@@ -5,6 +5,23 @@ module yaeos__equilibria_boundaries_auxiliar
    use yaeos__constants, only: R, pr
    use yaeos__math, only: interpol
    implicit none
+
+   type :: NearCritical
+      !! Near critical point information.
+      logical :: near_critical = .false.
+      !! If we are satisfying the condition of being near a critical point.
+      logical :: entering = .false.
+      !! Entering a critical region. This attribute is used to ensure that the
+      !! correct indexes are used since they should not be updated while inside
+      !! the region, just on the first point.
+      integer :: l 
+      !! Index of the phase that is becoming critical with the reference phase.
+      integer :: i
+      !! Index of the component with the max \(\ln K_i^l\)
+      integer :: j
+      !! Index of the component with the minimum \(\ln K_j^l\)
+   end type NearCritical
+
 contains
    subroutine get_z(alpha, z_0, z_inj, z, dzda)
       !! Calculate the fluid composition based on an amount of addition

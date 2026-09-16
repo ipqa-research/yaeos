@@ -161,26 +161,26 @@ contains
          end if
       end do
 
-      return
+      ! return
 
-      where(z == 0)
-         X(:nc) = 0
-      end where
+      ! where(z == 0)
+      !    X(:nc) = 0
+      ! end where
 
-      X(nc+1) = log(first_point%T)
-      X(nc+2) = log(first_point%P)
-      S0 = X(ns)
+      ! X(nc+1) = log(first_point%T)
+      ! X(nc+2) = log(first_point%P)
+      ! S0 = X(ns)
 
-      allocate(envelopes%points(0), envelopes%cps(0))
-      ! ========================================================================
-      ! Trace the line using the continuation method.
-      ! ------------------------------------------------------------------------
-      XS = continuation(&
-         foo, X, ns0=ns, S0=S0, &
-         dS0=dS0, max_points=max_points, solver_tol=1.e-9_pr, &
-         update_specification=update_spec, &
-         solver=solver, stop=stop_conditions &
-         )
+      ! allocate(envelopes%points(0), envelopes%cps(0))
+      ! ! ========================================================================
+      ! ! Trace the line using the continuation method.
+      ! ! ------------------------------------------------------------------------
+      ! XS = continuation(&
+      !    foo, X, ns0=ns, S0=S0, &
+      !    dS0=dS0, max_points=max_points, solver_tol=1.e-9_pr, &
+      !    update_specification=update_spec, &
+      !    solver=solver, stop=stop_conditions &
+      !    )
 
    contains
 
@@ -565,7 +565,7 @@ contains
 
       find_hpl = pt_envelope_2ph( &
          model, z, fr, &
-         specified_variable_0=nc+1, delta_0=-0.01_pr, &
+         specified_variable_0=nc+1, delta_0=-0.001_pr, &
          iterations=1000, points=max_points)
    end function find_hpl
 

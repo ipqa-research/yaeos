@@ -125,12 +125,11 @@ for i, mixrule in enumerate(mixrules):
         model_names.append(f"{cla.name} with {mixrule.name} mixrule")
 
 # =============================================================================
-# TODO Fix bug on GERG2008 (Excess properties not working)
 # Multifluid EoS
 # -----------------------------------------------------------------------------
-# model = yaeos.GERG2008(["n-hexane", "decane", "isobutane"])
-# models_list.append(model)
-# model_names.append("GERG2008")
+model = yaeos.GERG2008(["n-hexane", "decane", "isobutane"])
+models_list.append(model)
+model_names.append("GERG2008")
 
 # =============================================================================
 # SAFT EoS

@@ -28,12 +28,16 @@ module yaeos_c
 
    ! CubicEoS
    public :: srk, pr76, pr78, rkpr, psrk, get_ac_b_del1_del2_k
+   public :: get_cubiceos_attractive_parameters, get_cubiceos_repulsive_parameters
    ! Mixing rules
-   public :: set_mhv, set_qmr, set_qmrtd, set_hv, set_hvnrtl
+   public :: set_mhv, set_qmr, set_qmrtd, set_hv, set_hvnrtl, set_sddlc
+   public :: set_cmr, set_cmrtd
+   ! Alphas
+   public :: set_alpha_mathiascopeman, set_alpha_RKPR, set_alpha_soave
    ! Multifluid equations
    public :: multifluid_gerg2008
    ! SAFT equations
-   public :: pcsaft
+   public :: pcsaft, pcsaft_set_kij
 
    ! __del__
    public :: make_available_ar_models_list
@@ -67,6 +71,7 @@ module yaeos_c
    public :: entropy_excess_ar, helmholtz_excess_ar, internal_energy_excess_ar
 
    ! Phase equilibria
+   public :: pure_psat
    public :: flash, flash_vt, flash_grid, solve_mp_flash
    public :: flash_ge
    public :: saturation_pressure, saturation_temperature
@@ -505,6 +510,140 @@ contains
       call move_alloc(ar_model, ar_models(ar_id)%model)
    end subroutine set_qmr
 
+   subroutine set_sddlc(ar_id, qs, kij_0, kij_inf, t_star, lij)
+      !! # `set_sddlc`
+      !! Set the sDDLC with Temperature Dependent `k_ij`
+      !! to a cubic equation of state. The expression of the `k_ij` parameter is:
+      !! \[
+      !! k_{ij} = k_{ij}^{\infty} + k_{ij}^0 \exp {\frac{-T}{T^*_{ij}}}
+      !! \]
+      use yaeos, only: QMRTD, CubicEoS, sDDLC
+      integer(c_int), intent(in) :: ar_id !!
+      real(c_double), intent(in) :: qs(:)
+      real(c_double), intent(in) :: kij_0(:, :)
+      real(c_double), intent(in) :: kij_inf(:, :)
+      real(c_double), intent(in) :: t_star(:, :)
+      real(c_double), intent(in) :: lij(:, :)
+
+      type(sDDLC) :: mixrule
+
+      mixrule = sDDLC(q=qs, k=kij_inf, k0=kij_0, Tref=T_star, l=lij)
+
+      associate (ar_model => ar_models(ar_id)%model)
+         select type(ar_model)
+          class is(CubicEoS)
+            deallocate(ar_model%mixrule)
+            ar_model%mixrule = mixrule
+         end select
+      end associate
+   end subroutine set_sddlc
+
+   subroutine set_cmr(ar_id, kijk, lijk)
+      !! # `set_cmr`
+      !! Set the Cubic Mixing Rule (CMR) to a cubic equation of state.
+      !!
+      !! ## Description
+      !! With the `id` of a previously created cubic equation of state that is
+      !! in the list of `ArModels`, this procedure will set the mixing rule of
+      !! that model to the Cubic Mixing Rule (CMR) with the provided
+      !! binary interaction parameters matrices `kijk` and `lijk`.
+      use yaeos, only: CMR, CubicEoS
+      integer(c_int), intent(in) :: ar_id !! id in the `ArModels` list.
+      real(c_double) :: kijk(:, :, :) !! \(k_{ij}\) matrix
+      real(c_double) :: lijk(:, :, :) !! \(l_{ij}\) matrix
+
+      type(CMR) :: mixrule
+
+      ar_model = ar_models(ar_id)%model
+
+      ! Using a selector to determine that the model is a CubicEoS
+      select type(ar_model)
+       class is(CubicEoS)
+         mixrule = CMR(k=kijk, l=lijk)
+         ! Remove the previous mixing rule in the model
+         deallocate(ar_model%mixrule)
+         ! Put the new mixing rule
+         ar_model%mixrule = mixrule
+      end select
+
+      call move_alloc(ar_model, ar_models(ar_id)%model)
+   end subroutine set_cmr
+
+   subroutine set_cmrtd(ar_id, kijk_0, kijk_inf, t_star, lijk)
+      !! # `set_cmrtd`
+      !! Set the Cubic Mixing Rule with Temperature Dependent `k_ijk` (CMRTD)
+      !! to a cubic equation of state. The expression of the `k_ijk` parameter is:
+      !! \[
+      !! k_{ijk} = k_{ijk}^{\infty} + k_{ijk}^0 \exp {\frac{-T}{T^*_{ijk}}}
+      !! \]
+      use yaeos, only: CMRTD, CubicEoS
+      integer(c_int), intent(in) :: ar_id !!
+      real(c_double), intent(in) :: kijk_0(:, :, :)
+      real(c_double), intent(in) :: kijk_inf(:, :, :)
+      real(c_double), intent(in) :: t_star(:, :, :)
+      real(c_double), intent(in) :: lijk(:, :, :)
+
+      type(CMRTD) :: mixrule
+
+      mixrule = CMRTD(k=kijk_inf, k0=kijk_0, Tref=t_star, l=lijk)
+
+      associate (ar_model => ar_models(ar_id)%model)
+         select type(ar_model)
+          class is(CubicEoS)
+            deallocate(ar_model%mixrule)
+            ar_model%mixrule = mixrule
+         end select
+      end associate
+   end subroutine set_cmrtd
+
+   ! ==========================================================================
+   !  Cubic Alpha Functions
+   ! --------------------------------------------------------------------------
+
+   subroutine set_alpha(ar_id, alpha)
+      use yaeos, only: CubicEoS, AlphaFunction
+      integer(c_int) :: ar_id
+      class(AlphaFunction) :: alpha
+
+      associate (ar_model => ar_models(ar_id)%model)
+         select type(ar_model)
+          class is (CubicEoS)
+            call ar_model%set_alpha(alpha)
+         end select
+      end associate
+   end subroutine set_alpha
+
+
+   subroutine set_alpha_soave(ar_id, ks)
+      use yaeos, only: AlphaSoave, CubicEoS
+      integer(c_int), intent(in) :: ar_id
+      real(c_double), intent(in) :: ks(:)
+      type(AlphaSoave) :: alpha
+      alpha = AlphaSoave(k=ks)
+      call set_alpha(ar_id, alpha)
+   end subroutine set_alpha_soave
+
+   subroutine set_alpha_RKPR(ar_id, ks)
+      use yaeos, only: AlphaRKPR, CubicEoS
+      integer(c_int), intent(in) :: ar_id
+      real(c_double), intent(in) :: ks(:)
+      type(AlphaRKPR) :: alpha
+      alpha = AlphaRKPR(k=ks)
+      call set_alpha(ar_id, alpha)
+   end subroutine set_alpha_RKPR
+
+   subroutine set_alpha_mathiascopeman(ar_id, c1s, c2s, c3s)
+      use yaeos, only: AlphaMathiasCopeman, CubicEoS
+      integer(c_int), intent(in) :: ar_id
+      real(c_double), intent(in) :: c1s(:)
+      real(c_double), intent(in) :: c2s(:)
+      real(c_double), intent(in) :: c3s(:)
+      type(AlphaMathiasCopeman) :: alpha
+
+      alpha = AlphaMathiasCopeman(c1=c1s, c2=c2s, c3=c3s)
+      call set_alpha(ar_id, alpha)
+   end subroutine set_alpha_mathiascopeman
+
    ! ==========================================================================
    !  Cubic EoS implementations
    ! --------------------------------------------------------------------------
@@ -580,8 +719,9 @@ contains
       call extend_ar_models_list(id)
    end subroutine psrk
 
+   ! Get cubic parameters
    subroutine get_ac_b_del1_del2_k(id, ac, b, del1, del2, k, nc)
-      use yaeos, only: CubicEoS, size, AlphaRKPR
+      use yaeos, only: CubicEoS, size, AlphaRKPR, AlphaSoave
       integer(c_int), intent(in) :: id
       integer, intent(in) :: nc
       real(c_double), dimension(nc), intent(out) :: ac, b, del1, del2, k
@@ -598,11 +738,61 @@ contains
                select type(a)
                 class is(AlphaRKPR)
                   k(:nc) = a%k
+                class is(AlphaSoave)
+                  k(:nc) = a%k
                end select
             end associate
          end select
       end associate
    end subroutine get_ac_b_del1_del2_k
+
+   subroutine get_cubiceos_attractive_parameters(id, nc, n, T, a, dadt, dadt2)
+      !! Get the attractive parameters of the cubic eos object for a range
+      !! of temperatures
+      use yaeos, only: pr, CubicEoS
+      integer(c_int), intent(in) :: id !! Model id
+      integer(c_int), intent(in) :: n !! Number of valuations
+      integer(c_int), intent(in) :: nc !! Number of components
+      real(c_double), intent(in) :: T(n) !! Temperatures to evaluate
+      real(c_double), intent(out) :: a(n, nc) !! Attractive parameter values
+      real(c_double), intent(out) :: dadt(n, nc) !! Attractive parameter values
+      real(c_double), intent(out) :: dadt2(n, nc) !! Attractive parameter values
+
+      integer :: i
+      real(pr) :: Tc(nc), ac(nc)
+      real(pr) :: Tr(nc)
+
+      ar_model = ar_models(id)%model
+
+      select type(ar_model)
+       class is (CubicEoS)
+         Tc = ar_model%components%Tc
+         ac = ar_model%ac
+         do i=1,n
+            Tr = T(i)/Tc
+            call ar_model%alpha%alpha(Tr, a(i, :), dadt(i, :), dadt2(i, :))
+            a(i, :) = ac * a(i, :)
+            dadt(i, :) = ac * dadt(i, :) / Tc
+            dadt2(i, :) = ac * dadt2(i, :) / Tc**2
+         end do
+      end select
+   end subroutine get_cubiceos_attractive_parameters
+
+   subroutine get_cubiceos_repulsive_parameters(id, nc, b)
+      !! Get the repulsive parameters of the cubic eos object
+      use yaeos, only: pr, CubicEoS
+      integer(c_int), intent(in) :: id !! Model id
+      integer(c_int), intent(in) :: nc !! Number of components
+      real(c_double), intent(out) :: b(nc) !! Repulsive parameter value
+
+
+      ar_model = ar_models(id)%model
+
+      select type(ar_model)
+       class is (CubicEoS)
+         b = ar_model%b
+      end select
+   end subroutine get_cubiceos_repulsive_parameters
 
    ! ==========================================================================
    !  Multifluid equations
@@ -630,6 +820,22 @@ contains
       ar_model = init_pcsaft(m, sigma, epsilon_k, kij)
       call extend_ar_models_list(id)
    end subroutine pcsaft
+
+   subroutine pcsaft_set_kij(ar_id, i, j, kij)
+      use yaeos, only: pcsaft
+      integer(c_int), intent(in) :: ar_id
+      integer(c_int), intent(in) :: i
+      integer(c_int), intent(in) :: j
+      real(c_double), intent(in) :: kij
+
+      associate (ar_model => ar_models(ar_id)%model)
+         select type(ar_model)
+          class is (PCSAFT)
+            ar_model%kij(i, j) = kij
+            ar_model%kij(j, i) = kij
+         end select
+      end associate
+   end subroutine
 
    ! ==========================================================================
    !  Thermodynamic properties
@@ -944,6 +1150,19 @@ contains
    ! ==========================================================================
    ! Phase equilibria
    ! --------------------------------------------------------------------------
+
+   subroutine pure_psat(id, ncomp, T, psat, Vl, Vv)
+      integer(c_int), intent(in) :: id
+      integer(c_int), intent(in) :: ncomp
+      real(c_double), intent(in) :: T
+      real(c_double), intent(out) :: Psat
+      real(c_double), intent(out) :: Vl
+      real(c_double), intent(out) :: Vv
+      ar_model = ar_models(id)%model
+      Psat = ar_model%Psat_pure(ncomp, T, Vl, Vv)
+   end subroutine
+
+
    subroutine critical_point(id, z0, zi, spec, S, max_iters, x, T, P, V)
       use yaeos, only: EquilibriumState, fcritical_point => critical_point
       integer(c_int), intent(in) :: id
@@ -957,7 +1176,7 @@ contains
       real(c_double), intent(out) :: P
       real(c_double), intent(out) :: V
 
-      real(c_double) :: y(size(z0)), Vx, Vy, beta
+      real(c_double) :: y(size(z0)), Vy, beta
 
       type(EquilibriumState) :: crit
 
@@ -973,7 +1192,7 @@ contains
       a0, v0, t0, p0, z0, zi, stability_analysis, max_points, stop_pressure, &
       as, Vs, Ts, Ps, CEP_x, CEP_y, CEP_P, CEP_Vx, CEP_Vy, CEP_T)
       use yaeos, only: EquilibriumState, CriticalLine, &
-         fcritical_line => critical_line, spec_CP
+         fcritical_line => critical_line
       integer(c_int), intent(in) :: id
       integer(c_int), intent(in) :: ns
       real(c_double), intent(in) :: S
@@ -1170,8 +1389,6 @@ contains
       real(c_double), intent(out) :: all_mins(size(z), size(z)+1)
 
       real(c_double) :: d_i(size(z))
-
-      integer :: i
 
       call min_tpd(&
          ar_models(id)%model, z=z, P=P, T=T, &
@@ -1618,7 +1835,7 @@ contains
          P0=P0, T0=T0, ns0=ns0, ds0=ds0, &
          beta_w=beta_w, points=max_points, max_pressure=stop_pressure, &
          allow_negative_betas=allow_negative_betas &
-      )
+         )
 
       do i=1,size(pt_mp%points)
          do j=1,np

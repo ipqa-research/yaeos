@@ -53,15 +53,19 @@ contains
       integer, parameter :: n = 2
       real(pr) :: tc(n), pc(n), w(n), zc(n)
       real(pr) :: kij(n, n), lij(n, n)
+      real(pr) :: del1(n), k(n)
       tc = [190._pr, 310._pr]
       pc = [14._pr, 30._pr]
       w = [0.001_pr, 0.03_pr]
       zc = [0.23, 0.26]
 
+      k = [0.71711249633466034, 1.2255542836473572]
+      del1 = [4.6027121799930963, 2.6129328651841592]
+
       kij = reshape([0., 0.1, 0.1, 0.], [n, n])
       lij = kij/2
 
-      eos = RKPR(tc, pc, w, zc, kij, lij)
+      eos = RKPR(tc, pc, w, zc, kij, lij, delta_1=del1, k=k)
    end function binary_RKPR
 
    type(hdPR76) function binary_PR76_hd() result(eos)

@@ -416,8 +416,6 @@ contains
       less_phases = .false.
       ! call levenberg_marquardt(lmsolve, 1e-10_pr, X, F, info)
 
-      open(1, file="X.dat", status="replace")
-      open(2, file="dX.dat", status="replace")
       do iters=1,max_iters
          call pt_F_NP(model, z, np, kinds_x, kind_w, X, ns1, S1, ns2, S2, F, df)
 
@@ -437,11 +435,7 @@ contains
          end do
 
          X = X + dX
-
-
       end do
-      close(1)
-      close(2)
    contains
       subroutine lmsolve(n, m, xvec, fvec, info)
          integer, intent(in) :: n, m

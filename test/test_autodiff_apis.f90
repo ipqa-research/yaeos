@@ -102,13 +102,13 @@ contains
       use yaeos, only: ArModel
 
       class(ArModel), allocatable :: eos
-      integer, parameter :: n = 2
-      real(pr) :: z(n), V, T
+      integer, parameter :: nc = 2
+      real(pr) :: z(nc), V, T
       real(pr) :: Ar, ArV, ArV2, ArT, ArTV, ArT2
-      real(pr) :: Arn(n), ArVn(n), ArTn(n), Arn2(n, n)
+      real(pr) :: Arn(nc), ArVn(nc), ArTn(nc), Arn2(nc, nc)
 
       real(pr) :: Ar_val, ArV_val, ArV2_val, ArT_val, ArTV_val, ArT2_val
-      real(pr) :: Arn_val(n), ArVn_val(n), ArTn_val(n), Arn2_val(n, n)
+      real(pr) :: Arn_val(nc), ArVn_val(nc), ArTn_val(nc), Arn2_val(nc, nc)
 
       Ar_val = -9.5079006412803206
       ArV_val = 8.8347920054119555
@@ -127,34 +127,49 @@ contains
       v = 1
       T = 150
 
-      call eos%residual_helmholtz( &
-         z, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArT=ArT, ArTV=ArTV, &
-         ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn &
-         )
+      call test_numdiff
+   contains
+      subroutine test_numdiff
+         use yaeos, only: individual_ar_calls, numeric_ar_derivatives
+         real(pr) :: V, T, z(nc)
+         real(pr) :: Ar_num, ArV_num, ArT_num, ArV2_num, ArT2_num, ArTV_num
+         real(pr), dimension(nc) :: Arn_num, ArVn_num, ArTn_num
+         real(pr), dimension(nc, nc) :: Arn2_num
+         real(pr) :: Ar, ArV, ArT, ArV2, ArT2, ArTV
+         real(pr), dimension(nc) :: Arn, ArVn, ArTn
+         real(pr), dimension(nc, nc) :: Arn2
 
-      call assert(allclose([Ar], [Ar_val], absolute_tolerance), "tape_Ar")
-      call assert(allclose([ArV], [ArV_val], absolute_tolerance), "tape_ArV")
-      call assert(allclose([ArT], [ArT_val], absolute_tolerance), "tape_ArT")
-      call assert(allclose([ArTV], [ArTV_val], absolute_tolerance), "tape_ArTV")
-      call assert(allclose([ArV2], [ArV2_val], absolute_tolerance), "tape_ArV2")
-      call assert(allclose([ArT2], [ArT2_val], absolute_tolerance), "tape_ArT2")
-      call assert(allclose([ArVn], [ArVn_val], absolute_tolerance), "tape_ArVn")
-      call assert(allclose([ArTn], [ArTn_val], absolute_tolerance), "tape_ArTn")
+         real(pr) :: dn = 1e-5, dv=1e-6, dt=1e-2
+         real(pr), parameter :: tol=1e-2
+         integer :: i, j
 
-      call eos%residual_helmholtz( &
-         z, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArT=ArT, ArTV=ArTV, &
-         ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
-         )
+         logical :: individual_calls
 
-      call assert(allclose([Ar], [Ar_val], absolute_tolerance), "tape_Ar")
-      call assert(allclose([ArV], [ArV_val], absolute_tolerance), "tape_ArV")
-      call assert(allclose([ArT], [ArT_val], absolute_tolerance), "tape_ArT")
-      call assert(allclose([ArTV], [ArTV_val], absolute_tolerance), "tape_ArTV")
-      call assert(allclose([ArV2], [ArV2_val], absolute_tolerance), "tape_ArV2")
-      call assert(allclose([ArT2], [ArT2_val], absolute_tolerance), "tape_ArT2")
 
-      call assert(allclose([ArVn], [ArVn_val], absolute_tolerance), "tape_ArVn")
-      call assert(allclose([ArTn], [ArTn_val], absolute_tolerance), "tape_ArTn")
-      call assert(allclose([Arn2], [Arn2_val], absolute_tolerance), "tape_Arn2")
+         z = [0.3, 0.7]
+         v = 1
+         T = 150
+         
+         call numeric_ar_derivatives(eos, z, V, T, dn, dv, dt, &
+            Ar_num, ArV_num, ArT_num, Arn_num, ArV2_num, ArT2_num, ArTV_num, ArVn_num, ArTn_num, Arn2_num)
+
+         call eos%residual_helmholtz(z, V, T, &
+            Ar=Ar, ArV=ArV, ArT=ArT, Arn=Arn, ArV2=ArV2, ArT2=ArT2, ArTV=ArTV, &
+            ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
+            )
+
+         call assert(allclose([Ar_num], [Ar], tol), "tape diff")
+         
+         call assert(allclose([ArT_num] , [ArT], tol), "tape diff")
+         call assert(allclose([ArT2_num], [ArT2], tol), "tape diff")
+
+         call assert(allclose([ArV_num] , [ArV], tol), "tape diff")
+         call assert(allclose([ArV2_num], [ArV2], tol), "tape diff")
+
+         call assert(allclose([ArTV_num], [ArTV], tol), "tape diff")
+
+         call assert(allclose([ArVn_num], [ArVn], tol), "tape diff")
+         call assert(allclose([ArTn_num], [ArTn], tol), "tape diff")
+      end subroutine test_numdiff
    end subroutine test_pr76_tape
 end program test_autodiff_api

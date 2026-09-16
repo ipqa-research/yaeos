@@ -105,11 +105,11 @@ terms of \(A^r(\mathbf{n}, V, T)\) so a little algebraic work is required.
 
 Finally, we are going to use the MM notation, for that:
 
-$n$ is the total number of moles, and \(n_i\) is the number of moles of
+\(\mathbf{n}\) is the total number of moles, and \(n_i\) is the number of moles of
 component \(i\). Therefore:
 
 $$
-n = \sum_i n_i
+\mathbf{n} = \sum_i n_i
 $$
 
 The moles number vector is denoted as \(\mathbf{n}\).
@@ -150,19 +150,19 @@ Pressure can be calculated from the residual Helmholtz free energy as follows:
 
 $$
 P = - \left(\frac{\partial A^r}{\partial V} \right)_{T,\mathbf{n}} 
-+ \frac{nRT}{V}
++ \frac{\mathbf{n}RT}{V}
 $$
 
 $$
 \left(\frac{\partial P}{\partial V} \right)_{T,\mathbf{n}} =
 -\left(\frac{\partial^2 A^r}{\partial V^2} \right)_{T,\mathbf{n}} -
-\frac{nRT}{V^2}
+\frac{\mathbf{n}RT}{V^2}
 $$
 
 $$
 \left(\frac{\partial P}{\partial T} \right)_{V,\mathbf{n}} =
 - \left(\frac{\partial^2 A^r}{\partial V \partial T} \right)_{\mathbf{n}} +
-- \frac{nR}{V}
+- \frac{\mathbf{n}R}{V}
 $$
 
 $$
@@ -260,7 +260,7 @@ $$
 Remember that the compressibility factor \(Z\) is calculated as:
 
 $$
-Z = \frac{PV}{nRT}
+Z = \frac{PV}{\mathbf{n}RT}
 $$
 
 Next, the derivatives:
@@ -283,7 +283,7 @@ $$
 
 $$
 \left(\frac{\partial \ln \hat{\phi_i}}{\partial n_j} \right)_{P,T} =
-\frac{1}{n} + \frac{1}{RT} 
+\frac{1}{\mathbf{n}} + \frac{1}{RT} 
 \left(\frac{\partial^2 A^r}{\partial n_i \partial n_j}
 + \frac{\left(\frac{\partial P}{\partial n_i} \right)_{V,T}
 \left(\frac{\partial P}{\partial n_j} \right)_{V,T}}
@@ -412,25 +412,25 @@ The residual enthalpy is calculated as follows:
 
 $$
 H^r(\mathbf{n},V,T) = H^r(\mathbf{n},P,T) = A^r(\mathbf{n},V,T) + T
-S^r(\mathbf{n},V,T) + PV - nRT
+S^r(\mathbf{n},V,T) + PV - \mathbf{n}RT
 $$
 
 We know that pressure can be calculated as:
 
 $$
 P = - \left(\frac{\partial A^r}{\partial V} \right)_{T,\mathbf{n}} +
-\frac{nRT}{V}
+\frac{\mathbf{n}RT}{V}
 $$
 
 Then, we can obtain:
 
 $$
-P - \frac{nRT}{V} = - \left(\frac{\partial A^r}{\partial V}
+P - \frac{\mathbf{n}RT}{V} = - \left(\frac{\partial A^r}{\partial V}
 \right)_{T,\mathbf{n}}
 $$
 
 $$
-PV - nRT = - V \left(\frac{\partial A^r}{\partial V} \right)_{T,\mathbf{n}}
+PV - \mathbf{n}RT = - V \left(\frac{\partial A^r}{\partial V} \right)_{T,\mathbf{n}}
 $$
 
 And we also know how to calculate residual entropy as:
@@ -494,13 +494,13 @@ end block residual_enthalpy
 The residual Gibbs free energy is calculated as follows:
 
 $$
-G^r(\mathbf{n},V,T) = A^r(\mathbf{n},V,T) + PV - nRT
+G^r(\mathbf{n},V,T) = A^r(\mathbf{n},V,T) + PV - \mathbf{n}RT
 $$
 
 As with residual enthalpy we can easily deduce:
 
 $$
-PV - nRT = - V \left(\frac{\partial A^r}{\partial V} \right)_{T,\mathbf{n}}
+PV - \mathbf{n}RT = - V \left(\frac{\partial A^r}{\partial V} \right)_{T,\mathbf{n}}
 $$
 
 For that:
@@ -559,7 +559,7 @@ $$
 From **MM - Chapter 1 - Table 6 (Equations IX, XII, and XIII)** we know that:
 
 $$
-    S^r(\mathbf{n},P,T) = S^r(\mathbf{n},V,T) + nR \; ln Z
+    S^r(\mathbf{n},P,T) = S^r(\mathbf{n},V,T) + \mathbf{n}R \; ln Z
 $$
 
 $$
@@ -567,14 +567,14 @@ $$
 $$
 
 $$
-    G^r(\mathbf{n},P,T) = G^r(\mathbf{n},V,T) - nRT \; ln Z
+    G^r(\mathbf{n},P,T) = G^r(\mathbf{n},V,T) - \mathbf{n}RT \; ln Z
 $$
 
 Replacing on the first equation we have:
 
 $$
-G^r(\mathbf{n},V,T) - nRT \; ln Z = H^r(\mathbf{n},V,T) - T
-\left(S^r(\mathbf{n},V,T) + nR \; ln Z \right)
+G^r(\mathbf{n},V,T) - \mathbf{n}RT \; ln Z = H^r(\mathbf{n},V,T) - T
+\left(S^r(\mathbf{n},V,T) + \mathbf{n}R \; ln Z \right)
 $$
 
 Which of course lead us to:
@@ -708,7 +708,7 @@ The residual constant pressure heat capacity is calculated as follows:
 $$
 C_P^r(\mathbf{n},V,T) = C_V^r(\mathbf{n},V,T) + T \left(\frac{\partial
 P}{\partial T}\right)_{V,\mathbf{n}} \left(\frac{\partial V}{\partial
-T}\right)_{P,\mathbf{n}} - nR
+T}\right)_{P,\mathbf{n}} - \mathbf{n}R
 $$
 
 From **MM - Chapter 1 - Equation A37** we know that:
@@ -725,7 +725,7 @@ With a direct replacement:
 $$
 C_P^r(\mathbf{n},V,T) = C_V^r(\mathbf{n},V,T) - T \frac{\left(\frac{\partial P}
 {\partial T} \right)^2_{V,\mathbf{n}}}{\left(\frac{\partial P}
-{\partial V} \right)_{T,\mathbf{n}}} - nR
+{\partial V} \right)_{T,\mathbf{n}}} - \mathbf{n}R
 $$
 
 We can replace all the terms to obtain an expression completely expressed in
@@ -735,8 +735,8 @@ $$
 C_P^r(\mathbf{n},V,T) = - T \left(\frac{\partial^2 A^r}{\partial T^2}
 \right)_{V,\mathbf{n}} - T \; \frac{\left(- \left(\frac{\partial^2
 A^r}{\partial V \partial T} \right)_{V,\mathbf{n}} +
-\frac{nR}{V}\right)^2}{\left(-\left(\frac{\partial^2 A^r}{\partial V^2}
-\right)_{T,\mathbf{n}} - \frac{nRT}{V^2}\right)} - nR
+\frac{\mathbf{n}R}{V}\right)^2}{\left(-\left(\frac{\partial^2 A^r}{\partial
+V^2} \right)_{T,\mathbf{n}} - \frac{\mathbf{n}RT}{V^2}\right)} - \mathbf{n}R
 $$
 
 
@@ -791,7 +791,7 @@ $$
 $$
     \left(\frac{\partial \, ln \; Z}{\partial n_i}\right)_{P,T} =
     \frac{1}{V} \left(\frac{\partial V}{\partial n_i}\right)_{P,T} 
-    - \frac{1}{n}
+    - \frac{1}{\mathbf{n}}
 $$
 
 If desired, all the volume derivatives can be expressed in terms of
@@ -801,7 +801,7 @@ $$
     \left(\frac{\partial V}{\partial P}\right)_{T,\mathbf{n}} =
     \frac{1}{\left(\frac{\partial P}{\partial V}\right)_{T,\mathbf{n}}} =
     \frac{1}{-\left(\frac{\partial^2 A^r}{\partial V^2} \right)_{T,\mathbf{n}}
-    - \frac{nRT}{V^2}}
+    - \frac{\mathbf{n}RT}{V^2}}
 $$
 
 From **MM - Chapter 1 - Equation A39**
@@ -822,8 +822,9 @@ $$
     \frac{\left(\frac{\partial P}{\partial T}
     \right)_{V,\mathbf{n}}}{\left(\frac{\partial P}{\partial V}
     \right)_{T,\mathbf{n}}} = - \frac{- \left(\frac{\partial^2 A^r}{\partial V
-    \partial T} \right)_{\mathbf{n}} + \frac{nR}{V}}{-\left(\frac{\partial^2
-    A^r}{\partial V^2} \right)_{T,\mathbf{n}} - \frac{nRT}{V^2}}
+    \partial T} \right)_{\mathbf{n}} +
+    \frac{\mathbf{n}R}{V}}{-\left(\frac{\partial^2 A^r}{\partial V^2}
+    \right)_{T,\mathbf{n}} - \frac{\mathbf{n}RT}{V^2}}
 $$
 
 Finally, we have to understand the chain rule...
@@ -900,7 +901,7 @@ end block lnphi_pt_v
 The \(A^r(\mathbf{n}, P, T)\) can be calculated as follows:
 
 $$
-    A^r(\mathbf{n}, P, T) = A^r(\mathbf{n}, V, T) - nRT \; ln \; Z
+    A^r(\mathbf{n}, P, T) = A^r(\mathbf{n}, V, T) - \mathbf{n}RT \; ln \; Z
 $$
 
 And its derivatives:
@@ -909,7 +910,7 @@ $$
     \left(\frac{\partial \, A^r(\mathbf{n},P,T)}{\partial
     P}\right)_{T,\mathbf{n}} = \left(\frac{\partial \,
     A^r(\mathbf{n},V,T)}{\partial V}\right)_{T,\mathbf{n}} \left(\frac{\partial
-    V}{\partial P}\right)_{T,\mathbf{n}} - n R T \left(\frac{1}{P} +
+    V}{\partial P}\right)_{T,\mathbf{n}} - \mathbf{n} R T \left(\frac{1}{P} +
     \frac{1}{V} \left(\frac{\partial V}{\partial P}\right)_{T,\mathbf{n}}
     \right)
 $$
@@ -919,8 +920,8 @@ $$
     T}\right)_{P,\mathbf{n}} = \left(\frac{\partial A^r(\mathbf{n}, V,
     T)}{\partial T}\right)_{V,\mathbf{n}} + \left(\frac{\partial
     A^r(\mathbf{n}, V, T)}{\partial V}\right)_{T,\mathbf{n}}
-    \left(\frac{\partial V}{\partial T}\right)_{P,\mathbf{n}} - nR \; ln \; Z -
-    n R T \left(\frac{1}{V} \left(\frac{\partial V}{\partial
+    \left(\frac{\partial V}{\partial T}\right)_{P,\mathbf{n}} - \mathbf{n}R \;
+    ln \; Z - \mathbf{n} R T \left(\frac{1}{V} \left(\frac{\partial V}{\partial
     T}\right)_{P,\mathbf{n}} - \frac{1}{T}\right)
 $$
 
@@ -928,9 +929,9 @@ $$
     \left(\frac{\partial A^r(\mathbf{n},P,T)}{\partial n_i}\right)_{P,T} =
     \left(\frac{\partial A^r(\mathbf{n},V,T)}{\partial n_i}\right)_{V,T} +
     \left(\frac{\partial A^r(\mathbf{n},V,T)}{\partial V}\right)_{T,\mathbf{n}}
-    \left(\frac{\partial V}{\partial n_i}\right)_{P,T} - RT \; ln \; Z - nRT
-    \left(\frac{1}{V} \left(\frac{\partial V}{\partial n_i}\right)_{P,T} -
-    \frac{1}{n}\right)
+    \left(\frac{\partial V}{\partial n_i}\right)_{P,T} - RT \; ln \; Z -
+    \mathbf{n}RT \left(\frac{1}{V} \left(\frac{\partial V}{\partial
+    n_i}\right)_{P,T} - \frac{1}{\mathbf{n}}\right)
 $$
 
 ```fortran
@@ -955,34 +956,36 @@ end block ar_pt
 The residual entropy at \(\mathbf{n}, P, T\) can be calculated as follows:
 
 $$
-    S^r(\mathbf{n}, P, T) = S^r(\mathbf{n}, V, T) + nR \; \ln \; Z
+    S^r(\mathbf{n}, P, T) = S^r(\mathbf{n}, V, T) + \mathbf{n}R \; \ln \; Z
 $$
 
 And its derivatives:
 
 $$
-    \left(\frac{\partial S^r(\mathbf{n},P,T)}{\partial P}\right)_{T,n} =
-    \left(\frac{\partial S^r(\mathbf{n},V,T)}{\partial V}\right)_{T,n}
-    \left(\frac{\partial V}{\partial P}\right)_{T,n} + nR
-    \left(\frac{1}{P} + \frac{1}{V} \left(\frac{\partial V}{\partial
-    P}\right)_{T,n} \right)
+    \left(\frac{\partial S^r(\mathbf{n},P,T)}{\partial P}\right)_{T,\mathbf{n}}
+    = \left(\frac{\partial S^r(\mathbf{n},V,T)}{\partial
+    V}\right)_{T,\mathbf{n}} \left(\frac{\partial V}{\partial
+    P}\right)_{T,\mathbf{n}} + \mathbf{n}R \left(\frac{1}{P} + \frac{1}{V}
+    \left(\frac{\partial V}{\partial P}\right)_{T,\mathbf{n}} \right)
 $$
 
 $$
-    \left(\frac{\partial S^r(\mathbf{n},P,T)}{\partial T}\right)_{P,n} =
-    \left(\frac{\partial S^r(\mathbf{n},V,T)}{\partial T}\right)_{V,n} +
-    \left(\frac{\partial S^r(\mathbf{n},V,T)}{\partial V}\right)_{T,n}
-    \left(\frac{\partial V}{\partial T}\right)_{P,n} + nR \left(\frac{1}{V}
-    \left(\frac{\partial V}{\partial T}\right)_{P,n} - \frac{1}{T}\right)
+    \left(\frac{\partial S^r(\mathbf{n},P,T)}{\partial T}\right)_{P,\mathbf{n}}
+    = \left(\frac{\partial S^r(\mathbf{n},V,T)}{\partial
+    T}\right)_{V,\mathbf{n}} + \left(\frac{\partial
+    S^r(\mathbf{n},V,T)}{\partial V}\right)_{T,\mathbf{n}} \left(\frac{\partial
+    V}{\partial T}\right)_{P,\mathbf{n}} + \mathbf{n}R \left(\frac{1}{V}
+    \left(\frac{\partial V}{\partial T}\right)_{P,\mathbf{n}} -
+    \frac{1}{T}\right)
 $$
 
 $$
     \left(\frac{\partial S^r(\mathbf{n},P,T)}{\partial n_i}\right)_{P,T} =
     \left(\frac{\partial S^r(\mathbf{n},V,T)}{\partial n_i}\right)_{V,T} +
-    \left(\frac{\partial S^r(\mathbf{n},V,T)}{\partial V}\right)_{T,n}
-    \left(\frac{\partial V}{\partial n_i}\right)_{P,T} + R \; ln \; Z + nR
-    \left(\frac{1}{V} \left(\frac{\partial V}{\partial n_i}\right)_{P,T} -
-    \frac{1}{n}\right)
+    \left(\frac{\partial S^r(\mathbf{n},V,T)}{\partial V}\right)_{T,\mathbf{n}}
+    \left(\frac{\partial V}{\partial n_i}\right)_{P,T} + R \; ln \; Z +
+    \mathbf{n}R \left(\frac{1}{V} \left(\frac{\partial V}{\partial
+    n_i}\right)_{P,T} - \frac{1}{\mathbf{n}}\right)
 $$
 
 
@@ -1000,22 +1003,24 @@ $$
 For that, its derivatives can be obtained as:
 
 $$
-    \left(\frac{\partial H^r(\mathbf{n},P,T)}{\partial P}\right)_{T,n} =
-    \left(\frac{\partial H^r(\mathbf{n},V,T)}{\partial V}\right)_{T,n}
-    \left(\frac{\partial P}{\partial V}\right)^{-1}_{T,n}
+    \left(\frac{\partial H^r(\mathbf{n},P,T)}{\partial P}\right)_{T,\mathbf{n}}
+    = \left(\frac{\partial H^r(\mathbf{n},V,T)}{\partial
+    V}\right)_{T,\mathbf{n}} \left(\frac{\partial P}{\partial
+    V}\right)^{-1}_{T,\mathbf{n}}
 $$
 
 $$
-    \left(\frac{\partial H^r(\mathbf{n},P,T)}{\partial T}\right)_{P,n} =
-    \left(\frac{\partial H^r(\mathbf{n},V,T)}{\partial T}\right)_{V,n} +
-    \left(\frac{\partial H^r(\mathbf{n},V,T)}{\partial V}\right)_{T,n}
-    \left(\frac{\partial V}{\partial T}\right)_{P,n}
+    \left(\frac{\partial H^r(\mathbf{n},P,T)}{\partial T}\right)_{P,\mathbf{n}}
+    = \left(\frac{\partial H^r(\mathbf{n},V,T)}{\partial
+    T}\right)_{V,\mathbf{n}} + \left(\frac{\partial
+    H^r(\mathbf{n},V,T)}{\partial V}\right)_{T,\mathbf{n}} \left(\frac{\partial
+    V}{\partial T}\right)_{P,\mathbf{n}}
 $$
 
 $$
     \left(\frac{\partial H^r(\mathbf{n},P,T)}{\partial n_i}\right)_{P,T} =
     \left(\frac{\partial H^r(\mathbf{n},V,T)}{\partial n_i}\right)_{V,T} +
-    \left(\frac{\partial H^r(\mathbf{n},V,T)}{\partial V}\right)_{T,n}
+    \left(\frac{\partial H^r(\mathbf{n},V,T)}{\partial V}\right)_{T,\mathbf{n}}
     \left(\frac{\partial V}{\partial n_i}\right)_{P,T}
 $$
 
@@ -1050,7 +1055,7 @@ $$
     \left(\frac{\partial \, G^r(\mathbf{n},P,T)}{\partial
     P}\right)_{T,\mathbf{n}} = \left(\frac{\partial \,
     G^r(\mathbf{n},V,T)}{\partial V}\right)_{T,\mathbf{n}} \left(\frac{\partial
-    V}{\partial P}\right)_{T,\mathbf{n}} - n R T \left(\frac{1}{P} +
+    V}{\partial P}\right)_{T,\mathbf{n}} - \mathbf{n} R T \left(\frac{1}{P} +
     \frac{1}{V} \left(\frac{\partial V}{\partial P}\right)_{T,\mathbf{n}}
     \right)
 $$
@@ -1060,8 +1065,8 @@ $$
     T}\right)_{P,\mathbf{n}} = \left(\frac{\partial G^r(\mathbf{n}, V,
     T)}{\partial T}\right)_{V,\mathbf{n}} + \left(\frac{\partial
     G^r(\mathbf{n}, V, T)}{\partial V}\right)_{T,\mathbf{n}}
-    \left(\frac{\partial V}{\partial T}\right)_{P,\mathbf{n}} - nR \; ln \; Z -
-    n R T \left(\frac{1}{V} \left(\frac{\partial V}{\partial
+    \left(\frac{\partial V}{\partial T}\right)_{P,\mathbf{n}} - \mathbf{n}R \;
+    ln \; Z - \mathbf{n} R T \left(\frac{1}{V} \left(\frac{\partial V}{\partial
     T}\right)_{P,\mathbf{n}} - \frac{1}{T}\right)
 $$
 
@@ -1069,9 +1074,9 @@ $$
     \left(\frac{\partial G^r(\mathbf{n},P,T)}{\partial n_i}\right)_{P,T} =
     \left(\frac{\partial G^r(\mathbf{n},V,T)}{\partial n_i}\right)_{V,T} +
     \left(\frac{\partial G^r(\mathbf{n},V,T)}{\partial V}\right)_{T,\mathbf{n}}
-    \left(\frac{\partial V}{\partial n_i}\right)_{P,T} - RT \; ln \; Z - nRT
-    \left(\frac{1}{V} \left(\frac{\partial V}{\partial n_i}\right)_{P,T} -
-    \frac{1}{n}\right)
+    \left(\frac{\partial V}{\partial n_i}\right)_{P,T} - RT \; ln \; Z -
+    \mathbf{n}RT \left(\frac{1}{V} \left(\frac{\partial V}{\partial
+    n_i}\right)_{P,T} - \frac{1}{\mathbf{n}}\right)
 $$
 
 ```fortran
@@ -1101,22 +1106,24 @@ $$
 Therefore, its derivatives are the same as enthalpy \((\mathbf{n}, P, T)\):
 
 $$
-    \left(\frac{\partial U^r(\mathbf{n},P,T)}{\partial P}\right)_{T,n} =
-    \left(\frac{\partial U^r(\mathbf{n},V,T)}{\partial V}\right)_{T,n}
-    \left(\frac{\partial P}{\partial V}\right)^{-1}_{T,n}
+    \left(\frac{\partial U^r(\mathbf{n},P,T)}{\partial P}\right)_{T,\mathbf{n}}
+    = \left(\frac{\partial U^r(\mathbf{n},V,T)}{\partial
+    V}\right)_{T,\mathbf{n}} \left(\frac{\partial P}{\partial
+    V}\right)^{-1}_{T,\mathbf{n}}
 $$
 
 $$
-    \left(\frac{\partial U^r(\mathbf{n},P,T)}{\partial T}\right)_{P,n} =
-    \left(\frac{\partial U^r(\mathbf{n},V,T)}{\partial T}\right)_{V,n} +
-    \left(\frac{\partial U^r(\mathbf{n},V,T)}{\partial V}\right)_{T,n}
-    \left(\frac{\partial V}{\partial T}\right)_{P,n}
+    \left(\frac{\partial U^r(\mathbf{n},P,T)}{\partial T}\right)_{P,\mathbf{n}}
+    = \left(\frac{\partial U^r(\mathbf{n},V,T)}{\partial
+    T}\right)_{V,\mathbf{n}} + \left(\frac{\partial
+    U^r(\mathbf{n},V,T)}{\partial V}\right)_{T,\mathbf{n}} \left(\frac{\partial
+    V}{\partial T}\right)_{P,\mathbf{n}}
 $$
 
 $$
     \left(\frac{\partial U^r(\mathbf{n},P,T)}{\partial n_i}\right)_{P,T} =
     \left(\frac{\partial U^r(\mathbf{n},V,T)}{\partial n_i}\right)_{V,T} +
-    \left(\frac{\partial U^r(\mathbf{n},V,T)}{\partial V}\right)_{T,n}
+    \left(\frac{\partial U^r(\mathbf{n},V,T)}{\partial V}\right)_{T,\mathbf{n}}
     \left(\frac{\partial V}{\partial n_i}\right)_{P,T}
 $$
 
@@ -1223,13 +1230,13 @@ And its derivatives:
 **MM - Chapter 1 - Table 9 (Equations V and VI)**
 
 $$
-    \left(\frac{\partial \ln \; \gamma_i}{\partial T}\right)_{P,n} =
-    \left(\frac{\partial \ln \; \hat{\phi}_i}{\partial T}\right)_{P,n} -
-    \left(\frac{\partial \ln \; \phi_i}{\partial T}\right)_{P}
+    \left(\frac{\partial \ln \; \gamma_i}{\partial T}\right)_{P,\mathbf{n}} =
+    \left(\frac{\partial \ln \; \hat{\phi}_i}{\partial T}\right)_{P,\mathbf{n}}
+    - \left(\frac{\partial \ln \; \phi_i}{\partial T}\right)_{P}
 $$
 
 $$
-    \left(\frac{\partial \ln \; \gamma_i}{\partial P}\right)_{T,n} =
+    \left(\frac{\partial \ln \; \gamma_i}{\partial P}\right)_{T,\mathbf{n}} =
     \frac{\overline{V}_i(\mathbf{n}, P, T) - v_i(P, T)}{RT}
 $$
 
@@ -1241,8 +1248,10 @@ $$
 Where:
 
 $$
-\overline{V}_i(\mathbf{n}, P, T) = \left(\frac{\partial V}{\partial
-n_i}\right)_{P,T} = - \frac{\left(\frac{\partial P}{\partial n_i}\right)_{V,T}}{\left(\frac{\partial P}{\partial V}\right)_{T,\mathbf{n}}}
+    \overline{V}_i(\mathbf{n}, P, T) = \left(\frac{\partial V}{\partial
+    n_i}\right)_{P,T} = - \frac{\left(\frac{\partial P}{\partial
+    n_i}\right)_{V,T}}{\left(\frac{\partial P}{\partial
+    V}\right)_{T,\mathbf{n}}}
 $$
 
 and \(v_i(P, T)\) is the partial molar volume of component \(i\) in the pure
@@ -1290,9 +1299,7 @@ $$
 $$
 
 $$
-    \left(\frac{\partial G^E}{\partial n_j}\right)_{P,T} = R T \sum_i n_i
-    \left(\frac{\partial ln \; \gamma_i}{\partial n_j}\right)_{P,T} + R T
-    \; ln \; \gamma_j
+    \left(\frac{\partial G^E}{\partial n_i}\right)_{P,T} = R T \; ln \; \gamma_i
 $$
 
 ```fortran

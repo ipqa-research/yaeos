@@ -62,10 +62,7 @@ def solve_pt(
     mean = (x10 + y10) / 2
 
     z = [mean, 1 - mean]
-    y0 = np.array([y10, 1 - y10])
-    x0 = np.array([x10, 1 - x10])
-
-    flash = model.flash_pt(z, pressure=p, temperature=t, k0=y0 / x0)
+    flash = model.flash_pt(z, pressure=p, temperature=t)
 
     x1 = flash["x"][0]
     y1 = flash["y"][0]
