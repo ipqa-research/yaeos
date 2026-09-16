@@ -59,7 +59,7 @@ contains
 
       ns0 = (nc*np) + (np+1)
       S0 = 0
-      dS0 = 0.01
+      dS0 = 0.001
 
       ! ws_stab(1, :) = [4.79003592e-01, 5.20996408e-01, 1.30001898e-15]
       ! ws_stab(2, :) = [5.63039080e-01, 4.36960920e-01, 4.17032026e-16]
@@ -74,8 +74,10 @@ contains
          )
 
       i = size(line%points)
+      print *, i
+      print *, line%points(1)%T
+      print *, line%points(i)%T
       call assert(line%points(1)%T > 570._pr, "Line sart at high T")
       call assert(line%points(i)%T < 150._pr, "Line stop at low T")
-
    end subroutine isoP
 end program generalized_line
