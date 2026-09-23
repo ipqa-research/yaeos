@@ -19,6 +19,7 @@ program main
    real(pr) :: n(nc), T, Tr(nc), Tc(nc), dn(nc)
 
    real(pr) :: D, dDdT, dDdT2, dDi(nc), dDidT(nc), dDij(nc,nc), dx
+   real(pr) :: V, dDdV, dDdV2, dDdTV, dDidV(nc)
 
    type(CubicEoS) :: model
    integer :: i, j
@@ -38,7 +39,11 @@ program main
    daidt = daidt*model%ac/Tc
    daidt2 = daidt2*model%ac/Tc**2
 
-   call model%mixrule%Dmix(n, T, ai, daidt, daidt2, D, dDdT, dDdT2, dDi, dDidT, dDij)
+   call model%mixrule%DMIX(n, V, T, &
+      ai, daidt, daidt2, &
+      D, &
+      dDdV, dDdT, dDdV2, dDdT2, dDi, dDdTV, dDidV, dDidT, dDij &
+      )
 
    call assert(allclose([D], [test_D], test_tol), &
       "Huron-Vidal Mixing Rule: D does not match expected value")

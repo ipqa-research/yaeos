@@ -6,6 +6,7 @@ from yaeos.core import ArModel
 from yaeos.lib import yaeos_c
 from yaeos.models.groups import groups_from_dicts
 from yaeos.models.residual_helmholtz.cubic_eos.mixing_rules import CubicMixRule
+from yaeos.models.residual_helmholtz.cubic_eos.alphas import CubicAlphaFunction
 
 
 class CubicEoS(ArModel):
@@ -70,6 +71,17 @@ class CubicEoS(ArModel):
         self.mixrule = mixrule
         self.mixrule.set_mixrule(self.id)
 
+    def set_alpha(self, alpha: CubicAlphaFunction) -> None:
+        """Set the alpha function for the EoS.
+
+        Parameters
+        ----------
+        alpha : CubicAlphaFunction
+            AlphaFunction object
+        """
+        self.alpha = alpha
+        self.alpha.set_alpha(self.id)
+
     def _model_params_as_str(self) -> str:
         """Return the model parameters as a string.
 
@@ -112,6 +124,38 @@ class CubicEoS(ArModel):
             fcode += self.mixrule._model_params_declaration_as_str()
 
         return fcode
+
+    def get_attractive_parameter(self, temperatures: np.ndarray):
+        """Calculate the attractive parameter of the CubicEoS.
+
+        Parameters
+        ----------
+        temperatures : array_like
+            Range of temperatuers for which calculate the attractive parameter.
+
+        Returns
+        -------
+        dict : Dictionary with the values of a for each component and its
+               derivatives with temperature.
+        """
+        a, dadt, dadt2 = yaeos_c.get_cubiceos_attractive_parameters(
+            id=self.id, nc=self.size(), t=temperatures
+        )
+
+        return {"a": a, "dt": dadt, "dt2": dadt2}
+
+    def get_repulsive_parameter(self):
+        """Calculate the repulsive parameters of the CubicEoS.
+
+        Returns
+        -------
+            array : Repulsive parameter value for each component.
+        """
+        b = yaeos_c.get_cubiceos_repulsive_parameters(
+            id=self.id, nc=self.size()
+        )
+
+        return b
 
 
 class PengRobinson76(CubicEoS):

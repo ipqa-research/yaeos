@@ -85,6 +85,29 @@ contains
       sq_error = ((exp - pred)/exp)**2
    end function sq_error
 
+   function central_numdiff(f, x, eps) result(df)
+      interface
+         function f(x)
+            import pr
+            real(pr), intent(in) :: x(:)
+            real(pr) :: f(size(x))
+         end function f
+      end interface
+      real(pr), intent(in) :: x(:)
+      real(pr), intent(in) :: eps
+      real(pr) :: df(size(x), size(x))
+
+      integer :: i
+      real(pr) :: f1(size(x)), f2(size(x))
+      real(pr) :: dx(size(x))
+
+      do i=1,size(x)
+         dx = 0
+         dx(i) = x(i) * eps
+         df(:, i) = (f(x + dx) - f(x - dx))/(2*dx(i))
+      end do
+   end function central_numdiff
+
    function dx_to_dn(x, dx) result(dn)
       !! # dx_to_dn
       !!
@@ -328,7 +351,6 @@ contains
       s = b(1)
       t = b(2)
    end subroutine intersects
-
 
    subroutine levenberg_marquardt(&
       fun, tol, X, F, info &

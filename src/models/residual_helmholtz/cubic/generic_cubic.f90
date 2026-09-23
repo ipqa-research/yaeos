@@ -14,7 +14,10 @@ module yaeos__models_ar_genericcubic
    type, abstract :: CubicMixRule
       !! Abstract derived type that describe the required
       !! procedure for a mixing rule on a Cubic EoS
-      logical :: dn2 = .false. !! Calculate second order derivatives
+      logical :: is_D_ddlc = .false.
+      !! Mixing rule D parameter dependant on density
+      logical :: dn2 = .false.
+      !! Calculate second order derivatives
    contains
       procedure(abs_Dmix), deferred :: Dmix
       procedure(abs_Bmix), deferred :: Bmix
@@ -98,6 +101,8 @@ module yaeos__models_ar_genericcubic
       procedure :: volume => volume
       procedure :: set_delta1 => set_delta1
       procedure :: set_mixrule => set_mixrule
+      procedure :: set_alpha => set_alpha
+      procedure :: calculate_attractive_parameters => calculate_attractive_parameters
    end type CubicEoS
 
    abstract interface
@@ -108,15 +113,16 @@ module yaeos__models_ar_genericcubic
          real(pr), intent(out) :: a(:), dadt(:), dadt2(:)
       end subroutine abs_alpha
 
-      subroutine abs_Dmix(self, n, T, &
+      subroutine abs_Dmix(self, n, V, T, &
          ai, daidt, daidt2, &
-         D, dDdT, dDdT2, dDi, dDidT, dDij&
+         D, &
+         dDdV, dDdT, dDdV2, dDdT2, dDi, dDdTV, dDidV, dDidT, dDij &
          )
          import CubicMixRule, pr
          class(CubicMixRule), intent(in) :: self
-         real(pr), intent(in) :: T, n(:)
+         real(pr), intent(in) :: V, T, n(:)
          real(pr), intent(in) :: ai(:), daidt(:), daidt2(:)
-         real(pr), intent(out) :: D, dDdT, dDdT2, dDi(:), dDidT(:), dDij(:, :)
+         real(pr), intent(out) :: D, dDdV, dDdT, dDdV2, dDdT2, dDdTV, dDi(:), dDidV(:), dDidT(:), dDij(:, :)
       end subroutine abs_Dmix
 
       subroutine abs_Bmix(self, n, bi, B, dBi, dBij)
@@ -126,6 +132,7 @@ module yaeos__models_ar_genericcubic
          real(pr), intent(in) :: bi(:)
          real(pr), intent(out) :: B, dBi(:), dBij(:, :)
       end subroutine abs_Bmix
+
       subroutine abs_D1mix(self, n, d1i, D1, dD1i, dD1ij)
          import pr, CubicMixRule
          class(CubicMixRule), intent(in) :: self
@@ -157,7 +164,9 @@ contains
       !! three parameter EoS RKPR where \(delta_1\) is not a constant and
       !! has its own mixing rule.
       !!
-      use yaeos__models_ar_genericcubic_base, only: generic => GenericCubic_Ar
+      use yaeos__models_ar_genericcubic_base, only: &
+         generic => GenericCubic_Ar, &
+         generic_dddlc => GenericCubic_Ar_dddlc
       use yaeos__constants, only: R
       class(CubicEoS), intent(in) :: self
       real(pr), intent(in) :: n(:) !! Number of moles
@@ -178,6 +187,7 @@ contains
 
       real(pr) :: B, dBi(size(n)), dBij(size(n), size(n))
       real(pr) :: D, dDi(size(n)), dDij(size(n), size(n)), dDidT(size(n)), dDdT, dDdT2
+      real(pr) :: dDdV, dDdV2, dDdTV, dDidV(size(n))
 
       real(pr) :: totn
       real(pr) d1, dD1i(size(n)), dD1ij(size(n), size(n))
@@ -207,18 +217,38 @@ contains
       ! ------------------------------------------------------------------------
       call self%mixrule%D1mix(n, self%del1, D1, dD1i, dD1ij)
       call self%mixrule%Bmix(n, self%b, B, dBi, dBij)
+      dDdV = 0
+      dDdV2 = 0
+      dDdTV = 0
+      dDdTV = 0
       call self%mixrule%Dmix(&
-         n, T, a, dadt, dadt2, D, dDdT, dDdT2, dDi, dDidT, dDij&
+         n=n, V=V, T=T, ai=a, daidt=dadt, daidt2=dadt2, &
+         D=D, &
+         dDdV=dDdV, dDdV2=dDdV2,dDdT=dDdT, dDdT2=dDdT2, &
+         dDdTV=dDdTV, dDi=dDi, dDidV=dDidV, dDidT=dDidT, dDij=dDij &
          )
 
-      call generic(&
-         n, V, T, &
-         B, dBi, dBij, &
-         D, dDi, dDij, dDidT, dDdT, dDdT2, &
-         D1, dD1i, dD1ij, &
-         Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2&
-         )
-
+      if (self%mixrule%is_D_ddlc) then
+         call generic_dddlc(&
+            n=n, V=V, T=T, &
+            B=B, &
+            dBi=dBi, dBij=dBij, &
+            D=D, &
+            dDdV=dDdV, dDdV2=dDdV2,dDdT=dDdT, dDdT2=dDdT2, &
+            dDdTV=dDdTV, dDi=dDi, dDidV=dDidV, dDidT=dDidT, dDij=dDij, &
+            D1=D1, dD1i=dD1i, dD1ij=dD1ij, &
+            Ar=Ar, ArV=ArV, ArT=ArT, ArTV=ArTV, ArV2=ArV2, &
+            ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2&
+            )
+      else
+         call generic(&
+            n=n, V=V, T=T, &
+            B=B, dBi=dBi, dBij=dBij, &
+            D=D, dDi=dDi, dDij=dDij, dDidT=dDidT, dDdT=dDdT, dDdT2=dDdT2, &
+            D1=D1, dD1i=dD1i, dD1ij=dD1ij, &
+            Ar=Ar, ArV=ArV, ArT=ArT, ArTV=ArTV, ArV2=ArV2, ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2&
+            )
+      end if
    end subroutine GenericCubic_Ar
 
    subroutine set_delta1(self, delta1)
@@ -234,6 +264,30 @@ contains
       if (allocated(self%mixrule)) deallocate(self%mixrule)
       self%mixrule = mixrule
    end subroutine set_mixrule
+
+   subroutine set_alpha(self, alpha)
+      class(CubicEoS), intent(in out) :: self
+      class(AlphaFunction), intent(in) :: alpha
+      if (allocated(self%alpha)) deallocate(self%alpha)
+      self%alpha = alpha
+   end subroutine set_alpha
+
+   subroutine calculate_attractive_parameters(self, T, a, dadt, dadt2)
+      class(CubicEoS), intent(in out) :: self !! Model
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), intent(out) :: a(:) !! Attractive parameter
+      real(pr), intent(out) :: dadt(:) !! Derivative wrt temperature
+      real(pr), intent(out) :: dadt2(:) !! Second derivative wrt temperature
+
+      real(pr) :: Tr(size(a)) !! Reduced temperatures for each pure component
+
+      Tr = T/self%components%Tc
+      call self%alpha%alpha(Tr, a, dadt, dadt2)
+
+      a = self%ac * a
+      dadt = self%ac * dadt / self%components%Tc
+      dadt2 = self%ac * dadt2 / self%components%Tc**2
+   end subroutine calculate_attractive_parameters
 
    function v0(self, n, p, t)
       !! Cubic EoS volume initializer.
@@ -252,18 +306,8 @@ contains
       !! # Cubic EoS volume solver
       !! Volume solver optimized for Cubic Equations of State.
       !!
-      !! @warn
-      !! This routine intends to use the analyitical solution of the cubic
-      !! equation, but due to errors in the solutions it is not used. And
-      !! the general volume solver by Michelsen is used instead.
-      !! @endwarn
-      !!
       !! # Description
-      !! Cubic equations can be analytically solved. Using an anallytical
-      !! solution provides the best possible solution in terms of speed and
-      !! precision. This subroutine uses the modified cardano method proposed
-      !! by Rosendo.
-      !!
+      !! Uses the solver proposed by Michelsen.
       !! # Examples
       !!
       !! ```fortran
@@ -311,67 +355,5 @@ contains
       real(pr) :: totn
 
       call volume_michelsen(eos, n=n, P=P, T=T, V=V, root_type=root_type)
-      return
-
-      totn = sum(n)
-      z = n/totn
-      Tr = T/eos%components%Tc
-      ! ========================================================================
-      ! Attractive parameter and derivatives
-      ! ------------------------------------------------------------------------
-      call eos%alpha%alpha(Tr, a, dadt, dadt2)
-      a = eos%ac * a
-      dadt = eos%ac * dadt / eos%components%Tc
-      dadt2 = eos%ac * dadt2 / eos%components%Tc**2
-
-      ! ========================================================================
-      ! Mixing rules
-      ! ------------------------------------------------------------------------
-      call eos%mixrule%D1mix(z, eos%del1, D1, dD1i, dD1ij)
-      call eos%mixrule%Bmix(z, eos%b, Bmix, dBi, dBij)
-      call eos%mixrule%Dmix(&
-         z, T, a, dadt, dadt2, D, dDdT, dDdT2, dDi, dDidT, dDij&
-         )
-      D2 = (1._pr - D1)/(1._pr + D1)
-
-      cp(1) = -P
-      cp(2) = -P*Bmix*(D1 + D2 - 1) + R*T
-      cp(3) = -P*(D1*D2*Bmix**2 - D1*Bmix**2 - D2*Bmix**2) + R*T*Bmix*(D1+D2) - D
-      cp(4) = P*D1*D2*Bmix**3 + R*T *D1*D2*Bmix**2 + D*Bmix
-
-      ! call cubic_roots(cp, rr, cr, flag)
-      ! call cubic_roots_rosendo(cp, rr, cr, flag)
-
-      select case(flag)
-       case(-1)
-         V_liq = rr(1)
-         V_vap = rr(3)
-         if (V_liq < 0) V_liq = V_vap
-       case(1)
-         V_liq = rr(1)
-         V_vap = rr(1)
-      end select
-
-      select case(root_type)
-       case("liquid")
-         V = V_liq
-       case("vapor")
-         V = V_vap
-       case("stable")
-         ! AT is something close to Gr(P,T)
-         call eos%residual_helmholtz(z, V_liq, T, Ar=Ar)
-         AT_Liq = (Ar + V_liq*P)/(T*R) - sum(z)*log(V_liq)
-
-         call eos%residual_helmholtz(z, V_vap, T, Ar=Ar)
-         AT_Vap = (Ar + V_vap*P)/(T*R) - sum(z)*log(V_vap)
-
-         if (AT_liq <= AT_vap) then
-            V = V_liq
-         else
-            V = V_vap
-         end if
-      end select
-
-      V = totn * V
    end subroutine volume
 end module yaeos__models_ar_genericcubic

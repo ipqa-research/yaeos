@@ -34,7 +34,7 @@ This style guide is a living document and proposed changes may be adopted after 
 * The filename should match the program or module name and have the file extension `.f90` or `.F90` if preprocessing is required
 * `module` names should include it's subdirectory, using `yaeos__` for the parent
   `src` directory. For example the module in `src/phase_equilibria/flash.f90`
-  should be named `yaeos__phase_equilibria_flash`.
+  should be named `yaeos__phase_equilibria_flash`. If the module name is longer that the accepted number of columns of the compiler, it is possible to simplify to just initials of each word: `yaeos__p_e_f`
 * If the interface and implementation is split using submodules the implementation submodule file should have the same name as the
   interface (parent) module but end in `_implementation`
   E.g., `string_class.f90` and `string_class_implementation.f90`
@@ -78,8 +78,7 @@ We recommend ~~enforce~~ the use of `findent` to format your files.
 ## End <scope> block closing statements
 
 Fortran allows certain block constructs or scopes to include the name of the program unit in the end statement.
-The convention adopted herein is to include procedure names, `module` names and `program` names in the `end` statement,
-unless the closing statement can reasonably be expected to be on the same screen or page, within about 25 lines.
+The convention adopted herein is to include procedure names, `module` names and `program` names in the `end` statement
 
 ## Document public API code with FORD
 

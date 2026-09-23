@@ -394,9 +394,13 @@ contains
       type(CubicEoS), intent(in out) :: model !! The model to be refitted
       integer, intent(in) :: component !! Component index to refit
 
-      real(pr) :: Psat_i, diff, Tc, Pc, w
+      real(pr) :: Psat_i, Tc, Pc, w
+      real(pr) :: Vv !! Volume of vapor [L]
+      real(pr) :: VL !! Volume of liquid [L]
+      real(pr) :: w_eos
+      real(pr) :: f_prev, f_curr, k_prev, k_curr, k_next, step
 
-      integer :: i
+      integer :: i, iter
       type(AlphaRKPR) :: alpha
       type(PurePsat) :: Psat
 
@@ -413,29 +417,55 @@ contains
       Pc = model%components%pc(i)
       w = model%components%w(i)
 
-      diff = 1
-      do while (abs(diff)/abs(w) > 1e-5)
-         Psat_i = model%Psat_pure(i, 0.7*Tc)
+      ! Solve w_eos(k) - w = 0 using the secant method.
+      alpha%k(i) = 5
+      k_curr = alpha%k(i)
+      k_prev = k_curr + max(abs(k_curr)*1e-3_pr, 1e-4_pr)
+      f_prev = huge(1._pr)
 
-         if (Psat_i < 1e-10) then
+      iter = 0
+      do while(abs(f_prev) > 1e-3)
+         iter = iter + 1
+         Psat_i = model%Psat_pure(i, 0.7*Tc, Vl=Vl, Vv=Vv)
+
+         if (Psat_i < 1e-10 .or. isnan(Psat_i)) then
             ! If the saturation pressure did not converge, calculate the
             ! whole line
-            Psat = pure_saturation_line(model, i, minp=0.01*Pc, minT=0.6*Tc)
+            Psat = pure_saturation_line(model, i, minp=0._pr, minT=0.6*Tc)
             Psat_i = Psat%get_P(0.7*Tc)
 
             ! If the saturation pressure still not converges, just give it
             ! a value of 80% of the critical pressure.
             ! TODO: This could be improved by using a better initial guess
-            if (Psat_i < 1e-10) Psat_i = 0.8*Pc
+            if (Psat_i < 1e-10) Psat_i = 0.1*Pc
          end if
 
-         diff = (w - (-1 - log10(Psat_i/Pc)))
-         alpha%k(i) = alpha%k(i) + 0.1*diff
+         w_eos = (-1 - log10(Psat_i/Pc))
+         f_curr = (w_eos - w)/w
+
+         if (iter == 1) then
+            ! The perturbed point is evaluated on the next iteration.
+            k_prev = k_curr
+            f_prev = f_curr
+            k_curr = k_curr + min(abs(k_curr)*1e-3_pr, 1e-4_pr)
+         else
+            ! if (abs(f_curr - f_prev) <= epsilon(1._pr)) exit
+            step = f_curr*(k_curr-k_prev)/(f_curr-f_prev)
+            k_next = k_curr - sign(min(abs(step), 0.1*k_curr), step)
+            k_prev = k_curr
+            f_prev = f_curr
+            k_curr = k_next
+         end if
+         if (iter > 5000) exit
 
          deallocate(model%alpha)
+         alpha%k(i) = k_curr
          model%alpha = alpha
-         if (Psat_i < 1e-6) error stop
       end do
+
+      if (allocated(model%alpha)) deallocate(model%alpha)
+      alpha%k(i) = k_curr
+      model%alpha = alpha
    end subroutine refit_rkpr_k
 
    subroutine get_OMa_OMb(del1, OMa, OMb)

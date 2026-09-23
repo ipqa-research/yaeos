@@ -2531,6 +2531,36 @@ class ArModel(ABC):
     # =========================================================================
     # Equilibrium calculations
     # -------------------------------------------------------------------------
+
+    def pure_saturation_pressure(self, component, temperature):
+        """Saturation pressure of a pure component at a given temperature.
+
+        Parameters
+        ----------
+        component: int
+            Which component index to calculate (starting from 0)
+        temperature: float
+            Temperature at which calculate [K]
+
+        Returns
+        -------
+        dict
+            Pure component saturation pressure dictionary with the keys:
+                - P: Pressure [bar]
+                - T: Temperature [K]
+                - Vx: Liquid volume [L]
+                - Vy: Vapor volume [L]
+        """
+        psat, vl, vv = yaeos_c.pure_psat(
+            id=self.id, ncomp=component+1, t=temperature
+        )
+        return {
+            "T": temperature,
+            "P": psat,
+            "Vx": vl,
+            "Vy": vv
+        }
+
     def pure_saturation_pressures(
         self, component, stop_pressure=0.01, stop_temperature=100
     ):
@@ -3035,13 +3065,14 @@ class ArModel(ABC):
     def phase_envelope_pt(
         self,
         z,
-        kind: str = "bubble",
+        kind: str = "dew",
         max_points: int = MAX_POINTS_ENVELOPES,
         t0: float = 150.0,
         p0: float = 1.0,
         w0=None,
         stop_pressure: float = 2500,
         ds0: float = 0.001,
+        liquidliquid_min_temperature: float = 100,
     ) -> PTEnvelope:
         """Two phase envelope calculation (PT).
 
@@ -3051,7 +3082,7 @@ class ArModel(ABC):
             Global mole fractions
         kind : str, optional
             Kind of saturation point to start the envelope calculation,
-            defaults to "bubble". Options are
+            defaults to "dew". Options are
             - "bubble"
             - "dew"
             - "liquid-liquid"
@@ -3078,6 +3109,8 @@ class ArModel(ABC):
             specified variable is the temperature for bubble and dew lines, and
             pressure for liquid-liquid lines. For bubble and dew lines, the
             step is positive, while for liquid-liquid lines it is negative.
+        liquidliquid_min_temperature: float, optional
+            Minimum temperature to look for a Liquid-Liquid separation.
 
         Returns
         -------
@@ -3108,10 +3141,8 @@ class ArModel(ABC):
                 p0=1.0
             )
 
-            plt.plot(env["T"], env["P"])
-            plt.scatter(env["Tc"], env["Pc"])
+            env.plot()
         """
-        ds0 = 0.001
 
         if kind == "bubble":
             sat = self.saturation_pressure(z, t0, kind=kind, p0=p0)
@@ -3142,7 +3173,7 @@ class ArModel(ABC):
                     w0[i] = 1 - np.sum(w0[1:])
                     t = t0
                     tm = 1
-                    while tm > -0.01 and t > 100:
+                    while tm > -0.01 and t > liquidliquid_min_temperature:
                         tm = self.stability_tm(z, w0, p0, t)
                         t -= 50
 
@@ -3542,7 +3573,7 @@ class ArModel(ABC):
         kind_w=None,
         max_points=MAX_POINTS_ENVELOPES,
         stop_pressure=2500,
-        allow_negative_betas=False
+        allow_negative_betas=False,
     ) -> PTEnvelope:
         """Multi-phase envelope."""
         x_l0 = np.array(x_l0)
@@ -3570,7 +3601,7 @@ class ArModel(ABC):
                 kind_w=kind_w,
                 max_points=max_points,
                 stop_pressure=stop_pressure,
-                allow_negative_betas=allow_negative_betas
+                allow_negative_betas=allow_negative_betas,
             )
         )
 
@@ -3825,12 +3856,8 @@ class ArModel(ABC):
             return dsps, locs_1, locs_2
 
         for t, p in zip(temperatures, pressures):
-            env1_loc = (
-                np.argmin(np.abs(env1["T"] - t) + np.abs(env1["P"] - p)) + 1
-            )
-            env2_loc = (
-                np.argmin(np.abs(env2["T"] - t) + np.abs(env2["P"] - p)) + 1
-            )
+            env1_loc = np.argmin(np.abs(env1["T"] - t) + np.abs(env1["P"] - p))
+            env2_loc = np.argmin(np.abs(env2["T"] - t) + np.abs(env2["P"] - p))
 
             betas_1 = env1.main_phases_molar_fractions[env1_loc, :]
             betas_2 = env2.main_phases_molar_fractions[env2_loc, :]
@@ -4125,6 +4152,8 @@ class ArModel(ABC):
         ws_stability=None,
         max_points=100,
         beta0=1e-15,
+        pstep="down",
+        tstep="down",
     ) -> dict:
         """Calculate precipitation line from a PTEnvelope."""
         phases = env.number_of_phases
@@ -4134,14 +4163,46 @@ class ArModel(ABC):
             spec_variable = phases * len(z) + phases + 1 + 1
             p0 = spec_value
             spec_variable_value = np.log(p0)
+            # There can be two (and in more rare cases even more)
+            # points at the fixed P value. So we select one based on the value
+            # of pstep. Related to the desired step on P
+            y = [p0, p0]
+            x = [0, 1e10]
+            ts, ps, *_ = intersection(x, y, env["T"], env["P"])
+
+            # Add just a little noise in case we are on the last point of
+            # the envelope. Using the originally specified value later
+            # ensures that there are no errors
+            if len(ts) == 0:
+                ts, ps, *_ = intersection(x, y, env["T"], env["P"] + 1)
+                if len(ts) == 0:
+                    ts, ps, *_ = intersection(x, y, env["T"], env["P"] - 1)
+
+            if tstep == "down":
+                t0 = max(ts)
+            else:
+                t0 = min(ts)
+
+            loc = np.argmin((env["T"] - t0) ** 2 + (env["P"] - p0) ** 2)
             loc = np.argmin(np.abs(env["P"] - p0))
             t0 = env["T"][loc]
         elif spec == "T":
             spec_variable = phases * len(z) + phases + 1 + 2
             t0 = spec_value
             spec_variable_value = np.log(t0)
-            loc = np.argmin(np.abs(env["T"] - t0))
-            p0 = env["P"][loc]
+
+            # There can be two (and in more rare cases even more)
+            # points at the fixed T value. So we select one based on the value
+            # of pstep. Related to the desired step on P
+            x = [t0, t0]
+            y = [0, 1e10]
+
+            ts, ps, *_ = intersection(x, y, env["T"], env["P"])
+            if pstep == "down":
+                p0 = min(ps)
+            else:
+                p0 = max(ps)
+            loc = np.argmin((env["T"] - t0) ** 2 + (env["P"] - p0) ** 2)
         else:
             raise ValueError(
                 "spec must be either 'P' or 'T', got: {}".format(spec)

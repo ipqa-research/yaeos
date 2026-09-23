@@ -336,9 +336,10 @@ contains
          )
 
 
-      ! Calculate isofugacity coefficients
+      ! Calculate isofugacity equations
       isofug_1 = lnf_x - lnf_w
       isofug_2 = lnf_y - lnf_w
+      ! Pressure equality
       Peq_1 = Px - Pw
       Peq_2 = Py - Pw
 

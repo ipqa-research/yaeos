@@ -52,7 +52,7 @@ contains
 
       call min_tpd(model, z, P, T, mintpd, w)
       call check(error, abs(mintpd) < 1e-4_pr)
-      
+
       P = 15
       call min_tpd(model, z, P, T, mintpd, w)
       call check(error, abs(mintpd - (-0.172_pr)) < 1e-2)
