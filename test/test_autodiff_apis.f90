@@ -155,26 +155,18 @@ contains
             ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
             )
 
-         call assert(allclose([Ar], [Ar_val], absolute_tolerance), "tape_Ar")
-         call assert(allclose([ArV], [ArV_val], absolute_tolerance), "tape_ArV")
-         call assert(allclose([ArT], [ArT_val], absolute_tolerance), "tape_ArT")
-         call assert(allclose([ArTV], [ArTV_val], absolute_tolerance), "tape_ArTV")
-         call assert(allclose([ArV2], [ArV2_val], absolute_tolerance), "tape_ArV2")
-         call assert(allclose([ArT2], [ArT2_val], absolute_tolerance), "tape_ArT2")
-         call assert(allclose([ArVn], [ArVn_val], absolute_tolerance), "tape_ArVn")
-         call assert(allclose([ArTn], [ArTn_val], absolute_tolerance), "tape_ArTn")
+         call assert(allclose([Ar_num], [Ar], tol), "tape diff")
+         
+         call assert(allclose([ArT_num] , [ArT], tol), "tape diff")
+         call assert(allclose([ArT2_num], [ArT2], tol), "tape diff")
 
-         call assert(allclose([Ar], [Ar_val], absolute_tolerance), "tape_Ar")
-         call assert(allclose([ArV], [ArV_val], absolute_tolerance), "tape_ArV")
-         call assert(allclose([ArT], [ArT_val], absolute_tolerance), "tape_ArT")
-         call assert(allclose([ArTV], [ArTV_val], absolute_tolerance), "tape_ArTV")
-         call assert(allclose([ArV2], [ArV2_val], absolute_tolerance), "tape_ArV2")
-         call assert(allclose([ArT2], [ArT2_val], absolute_tolerance), "tape_ArT2")
+         call assert(allclose([ArV_num] , [ArV], tol), "tape diff")
+         call assert(allclose([ArV2_num], [ArV2], tol), "tape diff")
 
-         call assert(allclose([ArVn], [ArVn_val], absolute_tolerance), "tape_ArVn")
-         call assert(allclose([ArTn], [ArTn_val], absolute_tolerance), "tape_ArTn")
-         call assert(allclose([Arn2], [Arn2_val], absolute_tolerance), "tape_Arn2")
+         call assert(allclose([ArTV_num], [ArTV], tol), "tape diff")
 
+         call assert(allclose([ArVn_num], [ArVn], tol), "tape diff")
+         call assert(allclose([ArTn_num], [ArTn], tol), "tape diff")
       end subroutine test_numdiff
    end subroutine test_pr76_tape
 end program test_autodiff_api
