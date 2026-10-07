@@ -1,6 +1,6 @@
 module autodiff_hyperdual_pr76
     use yaeos__constants, only: pr, R
-    use yaeos__ar_models_hyperdual
+    use yaeos__adiff_hyperdual_ar_api
     implicit none
 
     type, extends(ArModelAdiff) :: hdPR76
