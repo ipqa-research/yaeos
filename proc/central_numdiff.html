@@ -10,7 +10,7 @@
     <meta name="author" content="Federico Benelli" >
     <link rel="icon" href="../favicon.png">
 
-    <title>get_v0_impl &ndash; yaeos</title>
+    <title>central_numdiff &ndash; yaeos</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -81,7 +81,7 @@
 
     <div class="container">
   <div class="row">
-    <h1>get_v0_impl
+    <h1>central_numdiff
       <small>Function</small>
       
     </h1>
@@ -93,21 +93,21 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.1% of total for procedures.">14 statements</a>
+                 title=" 0.1% of total for procedures.">20 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/pc_saft.f90"> Source File</a>
+              <a href="../src/math.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/pc_saft.f90.html'>pc_saft.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__models_ar_saft_pcsaft.html'>yaeos__models_ar_saft_pcsaft</a></li>
-            <li class="breadcrumb-item active" aria-current="page">get_v0_impl</li>
+                <li class="breadcrumb-item"><a href='../sourcefile/math.f90.html'>math.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__math.html'>yaeos__math</a></li>
+            <li class="breadcrumb-item active" aria-current="page">central_numdiff</li>
           </ol>
         </nav>
       </div>
@@ -135,8 +135,10 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/get_v0_impl.html#variable-i~101">i</a>
-            <a class="list-group-item" href="../proc/get_v0_impl.html#variable-sum_seg_vol">sum_seg_vol</a>
+            <a class="list-group-item" href="../proc/central_numdiff.html#variable-dx">dx</a>
+            <a class="list-group-item" href="../proc/central_numdiff.html#variable-f1">f1</a>
+            <a class="list-group-item" href="../proc/central_numdiff.html#variable-f2">f2</a>
+            <a class="list-group-item" href="../proc/central_numdiff.html#variable-i~12">i</a>
         </div>
       </div>
     </div>
@@ -166,13 +168,11 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>private  function get_v0_impl(self, n, P, T) result(v0)  
+    <h2>public  function central_numdiff(f, x, eps) result(df)  
 </h2>
     
 
 
-    <h3>Type Bound</h3>
-    <p><a href='../type/pcsaft.html'>PcSaft</a></p>
 
     <h3>Arguments</h3>
         <table class="table table-striped varlist">
@@ -186,23 +186,27 @@
     </thead>
     <tbody>
         <tr>
-            <td>
-              <span class="anchor" id="variable-self~60"></span>
-              class(<a href='../type/pcsaft.html'>PcSaft</a>),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>self</strong></td>
-            <td>
-                
-            </td>
-        </tr>
+            <td colspan="7">
+              <small>    <h5>
+    public  function f(x)  
+
+    </h5>
+  
+
+  <h6>Arguments</h6>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~80"></span>
+              <span class="anchor" id="variable-x~3"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -210,14 +214,25 @@
               
             </td>
             <td>::</td>
-            <td><strong>n</strong>(:)</td>
+            <td><strong>x</strong>(:)</td>
             <td>
                 
             </td>
         </tr>
+    </tbody>
+  </table>
+
+    <h6>
+    Return Value
+    <small>real(kind=pr), (size(x))</small>
+    </h6>
+    
+</small>
+            </td>
+        </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~44"></span>
+              <span class="anchor" id="variable-x~4"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -225,14 +240,14 @@
               
             </td>
             <td>::</td>
-            <td><strong>P</strong></td>
+            <td><strong>x</strong>(:)</td>
             <td>
                 
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~71"></span>
+              <span class="anchor" id="variable-eps"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -240,7 +255,7 @@
               
             </td>
             <td>::</td>
-            <td><strong>T</strong></td>
+            <td><strong>eps</strong></td>
             <td>
                 
             </td>
@@ -250,8 +265,8 @@
 
       <h3>Return Value
         <small>
-          <span class="anchor" id="variable-v0~4"></span>
-          real(kind=pr)
+          <span class="anchor" id="variable-df~4"></span>
+          real(kind=pr), (size(x),size(x))
         </small>
       </h3>
       
@@ -272,15 +287,15 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-i~101"></span>
-              integer,
+              <span class="anchor" id="variable-dx"></span>
+              real(kind=pr),
             </td>
-              <td>private</td>
+              <td>public</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>i</strong></td>
+            <td><strong>dx</strong>(size(x))</td>
                 <td></td>
                 <td></td>
             <td>
@@ -289,15 +304,49 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-sum_seg_vol"></span>
+              <span class="anchor" id="variable-f1"></span>
               real(kind=pr),
             </td>
-              <td>private</td>
+              <td>public</td>
             <td>
               
             </td>
             <td>::</td>
-            <td><strong>sum_seg_vol</strong></td>
+            <td><strong>f1</strong>(size(x))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-f2"></span>
+              real(kind=pr),
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>f2</strong>(size(x))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-i~12"></span>
+              integer,
+            </td>
+              <td>public</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>i</strong></td>
                 <td></td>
                 <td></td>
             <td>
@@ -337,7 +386,7 @@
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-08-06 13:57 +0000             </p>
+ on 2026-10-07 16:05 +0000             </p>
           </div>
         </div>
         <br>

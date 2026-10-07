@@ -93,7 +93,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.1% of total for procedures.">19 statements</a>
+                 title=" 0.2% of total for procedures.">28 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -135,18 +135,14 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/psat_pure.html#variable-f~50">F</a>
-            <a class="list-group-item" href="../proc/psat_pure.html#variable-p~91">P</a>
-            <a class="list-group-item" href="../proc/psat_pure.html#variable-pc~12">Pc</a>
-            <a class="list-group-item" href="../proc/psat_pure.html#variable-s~56">S</a>
-            <a class="list-group-item" href="../proc/psat_pure.html#variable-vl~9">Vl</a>
-            <a class="list-group-item" href="../proc/psat_pure.html#variable-vv">Vv</a>
-            <a class="list-group-item" href="../proc/psat_pure.html#variable-x~80">X</a>
-            <a class="list-group-item" href="../proc/psat_pure.html#variable-df~30">dF</a>
-            <a class="list-group-item" href="../proc/psat_pure.html#variable-dfds~19">dFdS</a>
-            <a class="list-group-item" href="../proc/psat_pure.html#variable-its~28">its</a>
-            <a class="list-group-item" href="../proc/psat_pure.html#variable-n~126">n</a>
-            <a class="list-group-item" href="../proc/psat_pure.html#variable-ns~67">ns</a>
+            <a class="list-group-item" href="../proc/psat_pure.html#variable-f~32">F</a>
+            <a class="list-group-item" href="../proc/psat_pure.html#variable-pc~10">Pc</a>
+            <a class="list-group-item" href="../proc/psat_pure.html#variable-s~32">S</a>
+            <a class="list-group-item" href="../proc/psat_pure.html#variable-x~56">X</a>
+            <a class="list-group-item" href="../proc/psat_pure.html#variable-df~17">dF</a>
+            <a class="list-group-item" href="../proc/psat_pure.html#variable-its~18">its</a>
+            <a class="list-group-item" href="../proc/psat_pure.html#variable-n~96">n</a>
+            <a class="list-group-item" href="../proc/psat_pure.html#variable-ns~39">ns</a>
         </div>
       </div>
     </div>
@@ -176,7 +172,7 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>private  function Psat_pure(eos, ncomp, T)  
+    <h2>private  function Psat_pure(eos, ncomp, T, Vl, Vv, converged)  
 </h2>
     
 
@@ -199,7 +195,7 @@ secant method.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-eos~35"></span>
+              <span class="anchor" id="variable-eos~30"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -214,7 +210,7 @@ secant method.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ncomp~8"></span>
+              <span class="anchor" id="variable-ncomp~6"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -230,7 +226,7 @@ will be calculated</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~140"></span>
+              <span class="anchor" id="variable-t~90"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -241,6 +237,51 @@ will be calculated</p>
             <td><strong>T</strong></td>
             <td>
                 <p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vl~9"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Vl</strong></td>
+            <td>
+                <p>Liquid volume [L]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vv~4"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Vv</strong></td>
+            <td>
+                <p>Vapor volume [L]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-converged~3"></span>
+              logical,
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>converged</strong></td>
+            <td>
+                <p>The calculation converged</p>
             </td>
         </tr>
     </tbody>
@@ -540,76 +581,112 @@ implementation in a submodule of an interface in a parent module.
 <!-- Generated by graphviz version 2.43.0 (0)
  -->
 <!-- Title: proc~~psat_pure~~CalledByGraph Pages: 1 -->
-<svg id="procpsat_pureCalledByGraph" width="392pt" height="74pt"
- viewBox="0.00 0.00 392.00 74.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~psat_pure~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 70)">
+<svg id="procpsat_pureCalledByGraph" width="635pt" height="143pt"
+ viewBox="0.00 0.00 635.00 143.27" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~psat_pure~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 139.27)">
 <title>proc~~psat_pure~~CalledByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-70 388,-70 388,4 -4,4"/>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-139.27 631,-139.27 631,4 -4,4"/>
 <!-- proc~psat_pure -->
 <g id="proc~~psat_pure~~CalledByGraph_node1" class="node">
 <title>proc~psat_pure</title>
-<polygon fill="none" stroke="black" points="384,-45 266,-45 266,-21 384,-21 384,-45"/>
-<text text-anchor="middle" x="325" y="-30.6" font-family="Helvetica,sans-Serif" font-size="10.50">ArModel%Psat_pure</text>
+<polygon fill="none" stroke="black" points="627,-87 509,-87 509,-63 627,-63 627,-87"/>
+<text text-anchor="middle" x="568" y="-72.6" font-family="Helvetica,sans-Serif" font-size="10.50">ArModel%Psat_pure</text>
+</g>
+<!-- proc~estimate_critical_point -->
+<g id="proc~~psat_pure~~CalledByGraph_node2" class="node">
+<title>proc~estimate_critical_point</title>
+<g id="a_proc~~psat_pure~~CalledByGraph_node2"><a xlink:href="../proc/estimate_critical_point.html" xlink:title="estimate_critical_point">
+<polygon fill="#d9534f" stroke="#d9534f" points="473,-108 340,-108 340,-84 473,-84 473,-108"/>
+<text text-anchor="middle" x="406.5" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">estimate_critical_point</text>
+</a>
+</g>
+</g>
+<!-- proc~estimate_critical_point&#45;&gt;proc~psat_pure -->
+<g id="proc~~psat_pure~~CalledByGraph_edge1" class="edge">
+<title>proc~estimate_critical_point&#45;&gt;proc~psat_pure</title>
+<path fill="none" stroke="#000000" d="M473.3,-87.34C481.65,-86.24 490.22,-85.11 498.62,-84"/>
+<polygon fill="#000000" stroke="#000000" points="499.29,-87.44 508.75,-82.67 498.38,-80.5 499.29,-87.44"/>
 </g>
 <!-- proc~get_critical_constants -->
-<g id="proc~~psat_pure~~CalledByGraph_node2" class="node">
+<g id="proc~~psat_pure~~CalledByGraph_node3" class="node">
 <title>proc~get_critical_constants</title>
-<g id="a_proc~~psat_pure~~CalledByGraph_node2"><a xlink:href="../proc/get_critical_constants.html" xlink:title="get_critical_constants">
-<polygon fill="#d9534f" stroke="#d9534f" points="230,-66 103,-66 103,-42 230,-42 230,-66"/>
-<text text-anchor="middle" x="166.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_critical_constants</text>
+<g id="a_proc~~psat_pure~~CalledByGraph_node3"><a xlink:href="../proc/get_critical_constants.html" xlink:title="get_critical_constants">
+<polygon fill="#d9534f" stroke="#d9534f" points="470,-66 343,-66 343,-42 470,-42 470,-66"/>
+<text text-anchor="middle" x="406.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_critical_constants</text>
 </a>
 </g>
 </g>
 <!-- proc~get_critical_constants&#45;&gt;proc~psat_pure -->
-<g id="proc~~psat_pure~~CalledByGraph_edge1" class="edge">
-<title>proc~get_critical_constants&#45;&gt;proc~psat_pure</title>
-<path fill="none" stroke="#000000" d="M230.25,-45.58C238.6,-44.46 247.18,-43.31 255.62,-42.18"/>
-<polygon fill="#000000" stroke="#000000" points="256.35,-45.61 265.8,-40.81 255.42,-38.67 256.35,-45.61"/>
-</g>
-<!-- proc~refit_rkpr_k -->
-<g id="proc~~psat_pure~~CalledByGraph_node3" class="node">
-<title>proc~refit_rkpr_k</title>
-<g id="a_proc~~psat_pure~~CalledByGraph_node3"><a xlink:href="../proc/refit_rkpr_k.html" xlink:title="refit_rkpr_k">
-<polygon fill="#d9534f" stroke="#d9534f" points="202.5,-24 130.5,-24 130.5,0 202.5,0 202.5,-24"/>
-<text text-anchor="middle" x="166.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">refit_rkpr_k</text>
-</a>
-</g>
-</g>
-<!-- proc~refit_rkpr_k&#45;&gt;proc~psat_pure -->
 <g id="proc~~psat_pure~~CalledByGraph_edge2" class="edge">
-<title>proc~refit_rkpr_k&#45;&gt;proc~psat_pure</title>
-<path fill="none" stroke="#000000" d="M202.62,-16.71C218.36,-18.82 237.49,-21.39 255.86,-23.86"/>
-<polygon fill="#000000" stroke="#000000" points="255.58,-27.35 265.96,-25.21 256.51,-20.41 255.58,-27.35"/>
+<title>proc~get_critical_constants&#45;&gt;proc~psat_pure</title>
+<path fill="none" stroke="#000000" d="M470.08,-62.24C479.44,-63.47 489.13,-64.75 498.6,-65.99"/>
+<polygon fill="#000000" stroke="#000000" points="498.39,-69.5 508.76,-67.33 499.31,-62.56 498.39,-69.5"/>
 </g>
 <!-- proc~init_pcsaft -->
 <g id="proc~~psat_pure~~CalledByGraph_node4" class="node">
 <title>proc~init_pcsaft</title>
 <g id="a_proc~~psat_pure~~CalledByGraph_node4"><a xlink:href="../proc/init_pcsaft.html" xlink:title="init_pcsaft">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="67,-66 0,-66 0,-42 67,-42 67,-66"/>
-<text text-anchor="middle" x="33.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">init_pcsaft</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="67,-128 0,-128 0,-104 67,-104 67,-128"/>
+<text text-anchor="middle" x="33.5" y="-113.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">init_pcsaft</text>
 </a>
 </g>
 </g>
-<!-- proc~init_pcsaft&#45;&gt;proc~get_critical_constants -->
+<!-- proc~init_pcsaft&#45;&gt;proc~psat_pure -->
 <g id="proc~~psat_pure~~CalledByGraph_edge3" class="edge">
-<title>proc~init_pcsaft&#45;&gt;proc~get_critical_constants</title>
-<path fill="none" stroke="#000000" d="M67.22,-54C75.09,-54 83.82,-54 92.73,-54"/>
-<polygon fill="#000000" stroke="#000000" points="92.82,-57.5 102.82,-54 92.82,-50.5 92.82,-57.5"/>
+<title>proc~init_pcsaft&#45;&gt;proc~psat_pure</title>
+<path fill="none" stroke="#000000" d="M67.17,-120.72C140.67,-130.33 324.28,-148.71 473,-117 495.78,-112.14 519.72,-101.35 537.74,-91.92"/>
+<polygon fill="#000000" stroke="#000000" points="539.44,-94.98 546.58,-87.16 536.12,-88.82 539.44,-94.98"/>
+</g>
+<!-- proc~find_critical_points_all_components -->
+<g id="proc~~psat_pure~~CalledByGraph_node6" class="node">
+<title>proc~find_critical_points_all_components</title>
+<g id="a_proc~~psat_pure~~CalledByGraph_node6"><a xlink:href="../proc/find_critical_points_all_components.html" xlink:title="find_critical_points_all_components">
+<polygon fill="#d9534f" stroke="#d9534f" points="304,-108 103,-108 103,-84 304,-84 304,-108"/>
+<text text-anchor="middle" x="203.5" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">find_critical_points_all_components</text>
+</a>
+</g>
+</g>
+<!-- proc~init_pcsaft&#45;&gt;proc~find_critical_points_all_components -->
+<g id="proc~~psat_pure~~CalledByGraph_edge7" class="edge">
+<title>proc~init_pcsaft&#45;&gt;proc~find_critical_points_all_components</title>
+<path fill="none" stroke="#000000" d="M67.29,-112.1C75,-111.18 83.65,-110.15 92.74,-109.07"/>
+<polygon fill="#000000" stroke="#000000" points="93.24,-112.53 102.76,-107.87 92.41,-105.58 93.24,-112.53"/>
+</g>
+<!-- proc~refit_rkpr_k -->
+<g id="proc~~psat_pure~~CalledByGraph_node5" class="node">
+<title>proc~refit_rkpr_k</title>
+<g id="a_proc~~psat_pure~~CalledByGraph_node5"><a xlink:href="../proc/refit_rkpr_k.html" xlink:title="refit_rkpr_k">
+<polygon fill="#d9534f" stroke="#d9534f" points="442.5,-24 370.5,-24 370.5,0 442.5,0 442.5,-24"/>
+<text text-anchor="middle" x="406.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">refit_rkpr_k</text>
+</a>
+</g>
+</g>
+<!-- proc~refit_rkpr_k&#45;&gt;proc~psat_pure -->
+<g id="proc~~psat_pure~~CalledByGraph_edge4" class="edge">
+<title>proc~refit_rkpr_k&#45;&gt;proc~psat_pure</title>
+<path fill="none" stroke="#000000" d="M442.76,-22.52C452.62,-25.68 463.3,-29.29 473,-33 493,-40.65 514.87,-50.34 532.48,-58.48"/>
+<polygon fill="#000000" stroke="#000000" points="531.24,-61.77 541.78,-62.82 534.2,-55.42 531.24,-61.77"/>
+</g>
+<!-- proc~find_critical_points_all_components&#45;&gt;proc~estimate_critical_point -->
+<g id="proc~~psat_pure~~CalledByGraph_edge5" class="edge">
+<title>proc~find_critical_points_all_components&#45;&gt;proc~estimate_critical_point</title>
+<path fill="none" stroke="#000000" d="M304.12,-96C312.75,-96 321.39,-96 329.78,-96"/>
+<polygon fill="#000000" stroke="#000000" points="329.89,-99.5 339.89,-96 329.89,-92.5 329.89,-99.5"/>
 </g>
 <!-- proc~rkpr -->
-<g id="proc~~psat_pure~~CalledByGraph_node5" class="node">
+<g id="proc~~psat_pure~~CalledByGraph_node7" class="node">
 <title>proc~rkpr</title>
-<g id="a_proc~~psat_pure~~CalledByGraph_node5"><a xlink:href="../proc/rkpr.html" xlink:title="RKPR">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="60.5,-24 6.5,-24 6.5,0 60.5,0 60.5,-24"/>
-<text text-anchor="middle" x="33.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">RKPR</text>
+<g id="a_proc~~psat_pure~~CalledByGraph_node7"><a xlink:href="../proc/rkpr.html" xlink:title="RKPR">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="230.5,-24 176.5,-24 176.5,0 230.5,0 230.5,-24"/>
+<text text-anchor="middle" x="203.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">RKPR</text>
 </a>
 </g>
 </g>
 <!-- proc~rkpr&#45;&gt;proc~refit_rkpr_k -->
-<g id="proc~~psat_pure~~CalledByGraph_edge4" class="edge">
+<g id="proc~~psat_pure~~CalledByGraph_edge6" class="edge">
 <title>proc~rkpr&#45;&gt;proc~refit_rkpr_k</title>
-<path fill="none" stroke="#000000" d="M60.69,-12C77.74,-12 100.41,-12 120.31,-12"/>
-<polygon fill="#000000" stroke="#000000" points="120.41,-15.5 130.41,-12 120.41,-8.5 120.41,-15.5"/>
+<path fill="none" stroke="#000000" d="M230.78,-12C263.67,-12 320.53,-12 360.42,-12"/>
+<polygon fill="#000000" stroke="#000000" points="360.43,-15.5 370.43,-12 360.43,-8.5 360.43,-15.5"/>
 </g>
 </g>
 </svg>
@@ -709,7 +786,7 @@ implementation in a submodule of an interface in a parent module.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-f~50"></span>
+              <span class="anchor" id="variable-f~32"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -726,7 +803,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~91"></span>
+              <span class="anchor" id="variable-pc~10"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -734,7 +811,7 @@ implementation in a submodule of an interface in a parent module.
               
             </td>
             <td>::</td>
-            <td><strong>P</strong></td>
+            <td><strong>Pc</strong>(size(eos))</td>
                 <td></td>
                 <td></td>
             <td>
@@ -743,24 +820,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-pc~12"></span>
-              real(kind=pr),
-            </td>
-              <td>private</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Pc</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-s~56"></span>
+              <span class="anchor" id="variable-s~32"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -777,41 +837,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vl~9"></span>
-              real(kind=pr),
-            </td>
-              <td>private</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Vl</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-vv"></span>
-              real(kind=pr),
-            </td>
-              <td>private</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Vv</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-x~80"></span>
+              <span class="anchor" id="variable-x~56"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -828,7 +854,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-df~30"></span>
+              <span class="anchor" id="variable-df~17"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -845,24 +871,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dfds~19"></span>
-              real(kind=pr),
-            </td>
-              <td>private</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dFdS</strong>(3)</td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-its~28"></span>
+              <span class="anchor" id="variable-its~18"></span>
               integer,
             </td>
               <td>private</td>
@@ -879,7 +888,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~126"></span>
+              <span class="anchor" id="variable-n~96"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -896,7 +905,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns~67"></span>
+              <span class="anchor" id="variable-ns~39"></span>
               integer,
             </td>
               <td>private,</td>
@@ -944,7 +953,7 @@ parameter
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-08-06 13:57 +0000             </p>
+ on 2026-10-07 16:05 +0000             </p>
           </div>
         </div>
         <br>

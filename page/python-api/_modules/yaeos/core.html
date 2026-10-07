@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.core &mdash; yaeos 4.5.3 documentation</title>
+  <title>yaeos.core &mdash; yaeos 4.5.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -13,7 +13,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=690d16f2"></script>
+      <script src="../../_static/documentation_options.js?v=a284863f"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -2729,6 +2729,39 @@
     <span class="c1"># =========================================================================</span>
     <span class="c1"># Equilibrium calculations</span>
     <span class="c1"># -------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="ArModel.pure_saturation_pressure">
+<a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.pure_saturation_pressure">[docs]</a>
+    <span class="k">def</span> <span class="nf">pure_saturation_pressure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">,</span> <span class="n">temperature</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Saturation pressure of a pure component at a given temperature.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        component: int</span>
+<span class="sd">            Which component index to calculate (starting from 0)</span>
+<span class="sd">        temperature: float</span>
+<span class="sd">            Temperature at which calculate [K]</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict</span>
+<span class="sd">            Pure component saturation pressure dictionary with the keys:</span>
+<span class="sd">                - P: Pressure [bar]</span>
+<span class="sd">                - T: Temperature [K]</span>
+<span class="sd">                - Vx: Liquid volume [L]</span>
+<span class="sd">                - Vy: Vapor volume [L]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">psat</span><span class="p">,</span> <span class="n">vl</span><span class="p">,</span> <span class="n">vv</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">pure_psat</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">ncomp</span><span class="o">=</span><span class="n">component</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">t</span><span class="o">=</span><span class="n">temperature</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;T&quot;</span><span class="p">:</span> <span class="n">temperature</span><span class="p">,</span>
+            <span class="s2">&quot;P&quot;</span><span class="p">:</span> <span class="n">psat</span><span class="p">,</span>
+            <span class="s2">&quot;Vx&quot;</span><span class="p">:</span> <span class="n">vl</span><span class="p">,</span>
+            <span class="s2">&quot;Vy&quot;</span><span class="p">:</span> <span class="n">vv</span>
+        <span class="p">}</span></div>
+
+
 <div class="viewcode-block" id="ArModel.pure_saturation_pressures">
 <a class="viewcode-back" href="../../core.html#yaeos.core.ArModel.pure_saturation_pressures">[docs]</a>
     <span class="k">def</span> <span class="nf">pure_saturation_pressures</span><span class="p">(</span>
@@ -3263,6 +3296,7 @@
         <span class="n">w0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">stop_pressure</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">2500</span><span class="p">,</span>
         <span class="n">ds0</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">,</span>
+        <span class="n">liquidliquid_min_temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PTEnvelope</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Two phase envelope calculation (PT).</span>
 
@@ -3299,6 +3333,8 @@
 <span class="sd">            specified variable is the temperature for bubble and dew lines, and</span>
 <span class="sd">            pressure for liquid-liquid lines. For bubble and dew lines, the</span>
 <span class="sd">            step is positive, while for liquid-liquid lines it is negative.</span>
+<span class="sd">        liquidliquid_min_temperature: float, optional</span>
+<span class="sd">            Minimum temperature to look for a Liquid-Liquid separation.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -3361,7 +3397,7 @@
                     <span class="n">w0</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">w0</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
                     <span class="n">t</span> <span class="o">=</span> <span class="n">t0</span>
                     <span class="n">tm</span> <span class="o">=</span> <span class="mi">1</span>
-                    <span class="k">while</span> <span class="n">tm</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mf">0.01</span> <span class="ow">and</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">:</span>
+                    <span class="k">while</span> <span class="n">tm</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mf">0.01</span> <span class="ow">and</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="n">liquidliquid_min_temperature</span><span class="p">:</span>
                         <span class="n">tm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stability_tm</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">w0</span><span class="p">,</span> <span class="n">p0</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span>
                         <span class="n">t</span> <span class="o">-=</span> <span class="mi">50</span>
 
