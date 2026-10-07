@@ -1,4 +1,10 @@
 program generalized_line
+   !! `generalized_line` test
+   !!
+   !! # Description
+   !! This tests check the algorithm for the calculation of the generalized
+   !! isoZ lines. Lines that calculate multiphase flashes using the continuation
+   !! method.
    use testing_aux, only: test_title, assert
    use yaeos
    use yaeos__equilibria_boundaries_generalized_isopleths, only: create_generalized_isoz_line, GeneralizedIsoZLine
@@ -23,7 +29,6 @@ program generalized_line
    kij(2, :) = [0.1, 0.,  0.2]
    kij(3, :) = [0.,  0.2, 0. ]
 
-
    model = PengRobinson78(Tc, Pc, w, kij=kij)
 
    z = [0.2, 0.4, 0.4]
@@ -35,6 +40,9 @@ program generalized_line
 
 contains
    subroutine isoP
+      !! # isoP
+      !! Calculation of the line at constant pressure. Making sure that the
+      !! line ends at low temperatures.
       integer, parameter :: np=1
       real(pr) :: x_l0(np, nc), w0(nc), betas0(np+1), P0, T0
       type(GeneralizedIsoZLine) :: line
@@ -58,8 +66,8 @@ contains
       spec_variable_value = log(P0)
 
       ns0 = (nc*np) + (np+1)
-      S0 = 1e-10
-      dS0 = 0.1
+      S0 = 0
+      dS0 = 0.001
 
       ! ws_stab(1, :) = [4.79003592e-01, 5.20996408e-01, 1.30001898e-15]
       ! ws_stab(2, :) = [5.63039080e-01, 4.36960920e-01, 4.17032026e-16]
@@ -76,6 +84,5 @@ contains
       i = size(line%points)
       call assert(line%points(1)%T > 570._pr, "Line sart at high T")
       call assert(line%points(i)%T < 150._pr, "Line stop at low T")
-
    end subroutine isoP
 end program generalized_line

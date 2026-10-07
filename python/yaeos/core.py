@@ -2531,6 +2531,36 @@ class ArModel(ABC):
     # =========================================================================
     # Equilibrium calculations
     # -------------------------------------------------------------------------
+
+    def pure_saturation_pressure(self, component, temperature):
+        """Saturation pressure of a pure component at a given temperature.
+
+        Parameters
+        ----------
+        component: int
+            Which component index to calculate (starting from 0)
+        temperature: float
+            Temperature at which calculate [K]
+
+        Returns
+        -------
+        dict
+            Pure component saturation pressure dictionary with the keys:
+                - P: Pressure [bar]
+                - T: Temperature [K]
+                - Vx: Liquid volume [L]
+                - Vy: Vapor volume [L]
+        """
+        psat, vl, vv = yaeos_c.pure_psat(
+            id=self.id, ncomp=component+1, t=temperature
+        )
+        return {
+            "T": temperature,
+            "P": psat,
+            "Vx": vl,
+            "Vy": vv
+        }
+
     def pure_saturation_pressures(
         self, component, stop_pressure=0.01, stop_temperature=100
     ):
@@ -3042,6 +3072,7 @@ class ArModel(ABC):
         w0=None,
         stop_pressure: float = 2500,
         ds0: float = 0.001,
+        liquidliquid_min_temperature: float = 100,
     ) -> PTEnvelope:
         """Two phase envelope calculation (PT).
 
@@ -3078,6 +3109,8 @@ class ArModel(ABC):
             specified variable is the temperature for bubble and dew lines, and
             pressure for liquid-liquid lines. For bubble and dew lines, the
             step is positive, while for liquid-liquid lines it is negative.
+        liquidliquid_min_temperature: float, optional
+            Minimum temperature to look for a Liquid-Liquid separation.
 
         Returns
         -------
@@ -3140,7 +3173,7 @@ class ArModel(ABC):
                     w0[i] = 1 - np.sum(w0[1:])
                     t = t0
                     tm = 1
-                    while tm > -0.01 and t > 100:
+                    while tm > -0.01 and t > liquidliquid_min_temperature:
                         tm = self.stability_tm(z, w0, p0, t)
                         t -= 50
 

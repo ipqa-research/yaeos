@@ -8,7 +8,7 @@ Our Cubic Equations of State are implemented based on the generic Cubic
 Equation [1]:
 
 \[
-    P = \frac{RT}{V-b} - \frac{a_c\alpha(T_r)}{(V + \delta_1 b)(V - \delta_2 b)}
+    P = \frac{RT}{V-b} - \frac{a_c\alpha(T_r)}{(V + \delta_1 b)(V + \delta_2 b)}
 \]
 
 Cubic equation of state allows to include the \(k_{ij}\) and \(l_{ij}\)
@@ -72,7 +72,7 @@ k =
 
 The RKPR EoS [2] extends the classical formulation of Cubic Equations of State by
 freeing the parameter \(\delta_1\) and setting \(\delta_2 =
-\frac{1+\delta_1}{1-\delta_1}\) [1]. This extra degree provides extra ways of
+\frac{1-\delta_1}{1+\delta_1}\) [1]. This extra degree provides extra ways of
 implementing the equation in comparison of other Cubic EoS (like PR and SRK)
 which are limited to definition of their critical constants.
 

@@ -37,7 +37,7 @@ module yaeos_c
    ! Multifluid equations
    public :: multifluid_gerg2008
    ! SAFT equations
-   public :: pcsaft
+   public :: pcsaft, pcsaft_set_kij
 
    ! __del__
    public :: make_available_ar_models_list
@@ -71,6 +71,7 @@ module yaeos_c
    public :: entropy_excess_ar, helmholtz_excess_ar, internal_energy_excess_ar
 
    ! Phase equilibria
+   public :: pure_psat
    public :: flash, flash_vt, flash_grid, solve_mp_flash
    public :: flash_ge
    public :: saturation_pressure, saturation_temperature
@@ -820,6 +821,22 @@ contains
       call extend_ar_models_list(id)
    end subroutine pcsaft
 
+   subroutine pcsaft_set_kij(ar_id, i, j, kij)
+      use yaeos, only: pcsaft
+      integer(c_int), intent(in) :: ar_id
+      integer(c_int), intent(in) :: i
+      integer(c_int), intent(in) :: j
+      real(c_double), intent(in) :: kij
+
+      associate (ar_model => ar_models(ar_id)%model)
+         select type(ar_model)
+          class is (PCSAFT)
+            ar_model%kij(i, j) = kij
+            ar_model%kij(j, i) = kij
+         end select
+      end associate
+   end subroutine
+
    ! ==========================================================================
    !  Thermodynamic properties
    ! --------------------------------------------------------------------------
@@ -1133,6 +1150,19 @@ contains
    ! ==========================================================================
    ! Phase equilibria
    ! --------------------------------------------------------------------------
+
+   subroutine pure_psat(id, ncomp, T, psat, Vl, Vv)
+      integer(c_int), intent(in) :: id
+      integer(c_int), intent(in) :: ncomp
+      real(c_double), intent(in) :: T
+      real(c_double), intent(out) :: Psat
+      real(c_double), intent(out) :: Vl
+      real(c_double), intent(out) :: Vv
+      ar_model = ar_models(id)%model
+      Psat = ar_model%Psat_pure(ncomp, T, Vl, Vv)
+   end subroutine
+
+
    subroutine critical_point(id, z0, zi, spec, S, max_iters, x, T, P, V)
       use yaeos, only: EquilibriumState, fcritical_point => critical_point
       integer(c_int), intent(in) :: id

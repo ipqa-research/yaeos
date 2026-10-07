@@ -17,6 +17,9 @@ module yaeos__equilibria_boundaries_generalized_isopleths
       real(pr), allocatable :: w_more_stable(:)
    end type GeneralizedIsoZLine
 
+   real(pr), parameter :: minT = 100
+   !! Mininimum temperature to make calculations
+
 contains
    type(GeneralizedIsoZLine) function create_generalized_isoz_line(&
       model, nc, np, nstab, kinds_x, kind_w, z, x_l0, w0, betas0, P0, T0, &
@@ -78,6 +81,7 @@ contains
 
       i_point = 0
       allocate(create_generalized_isoz_line%points(0))
+
       iters = 0
       line_tracing: do while(iters < max_iters .and. .not. found_unstability)
          i_point = i_point + 1
@@ -91,7 +95,7 @@ contains
          dXdS = solve_system(dF, -dFdS)
          ns = maxloc(abs(dXdS), dim=1)
 
-         dS = dXdS(ns) * dS ! * 3./iters
+         dS = dXdS(ns) * dS * 5./iters
 
          ! dS = sign(max(0.01, abs(dS)), dS)
          dXdS = dXdS/dXdS(ns)
@@ -113,7 +117,7 @@ contains
             exit line_tracing
          end if
 
-         if (any(point%betas < -1e-20)) then
+         if (any(point%betas < -1e-20) .or. point%T < minT) then
             exit line_tracing
          end if
 
@@ -130,12 +134,20 @@ contains
 
          dX = dXdS * dS
 
+         do while(maxval(abs(dX(iBetas))) > 0.1)
+            dX = dX/2
+         end do
+
+         do i=iBetas(1), iBetas(np)
+            do while(dX(i)**2 + dX(iT)**2 + dX(iP)**2 > 0.01)
+               dX = dX/3
+            end do
+         end do
+
          ! do while(&
-         !    any(abs(dX(ibetas)) > 0.05) &
-         !    .or. abs(dX(iT)) > 0.05 &
-         !    .or. abs(dX(iP)) > 0.05 &
-         !    )
-         !    dX = dX/2
+         !    spec_variable /= iT &
+         !    .and. abs(exp(X(iT) + dX(iT)) - exp(X(iT))) < 5)
+         !    dX = dX*2
          ! end do
 
          X = X + dX
@@ -396,7 +408,7 @@ contains
 
       do iters=1,max_iters
          call pt_F_NP(model, z, np, kinds_x, kind_w, X, ns1, S1, ns2, S2, F, df)
-         if (maxval(abs(F)) < 1e-9) exit
+         if (maxval(abs(F)) < 1e-9 .or. maxval(abs(dX)) < 1e-7) exit
 
          dX = solve_system(df, -F)
 

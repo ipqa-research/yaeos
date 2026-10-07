@@ -14,7 +14,7 @@ name = "yaeos"
 description = "Thermodynamic modelling with Equations of State"
 readme = "README.md"
 dependencies = ["IPython", "numpy", "scipy", "pandas", "intersect", "matplotlib"]
-version = "4.5.3"
+version = "4.5.4"
 requires-python = ">=3.10"
 
 
@@ -32,17 +32,13 @@ markers = [
 [tool.cibuildwheel]
 build = ["cp310-*", "cp311-*", "cp312-*", "cp313-*", "cp314-*"]
 skip = ["*-manylinux_i686", "*-musllinux_*", "*-win32"]
+manylinux-x86_64-image = "manylinux_2_28"
 
 [tool.cibuildwheel.linux]
-before-all = "yum -y install lapack-devel"
+before-all = """
+dnf install -y epel-release && \\
+dnf install -y lapack-devel blas-devel
+"""
 
 [tool.cibuildwheel.macos]
 before-all = "brew update && brew install lapack"
-
-# [tool.cibuildwheel.windows]
-# before-all = """
-#     git clone https://github.com/microsoft/vcpkg.git
-#     cd vcpkg
-#     .\\bootstrap-vcpkg.bat
-#     .\\vcpkg install lapack blas
-# """
