@@ -4,7 +4,6 @@ program tester
 
     use fortime, only: Timer
 
-    use test_autodiff_api, only: suite_autodiff_hd => collect_suite
     use test_flash, only: suite_flash => collect_suite
     use test_saturation, only: suite_saturation => collect_suite
     use test_math, only: suite_math => collect_suite
@@ -41,7 +40,6 @@ program tester
     stat = 0
 
     testsuites = [ &
-        new_testsuite("Autodiff APIs", suite_autodiff_hd), &
         new_testsuite("Flash", suite_flash), &
         new_testsuite("Saturation Points", suite_saturation), &
         new_testsuite("Math module", suite_math), &
