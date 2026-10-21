@@ -2,8 +2,10 @@ program test_flash_second_order
    use yaeos, only: pr, EquilibriumState, flash, flash_second_order
    use yaeos, only: ArModel, PengRobinson76, PengRobinson78
    use yaeos, only: GeModel, NRTL, UNIFAC, Groups, setup_unifac
+   use yaeos, only: UNIQUAC, setup_uniquac
    use yaeos__equilibria_stability, only: min_tpd
    use testing_aux, only: assert, test_title
+   use auxiliar_functions, only: allclose, rel_error
 
    implicit none
 
@@ -14,6 +16,7 @@ program test_flash_second_order
    call test_unifac_lle()
    call test_nrtl_lle()
    call test_ar_lle_liquid_root()
+   call test_uniquac_ss_failure_point()
 
 contains
 
@@ -205,4 +208,136 @@ contains
       call assert(so%Vx < 0.2_pr, "Ar LLE: heavy phase is liquid")
       call assert(so%Vy < 0.2_pr, "Ar LLE: light phase is liquid")
    end subroutine test_ar_lle_liquid_root
+
+   subroutine test_uniquac_ss_failure_point()
+      !! UNIQUAC point of the H2O2 feed trajectory where the
+      !! successive-substitution flash does not converge. The comparison is
+      !! against the Gibbs reference, not against `flash`.
+      !!
+      !! Component order: F, H2O2, PF, H2O, oil, ESBO, polyol.
+      integer, parameter :: nc = 7
+
+      type(UNIQUAC) :: model
+      type(EquilibriumState) :: so, trivial
+      real(pr) :: qs(nc), rs(nc)
+      real(pr) :: aij(nc, nc), bij(nc, nc), cij(nc, nc)
+      real(pr) :: dij(nc, nc), eij(nc, nc)
+      real(pr) :: n(nc), z(nc), k0(nc), ones(nc)
+      real(pr) :: x_ref(4), y_ref(4), beta_ref
+      real(pr) :: T, P
+      real(pr) :: ax(nc), ay(nc), ln_gamma_x(nc), ln_gamma_y(nc)
+      integer :: its
+      real(8) :: t1, t2
+
+      n = [ &
+         8.69085708798058754e+00_pr, 1.04599576389094473e+00_pr, &
+         8.06134619967180610e-01_pr, 2.12080199832480858e+01_pr, &
+         4.53403810029077592e-01_pr, 4.54221490480090750e-01_pr, &
+         8.39249341818703722e-14_pr ]
+
+      T = 333.15_pr
+      P = 1.0_pr
+      z = n/sum(n)
+
+      qs = [1.532_pr, 2.4_pr, 2.388_pr, 1.4_pr, 31.347_pr, &
+         30.492_pr, 41.232_pr]
+
+      rs = [1.528_pr, 2.0_pr, 2.242_pr, 0.92_pr, 38.7157_pr, &
+         38.8207_pr, 48.8112_pr]
+
+      aij = 0.0_pr
+      aij(1, 4) = 0.0650752585_pr
+      aij(4, 1) = -1.82683869_pr
+
+      bij = 0.0_pr
+
+      bij(1, :) = [0.0_pr, 151.0_pr, 135.49896199_pr, &
+         59.3246124_pr, -11095.62551048_pr, -3246.2424174_pr, &
+         -995.317802_pr]
+      bij(2, :) = [-199.0_pr, 0.0_pr, -101.29550998_pr, &
+         -11.76497438_pr, -62.99691978_pr, -1940.97729389_pr, &
+         -675.950034_pr]
+      bij(3, :) = [52.89079805_pr, -3.03767903_pr, 0.0_pr, &
+         107.87953158_pr, -1444.81779555_pr, -1113.00536155_pr, &
+         -787.3298_pr]
+      bij(4, :) = [947.601438_pr, 173.79237634_pr, &
+         -210.13173272_pr, 0.0_pr, 158.23356021_pr, &
+         190.74747368_pr, 180.790188_pr]
+      bij(5, :) = [21.69729307_pr, -169.18769991_pr, &
+         207.5615499_pr, -1252.35267809_pr, 0.0_pr, 0.0_pr, 0.0_pr]
+      bij(6, :) = [346.55860276_pr, 142.25776765_pr, &
+         414.04790322_pr, -1308.66514598_pr, 0.0_pr, 0.0_pr, 0.0_pr]
+      bij(7, :) = [264.640828_pr, 37.832309_pr, 340.930152_pr, &
+         -1362.762912_pr, 0.0_pr, 0.0_pr, 0.0_pr]
+
+      cij = 0.0_pr
+      dij = 0.0_pr
+      eij = 0.0_pr
+
+      model = setup_uniquac(qs, rs, aij, bij, cij, dij, eij)
+
+      k0 = [1.04947543188346137e+00_pr, &
+         5.59102656162917544e-01_pr, 2.05883043639840357e+00_pr, &
+         2.63674340469321811e-01_pr, 4.31976399332579896e+07_pr, &
+         1.79109736675408584e+01_pr, 4.05540135724048734e-02_pr]
+
+      x_ref = [0.2656_pr, 0.0326_pr, 0.0236_pr, 0.6700_pr]
+      y_ref = [0.2787_pr, 0.0182_pr, 0.0487_pr, 0.1767_pr]
+      beta_ref = 0.0418376_pr
+
+      ! The successive-substitution flash does not converge at this point,
+      ! so the second-order result is checked against the Gibbs reference.
+      call cpu_time(t1)
+      so = flash_second_order(model, z, T, P, k0=k0, iters=its)
+      call cpu_time(t2)
+      
+      call assert(so%kind == "split", "UNIQUAC SS-fail: split")
+      call assert(abs(so%beta - beta_ref) < 1e-3_pr, &
+         "UNIQUAC SS-fail: beta")
+      call assert(maxval(abs(so%x(1:4) - x_ref)) < 1e-3_pr, &
+         "UNIQUAC SS-fail: x")
+      call assert(maxval(abs(so%y(1:4) - y_ref)) < 1e-3_pr, &
+         "UNIQUAC SS-fail: y")
+      call assert(maxval(abs(so%x - so%y)) > 1e-2_pr, &
+         "UNIQUAC SS-fail: non-trivial")
+
+      call model%ln_activity_coefficient(so%x, T, ln_gamma_x)
+      call model%ln_activity_coefficient(so%y, T, ln_gamma_y)
+
+      ax = exp(ln_gamma_x) * so%x
+      ay = exp(ln_gamma_y) * so%y
+
+      call assert(allclose(ax, ay, 1e-6_pr), "Iso activities K0")
+
+      print *, its, (t2 - t1)*1000
+
+      ! The stability-analysis initialization reaches the same split.
+      call cpu_time(t1)
+      so = flash_second_order(model, z, T, P, iters=its)
+      call cpu_time(t2)
+      
+      call assert(so%kind == "split", "UNIQUAC SS-fail: min_tpd init")
+      call assert(maxval(abs(so%x(1:4) - x_ref)) < 1e-3_pr, &
+         "UNIQUAC SS-fail: x")
+      call assert(maxval(abs(so%y(1:4) - y_ref)) < 1e-3_pr, &
+         "UNIQUAC SS-fail: y")
+      call assert(abs(so%beta - beta_ref) < 1e-3_pr, &
+         "UNIQUAC SS-fail: min_tpd beta")
+      
+      call model%ln_activity_coefficient(so%x, T, ln_gamma_x)
+      call model%ln_activity_coefficient(so%y, T, ln_gamma_y)
+
+      ax = exp(ln_gamma_x) * so%x
+      ay = exp(ln_gamma_y) * so%y
+
+      call assert(allclose(ax, ay, 1e-6_pr), "Iso activities K0")
+
+      print *, its, (t2 - t1)*1000
+
+      ! K0 = 1 is exactly the trivial solution and must be rejected.
+      ones = 1.0_pr
+      trivial = flash_second_order(model, z, T, P, k0=ones, iters=its)
+      call assert(trivial%kind == "failed", &
+         "UNIQUAC SS-fail: trivial solution rejected")
+   end subroutine test_uniquac_ss_failure_point
 end program test_flash_second_order

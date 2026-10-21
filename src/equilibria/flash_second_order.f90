@@ -54,6 +54,7 @@ contains
       !! - `iters`: number of iterations used.
       !! - `tol`: gradient-norm tolerance (default `1e-8`).
       !! - `max_iters`: maximum number of iterations (default `200`).
+      !!
       class(BaseModel), intent(in) :: model !! Thermodynamic model
       real(pr), intent(in) :: z(:) !! Global mole fractions
       real(pr), intent(in) :: T !! Temperature [K]
@@ -209,6 +210,20 @@ contains
       x = l/Ltot
       y = v/Vtot
 
+      ! A small gradient and two different phases are required. This rejects
+      ! non-converged calculations and the trivial solution x = y.
+      ! The failed state is formatted exactly as in `flash`.
+      if (maxval(abs(g)) > tolerance .or. maxval(abs(x - y)) < 1e-10_pr) then
+         flash%kind = "failed"
+         flash%P = -1.0_pr
+         flash%x = x/x
+         flash%y = y/y
+         flash%iters = iterations
+         flash%T = T
+         if (present(iters)) iters = iterations
+         return
+      end if
+
       flash%kind = "split"
       flash%T = T
       flash%P = P_spec
@@ -216,15 +231,6 @@ contains
       flash%y = y
       flash%beta = Vtot
       flash%iters = iterations
-
-      ! A small gradient and two different phases are required. This rejects
-      ! non-converged calculations and the trivial solution x = y.
-      if (maxval(abs(g)) > tolerance .or. maxval(abs(x - y)) < 1e-10_pr) then
-         flash%kind = "failed"
-         flash%P = -1.0_pr
-         if (present(iters)) iters = iterations
-         return
-      end if
 
       select type (model)
        class is (ArModel)
@@ -241,6 +247,7 @@ contains
    subroutine evaluate_gibbs(model, z, l, T, P, light_root, Gibbs, g, H)
       !! Evaluate the reduced Gibbs energy, its gradient and its Hessian with
       !! respect to the heavy-phase mole numbers.
+      !!
       class(BaseModel), intent(in) :: model
       real(pr), intent(in) :: z(:) !! Global mole numbers (1 mol feed)
       real(pr), intent(in) :: l(:) !! Heavy-phase mole numbers
@@ -304,9 +311,9 @@ contains
       !! The matrix is factorised by columns as \(H + D = \bar{L}\bar{L}^T\),
       !! where \(D\) is a non-negative diagonal matrix and the off-diagonal
       !! elements of \(\bar{L}\) are bounded by \(\beta\)
-      !! (Murray 1972, Eqs. 4.9.7-4.9.12). Each pivot is taken in absolute 
-      !! value and floored at \(\delta = \sqrt{\varepsilon}\); a column whose 
-      !! largest element exceeds \(\beta\) is rescaled. If \(H\) is 
+      !! (Murray 1972, Eqs. 4.9.7-4.9.12). Each pivot is taken in absolute
+      !! value and floored at \(\delta = \sqrt{\varepsilon}\); a column whose
+      !! largest element exceeds \(\beta\) is rescaled. If \(H\) is
       !! sufficiently positive definite then \(D = 0\) and the step is the pure
       !! Newton step.
       !!
@@ -318,9 +325,9 @@ contains
       !! indefinite matrix such as \(H = [[1,2],[2,1]]\) gives a nearly
       !! singular \(H + D\) and a step of order \(10^{15}\).
       !!
-      real(pr), intent(in)  :: H(:, :)
-      real(pr), intent(in)  :: b(:)
-      real(pr), intent(out) :: x(:)
+      real(pr), intent(in)  :: H(:, :) !! Hessian
+      real(pr), intent(in)  :: b(:) !! Right-hand side
+      real(pr), intent(out) :: x(:) !! Variable vector
 
       integer  :: i, j, n
       real(pr) :: gamma, xi, beta, delta, theta, lh
