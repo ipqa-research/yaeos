@@ -79,7 +79,7 @@ contains
       real(pr) :: g(size(z)), H(size(z), size(z))
       real(pr) :: step(size(z))
       real(pr) :: alpha, alpha_max, G_trial, tolG
-      logical :: accepted
+      logical :: accepted, evaluated
       integer :: j
 
       character(len=:), allocatable :: light_root_type
@@ -131,11 +131,16 @@ contains
       ! \f$\theta_i = l_i/z_i\f$, so the admissible region is simply
       ! \f$0 < \theta_i < 1\f$.
       iterations = 0
+      evaluated = .false.
       do while (iterations < max_iterations)
-         l = z*theta
-         call evaluate_gibbs( &
-            model, z, l, T, P_spec, light_root_type, Gibbs, g_l, H_l &
-            )
+         ! Reuse the evaluation of an accepted line-search trial when
+         ! possible: it already corresponds to the current `theta`.
+         if (.not. evaluated) then
+            l = z*theta
+            call evaluate_gibbs( &
+               model, z, l, T, P_spec, light_root_type, Gibbs, g_l, H_l &
+               )
+         end if
 
          ! Chain rule: g_theta = Z g_l, H_theta = Z H_l Z.
          g = z*g_l
@@ -189,19 +194,27 @@ contains
             if (alpha < 1e-16_pr) exit
          end do
 
-         if (.not. accepted) exit
+         if (.not. accepted) then
+            ! The cached arrays no longer correspond to `theta`.
+            evaluated = .false.
+            exit
+         end if
          theta = theta_trial
+         Gibbs = G_trial
+         evaluated = .true.
       end do
 
       ! ========================================================================
       ! Format results
       ! ------------------------------------------------------------------------
-      ! Re-evaluate at the final point so the convergence test always uses the
-      ! gradient of the phase split that is actually returned.
-      l = z*theta
-      call evaluate_gibbs( &
-         model, z, l, T, P_spec, light_root_type, Gibbs, g_l, H_l &
-         )
+      ! The convergence test must use the gradient of the phase split that is
+      ! actually returned. Only re-evaluate when the cached values are stale.
+      if (.not. evaluated) then
+         l = z*theta
+         call evaluate_gibbs( &
+            model, z, l, T, P_spec, light_root_type, Gibbs, g_l, H_l &
+            )
+      end if
       g = z*g_l
 
       v = z - l
