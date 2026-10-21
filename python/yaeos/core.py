@@ -2797,7 +2797,14 @@ class ArModel(ABC):
 
         x, y, pressure, temperature, volume_x, volume_y, beta = (
             yaeos_c.flash_second_order(
-                self.id, z, p=pressure, t=temperature, k0=k0
+                self.id,
+                z,
+                p=pressure,
+                t=temperature,
+                k0=k0,
+                light_root=light_root,
+                miters=max_iters,
+                tol=tol,
             )
         )
 
