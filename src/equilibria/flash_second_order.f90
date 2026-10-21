@@ -6,12 +6,12 @@ module yaeos__equilibria_flash_second_order
    !! minimization of the reduced Gibbs energy, following the formulation of
    !! Michelsen (1982) described in `AGENTS.md`.
    !!
-   !! The independent variables are the mole numbers of the heavy phase,
-   !! \(l_i\). The light-phase mole numbers follow from the material balance
-   !! \(v_i = z_i - l_i\). The Gibbs energy is minimized with a Newton step
-   !! based on a modified Cholesky decomposition (Murray), combined with a
-   !! backtracking line search that keeps the iterate inside the physically
-   !! admissible region \(0 < l_i < z_i\).
+   !! The minimization variables are the scaled heavy-phase mole numbers
+   !! \(\theta_i = l_i/z_i\), so the light phase is \(v_i = z_i(1-\theta_i)\)
+   !! and the admissible region is \(0 < \theta_i < 1\). The Gibbs energy is
+   !! minimized with a Newton step based on a modified Cholesky decomposition
+   !! (Murray), combined with a line search that first computes the largest
+   !! step compatible with the bounds and then backtracks on the Gibbs energy.
    !!
    !! For `ArModel` the heavy phase is always evaluated with the liquid root.
    !! The light phase uses the stable root by default, but it can be forced to
@@ -68,15 +68,18 @@ contains
       real(pr) :: tolerance, grad_norm
       integer :: max_iterations, i, iterations
 
+      real(pr) :: theta(size(z)), theta_trial(size(z))
       real(pr) :: l(size(z)), v(size(z)), x(size(z)), y(size(z))
       real(pr) :: K(size(z)), w(size(z))
       real(pr) :: Ltot, Vtot, beta
       real(pr) :: mintpd
 
-      real(pr) :: Gibbs, g(size(z)), H(size(z), size(z))
-      real(pr) :: step(size(z)), l_trial(size(z))
-      real(pr) :: alpha, G_trial
+      real(pr) :: Gibbs, g_l(size(z)), H_l(size(z), size(z))
+      real(pr) :: g(size(z)), H(size(z), size(z))
+      real(pr) :: step(size(z))
+      real(pr) :: alpha, alpha_max, G_trial, tolG
       logical :: accepted
+      integer :: j
 
       character(len=:), allocatable :: light_root_type
 
@@ -118,15 +121,26 @@ contains
       ! minimization with one of the phases almost absent.
       beta = 0.5_pr
       l = z*(1 - beta)/(1 + beta*(K - 1))
+      theta = l/z
 
       ! ========================================================================
       ! Gibbs energy minimization
       ! ------------------------------------------------------------------------
+      ! The minimization is carried out in the scaled variables
+      ! \f$\theta_i = l_i/z_i\f$, so the admissible region is simply
+      ! \f$0 < \theta_i < 1\f$.
       iterations = 0
       do while (iterations < max_iterations)
+         l = z*theta
          call evaluate_gibbs( &
-            model, z, l, T, P_spec, light_root_type, Gibbs, g, H &
+            model, z, l, T, P_spec, light_root_type, Gibbs, g_l, H_l &
             )
+
+         ! Chain rule: g_theta = Z g_l, H_theta = Z H_l Z.
+         g = z*g_l
+         do j = 1, size(z)
+            H(:, j) = z*H_l(:, j)*z(j)
+         end do
 
          grad_norm = maxval(abs(g))
          if (grad_norm < tolerance) exit
@@ -137,34 +151,45 @@ contains
          ! descent direction for the Gibbs energy.
          call solve_modified_cholesky(H, -g, step)
 
-         ! A trust-region cap avoids extremely large steps when the Hessian
-         ! is ill-conditioned near a phase boundary.
-         if (maxval(abs(step)) > 0.5_pr*maxval(z)) then
-            step = step*(0.5_pr*maxval(z)/maxval(abs(step)))
-         end if
+         ! Largest step that keeps 0 < theta < 1 in every component.
+         alpha_max = huge(1.0_pr)
+         do j = 1, size(z)
+            if (step(j) > 0.0_pr) then
+               alpha_max = min(alpha_max, (1.0_pr - theta(j))/step(j))
+            else if (step(j) < 0.0_pr) then
+               alpha_max = min(alpha_max, -theta(j)/step(j))
+            end if
+         end do
+         if (alpha_max < huge(1.0_pr)) alpha_max = 0.99_pr*alpha_max
 
-         ! Backtracking line search. The physical bounds also prevent the
-         ! iterate from reaching the trivial solution (l = 0 or v = 0).
-         alpha = 1.0_pr
+         ! Backtracking line search on the Gibbs energy. The acceptance allows
+         ! an increase of `tolG`, which absorbs the evaluation noise of the EoS
+         ! volume solver (~1e-12 for cubic models). Without this margin the
+         ! line search rejects the full Newton step at the noise floor and the
+         ! iteration stalls while the gradient is still around 1e-8.
+         tolG = 1.0e4_pr*epsilon(1.0_pr)*max(1.0_pr, abs(Gibbs))
+         alpha = min(1.0_pr, alpha_max)
          G_trial = Gibbs
          accepted = .false.
-         do i = 1, 40
-            l_trial = l + alpha*step
-            if (all(l_trial > 0 .and. l_trial < z)) then
+         do i = 1, 60
+            theta_trial = theta + alpha*step
+            if (all(theta_trial > 0 .and. theta_trial < 1)) then
+               l = z*theta_trial
                call evaluate_gibbs( &
-                  model, z, l_trial, T, P_spec, light_root_type, &
-                  G_trial, g, H &
+                  model, z, l, T, P_spec, light_root_type, &
+                  G_trial, g_l, H_l &
                   )
-               if (G_trial <= Gibbs) then
+               if (G_trial <= Gibbs + tolG) then
                   accepted = .true.
                   exit
                end if
             end if
             alpha = 0.5_pr*alpha
+            if (alpha < 1e-16_pr) exit
          end do
 
          if (.not. accepted) exit
-         l = l_trial
+         theta = theta_trial
       end do
 
       ! ========================================================================
@@ -172,9 +197,11 @@ contains
       ! ------------------------------------------------------------------------
       ! Re-evaluate at the final point so the convergence test always uses the
       ! gradient of the phase split that is actually returned.
+      l = z*theta
       call evaluate_gibbs( &
-         model, z, l, T, P_spec, light_root_type, Gibbs, g, H &
+         model, z, l, T, P_spec, light_root_type, Gibbs, g_l, H_l &
          )
+      g = z*g_l
 
       v = z - l
       Ltot = sum(l)
@@ -270,63 +297,67 @@ contains
    end subroutine evaluate_gibbs
 
    subroutine solve_modified_cholesky(H, b, x)
-      !! Solve \((H + E)x = b\) using a modified Cholesky factorisation.
-      !!
-      !! The diagonal pivots are bounded from below. This is equivalent to
-      !! adding a diagonal matrix \(E\) to \(H\), and guarantees that the
-      !! resulting matrix is positive definite. If \(H\) is already positive
-      !! definite (with comfortably positive pivots) then \(E = 0\).
-      real(pr), intent(in) :: H(:, :)
-      real(pr), intent(in) :: b(:)
+      !! Solve (H + D) x = b with Murray's modified Cholesky (1972), Sec. 4.9.
+      !! Factorise by columns H + D = Lb*Lb^T with |l(j,i)| <= beta (Eqs. 4.9.7-12).
+      !! If H is sufficiently positive definite then D = 0 (pure Newton).
+      real(pr), intent(in)  :: H(:, :)
+      real(pr), intent(in)  :: b(:)
       real(pr), intent(out) :: x(:)
 
-      integer :: i, j, k, n
-      real(pr) :: pivot, min_pivot, scale, value
-      real(pr) :: Lmat(size(H, 1), size(H, 2))
-      real(pr) :: D(size(H, 1)), y(size(H, 1))
+      integer  :: i, j, n
+      real(pr) :: gamma, xi, beta, delta, theta, lh
+      real(pr) :: Lb(size(H, 1), size(H, 1)), lj(size(H, 1)), y(size(H, 1))
 
       n = size(H, 1)
-      scale = max(1.0_pr, maxval(abs(H)))
-      min_pivot = 1e-12_pr*scale
 
-      Lmat = 0.0_pr
+      ! Ec. 4.9.16
+      gamma = 0.0_pr
+      xi = 0.0_pr
       do i = 1, n
-         Lmat(i, i) = 1.0_pr
-      end do
-      D = 0.0_pr
-
-      do j = 1, n
-         pivot = H(j, j)
-         do k = 1, j - 1
-            pivot = pivot - Lmat(j, k)**2*D(k)
+         gamma = max(gamma, abs(H(i, i)))
+         do j = 1, n
+            if (j /= i) xi = max(xi, abs(H(i, j)))
          end do
-         if (pivot < min_pivot) pivot = min_pivot
-         D(j) = pivot
+      end do
+      beta = sqrt(max(gamma, xi/max(1.0_pr, sqrt(real(n, pr)**2 - 1.0_pr)), &
+         epsilon(1.0_pr)))
 
-         do i = j + 1, n
-            value = H(i, j)
-            do k = 1, j - 1
-               value = value - Lmat(i, k)*Lmat(j, k)*D(k)
+      delta = sqrt(epsilon(1.0_pr))
+
+      Lb = 0.0_pr
+      do i = 1, n
+         ! Ec. 4.9.8
+         lh = max(delta, sqrt(abs(H(i, i) - sum(Lb(i, 1:i - 1)**2))))
+
+         ! Ec. 4.9.9
+         theta = 0.0_pr
+         do j = i + 1, n
+            lj(j) = (H(j, i) - dot_product(Lb(i, 1:i - 1), Lb(j, 1:i - 1)))/lh
+            theta = max(theta, abs(lj(j)))
+         end do
+
+         if (theta <= beta) then
+            ! Ec. 4.9.10
+            Lb(i, i) = lh
+            do j = i + 1, n
+               Lb(j, i) = lj(j)
             end do
-            Lmat(i, j) = value/pivot
-         end do
+         else
+            ! Ec. 4.9.11-12
+            Lb(i, i) = theta*lh/beta
+            do j = i + 1, n
+               Lb(j, i) = beta*lj(j)/theta
+            end do
+         end if
       end do
 
-      ! Solve L y = b, D z = y, L^T x = z.
+      ! Lb y = b
       do i = 1, n
-         y(i) = b(i)
-         do k = 1, i - 1
-            y(i) = y(i) - Lmat(i, k)*y(k)
-         end do
+         y(i) = (b(i) - dot_product(Lb(i, 1:i - 1), y(1:i - 1)))/Lb(i, i)
       end do
-      do i = 1, n
-         y(i) = y(i)/D(i)
-      end do
+      ! Lb^T x = y
       do i = n, 1, -1
-         x(i) = y(i)
-         do k = i + 1, n
-            x(i) = x(i) - Lmat(k, i)*x(k)
-         end do
+         x(i) = (y(i) - dot_product(Lb(i + 1:n, i), x(i + 1:n)))/Lb(i, i)
       end do
    end subroutine solve_modified_cholesky
 end module yaeos__equilibria_flash_second_order
