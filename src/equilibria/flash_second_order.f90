@@ -297,9 +297,27 @@ contains
    end subroutine evaluate_gibbs
 
    subroutine solve_modified_cholesky(H, b, x)
-      !! Solve (H + D) x = b with Murray's modified Cholesky (1972), Sec. 4.9.
-      !! Factorise by columns H + D = Lb*Lb^T with |l(j,i)| <= beta (Eqs. 4.9.7-12).
-      !! If H is sufficiently positive definite then D = 0 (pure Newton).
+      !! Solve \((H + D)x = b\) with a modified Cholesky factorisation after
+      !! Murray (1972), Sec. 4.9, with the choice of \(\beta\) from
+      !! Gill and Murray (1974).
+      !!
+      !! The matrix is factorised by columns as \(H + D = \bar{L}\bar{L}^T\),
+      !! where \(D\) is a non-negative diagonal matrix and the off-diagonal
+      !! elements of \(\bar{L}\) are bounded by \(\beta\)
+      !! (Murray 1972, Eqs. 4.9.7-4.9.12). Each pivot is taken in absolute 
+      !! value and floored at \(\delta = \sqrt{\varepsilon}\); a column whose 
+      !! largest element exceeds \(\beta\) is rescaled. If \(H\) is 
+      !! sufficiently positive definite then \(D = 0\) and the step is the pure
+      !! Newton step.
+      !!
+      !! Deviation from Murray (1972): Eq. 4.9.16 gives
+      !! \(\beta^2 = \max\{\gamma, \xi/n\}\). Here
+      !! \(\beta^2 = \max\{\gamma, \xi/\sqrt{n^2-1}, \varepsilon\}\)
+      !! (Gill and Murray 1974), with \(\gamma = \max_i |H_{ii}|\) and
+      !! \(\xi = \max_{i \ne j} |H_{ij}|\). With the original choice, an
+      !! indefinite matrix such as \(H = [[1,2],[2,1]]\) gives a nearly
+      !! singular \(H + D\) and a step of order \(10^{15}\).
+      !!
       real(pr), intent(in)  :: H(:, :)
       real(pr), intent(in)  :: b(:)
       real(pr), intent(out) :: x(:)
