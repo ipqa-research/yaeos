@@ -125,10 +125,6 @@ contains
       ! K0: the second-order flash initializes itself with stability analysis.
       so = flash_second_order(model, z, T, P, iters=its)
 
-      print *, ss%kind
-      print *, ss%y / ss%x
-      print *, so%y / so%x
-
       call assert(ss%kind == "split", "UNIFAC: successive substitutions")
       call assert(so%kind == "split", "UNIFAC: second order converges")
       call assert(maxval(abs(so%x - ss%x)) < 1e-5_pr, "UNIFAC: heavy composition")
@@ -159,8 +155,7 @@ contains
       T = 300._pr
       P = 1.0_pr
 
-      call min_tpd(model, z, P, T, mintpd, w)
-      k0 = w/z
+      k0 = [405.70535832398622_pr, 2.4648429478662474E-003_pr]
 
       ss = flash(model, z, T, k0=k0, iters=its)
       so = flash_second_order(model, z, T, P, k0=k0, iters=its)
