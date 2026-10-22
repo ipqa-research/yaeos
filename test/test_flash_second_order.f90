@@ -108,7 +108,7 @@ contains
 
       T = 250._pr
       P = 1._pr
-      z = [0.2_pr, 0.7_pr, 0.1_pr]
+      z = [0.2_pr, 0.5_pr, 0.3_pr]
 
       molecules(1)%groups_ids = [1, 42]
       molecules(1)%number_of_groups = [1, 1]
