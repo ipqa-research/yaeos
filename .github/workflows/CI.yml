@@ -187,25 +187,26 @@ jobs:
         if: runner.os == 'Windows'
         uses: msys2/setup-msys2@v2
         with:
-          msystem: MINGW64
+          msystem: UCRT64
           update: true
           install: >-
-            gcc
-            mingw-w64-x86_64-gcc-libgfortran
-            mingw-w64-x86_64-gcc-fortran
-            mingw-w64-x86_64-lapack
-            mingw-w64-x86_64-blas
-            mingw-w64-x86_64-fpm
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-gcc-fortran
+            mingw-w64-ucrt-x86_64-lapack
+            mingw-w64-ucrt-x86_64-blas
+            mingw-w64-ucrt-x86_64-fpm
+            mingw-w64-ucrt-x86_64-pkg-config
             make
             git
-            pkg-config
 
       - name: Add MSYS2 to PATH (Windows)
         if: runner.os == 'Windows'
         shell: msys2 {0}
         run: |
-          MINGW_PATH=$(cygpath -w $(dirname $(which gfortran)))
-          echo "$MINGW_PATH" >> $GITHUB_PATH
+          # -w for PATH, -m for delvewheel to avoid backslash escaping issues
+          GFORTRAN_DIR=$(dirname "$(which gfortran)")
+          echo "$(cygpath -w "$GFORTRAN_DIR")" >> "$GITHUB_PATH"
+          echo "MINGW_BIN_PATH=$(cygpath -m "$GFORTRAN_DIR")" >> "$GITHUB_ENV"
 
       - name: Install fpm
         uses: fortran-lang/setup-fpm@v10
