@@ -287,9 +287,7 @@ contains
 
       ! The successive-substitution flash does not converge at this point,
       ! so the second-order result is checked against the Gibbs reference.
-      call cpu_time(t1)
       so = flash_second_order(model, z, T, P, k0=k0, iters=its)
-      call cpu_time(t2)
       
       call assert(so%kind == "split", "UNIQUAC SS-fail: split")
       call assert(abs(so%beta - beta_ref) < 1e-3_pr, &
@@ -309,12 +307,8 @@ contains
 
       call assert(allclose(ax, ay, 1e-6_pr), "Iso activities K0")
 
-      print *, its, (t2 - t1)*1000
-
       ! The stability-analysis initialization reaches the same split.
-      call cpu_time(t1)
       so = flash_second_order(model, z, T, P, iters=its)
-      call cpu_time(t2)
       
       call assert(so%kind == "split", "UNIQUAC SS-fail: min_tpd init")
       call assert(maxval(abs(so%x(1:4) - x_ref)) < 1e-3_pr, &
@@ -331,8 +325,6 @@ contains
       ay = exp(ln_gamma_y) * so%y
 
       call assert(allclose(ax, ay, 1e-6_pr), "Iso activities K0")
-
-      print *, its, (t2 - t1)*1000
 
       ! K0 = 1 is exactly the trivial solution and must be rejected.
       ones = 1.0_pr

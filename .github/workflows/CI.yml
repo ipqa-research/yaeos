@@ -47,8 +47,9 @@ jobs:
 
     - name: Install dependencies
       run: |
+        # TODO: update gcovr later
         python -m pip install --upgrade pip
-        pip install ford numpy matplotlib gcovr numpy scipy coverage
+        pip install ford numpy matplotlib gcovr==8.6 numpy scipy coverage
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         sudo apt-get install libnlopt-dev libblas-dev liblapack-dev
 
