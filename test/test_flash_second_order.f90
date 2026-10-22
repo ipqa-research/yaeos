@@ -118,13 +118,16 @@ contains
       molecules(3)%number_of_groups = [1]
       model = setup_unifac(molecules)
 
-      call min_tpd(model, z, P, T, mintpd, w)
-      k0 = w/z
+      k0 = [10.699186891095467_pr, 5.685729557771E-003_pr, 476.8624745978_pr]
 
       ss = flash(model, z, T, k0=k0, iters=its)
 
-      ! No K0: the second-order flash initializes itself with stability analysis.
+      ! K0: the second-order flash initializes itself with stability analysis.
       so = flash_second_order(model, z, T, P, iters=its)
+
+      print *, ss%kind
+      print *, ss%y / ss%x
+      print *, so%y / so%x
 
       call assert(ss%kind == "split", "UNIFAC: successive substitutions")
       call assert(so%kind == "split", "UNIFAC: second order converges")
