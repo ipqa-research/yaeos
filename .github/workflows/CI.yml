@@ -203,8 +203,10 @@ jobs:
         if: runner.os == 'Windows'
         shell: msys2 {0}
         run: |
-          MINGW_PATH=$(cygpath -w $(dirname $(which gfortran)))
-          echo "$MINGW_PATH" >> $GITHUB_PATH
+          # -w for PATH, -m for delvewheel to avoid backslash escaping issues
+          GFORTRAN_DIR=$(dirname "$(which gfortran)")
+          echo "$(cygpath -w "$GFORTRAN_DIR")" >> "$GITHUB_PATH"
+          echo "MINGW_BIN_PATH=$(cygpath -m "$GFORTRAN_DIR")" >> "$GITHUB_ENV"
 
       - name: Install fpm
         uses: fortran-lang/setup-fpm@v10
