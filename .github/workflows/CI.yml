@@ -96,10 +96,14 @@ jobs:
             mingw-w64-x86_64-gcc-libgfortran
             mingw-w64-x86_64-gcc-fortran
             mingw-w64-x86_64-lapack
-            mingw-w64-x86_64-fpm
             make
             git
             pkg-config
+
+      - name: Install fpm
+        uses: fortran-lang/setup-fpm@v10
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Add MSYS2 binaries to PATH
         shell: msys2 {0}
@@ -198,7 +202,6 @@ jobs:
             mingw-w64-x86_64-gcc-fortran
             mingw-w64-x86_64-lapack
             mingw-w64-x86_64-blas
-            mingw-w64-x86_64-fpm
             make
             git
             pkg-config
@@ -211,7 +214,7 @@ jobs:
           echo "$MINGW_PATH" >> $GITHUB_PATH
 
       - name: Install fpm
-        uses: fortran-lang/setup-fpm@v7
+        uses: fortran-lang/setup-fpm@v10
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
