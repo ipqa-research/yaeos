@@ -203,12 +203,23 @@ jobs:
         if: runner.os == 'Windows'
         shell: msys2 {0}
         run: |
-          # -w for PATH, -m for delvewheel to avoid backslash escaping issues
-          GFORTRAN_DIR=$(dirname "$(which gfortran)")
-          echo "$(cygpath -w "$GFORTRAN_DIR")" >> "$GITHUB_PATH"
-          echo "MINGW_BIN_PATH=$(cygpath -m "$GFORTRAN_DIR")" >> "$GITHUB_ENV"
+          # -w for PATH, -m for tools that don't like backslashes (delvewheel,
+          # meson native file).
+          UCRT_BIN=$(dirname "$(which gfortran)")
+          echo "$(cygpath -w "$UCRT_BIN")" >> "$GITHUB_PATH"
+          echo "MINGW_BIN_PATH=$(cygpath -m "$UCRT_BIN")" >> "$GITHUB_ENV"
 
-      - name: Install fpm
+          # Show which toolchain (and fpm) the wheel build will pick up.
+          echo "Toolchain directory: $(cygpath -m "$UCRT_BIN")"
+          which fpm gfortran gcc
+          fpm --version
+          gfortran --version | head -n 1
+
+      # On Windows we deliberately use the UCRT64 fpm that comes with the
+      # MSYS2 toolchain instead of the PyPI wheel (which ships a MINGW64
+      # binary), see `fpm; platform_system != 'Windows'` in pyproject.toml.
+      - name: Install fpm (Linux/macOS)
+        if: runner.os != 'Windows'
         uses: fortran-lang/setup-fpm@v10
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -217,30 +228,14 @@ jobs:
         if: runner.os == 'Windows'
         shell: msys2 {0}
         run: |
-          GFORTRAN=$(cygpath -w $(which gfortran))
-          GCC=$(cygpath -w $(which gcc))
-          GPP=$(cygpath -w $(which g++))
           mkdir -p python/ci
           cat > python/ci/windows-mingw.ini << EOF
           [binaries]
-          c = '${GCC//\\/\\\\}'
-          cpp = '${GPP//\\/\\\\}'
-          fortran = '${GFORTRAN//\\/\\\\}'
+          c = '$(cygpath -m "$(which gcc)")'
+          cpp = '$(cygpath -m "$(which g++)")'
+          fortran = '$(cygpath -m "$(which gfortran)")'
           EOF
           cat python/ci/windows-mingw.ini
-
-      - name: Add MSYS2 to PATH (Windows)
-        if: runner.os == 'Windows'
-        shell: msys2 {0}
-        run: |
-          # Use -w for PATH, but -m for delvewheel to avoid backslash escaping issues
-          MINGW_PATH_WIN=$(cygpath -w $(dirname $(which gfortran)))
-          MINGW_PATH_MIXED=$(cygpath -m $(dirname $(which gfortran)))
-
-          echo "$MINGW_PATH_WIN" >> $GITHUB_PATH
-
-          # Save the dynamic path to GITHUB_ENV for later steps
-          echo "MINGW_BIN_PATH=$MINGW_PATH_MIXED" >> $GITHUB_ENV
 
       # CiBuildWheel
       - name: Install dependencies
@@ -253,10 +248,17 @@ jobs:
 
         # to supply options, put them in 'env', like:
         env:
-          # CIBW_BUILD_VERBOSITY: 3
+          # Full build output, so a failure is diagnosable from the log.
+          CIBW_BUILD_VERBOSITY: 3
           CIBW_BUILD_FRONTEND: build
 
-          CIBW_BEFORE_BUILD_WINDOWS: pip install delvewheel
+          # Sanity-check the toolchain inside the build environment itself (the
+          # isolated build env is what actually runs fpm/meson).
+          CIBW_BEFORE_BUILD_WINDOWS: >
+            pip install delvewheel &&
+            where fpm &&
+            fpm --version &&
+            gfortran --version
           CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel repair --add-path ${{ env.MINGW_BIN_PATH }} -w {dest_dir} {wheel}"
           CIBW_CONFIG_SETTINGS_WINDOWS: >
             setup-args=--native-file=../ci/windows-mingw.ini
