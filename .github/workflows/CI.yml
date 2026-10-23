@@ -264,7 +264,11 @@ jobs:
             setup-args=--native-file=../ci/windows-mingw.ini
 
           # MACOSX_DEPLOYMENT_TARGET: "13.0"
-          CIBW_BEFORE_TEST: pip install pytest fpm
+          # On Windows DO NOT install the PyPI `fpm` here: it ships a MINGW64
+          # binary that dies silently (0xC0000142) against the UCRT64 runtime
+          # DLLs on PATH. The MSYS2 UCRT64 fpm is already on PATH.
+          CIBW_BEFORE_TEST: pip install pytest
+          CIBW_BEFORE_TEST_LINUX: pip install pytest fpm
           CIBW_TEST_COMMAND: pytest {project}/python/tests --import-mode=importlib
 
       - uses: actions/upload-artifact@v4
