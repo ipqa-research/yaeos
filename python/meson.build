@@ -18,10 +18,12 @@ fc_version = fc.version()
 
 meson_path = meson.current_build_dir()
 
-omp = dependency('openmp')
-
 # Check if we are on Windows
 is_windows = host_machine.system() == 'windows'
+
+# On Windows OpenMP is linked explicitly through '-lgomp' below, so OpenMP
+# detection is only required where the dependency is actually used.
+omp = dependency('openmp', required : not is_windows)
 
 # lapack = dependency('lapack')
 
@@ -57,7 +59,8 @@ fpm_build_dir = meson_path / 'fpm_build'
 # from glibc >= 2.41 executable stack is not an option, so we force heap
 # allocation
 cc = meson.get_compiler('c')
-quadmath_dep = cc.find_library('quadmath', required: true)
+# quadmath is linked manually on Windows (-lquadmath below).
+quadmath_dep = cc.find_library('quadmath', required : not is_windows)
 
 if not is_windows
   # Flags needed after glibc 2.41. Only available from gcc 14.1
@@ -109,8 +112,11 @@ endif
 message('fpm build output:')
 output = fpm.stdout().strip()
 message(output)
-message('fpm build error:')
 err = fpm.stderr().strip()
+if fpm.returncode() != 0
+  error('fpm install failed with exit code ' + fpm.returncode().to_string() + ':\n' + err)
+endif
+message('fpm build error:')
 message(err)
 
 # f2py

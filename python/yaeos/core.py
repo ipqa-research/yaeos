@@ -440,7 +440,7 @@ class GeModel(ABC):
         return {"w": w_min, "tm": tm_min}, {"tm": all_mins, "w": all_mins_w}
 
     def flash_t(self, z, temperature: float, k0=None) -> dict:
-        """Two-phase split with specification of temperature and pressure.
+        """Two-phase split with specification of temperature.
 
         Parameters
         ----------
@@ -467,6 +467,56 @@ class GeModel(ABC):
 
         x, y, pressure, temperature, volume_x, volume_y, beta = (
             yaeos_c.flash_ge(self.id, z, t=temperature, k0=k0)
+        )
+
+        flash_result = {
+            "x": x,
+            "y": y,
+            "T": temperature,
+            "beta": beta,
+        }
+
+        return flash_result
+
+    def flash_t_second_order(
+        self, z, temperature: float, k0=None, max_iter=200, tol=1e-8
+    ) -> dict:
+        """Second order two-phase split with specification at T.
+
+        Implementantion of the Michelsen's second order two-phase flash
+        calculation.
+
+        Parameters
+        ----------
+        z : array_like
+            Global mole fractions
+        temperature : float
+            Temperature [K]
+        k0 : array_like, optional
+            Initial guess for the split, by default None (will use stability
+            analysis)
+        max_iter : int, optional
+            Maximum iteration number, by default 200
+        tol : float_, optional
+            Calculation tolerance, Michelsen's recomendation is to leave it at
+            1e-8, by default 1e-8
+
+        Returns
+        -------
+        dict
+            Flash result dictionary with keys:
+                - x: "phase 1" mole fractions
+                - y: "phase 2" mole fractions
+                - T: temperature [K]
+                - beta: "phase 2" fraction
+        """
+        if k0 is None:
+            k0 = [0 for i in range(len(z))]
+
+        x, y, pressure, temperature, volume_x, volume_y, beta = (
+            yaeos_c.flash_second_order_ge(
+                self.id, z, t=temperature, k0=k0, miters=max_iter, tol=tol
+            )
         )
 
         flash_result = {
@@ -2531,7 +2581,6 @@ class ArModel(ABC):
     # =========================================================================
     # Equilibrium calculations
     # -------------------------------------------------------------------------
-
     def pure_saturation_pressure(self, component, temperature):
         """Saturation pressure of a pure component at a given temperature.
 
@@ -2552,14 +2601,9 @@ class ArModel(ABC):
                 - Vy: Vapor volume [L]
         """
         psat, vl, vv = yaeos_c.pure_psat(
-            id=self.id, ncomp=component+1, t=temperature
+            id=self.id, ncomp=component + 1, t=temperature
         )
-        return {
-            "T": temperature,
-            "P": psat,
-            "Vx": vl,
-            "Vy": vv
-        }
+        return {"T": temperature, "P": psat, "Vx": vl, "Vy": vv}
 
     def pure_saturation_pressures(
         self, component, stop_pressure=0.01, stop_temperature=100
@@ -2672,6 +2716,96 @@ class ArModel(ABC):
 
         x, y, pressure, temperature, volume_x, volume_y, beta = yaeos_c.flash(
             self.id, z, p=pressure, t=temperature, k0=k0
+        )
+
+        flash_result = {
+            "x": x,
+            "y": y,
+            "Vx": volume_x,
+            "Vy": volume_y,
+            "P": pressure,
+            "T": temperature,
+            "beta": beta,
+        }
+
+        return flash_result
+
+    def flash_pt_second_order(
+        self,
+        z,
+        pressure: float,
+        temperature: float,
+        k0=None,
+        light_root="stable",
+        max_iters=200,
+        tol=1e-8,
+    ) -> dict:
+        """Two-phase split with specification of temperature and pressure.
+
+        Parameters
+        ----------
+        z : array_like
+            Global mole fractions
+        pressure : float
+            Pressure [bar]
+        temperature : float
+            Temperature [K]
+        k0 : array_like, optional
+            Initial guess for the split, by default None (will use k_wilson)
+        light_root : str, optional
+            Volume root nature of the light phase (liquid or stable), by
+            default stable
+        max_iter : int, optional
+            Maximum iteration number, by default 200
+        tol : float_, optional
+            Calculation tolerance, Michelsen's recomendation is to leave it at
+            1e-8, by default 1e-8
+
+
+        Returns
+        -------
+        dict
+            Flash result dictionary with keys:
+                - x: heavy phase mole fractions
+                - y: light phase mole fractions
+                - Vx: heavy phase volume [L]
+                - Vy: light phase volume [L]
+                - P: pressure [bar]
+                - T: temperature [K]
+                - beta: light phase fraction. If beta is -1 flash was not
+                        successful.
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([369.83, 507.6])        # critical temperatures [K]
+            pc = np.array([42.48, 30.25])         # critical pressures [bar]
+            w =  np.array([0.152291, 0.301261])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            print(model.flash_pt_second_order([0.5, 0.5], 8.0, 350.0))
+        """
+        if k0 is None:
+            k0 = [0 for i in range(len(z))]
+
+        x, y, pressure, temperature, volume_x, volume_y, beta = (
+            yaeos_c.flash_second_order(
+                self.id,
+                z,
+                p=pressure,
+                t=temperature,
+                k0=k0,
+                light_root=light_root,
+                miters=max_iters,
+                tol=tol,
+            )
         )
 
         flash_result = {
