@@ -60,9 +60,64 @@ module yaeos__models_ge_group_contribution_model_parameters
       procedure :: get_subgroups_aij => get_subgroups_aij
       procedure :: get_subgroups_bij => get_subgroups_bij
       procedure :: get_subgroups_cij => get_subgroups_cij
+      procedure :: check_consistency
    end type GeGCModelParameters
 
 contains
+   subroutine check_consistency(self)
+      class(GeGCModelParameters), intent(in) :: self
+      
+      integer :: n_subgroups, n_maingroups
+
+      n_subgroups = size(self%subgroups_ids)
+      n_maingroups = size(self%maingroups_ids)
+
+      ! ==============================================================
+      ! Subgroups and maingroups sizes
+      ! --------------------------------------------------------------
+      if (n_subgroups /= size(self%subgroups_maingroups)) then
+         error stop 'Subgroups and maingroups sizes mismatch'
+      end if
+
+      ! ==============================================================
+      ! Size parameters
+      ! --------------------------------------------------------------
+      if (n_subgroups /= size(self%subgroups_Rs)) then
+         error stop 'Subgroups and Rs sizes mismatch'
+      end if
+
+      if (n_subgroups /= size(self%subgroups_Qs)) then
+         error stop 'Subgroups and Qs sizes mismatch'
+      end if
+
+      ! ==============================================================
+      ! Interaction matrices
+      ! --------------------------------------------------------------
+      if (n_maingroups /= size(self%maingroups_aij, 1)) then
+         error stop 'Maingroups and aij sizes mismatch'
+      end if
+      
+      if (n_maingroups /= size(self%maingroups_aij, 2)) then
+         error stop 'Maingroups and aij sizes mismatch'
+      end if
+      
+      if (n_maingroups /= size(self%maingroups_bij, 1)) then
+         error stop 'Maingroups and bij sizes mismatch'
+      end if
+      
+      if (n_maingroups /= size(self%maingroups_bij, 2)) then
+         error stop 'Maingroups and bij sizes mismatch'
+      end if
+      
+      if (n_maingroups /= size(self%maingroups_cij, 1)) then
+         error stop 'Maingroups and cij sizes mismatch'
+      end if
+      
+      if (n_maingroups /= size(self%maingroups_cij, 2)) then
+         error stop 'Maingroups and cij sizes mismatch'
+      end if
+   end subroutine
+
    function get_subgroup_index(self, subgroup_id) result(subgroup_idx)
       !! # get_subgroup_index
       !! Get index of the subgroup with id: `subgroup_id`

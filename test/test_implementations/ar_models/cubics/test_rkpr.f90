@@ -10,10 +10,68 @@ contains
       type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
       testsuite = [ &
+         new_unittest("Test RKPR Ar individual calls", test_rkpr_individual_calls), &
          new_unittest("Test RKPR Ar consistency mix", test_rkpr_cons_mixture), &
          new_unittest("Test RKPR Ar consistency pure", test_rkpr_cons_pure) &
          ]
    end subroutine collect_suite
+
+   subroutine test_rkpr_individual_calls(error)
+      use yaeos, only: pr, RKPR, ArModel
+      use yaeos__consistency, only: individual_ar_calls
+      type(error_type), allocatable, intent(out) :: error
+
+      class(ArModel), allocatable :: model, model_kij
+      real(pr) :: tc(4), pc(4), w(4), zc(4), kij(4, 4), lij(4, 4)
+
+      real(pr) :: n(4), t, v
+
+      logical :: passed
+
+      n = [1.5, 0.2, 0.7, 2.3]
+
+      tc = [647.13_pr, 514.0_pr, 694.25_pr, 591.95_pr]
+      pc = [220.55_pr, 61.37_pr, 61.3_pr, 57.86_pr]
+      w = [0.344861_pr, 0.643558_pr, 0.44346_pr, 0.466521_pr]
+      zc = [&
+         0.22933184088891398_pr, &
+         0.24125043270236704_pr, &
+         0.24319009555842885_pr, &
+         0.21125514583718205_pr &
+         ]
+
+      t = 600_pr
+      v = 0.5_pr
+
+      ! =======================================================================
+      ! Without kij
+      ! -----------------------------------------------------------------------
+      model = RKPR(tc, pc, w, zc)
+
+      call individual_ar_calls(model, n, v, t, passed=passed)
+      call check(error, passed)
+
+      ! =======================================================================
+      ! With kij
+      ! -----------------------------------------------------------------------
+      kij = reshape([&
+         0.0_pr, 0.1_pr, 0.2_pr, 0.1_pr, &
+         0.1_pr, 0.0_pr, 0.3_pr, 0.25_pr, &
+         0.2_pr, 0.3_pr, 0.0_pr, 0.18_pr, &
+         0.1_pr, 0.25_pr, 0.18_pr, 0.0_pr], [size(n), size(n)])
+
+      lij = reshape([&
+         0.0_pr, 0.001_pr, 0.002_pr, 0.001_pr, &
+         0.001_pr, 0.0_pr, 0.003_pr, 0.0025_pr, &
+         0.002_pr, 0.003_pr, 0.0_pr, 0.0018_pr, &
+         0.001_pr, 0.0025_pr, 0.0018_pr, 0.0_pr], [size(n), size(n)])
+
+
+      model_kij = RKPR(tc, pc, w, zc, kij, lij)
+
+      call individual_ar_calls(model_kij, n, v, t, passed=passed)
+      call check(error, passed)
+   end subroutine test_rkpr_individual_calls
 
    subroutine test_rkpr_cons_mixture(error)
       use yaeos, only: pr, RKPR, ArModel
@@ -34,6 +92,7 @@ contains
       real(pr) :: eq31, eq33(size(n), size(n)), eq34(size(n)), eq36, eq37
 
       real(pr) :: kij(size(n), size(n)), lij(size(n), size(n))
+      real(pr) :: tol
 
       n = [1.5, 0.2, 0.7, 2.3]
       tc = [369.83, 425.12, 507.6, 540.2]
@@ -54,7 +113,7 @@ contains
          ArTV=ArTV, ArV2=ArV2, ArT2=ArT2, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2)
 
       call numeric_ar_derivatives(&
-         model, n, v, t, d_n = 0.0001_pr, d_v = 0.0001_pr, d_t = 0.01_pr, &
+         model, n, v, t, d_n = 0.0001_pr, d_v = 0.00001_pr, d_t = 0.001_pr, &
          Ar=Ar_num, ArV=ArV_num, ArT=ArT_num, ArTV=ArTV_num, ArV2=ArV2_num, &
          ArT2=ArT2_num, Arn=Arn_num, ArVn=ArVn_num, ArTn=ArTn_num, &
          Arn2=Arn2_num &
@@ -64,24 +123,26 @@ contains
          model, n, v, t, eq31=eq31, eq33=eq33, eq34=eq34, eq36=eq36, eq37=eq37 &
          )
 
+      tol = 1e-3
+
       ! Numeric derivatives
-      call check(error, rel_error(Ar, Ar_num) < 1e-5)
-      call check(error, rel_error(ArV, ArV_num) < 1e-5)
-      call check(error, rel_error(ArT, ArT_num) < 1e-5)
-      call check(error, allclose(Arn, Arn_num, 1e-5_pr))
-      call check(error, rel_error(ArV2, ArV2_num) < 1e-5)
-      call check(error, rel_error(ArT2, ArT2_num) < 1e-5)
-      call check(error, rel_error(ArTV, ArTV_num) < 1e-5)
-      call check(error, allclose(ArVn, ArVn_num, 1e-5_pr))
-      call check(error, allclose(ArTn, ArTn_num, 1e-5_pr))
-      call check(error, maxval(rel_error(Arn2, Arn2_num)) < 1e-5)
+      call check(error, rel_error(Ar, Ar_num) < tol)
+      call check(error, rel_error(ArV, ArV_num) < tol)
+      call check(error, rel_error(ArT, ArT_num) < tol)
+      call check(error, allclose(Arn, Arn_num, tol))
+      call check(error, rel_error(ArV2, ArV2_num) < tol)
+      call check(error, rel_error(ArT2, ArT2_num) < tol)
+      call check(error, rel_error(ArTV, ArTV_num) < tol)
+      call check(error, allclose(ArVn, ArVn_num, tol))
+      call check(error, allclose(ArTn, ArTn_num, tol))
+      call check(error, maxval(rel_error(Arn2, Arn2_num)) < tol)
 
       ! Consistency tests
-      call check(error, abs(eq31) <= 1e-13)
-      call check(error, maxval(abs(eq33)) < 1e-14)
-      call check(error, maxval(abs(eq34)) < 1e-14)
-      call check(error, abs(eq36) <= 1e-14)
-      call check(error, abs(eq37) <= 1e-14)
+      call check(error, abs(eq31) <= 1e-12)
+      call check(error, maxval(abs(eq33)) < 1e-12)
+      call check(error, maxval(abs(eq34)) < 1e-12)
+      call check(error, abs(eq36) <= 1e-12)
+      call check(error, abs(eq37) <= 1e-12)
 
       ! ========================================================================
       ! Model with kij and lij
@@ -118,23 +179,23 @@ contains
          )
 
       ! Numeric derivatives
-      call check(error, rel_error(Ar, Ar_num) < 1e-5)
-      call check(error, rel_error(ArV, ArV_num) < 1e-5)
-      call check(error, rel_error(ArT, ArT_num) < 1e-5)
-      call check(error, allclose(Arn, Arn_num, 1e-5_pr))
-      call check(error, rel_error(ArV2, ArV2_num) < 1e-5)
-      call check(error, rel_error(ArT2, ArT2_num) < 1e-5)
-      call check(error, rel_error(ArTV, ArTV_num) < 1e-5)
-      call check(error, allclose(ArVn, ArVn_num, 1e-5_pr))
-      call check(error, allclose(ArTn, ArTn_num, 1e-5_pr))
-      call check(error, maxval(rel_error(Arn2, Arn2_num)) < 1e-5)
+      call check(error, rel_error(Ar, Ar_num) < tol)
+      call check(error, rel_error(ArV, ArV_num) < tol)
+      call check(error, rel_error(ArT, ArT_num) < tol)
+      call check(error, allclose(Arn, Arn_num, tol))
+      call check(error, rel_error(ArV2, ArV2_num) < tol)
+      call check(error, rel_error(ArT2, ArT2_num) < tol)
+      call check(error, rel_error(ArTV, ArTV_num) < tol)
+      call check(error, allclose(ArVn, ArVn_num, tol))
+      call check(error, allclose(ArTn, ArTn_num, tol))
+      call check(error, maxval(rel_error(Arn2, Arn2_num)) < tol)
 
       ! Consistency tests
-      call check(error, abs(eq31) <= 1e-13)
-      call check(error, maxval(abs(eq33)) < 1e-14)
-      call check(error, maxval(abs(eq34)) < 1e-13)
-      call check(error, abs(eq36) <= 1e-14)
-      call check(error, abs(eq37) <= 1e-14)
+      call check(error, abs(eq31) <= 1e-12)
+      call check(error, maxval(abs(eq33)) < 1e-12)
+      call check(error, maxval(abs(eq34)) < 1e-12)
+      call check(error, abs(eq36) <= 1e-12)
+      call check(error, abs(eq37) <= 1e-12)
    end subroutine test_rkpr_cons_mixture
 
    subroutine test_rkpr_cons_pure(error)

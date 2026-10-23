@@ -18,19 +18,20 @@ module yaeos__consistency_armodel
    !! - [[ar_consistency]]: From an instantiated [[ArModel]] evaluate all the
    !! Michelsen and Mollerup consistency tests.
    !!
+   !! - [[individual_ar_calls]]: Test the individual calls to the Helmholtz 
+   !! free energy derivatives.
+   !!
    !! # References
    !! 1. Michelsen, M. L., & Mollerup, J. M. (2007). Thermodynamic models:
    !! Fundamentals & computational aspects (2. ed). Tie-Line Publications.
    !!
    use yaeos__constants, only: pr, R
    use yaeos__models_ar, only: ArModel
-   use yaeos__thermoprops, only: enthalpy_residual_vt, gibbs_residual_vt
-   use yaeos__thermoprops, only: fugacity_vt, pressure
 
    implicit none
 contains
    subroutine ar_consistency(&
-      eos, n, v, t, eq31, eq33, eq34, eq36, eq37 &
+      eos, n, V, T, eq31, eq33, eq34, eq36, eq37 &
       )
       !! # ar_consistency
       !! \(A^r\) models consistency tests.
@@ -87,7 +88,7 @@ contains
       !!  class(ArModel), allocatable :: model
       !!  real(pr) :: tc(4), pc(4), w(4)
       !!
-      !!  real(pr) :: n(4), t, v
+      !!  real(pr) :: n(4), T, V
       !!
       !!  real(pr) :: eq31, eq33(size(n), size(n)), eq34(size(n)), eq36, eq37
       !!
@@ -96,13 +97,13 @@ contains
       !!  pc = [45.99, 37.96, 39.23, 40.21]
       !!  w = [0.0115478, 0.200164, 0.3624, 0.298]
       !!
-      !!  t = 600_pr
-      !!  v = 0.5_pr
+      !!  T = 600_pr
+      !!  V = 0.5_pr
       !!
       !!  model = SoaveRedlichKwong(tc, pc, w)
       !!
       !!  call ar_consistency(&
-      !!     model, n, v, t, eq31=eq31, eq33=eq33, eq34=eq34, eq36=eq36, eq37=eq37 &
+      !!     model, n, V, T, eq31=eq31, eq33=eq33, eq34=eq34, eq36=eq36, eq37=eq37 &
       !!     )
       !! ```
       !! All `eqXX` variables should be close to zero.
@@ -113,10 +114,9 @@ contains
       !!
       class(ArModel), intent(in) :: eos !! Equation of state
       real(pr), intent(in) :: n(:) !! Moles number vector
-      real(pr), intent(in) :: t !! Temperature [K]
-      real(pr), intent(in) :: v !! Volume [L]
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), intent(in) :: V !! Volume [L]
       real(pr), optional, intent(out) :: eq31 !! MM Eq. 31
-      ! TODO real(pr), optional, intent(out) :: eq32
       real(pr), optional, intent(out) :: eq33(size(n), size(n)) !! MM Eq. 33
       real(pr), optional, intent(out) :: eq34(size(n)) !! MM Eq. 34
       real(pr), optional, intent(out) :: eq36 !! MM Eq. 36
@@ -127,42 +127,35 @@ contains
       ! ========================================================================
       ! Previous calculations
       ! ------------------------------------------------------------------------
-      real(pr) :: Grp, Grv, Hrv, p, dpdn(size(n)), ntot, z
-      real(pr) :: lnphi(size(n)), lnphip(size(n)), dlnPhidP(size(n))
+      real(pr) :: Grp, Grv, Hrv, P, dPdn(size(n)), ntot, z
+      real(pr) :: lnphi(size(n)), dlnPhidP(size(n))
       real(pr) :: dlnPhidT(size(n)), dlnPhidn(size(n), size(n))
 
-      call pressure(eos, n, v, t, p, dpdn=dpdn)
+      call eos%pressure(n, V, T, P, dPdn=dPdn)
 
-      call gibbs_residual_vt(eos, n, v, t, Grv)
+      call eos%gibbs_residual_vt(n, V, T, Grv)
 
-      call enthalpy_residual_vt(eos, n, v, t, Hr=Hrv)
+      call eos%enthalpy_residual_vt(n, V, T, Hr=Hrv)
 
-      call fugacity_vt(&
-         eos, n, v, t, lnphip=lnphip, &
+      call eos%lnphi_vt(&
+         n, V, T, lnPhi=lnPhi, &
          dlnPhidP=dlnPhidP, dlnPhidT=dlnPhidT, dlnPhidn=dlnPhidn &
          )
 
       ntot = sum(n)
 
-      lnphi(:) = lnphip(:) - log(p)
+      z = P * V / ntot / R / T
 
-      z = p * v / ntot / R / t
+      Grp = Grv - ntot * R * T * log(Z)
 
-      Grp = Grv - ntot * R * t * log(z)
-
-      ! ========================================================================
+      ! =======================================================================
       ! Equation 31
-      ! ------------------------------------------------------------------------
-      if (present(eq31)) eq31 = sum(n(:) * lnphi(:)) - Grp / (R * t)
+      ! -----------------------------------------------------------------------
+      if (present(eq31)) eq31 = sum(n(:) * lnPhi(:)) - Grp / (R * T)
 
-      ! ========================================================================
-      ! Equation 32
-      ! ------------------------------------------------------------------------
-      ! TODO
-
-      ! ========================================================================
+      ! =======================================================================
       ! Equation 33
-      ! ------------------------------------------------------------------------
+      ! -----------------------------------------------------------------------
       if (present(eq33)) then
          do i = 1, size(n), 1
             do j = 1, size(n), 1
@@ -171,9 +164,9 @@ contains
          end do
       end if
 
-      ! ========================================================================
+      ! =======================================================================
       ! Equation 34
-      ! ------------------------------------------------------------------------
+      ! -----------------------------------------------------------------------
       if (present(eq34)) then
          eq34 = 0.0_pr
 
@@ -184,21 +177,21 @@ contains
          end do
       end if
 
-      ! ========================================================================
+      ! =======================================================================
       ! Equation 36
-      ! ------------------------------------------------------------------------
-      if (present(eq36)) eq36 = sum(n(:) * dlnPhidP(:)) - (z - 1) * ntot / p
+      ! -----------------------------------------------------------------------
+      if (present(eq36)) eq36 = sum(n(:) * dlnPhidP(:)) - (z - 1) * ntot / P
 
-      ! ========================================================================
+      ! =======================================================================
       ! Equation 37
-      ! ------------------------------------------------------------------------
+      ! -----------------------------------------------------------------------
       if (present(eq37)) then
-         eq37 = sum(n(:) * dlnPhidT(:)) + Hrv / (R * t**2)
+         eq37 = sum(n(:) * dlnPhidT(:)) + Hrv / (R * T**2)
       end if
    end subroutine ar_consistency
 
    subroutine numeric_ar_derivatives(&
-      eos, n, v, t, d_n, d_v, d_t, &
+      eos, n, V, T, d_n, d_v, d_t, &
       Ar, ArV, ArT, Arn, ArV2, ArT2, ArTV, ArVn, ArTn, Arn2 &
       )
       !! # numeric_ar_derivatives
@@ -217,7 +210,7 @@ contains
       !!  class(ArModel), allocatable :: model
       !!  real(pr) :: tc(4), pc(4), w(4)
       !!
-      !!  real(pr) :: n(4), t, v
+      !!  real(pr) :: n(4), T, V
       !!
       !!  real(pr) :: Ar_num, ArV_num, ArT_num, Arn_num(size(n)), ArV2_num, ArT2_num
       !!  real(pr) :: ArTV_num, ArVn_num(size(n)), ArTn_num(size(n))
@@ -228,13 +221,13 @@ contains
       !!  pc = [45.99, 37.96, 39.23, 40.21]
       !!  w = [0.0115478, 0.200164, 0.3624, 0.298]
       !!
-      !!  t = 600_pr
-      !!  v = 0.5_pr
+      !!  T = 600_pr
+      !!  V = 0.5_pr
       !!
       !!  model = SoaveRedlichKwong(tc, pc, w)
       !!
       !!  call numeric_ar_derivatives(&
-      !!     model, n, v, t, d_n = 0.0001_pr, d_v = 0.0001_pr, d_t = 0.01_pr, &
+      !!     model, n, V, T, d_n = 0.0001_pr, d_v = 0.0001_pr, d_t = 0.01_pr, &
       !!     Ar=Ar_num, ArV=ArV_num, ArT=ArT_num, ArTV=ArTV_num, ArV2=ArV2_num, &
       !!     ArT2=ArT2_num, Arn=Arn_num, ArVn=ArVn_num, ArTn=ArTn_num, &
       !!     Arn2=Arn2_num &
@@ -243,8 +236,8 @@ contains
       !!
       class(ArModel), intent(in) :: eos !! Equation of state
       real(pr), intent(in) :: n(:) !! Moles number vector
-      real(pr), intent(in) :: t !! Temperature [K]
-      real(pr), intent(in) :: v !! Volume [L]
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), intent(in) :: V !! Volume [L]
       real(pr), intent(in) :: d_n !! Moles finite difference step
       real(pr), intent(in) :: d_t !! Temperature finite difference step
       real(pr), intent(in) :: d_v !! Volume finite difference step
@@ -268,15 +261,15 @@ contains
       ! Ar valuations
       ! ------------------------------------------------------------------------
       ! on point valuation
-      call eos%residual_helmholtz(n, v, t, Ar=Ar)
+      call eos%residual_helmholtz(n, V, T, Ar=Ar)
 
       ! ========================================================================
       ! Central numeric derivatives
       ! ------------------------------------------------------------------------
       ! Volume
       if (present(ArV) .or. present(ArV2)) then
-         call eos%residual_helmholtz(n, v + d_v, t, Ar=Ar_aux1)
-         call eos%residual_helmholtz(n, v - d_v, t, Ar=Ar_aux2)
+         call eos%residual_helmholtz(n, V + d_v, T, Ar=Ar_aux1)
+         call eos%residual_helmholtz(n, V - d_v, T, Ar=Ar_aux2)
 
          if (present(ArV)) ArV = (Ar_aux1 - Ar_aux2) / (2 * d_v)
          if (present(ArV2)) ArV2 = (Ar_aux1 - 2 * Ar + Ar_aux2) / d_v**2
@@ -284,8 +277,8 @@ contains
 
       ! Temperature
       if (present(ArT) .or. present(ArT2)) then
-         call eos%residual_helmholtz(n, v, t + d_t, Ar=Ar_aux1)
-         call eos%residual_helmholtz(n, v, t - d_t, Ar=Ar_aux2)
+         call eos%residual_helmholtz(n, V, T + d_t, Ar=Ar_aux1)
+         call eos%residual_helmholtz(n, V, T - d_t, Ar=Ar_aux2)
 
          if (present(ArT)) ArT = (Ar_aux1 - Ar_aux2) / (2 * d_t)
          if (present(ArT2)) ArT2 = (Ar_aux1 - 2 * Ar + Ar_aux2) / d_t**2
@@ -299,8 +292,8 @@ contains
             dn_aux1 = 0.0_pr
             dn_aux1(i) = d_n
 
-            call eos%residual_helmholtz(n + dn_aux1, v, t, Ar=Ar_aux1)
-            call eos%residual_helmholtz(n - dn_aux1, v, t, Ar=Ar_aux2)
+            call eos%residual_helmholtz(n + dn_aux1, V, T, Ar=Ar_aux1)
+            call eos%residual_helmholtz(n - dn_aux1, V, T, Ar=Ar_aux2)
 
             Arn(i) = (Ar_aux1 - Ar_aux2) / (2 * d_n)
          end do
@@ -311,10 +304,10 @@ contains
       ! ------------------------------------------------------------------------
       ! Temperature - Volume
       if (present(ArTV)) then
-         call eos%residual_helmholtz(n, v + d_v, t + d_t, Ar=Ar_aux1)
-         call eos%residual_helmholtz(n, v + d_v, t - d_t, Ar=Ar_aux2)
-         call eos%residual_helmholtz(n, v - d_v, t + d_t, Ar=Ar_aux3)
-         call eos%residual_helmholtz(n, v - d_v, t - d_t, Ar=Ar_aux4)
+         call eos%residual_helmholtz(n, V + d_v, T + d_t, Ar=Ar_aux1)
+         call eos%residual_helmholtz(n, V + d_v, T - d_t, Ar=Ar_aux2)
+         call eos%residual_helmholtz(n, V - d_v, T + d_t, Ar=Ar_aux3)
+         call eos%residual_helmholtz(n, V - d_v, T - d_t, Ar=Ar_aux4)
 
          ArTV = (Ar_aux1 - Ar_aux2 - Ar_aux3 + Ar_aux4) / (4 * d_t * d_v)
       end if
@@ -327,10 +320,10 @@ contains
             dn_aux1 = 0.0_pr
             dn_aux1(i) = d_n
 
-            call eos%residual_helmholtz(n + dn_aux1, v, t + d_t, Ar=Ar_aux1)
-            call eos%residual_helmholtz(n + dn_aux1, v, t - d_t, Ar=Ar_aux2)
-            call eos%residual_helmholtz(n - dn_aux1, v, t + d_t, Ar=Ar_aux3)
-            call eos%residual_helmholtz(n - dn_aux1, v, t - d_t, Ar=Ar_aux4)
+            call eos%residual_helmholtz(n + dn_aux1, V, T + d_t, Ar=Ar_aux1)
+            call eos%residual_helmholtz(n + dn_aux1, V, T - d_t, Ar=Ar_aux2)
+            call eos%residual_helmholtz(n - dn_aux1, V, T + d_t, Ar=Ar_aux3)
+            call eos%residual_helmholtz(n - dn_aux1, V, T - d_t, Ar=Ar_aux4)
 
             ArTn(i) = &
                (Ar_aux1 - Ar_aux2 - Ar_aux3 + Ar_aux4) / (4 * d_t * d_n)
@@ -345,10 +338,10 @@ contains
             dn_aux1 = 0.0_pr
             dn_aux1(i) = d_n
 
-            call eos%residual_helmholtz(n + dn_aux1, v + d_v, t, Ar=Ar_aux1)
-            call eos%residual_helmholtz(n + dn_aux1, v - d_v, t, Ar=Ar_aux2)
-            call eos%residual_helmholtz(n - dn_aux1, v + d_v, t, Ar=Ar_aux3)
-            call eos%residual_helmholtz(n - dn_aux1, v - d_v, t, Ar=Ar_aux4)
+            call eos%residual_helmholtz(n + dn_aux1, V + d_v, T, Ar=Ar_aux1)
+            call eos%residual_helmholtz(n + dn_aux1, V - d_v, T, Ar=Ar_aux2)
+            call eos%residual_helmholtz(n - dn_aux1, V + d_v, T, Ar=Ar_aux3)
+            call eos%residual_helmholtz(n - dn_aux1, V - d_v, T, Ar=Ar_aux4)
 
             ArVn(i) = &
                (Ar_aux1 - Ar_aux2 - Ar_aux3 + Ar_aux4) / (4 * d_v * d_n)
@@ -365,8 +358,8 @@ contains
                   dn_aux1 = 0.0_pr
                   dn_aux1(i) = d_n
 
-                  call eos%residual_helmholtz(n + dn_aux1, v, t, Ar=Ar_aux1)
-                  call eos%residual_helmholtz(n - dn_aux1, v, t, Ar=Ar_aux2)
+                  call eos%residual_helmholtz(n + dn_aux1, V, T, Ar=Ar_aux1)
+                  call eos%residual_helmholtz(n - dn_aux1, V, T, Ar=Ar_aux2)
 
                   Arn2(i, j) = (Ar_aux1 - 2 * Ar + Ar_aux2) / d_n**2
                else
@@ -377,16 +370,16 @@ contains
                   dn_aux2(j) = d_n
 
                   call eos%residual_helmholtz(&
-                     n + dn_aux1 + dn_aux2, v, t, Ar=Ar_aux1 &
+                     n + dn_aux1 + dn_aux2, V, T, Ar=Ar_aux1 &
                      )
                   call eos%residual_helmholtz(&
-                     n + dn_aux1 - dn_aux2, v, t, Ar=Ar_aux2 &
+                     n + dn_aux1 - dn_aux2, V, T, Ar=Ar_aux2 &
                      )
                   call eos%residual_helmholtz(&
-                     n - dn_aux1 + dn_aux2, v, t, Ar=Ar_aux3 &
+                     n - dn_aux1 + dn_aux2, V, T, Ar=Ar_aux3 &
                      )
                   call eos%residual_helmholtz(&
-                     n - dn_aux1 - dn_aux2, v, t, Ar=Ar_aux4 &
+                     n - dn_aux1 - dn_aux2, V, T, Ar=Ar_aux4 &
                      )
 
                   Arn2(i, j) = &
@@ -396,4 +389,146 @@ contains
          end do
       end if
    end subroutine numeric_ar_derivatives
+
+   subroutine individual_ar_calls(eos, n, V, T, passed)
+      !! # individual_ar_calls
+      !! Check if all derivatives of helmholtz can be called individually
+      !!
+      !! # Description
+      !! Tool to facilitate the development of new [[ArModel]] by testing
+      !! the individual call of each Helmholtz derivative. The individual call
+      !! must be equal to the total call.
+      !!
+      !! # Examples
+      !!
+      !! ```fortran
+      !!  use yaeos, only: pr, SoaveRedlichKwong, ArModel
+      !!  use yaeos__consistency_armodel, only: individual_ar_calls
+      !!
+      !!  class(ArModel), allocatable :: model
+      !!  real(pr) :: tc(4), pc(4), w(4)
+      !!
+      !!  real(pr) :: n(4), T, V
+      !!  logical :: passed
+      !!
+      !!  n = [1.5, 0.2, 0.7, 2.3]
+      !!  tc = [190.564, 425.12, 300.11, 320.25]
+      !!  pc = [45.99, 37.96, 39.23, 40.21]
+      !!  w = [0.0115478, 0.200164, 0.3624, 0.298]
+      !!
+      !!  T = 600_pr
+      !!  V = 0.5_pr
+      !!
+      !!  model = SoaveRedlichKwong(tc, pc, w)
+      !!
+      !!  call individual_ar_calls(model, n, V, T, passed)
+      !!
+      !!  ! If TRUE, then all individual calls are correct
+      !!  print *, passed
+      !! ```
+      !!
+      class(ArModel), intent(in) :: eos !! Equation of state
+      real(pr), intent(in) :: n(:) !! Moles number vector
+      real(pr), intent(in) :: V !! Volume [L]
+      real(pr), intent(in) :: T !! Temperature [K]
+      logical, intent(out) :: passed
+      !! Flag indicating if all individual calls are correct
+
+      integer :: i, j
+
+      ! All calls together
+      real(pr) :: Ar, ArV, ArT, Arn(size(n)), ArV2, ArT2, ArTV, ArVn(size(n))
+      real (pr) :: ArTn(size(n)), Arn2(size(n), size(n))
+
+      ! Individual calls
+      real(pr) :: i_Ar, i_ArV, i_ArT, i_Arn(size(n)), i_ArV2, i_ArT2, i_ArTV
+      real (pr) :: i_ArVn(size(n)), i_ArTn(size(n)), i_Arn2(size(n), size(n))
+
+      ! =======================================================================
+      ! All calls together
+      ! -----------------------------------------------------------------------
+      call eos%residual_helmholtz(&
+         n=n, V=V, T=T, Ar=Ar, ArV=ArV, ArT=ArT, ArTV=ArTV, &
+         ArV2=ArV2, ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
+      )
+
+      ! =======================================================================
+      ! Individual calls
+      ! -----------------------------------------------------------------------
+      call eos%residual_helmholtz(n=n, V=V, T=T, Ar=i_Ar)
+      call eos%residual_helmholtz(n=n, V=V, T=T, ArV=i_ArV)
+      call eos%residual_helmholtz(n=n, V=V, T=T, ArT=i_ArT)
+      call eos%residual_helmholtz(n=n, V=V, T=T, Arn=i_Arn)
+      call eos%residual_helmholtz(n=n, V=V, T=T, ArV2=i_ArV2)
+      call eos%residual_helmholtz(n=n, V=V, T=T, ArT2=i_ArT2)
+      call eos%residual_helmholtz(n=n, V=V, T=T, ArTV=i_ArTV)
+      call eos%residual_helmholtz(n=n, V=V, T=T, ArVn=i_ArVn)
+      call eos%residual_helmholtz(n=n, V=V, T=T, ArTn=i_ArTn)
+      call eos%residual_helmholtz(n=n, V=V, T=T, Arn2=i_Arn2)
+
+      ! =======================================================================
+      ! Asserts
+      ! -----------------------------------------------------------------------
+      if (abs(Ar - i_Ar) > epsilon(Ar)) then
+         passed = .false.
+         return
+      end if
+
+      if (abs(ArV - i_ArV) > epsilon(ArV)) then
+         passed = .false.
+         return
+      end if
+
+      if (abs(ArT - i_ArT) > epsilon(ArT)) then
+         passed = .false.
+         return
+      end if
+
+      do i = 1, size(n)
+         if (abs(Arn(i) - i_Arn(i)) > epsilon(Arn(i))) then
+            passed = .false.
+            return
+         end if
+      end do
+
+      if (abs(ArV2 - i_ArV2) > epsilon(ArV2)) then
+         passed = .false.
+         return
+      end if
+
+      if (abs(ArT2 - i_ArT2) > epsilon(ArT2)) then
+         passed = .false.
+         return
+      end if
+
+      if (abs(ArTV - i_ArTV) > epsilon(ArTV)) then
+         passed = .false.
+         return
+      end if
+
+      do i = 1, size(n)
+         if (abs(ArVn(i) - i_ArVn(i)) > epsilon(ArVn(i))) then
+            passed = .false.
+            return
+         end if
+      end do
+
+      do i = 1, size(n)
+         if (abs(ArTn(i) - i_ArTn(i)) > epsilon(ArTn(i))) then
+            passed = .false.
+            return
+         end if
+      end do
+
+      do i = 1, size(n)
+         do j = 1, size(n)
+            if (abs(Arn2(i, j) - i_Arn2(i, j)) > epsilon(Arn2(i, j))) then
+               passed = .false.
+               return
+            end if
+         end do
+      end do
+
+      passed = .true.
+   end subroutine individual_ar_calls
 end module yaeos__consistency_armodel

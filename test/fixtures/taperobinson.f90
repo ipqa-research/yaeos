@@ -16,6 +16,7 @@
 MODULE autodiff_tapenade_pr76
    USE YAEOS__CONSTANTS, ONLY : pr, r
    USE YAEOS__TAPENADE_AR_API, ONLY : armodeltapenade
+   use yaeos__tapenade_interfaces
    IMPLICIT NONE
    type, extends(ArModelTapenade) :: TPR76
       REAL(pr), ALLOCATABLE :: kij(:, :), lij(:, :)
@@ -29,7 +30,7 @@ MODULE autodiff_tapenade_pr76
       procedure :: ar_b
       procedure :: ar_d_b
       procedure :: ar_d_d
-      procedure :: v0 => VOLUME_INITALIZER
+      procedure :: get_v0 => VOLUME_INITALIZER
    end type TPR76
 
 CONTAINS
@@ -800,12 +801,6 @@ CONTAINS
       INTEGER :: ad_from
       INTEGER :: ad_to
       INTEGER :: ad_to0
-      EXTERNAL PUSHREAL8ARRAY
-      EXTERNAL PUSHINTEGER4
-      EXTERNAL PUSHREAL8
-      EXTERNAL POPREAL8
-      EXTERNAL POPINTEGER4
-      EXTERNAL POPREAL8ARRAY
       INTEGER :: arg12
       LOGICAL, DIMENSION(SIZE(n)) :: mask1
       LOGICAL, DIMENSION(SIZE(n)) :: mask2
@@ -1357,15 +1352,15 @@ CONTAINS
       &     arg11))*(r*t)
    end subroutine AR
 
-   PURE FUNCTION VOLUME_INITALIZER(model, n, p, t) RESULT (v0)
+   PURE FUNCTION VOLUME_INITALIZER(self, n, p, t) RESULT (v0)
       IMPLICIT NONE
-      class(TPR76), INTENT(IN) :: model
+      class(TPR76), INTENT(IN) :: self
       REAL(pr), INTENT(IN) :: n(:)
       REAL(pr), INTENT(IN) :: p
       REAL(pr), INTENT(IN) :: t
       REAL(pr) :: v0
       INTRINSIC SUM
-      v0 = SUM(n*model%b)/SUM(model%b)
+      v0 = SUM(n*self%b)/SUM(self%b)
    end function VOLUME_INITALIZER
 
 end module autodiff_tapenade_pr76
