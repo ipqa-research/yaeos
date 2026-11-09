@@ -9,7 +9,7 @@ module yaeos__equilibria_saturation_points
 
    real(pr) :: tol = 1e-6_pr
    integer :: max_iterations = 2000
-   integer :: iters_first_step = 15
+   integer :: iters_first_step = 30
    real(pr) :: step_tol = 0.1_pr
 
 contains

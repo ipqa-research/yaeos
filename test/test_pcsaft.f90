@@ -32,7 +32,7 @@ contains
       model = init_pcsaft(m, sigma, epsilon_k)
 
       z = [0.5, 0.5]
-      sat_point = saturation_pressure(model, z, T=300._pr, kind="bubble", P0=100._pr)
+      sat_point = saturation_pressure(model, z, T=300._pr, kind="bubble", P0=10._pr)
       call assert(abs(sat_point%P - P_test) < 1.0e-3_pr, &
          "PC-SAFT Methane/Hexane bubble point pressure test failed.")
       call assert(allclose(sat_point%y, y_test, rtol=1.0e-2_pr), &

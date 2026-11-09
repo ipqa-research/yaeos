@@ -12,7 +12,7 @@ program main
    call homotopy(sub=foo, x=X, tol=1e-8_8, max_its=50, its=its)
 
    call foo(X, F, J)
-   call assert(maxval(abs(F)) < 1e-8_8, "Homotopy solver did not converge sufficiently")
+   call assert(maxval(abs(F)) < 1e-8_8, "Homotopy solver did not converge to desired tolerance")
 
 contains
 

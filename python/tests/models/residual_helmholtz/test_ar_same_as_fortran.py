@@ -125,12 +125,11 @@ for i, mixrule in enumerate(mixrules):
         model_names.append(f"{cla.name} with {mixrule.name} mixrule")
 
 # =============================================================================
-# TODO Fix bug on GERG2008 (Excess properties not working)
 # Multifluid EoS
 # -----------------------------------------------------------------------------
-# model = yaeos.GERG2008(["n-hexane", "decane", "isobutane"])
-# models_list.append(model)
-# model_names.append("GERG2008")
+model = yaeos.GERG2008(["n-hexane", "decane", "isobutane"])
+models_list.append(model)
+model_names.append("GERG2008")
 
 # =============================================================================
 # SAFT EoS
@@ -551,7 +550,7 @@ def test_ar_same_as_fortran(ar_model: ArModel, name: str):
     # If compilation error occured, here will be printed
     assert (
         start_idx is not None
-    ), f"No FORTRAN OUTPUT found.\nSTDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}"  # noqa
+    ), f"No FORTRAN OUTPUT found (fpm exit {result.returncode}).\nSTDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}"  # noqa
 
     # Actual output lines
     lines = lines[start_idx:]

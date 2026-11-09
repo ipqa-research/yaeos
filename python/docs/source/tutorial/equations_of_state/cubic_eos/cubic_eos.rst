@@ -5,4 +5,5 @@ Cubic Equations of State
    :maxdepth: 4
 
    cubic_models.ipynb
+   cubic_alphas.ipynb
    cubic_mixing_rules.ipynb

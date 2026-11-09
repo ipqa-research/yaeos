@@ -222,6 +222,7 @@ contains
             Pc = exp(Xc(iP))
             px_envelope%Pc = [px_envelope%Pc, Pc]
             px_envelope%ac = [px_envelope%ac, ac]
+            if (nc == 2) exit
          end if
 
          X_last_converged = X

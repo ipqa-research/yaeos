@@ -440,7 +440,7 @@ class GeModel(ABC):
         return {"w": w_min, "tm": tm_min}, {"tm": all_mins, "w": all_mins_w}
 
     def flash_t(self, z, temperature: float, k0=None) -> dict:
-        """Two-phase split with specification of temperature and pressure.
+        """Two-phase split with specification of temperature.
 
         Parameters
         ----------
@@ -467,6 +467,56 @@ class GeModel(ABC):
 
         x, y, pressure, temperature, volume_x, volume_y, beta = (
             yaeos_c.flash_ge(self.id, z, t=temperature, k0=k0)
+        )
+
+        flash_result = {
+            "x": x,
+            "y": y,
+            "T": temperature,
+            "beta": beta,
+        }
+
+        return flash_result
+
+    def flash_t_second_order(
+        self, z, temperature: float, k0=None, max_iter=200, tol=1e-8
+    ) -> dict:
+        """Second order two-phase split with specification at T.
+
+        Implementantion of the Michelsen's second order two-phase flash
+        calculation.
+
+        Parameters
+        ----------
+        z : array_like
+            Global mole fractions
+        temperature : float
+            Temperature [K]
+        k0 : array_like, optional
+            Initial guess for the split, by default None (will use stability
+            analysis)
+        max_iter : int, optional
+            Maximum iteration number, by default 200
+        tol : float_, optional
+            Calculation tolerance, Michelsen's recomendation is to leave it at
+            1e-8, by default 1e-8
+
+        Returns
+        -------
+        dict
+            Flash result dictionary with keys:
+                - x: "phase 1" mole fractions
+                - y: "phase 2" mole fractions
+                - T: temperature [K]
+                - beta: "phase 2" fraction
+        """
+        if k0 is None:
+            k0 = [0 for i in range(len(z))]
+
+        x, y, pressure, temperature, volume_x, volume_y, beta = (
+            yaeos_c.flash_second_order_ge(
+                self.id, z, t=temperature, k0=k0, miters=max_iter, tol=tol
+            )
         )
 
         flash_result = {
@@ -2531,6 +2581,30 @@ class ArModel(ABC):
     # =========================================================================
     # Equilibrium calculations
     # -------------------------------------------------------------------------
+    def pure_saturation_pressure(self, component, temperature):
+        """Saturation pressure of a pure component at a given temperature.
+
+        Parameters
+        ----------
+        component: int
+            Which component index to calculate (starting from 0)
+        temperature: float
+            Temperature at which calculate [K]
+
+        Returns
+        -------
+        dict
+            Pure component saturation pressure dictionary with the keys:
+                - P: Pressure [bar]
+                - T: Temperature [K]
+                - Vx: Liquid volume [L]
+                - Vy: Vapor volume [L]
+        """
+        psat, vl, vv = yaeos_c.pure_psat(
+            id=self.id, ncomp=component + 1, t=temperature
+        )
+        return {"T": temperature, "P": psat, "Vx": vl, "Vy": vv}
+
     def pure_saturation_pressures(
         self, component, stop_pressure=0.01, stop_temperature=100
     ):
@@ -2642,6 +2716,96 @@ class ArModel(ABC):
 
         x, y, pressure, temperature, volume_x, volume_y, beta = yaeos_c.flash(
             self.id, z, p=pressure, t=temperature, k0=k0
+        )
+
+        flash_result = {
+            "x": x,
+            "y": y,
+            "Vx": volume_x,
+            "Vy": volume_y,
+            "P": pressure,
+            "T": temperature,
+            "beta": beta,
+        }
+
+        return flash_result
+
+    def flash_pt_second_order(
+        self,
+        z,
+        pressure: float,
+        temperature: float,
+        k0=None,
+        light_root="stable",
+        max_iters=200,
+        tol=1e-8,
+    ) -> dict:
+        """Two-phase split with specification of temperature and pressure.
+
+        Parameters
+        ----------
+        z : array_like
+            Global mole fractions
+        pressure : float
+            Pressure [bar]
+        temperature : float
+            Temperature [K]
+        k0 : array_like, optional
+            Initial guess for the split, by default None (will use k_wilson)
+        light_root : str, optional
+            Volume root nature of the light phase (liquid or stable), by
+            default stable
+        max_iter : int, optional
+            Maximum iteration number, by default 200
+        tol : float_, optional
+            Calculation tolerance, Michelsen's recomendation is to leave it at
+            1e-8, by default 1e-8
+
+
+        Returns
+        -------
+        dict
+            Flash result dictionary with keys:
+                - x: heavy phase mole fractions
+                - y: light phase mole fractions
+                - Vx: heavy phase volume [L]
+                - Vy: light phase volume [L]
+                - P: pressure [bar]
+                - T: temperature [K]
+                - beta: light phase fraction. If beta is -1 flash was not
+                        successful.
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([369.83, 507.6])        # critical temperatures [K]
+            pc = np.array([42.48, 30.25])         # critical pressures [bar]
+            w =  np.array([0.152291, 0.301261])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            print(model.flash_pt_second_order([0.5, 0.5], 8.0, 350.0))
+        """
+        if k0 is None:
+            k0 = [0 for i in range(len(z))]
+
+        x, y, pressure, temperature, volume_x, volume_y, beta = (
+            yaeos_c.flash_second_order(
+                self.id,
+                z,
+                p=pressure,
+                t=temperature,
+                k0=k0,
+                light_root=light_root,
+                miters=max_iters,
+                tol=tol,
+            )
         )
 
         flash_result = {
@@ -3035,13 +3199,14 @@ class ArModel(ABC):
     def phase_envelope_pt(
         self,
         z,
-        kind: str = "bubble",
+        kind: str = "dew",
         max_points: int = MAX_POINTS_ENVELOPES,
         t0: float = 150.0,
         p0: float = 1.0,
         w0=None,
         stop_pressure: float = 2500,
         ds0: float = 0.001,
+        liquidliquid_min_temperature: float = 100,
     ) -> PTEnvelope:
         """Two phase envelope calculation (PT).
 
@@ -3051,7 +3216,7 @@ class ArModel(ABC):
             Global mole fractions
         kind : str, optional
             Kind of saturation point to start the envelope calculation,
-            defaults to "bubble". Options are
+            defaults to "dew". Options are
             - "bubble"
             - "dew"
             - "liquid-liquid"
@@ -3078,6 +3243,8 @@ class ArModel(ABC):
             specified variable is the temperature for bubble and dew lines, and
             pressure for liquid-liquid lines. For bubble and dew lines, the
             step is positive, while for liquid-liquid lines it is negative.
+        liquidliquid_min_temperature: float, optional
+            Minimum temperature to look for a Liquid-Liquid separation.
 
         Returns
         -------
@@ -3108,10 +3275,8 @@ class ArModel(ABC):
                 p0=1.0
             )
 
-            plt.plot(env["T"], env["P"])
-            plt.scatter(env["Tc"], env["Pc"])
+            env.plot()
         """
-        ds0 = 0.001
 
         if kind == "bubble":
             sat = self.saturation_pressure(z, t0, kind=kind, p0=p0)
@@ -3142,7 +3307,7 @@ class ArModel(ABC):
                     w0[i] = 1 - np.sum(w0[1:])
                     t = t0
                     tm = 1
-                    while tm > -0.01 and t > 100:
+                    while tm > -0.01 and t > liquidliquid_min_temperature:
                         tm = self.stability_tm(z, w0, p0, t)
                         t -= 50
 
@@ -3542,7 +3707,7 @@ class ArModel(ABC):
         kind_w=None,
         max_points=MAX_POINTS_ENVELOPES,
         stop_pressure=2500,
-        allow_negative_betas=False
+        allow_negative_betas=False,
     ) -> PTEnvelope:
         """Multi-phase envelope."""
         x_l0 = np.array(x_l0)
@@ -3570,7 +3735,7 @@ class ArModel(ABC):
                 kind_w=kind_w,
                 max_points=max_points,
                 stop_pressure=stop_pressure,
-                allow_negative_betas=allow_negative_betas
+                allow_negative_betas=allow_negative_betas,
             )
         )
 
@@ -3825,12 +3990,8 @@ class ArModel(ABC):
             return dsps, locs_1, locs_2
 
         for t, p in zip(temperatures, pressures):
-            env1_loc = (
-                np.argmin(np.abs(env1["T"] - t) + np.abs(env1["P"] - p))
-            )
-            env2_loc = (
-                np.argmin(np.abs(env2["T"] - t) + np.abs(env2["P"] - p))
-            )
+            env1_loc = np.argmin(np.abs(env1["T"] - t) + np.abs(env1["P"] - p))
+            env2_loc = np.argmin(np.abs(env2["T"] - t) + np.abs(env2["P"] - p))
 
             betas_1 = env1.main_phases_molar_fractions[env1_loc, :]
             betas_2 = env2.main_phases_molar_fractions[env2_loc, :]
@@ -4125,6 +4286,8 @@ class ArModel(ABC):
         ws_stability=None,
         max_points=100,
         beta0=1e-15,
+        pstep="down",
+        tstep="down",
     ) -> dict:
         """Calculate precipitation line from a PTEnvelope."""
         phases = env.number_of_phases
@@ -4134,14 +4297,46 @@ class ArModel(ABC):
             spec_variable = phases * len(z) + phases + 1 + 1
             p0 = spec_value
             spec_variable_value = np.log(p0)
+            # There can be two (and in more rare cases even more)
+            # points at the fixed P value. So we select one based on the value
+            # of pstep. Related to the desired step on P
+            y = [p0, p0]
+            x = [0, 1e10]
+            ts, ps, *_ = intersection(x, y, env["T"], env["P"])
+
+            # Add just a little noise in case we are on the last point of
+            # the envelope. Using the originally specified value later
+            # ensures that there are no errors
+            if len(ts) == 0:
+                ts, ps, *_ = intersection(x, y, env["T"], env["P"] + 1)
+                if len(ts) == 0:
+                    ts, ps, *_ = intersection(x, y, env["T"], env["P"] - 1)
+
+            if tstep == "down":
+                t0 = max(ts)
+            else:
+                t0 = min(ts)
+
+            loc = np.argmin((env["T"] - t0) ** 2 + (env["P"] - p0) ** 2)
             loc = np.argmin(np.abs(env["P"] - p0))
             t0 = env["T"][loc]
         elif spec == "T":
             spec_variable = phases * len(z) + phases + 1 + 2
             t0 = spec_value
             spec_variable_value = np.log(t0)
-            loc = np.argmin(np.abs(env["T"] - t0))
-            p0 = env["P"][loc]
+
+            # There can be two (and in more rare cases even more)
+            # points at the fixed T value. So we select one based on the value
+            # of pstep. Related to the desired step on P
+            x = [t0, t0]
+            y = [0, 1e10]
+
+            ts, ps, *_ = intersection(x, y, env["T"], env["P"])
+            if pstep == "down":
+                p0 = min(ps)
+            else:
+                p0 = max(ps)
+            loc = np.argmin((env["T"] - t0) ** 2 + (env["P"] - p0) ** 2)
         else:
             raise ValueError(
                 "spec must be either 'P' or 'T', got: {}".format(spec)

@@ -139,7 +139,10 @@ class PTEnvelope:
         ax.set_xlabel("Temperature [K]")
         ax.set_ylabel("Pressure [bar]")
         ax.scatter(
-            self.critical_temperatures, self.critical_pressures, color="black"
+            self.critical_temperatures,
+            self.critical_pressures,
+            color="black",
+            zorder=10,
         )
 
     def __getitem__(self, key):
@@ -362,7 +365,10 @@ class PXEnvelope:
         ax.set_xlabel(r"$\alpha$")
         ax.set_ylabel("Pressure [bar]")
         ax.scatter(
-            self.critical_alphas, self.critical_pressures, color="black"
+            self.critical_alphas,
+            self.critical_pressures,
+            color="black",
+            zorder=10,
         )
 
     def __getitem__(self, key):
@@ -386,6 +392,27 @@ class PXEnvelope:
         """
         if "key" in self.__dict__:
             return self.__dict__["key"]
+        elif isinstance(key, slice):
+            return PXEnvelope(
+                global_composition_0=self.global_composition_0,
+                global_composition_i=self.global_composition_i,
+                temperature=self.temperature,
+                main_phases_compositions=self.main_phases_compositions[key],
+                reference_phase_compositions=self.reference_phase_compositions[
+                    key
+                ],
+                main_phases_molar_fractions=self.main_phases_molar_fractions[
+                    key
+                ],
+                pressures=self.pressures[key],
+                alphas=self.alphas[key],
+                iterations=self.iterations[key],
+                specified_variable=self.specified_variable[key],
+                main_phases_kinds=self.main_phases_kinds[key],
+                reference_phase_kinds=self.reference_phase_kinds[key],
+                critical_pressures=self.critical_pressures,
+                critical_alphas=self.critical_alphas,
+            )
         elif isinstance(key, np.ndarray) or isinstance(key, list):
             return PXEnvelope(
                 global_composition_0=self.global_composition_0,
@@ -559,7 +586,10 @@ class TXEnvelope:
         ax.set_xlabel(r"$\alpha$")
         ax.set_ylabel("Temperature [K]")
         ax.scatter(
-            self.critical_alphas, self.critical_pressures, color="black"
+            self.critical_alphas,
+            self.critical_pressures,
+            color="black",
+            zorder=10,
         )
 
     def __getitem__(self, key):
