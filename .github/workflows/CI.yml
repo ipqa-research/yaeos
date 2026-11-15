@@ -56,22 +56,22 @@ jobs:
         sudo apt-get install libnlopt-dev libblas-dev liblapack-dev
 
     - name: Run tests without coverage
-      if: env.FC == 'gfortran'
+      if: startsWith(env.FC, 'gfortran')
       run: |
         fpm test --profile release --flag "-g -ffree-line-length-0" --compiler ${{ env.FC }} --c-compiler gcc
 
     # Coverage is collected and uploaded once, from the newest image.
     - name: Run tests with coverage
-      if: env.FC == 'gfortran' && matrix.os == 'ubuntu-latest'
+      if: startsWith(env.FC, 'gfortran') && matrix.os == 'ubuntu-latest'
       run: |
         fpm test --profile release --flag "-g -coverage -ffree-line-length-0" --compiler ${{ env.FC }} --c-compiler gcc
 
     - name: Coverage
       run: bash ci/ci.sh coverage
-      if: env.FC == 'gfortran' && matrix.os == 'ubuntu-latest'
+      if: startsWith(env.FC, 'gfortran') && matrix.os == 'ubuntu-latest'
 
     - name: Upload coverage reports to Codecov
-      if: env.FC == 'gfortran' && matrix.os == 'ubuntu-latest'
+      if: startsWith(env.FC, 'gfortran') && matrix.os == 'ubuntu-latest'
       uses: codecov/codecov-action@v5
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
