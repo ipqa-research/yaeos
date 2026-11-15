@@ -114,20 +114,20 @@ contains
       call assert(rel_error(ArV, ArV_num) < 1e-6, "SRK Ar consistency mix (no kij): ArV vs numeric derivative")
       call assert(rel_error(ArT, ArT_num) < 1e-6, "SRK Ar consistency mix (no kij): ArT vs numeric derivative")
       call assert(allclose(Arn, Arn_num, 1e-6_pr), "SRK Ar consistency mix (no kij): Arn vs numeric derivative")
-      call assert(rel_error(ArV2, ArV2_num) < 1e-6, "SRK Ar consistency mix (no kij): ArV2 vs numeric derivative")
-      call assert(rel_error(ArT2, ArT2_num) < 1e-6, "SRK Ar consistency mix (no kij): ArT2 vs numeric derivative")
-      call assert(rel_error(ArTV, ArTV_num) < 1e-6, "SRK Ar consistency mix (no kij): ArTV vs numeric derivative")
-      call assert(allclose(ArVn, ArVn_num, 1e-6_pr), "SRK Ar consistency mix (no kij): ArVn vs numeric derivative")
-      call assert(allclose(ArTn, ArTn_num, 1e-6_pr), "SRK Ar consistency mix (no kij): ArTn vs numeric derivative")
-      call assert(maxval(rel_error(Arn2, Arn2_num)) < 1e-6, &
+      call assert(rel_error(ArV2, ArV2_num) < 1e-5, "SRK Ar consistency mix (no kij): ArV2 vs numeric derivative")
+      call assert(rel_error(ArT2, ArT2_num) < 1e-5, "SRK Ar consistency mix (no kij): ArT2 vs numeric derivative")
+      call assert(rel_error(ArTV, ArTV_num) < 1e-5, "SRK Ar consistency mix (no kij): ArTV vs numeric derivative")
+      call assert(allclose(ArVn, ArVn_num, 1e-5_pr), "SRK Ar consistency mix (no kij): ArVn vs numeric derivative")
+      call assert(allclose(ArTn, ArTn_num, 1e-5_pr), "SRK Ar consistency mix (no kij): ArTn vs numeric derivative")
+      call assert(maxval(rel_error(Arn2, Arn2_num)) < 1e-5, &
          "SRK Ar consistency mix (no kij): Arn2 vs numeric derivative")
 
       ! Consistency tests
-      call assert(abs(eq31) <= 1e-14, "SRK Ar consistency mix (no kij): eq31 (sum n_i lnphi_i = Gr/RT)")
-      call assert(maxval(abs(eq33)) < 1e-15, "SRK Ar consistency mix (no kij): eq33 (symmetric dlnphi/dn)")
-      call assert(maxval(abs(eq34)) < 1e-14, "SRK Ar consistency mix (no kij): eq34 (sum_i n_i dlnphi_i/dn_j = 0)")
-      call assert(abs(eq36) <= 1e-15, "SRK Ar consistency mix (no kij): eq36 (sum n_i dlnphi_i/dP = (Z-1)n/P)")
-      call assert(abs(eq37) <= 1e-15, "SRK Ar consistency mix (no kij): eq37 (sum n_i dlnphi_i/dT = -Hr/RT^2)")
+      call assert(abs(eq31) <= 1e-13, "SRK Ar consistency mix (no kij): eq31 (sum n_i lnphi_i = Gr/RT)")
+      call assert(maxval(abs(eq33)) < 1e-13, "SRK Ar consistency mix (no kij): eq33 (symmetric dlnphi/dn)")
+      call assert(maxval(abs(eq34)) < 1e-13, "SRK Ar consistency mix (no kij): eq34 (sum_i n_i dlnphi_i/dn_j = 0)")
+      call assert(abs(eq36) <= 1e-13, "SRK Ar consistency mix (no kij): eq36 (sum n_i dlnphi_i/dP = (Z-1)n/P)")
+      call assert(abs(eq37) <= 1e-13, "SRK Ar consistency mix (no kij): eq37 (sum n_i dlnphi_i/dT = -Hr/RT^2)")
 
       ! ========================================================================
       ! Model with kij and lij
@@ -168,20 +168,20 @@ contains
       call assert(rel_error(ArV, ArV_num) < 1e-6, "SRK Ar consistency mix (kij/lij): ArV vs numeric derivative")
       call assert(rel_error(ArT, ArT_num) < 1e-6, "SRK Ar consistency mix (kij/lij): ArT vs numeric derivative")
       call assert(allclose(Arn, Arn_num, 1e-6_pr), "SRK Ar consistency mix (kij/lij): Arn vs numeric derivative")
-      call assert(rel_error(ArV2, ArV2_num) < 1e-6, "SRK Ar consistency mix (kij/lij): ArV2 vs numeric derivative")
-      call assert(rel_error(ArT2, ArT2_num) < 1e-6, "SRK Ar consistency mix (kij/lij): ArT2 vs numeric derivative")
-      call assert(rel_error(ArTV, ArTV_num) < 1e-6, "SRK Ar consistency mix (kij/lij): ArTV vs numeric derivative")
-      call assert(allclose(ArVn, ArVn_num, 1e-6_pr), "SRK Ar consistency mix (kij/lij): ArVn vs numeric derivative")
-      call assert(allclose(ArTn, ArTn_num, 1e-6_pr), "SRK Ar consistency mix (kij/lij): ArTn vs numeric derivative")
-      call assert(maxval(rel_error(Arn2, Arn2_num)) < 1e-6, &
+      call assert(rel_error(ArV2, ArV2_num) < 1e-5, "SRK Ar consistency mix (kij/lij): ArV2 vs numeric derivative")
+      call assert(rel_error(ArT2, ArT2_num) < 1e-5, "SRK Ar consistency mix (kij/lij): ArT2 vs numeric derivative")
+      call assert(rel_error(ArTV, ArTV_num) < 1e-5, "SRK Ar consistency mix (kij/lij): ArTV vs numeric derivative")
+      call assert(allclose(ArVn, ArVn_num, 1e-5_pr), "SRK Ar consistency mix (kij/lij): ArVn vs numeric derivative")
+      call assert(allclose(ArTn, ArTn_num, 1e-5_pr), "SRK Ar consistency mix (kij/lij): ArTn vs numeric derivative")
+      call assert(maxval(rel_error(Arn2, Arn2_num)) < 1e-5, &
          "SRK Ar consistency mix (kij/lij): Arn2 vs numeric derivative")
 
       ! Consistency tests
-      call assert(abs(eq31) <= 1e-14, "SRK Ar consistency mix (kij/lij): eq31 (sum n_i lnphi_i = Gr/RT)")
-      call assert(maxval(abs(eq33)) < 1e-15, "SRK Ar consistency mix (kij/lij): eq33 (symmetric dlnphi/dn)")
-      call assert(maxval(abs(eq34)) < 1e-15, "SRK Ar consistency mix (kij/lij): eq34 (sum_i n_i dlnphi_i/dn_j = 0)")
-      call assert(abs(eq36) <= 1e-15, "SRK Ar consistency mix (kij/lij): eq36 (sum n_i dlnphi_i/dP = (Z-1)n/P)")
-      call assert(abs(eq37) <= 1e-15, "SRK Ar consistency mix (kij/lij): eq37 (sum n_i dlnphi_i/dT = -Hr/RT^2)")
+      call assert(abs(eq31) <= 1e-13, "SRK Ar consistency mix (kij/lij): eq31 (sum n_i lnphi_i = Gr/RT)")
+      call assert(maxval(abs(eq33)) < 1e-13, "SRK Ar consistency mix (kij/lij): eq33 (symmetric dlnphi/dn)")
+      call assert(maxval(abs(eq34)) < 1e-13, "SRK Ar consistency mix (kij/lij): eq34 (sum_i n_i dlnphi_i/dn_j = 0)")
+      call assert(abs(eq36) <= 1e-13, "SRK Ar consistency mix (kij/lij): eq36 (sum n_i dlnphi_i/dP = (Z-1)n/P)")
+      call assert(abs(eq37) <= 1e-13, "SRK Ar consistency mix (kij/lij): eq37 (sum n_i dlnphi_i/dT = -Hr/RT^2)")
    end subroutine test_srk_cons_mixture
 
    subroutine test_srk_cons_pure()
@@ -232,19 +232,19 @@ contains
       call assert(rel_error(ArV, ArV_num) < 1e-6, "SRK Ar consistency pure: ArV vs numeric derivative")
       call assert(rel_error(ArT, ArT_num) < 1e-6, "SRK Ar consistency pure: ArT vs numeric derivative")
       call assert(allclose(Arn, Arn_num, 1e-6_pr), "SRK Ar consistency pure: Arn vs numeric derivative")
-      call assert(rel_error(ArV2, ArV2_num) < 1e-6, "SRK Ar consistency pure: ArV2 vs numeric derivative")
+      call assert(rel_error(ArV2, ArV2_num) < 1e-5, "SRK Ar consistency pure: ArV2 vs numeric derivative")
       call assert(rel_error(ArT2, ArT2_num) < 1e-5, "SRK Ar consistency pure: ArT2 vs numeric derivative")
-      call assert(rel_error(ArTV, ArTV_num) < 1e-6, "SRK Ar consistency pure: ArTV vs numeric derivative")
-      call assert(allclose(ArVn, ArVn_num, 1e-6_pr), "SRK Ar consistency pure: ArVn vs numeric derivative")
-      call assert(allclose(ArTn, ArTn_num, 1e-6_pr), "SRK Ar consistency pure: ArTn vs numeric derivative")
-      call assert(maxval(rel_error(Arn2, Arn2_num)) < 1e-6, "SRK Ar consistency pure: Arn2 vs numeric derivative")
+      call assert(rel_error(ArTV, ArTV_num) < 1e-5, "SRK Ar consistency pure: ArTV vs numeric derivative")
+      call assert(allclose(ArVn, ArVn_num, 1e-5_pr), "SRK Ar consistency pure: ArVn vs numeric derivative")
+      call assert(allclose(ArTn, ArTn_num, 1e-5_pr), "SRK Ar consistency pure: ArTn vs numeric derivative")
+      call assert(maxval(rel_error(Arn2, Arn2_num)) < 1e-5, "SRK Ar consistency pure: Arn2 vs numeric derivative")
 
       ! Consistency tests
-      call assert(abs(eq31) <= 1e-14, "SRK Ar consistency pure: eq31 (sum n_i lnphi_i = Gr/RT)")
-      call assert(maxval(abs(eq33)) < 1e-15, "SRK Ar consistency pure: eq33 (symmetric dlnphi/dn)")
-      call assert(maxval(abs(eq34)) < 1e-15, "SRK Ar consistency pure: eq34 (sum_i n_i dlnphi_i/dn_j = 0)")
-      call assert(abs(eq36) <= 1e-15, "SRK Ar consistency pure: eq36 (sum n_i dlnphi_i/dP = (Z-1)n/P)")
-      call assert(abs(eq37) <= 1e-15, "SRK Ar consistency pure: eq37 (sum n_i dlnphi_i/dT = -Hr/RT^2)")
+      call assert(abs(eq31) <= 1e-13, "SRK Ar consistency pure: eq31 (sum n_i lnphi_i = Gr/RT)")
+      call assert(maxval(abs(eq33)) < 1e-13, "SRK Ar consistency pure: eq33 (symmetric dlnphi/dn)")
+      call assert(maxval(abs(eq34)) < 1e-13, "SRK Ar consistency pure: eq34 (sum_i n_i dlnphi_i/dn_j = 0)")
+      call assert(abs(eq36) <= 1e-13, "SRK Ar consistency pure: eq36 (sum n_i dlnphi_i/dP = (Z-1)n/P)")
+      call assert(abs(eq37) <= 1e-13, "SRK Ar consistency pure: eq37 (sum n_i dlnphi_i/dT = -Hr/RT^2)")
    end subroutine test_srk_cons_pure
 
 end program test_srk

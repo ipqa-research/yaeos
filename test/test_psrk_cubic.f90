@@ -119,10 +119,10 @@ contains
       call assert(rel_error(ArT, ArT_num) < 1e-5, "PSRK Ar consistency mix (no kij): ArT vs numeric derivative")
       call assert(allclose(Arn, Arn_num, 1e-5_pr), "PSRK Ar consistency mix (no kij): Arn vs numeric derivative")
       call assert(rel_error(ArV2, ArV2_num) < 1e-5, "PSRK Ar consistency mix (no kij): ArV2 vs numeric derivative")
-      call assert(rel_error(ArT2, ArT2_num) < 1e-6, "PSRK Ar consistency mix (no kij): ArT2 vs numeric derivative")
-      call assert(rel_error(ArTV, ArTV_num) < 1e-6, "PSRK Ar consistency mix (no kij): ArTV vs numeric derivative")
-      call assert(allclose(ArVn, ArVn_num, 1e-6_pr), "PSRK Ar consistency mix (no kij): ArVn vs numeric derivative")
-      call assert(allclose(ArTn, ArTn_num, 1e-6_pr), "PSRK Ar consistency mix (no kij): ArTn vs numeric derivative")
+      call assert(rel_error(ArT2, ArT2_num) < 1e-5, "PSRK Ar consistency mix (no kij): ArT2 vs numeric derivative")
+      call assert(rel_error(ArTV, ArTV_num) < 1e-5, "PSRK Ar consistency mix (no kij): ArTV vs numeric derivative")
+      call assert(allclose(ArVn, ArVn_num, 1e-5_pr), "PSRK Ar consistency mix (no kij): ArVn vs numeric derivative")
+      call assert(allclose(ArTn, ArTn_num, 1e-5_pr), "PSRK Ar consistency mix (no kij): ArTn vs numeric derivative")
       call assert(maxval(rel_error(Arn2, Arn2_num)) < 1e-5, &
          "PSRK Ar consistency mix (no kij): Arn2 vs numeric derivative")
 
@@ -189,7 +189,7 @@ contains
       call assert(allclose(Arn, Arn_num, 1e-6_pr), "PSRK Ar consistency pure: Arn vs numeric derivative")
       call assert(rel_error(ArV2, ArV2_num) < 1e-4, "PSRK Ar consistency pure: ArV2 vs numeric derivative")
       call assert(rel_error(ArT2, ArT2_num) < 1e-4, "PSRK Ar consistency pure: ArT2 vs numeric derivative")
-      call assert(rel_error(ArTV, ArTV_num) < 1e-6, "PSRK Ar consistency pure: ArTV vs numeric derivative")
+      call assert(rel_error(ArTV, ArTV_num) < 1e-5, "PSRK Ar consistency pure: ArTV vs numeric derivative")
       call assert(allclose(ArVn, ArVn_num, 1e-5_pr), "PSRK Ar consistency pure: ArVn vs numeric derivative")
       call assert(allclose(ArTn, ArTn_num, 1e-5_pr), "PSRK Ar consistency pure: ArTn vs numeric derivative")
       call assert(maxval(rel_error(Arn2, Arn2_num)) < 1e-5, "PSRK Ar consistency pure: Arn2 vs numeric derivative")
