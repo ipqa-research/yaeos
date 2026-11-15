@@ -109,7 +109,7 @@ contains
       real(pr), intent(in) :: K(:) !! K-factors
       real(pr), intent(out) :: beta_min !! Lower limit for \(\beta\)
       real(pr), intent(out) :: beta_max !! Upper limit for \(\beta\)
-      real(pr), intent(out) :: beta !! \(\beta\) value
+      real(pr), intent(in out) :: beta !! \(\beta\): initial guess on entry, solution on exit
 
       real(pr) :: g
       real(pr) :: dgdb

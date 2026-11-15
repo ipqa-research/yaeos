@@ -196,31 +196,37 @@ contains
       real(pr) :: Gr
       real(pr) :: Vliq
       real(pr) :: Vvap
-      logical :: failed !! True when the solver did not converge.
+      logical :: failed_liq !! True when the liquid-root solve did not converge.
+      logical :: failed_vap !! True when the vapor-root solve did not converge.
 
       GrL = HUGE(GrL)
       GrV = HUGE(GrV)
+      failed_liq = .false.
+      failed_vap = .false.
 
       totnRT = sum(n) * R * T
       select case(root_type)
        case("liquid")
          Vliq = eos%get_v0(n, P, T) * 1.001_pr
-         call newton(foo, Vliq, tol=tol, max_iters=max_iters, failed=failed)
+         call newton(foo, Vliq, tol=tol, max_iters=max_iters, failed=failed_liq)
          GrL = Gr
        case("vapor")
-         ! Vvap = R * T / P
-         Vvap = R * T / P
-         call newton(foo, Vvap, tol=tol, max_iters=max_iters, failed=failed)
+         Vvap = totnRT / P ! ideal gas for the total moles
+         call newton(foo, Vvap, tol=tol, max_iters=max_iters, failed=failed_vap)
          GrV = Gr
        case("stable")
          Vliq = eos%get_v0(n, P, T)*1.00001_pr
-         call newton(foo, Vliq, tol=tol, max_iters=max_iters, failed=failed)
+         call newton(foo, Vliq, tol=tol, max_iters=max_iters, failed=failed_liq)
          GrL = Gr
 
-         Vvap = R * T / P
-         call newton(foo, Vvap, tol=tol, max_iters=max_iters, failed=failed)
+         Vvap = totnRT / P
+         call newton(foo, Vvap, tol=tol, max_iters=max_iters, failed=failed_vap)
          GrV = Gr
       end select
+
+      ! A root that did not converge cannot be selected.
+      if (failed_liq) GrL = huge(GrL)
+      if (failed_vap) GrV = huge(GrV)
 
       if (GrL < GrV) then
          V = Vliq
@@ -228,7 +234,7 @@ contains
          V = Vvap
       end if
 
-      if (failed) V = -1
+      if (GrL == huge(GrL) .and. GrV == huge(GrV)) V = -1
 
    contains
       subroutine foo(x, f, df)

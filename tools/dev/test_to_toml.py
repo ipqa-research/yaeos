@@ -7,12 +7,22 @@ Only files under `test/` matching `test_*.f90` are considered. In addition,
 a file is only treated as a test if it contains both a Fortran `program`
 declaration and a matching `end program`, so helper modules and other sources
 in `test/` are intentionally ignored.
-python tools/dev/test_to_toml.py
+
+Tests live in subdirectories of `test/` that mirror `src/` (for example the
+tests of `src/equilibria/flash.f90` are in `test/equilibria/`). Each test is
+named after its file without the `test_` prefix, so file names must be unique
+across all subdirectories.
+
+    python tools/dev/test_to_toml.py           # update fpm.toml
+    python tools/dev/test_to_toml.py --check   # only report; exit 1 if stale
 """
 
+import sys
 import toml
 import re
 from pathlib import Path
+
+check_only = "--check" in sys.argv[1:]
 
 root_path = Path(__file__).parent.parent.parent
 fpm_path = root_path / "fpm.toml"
@@ -36,6 +46,12 @@ for f90 in sorted(tests_path.rglob("test_*.f90")):
     ):
         continue
     name = f90.stem.removeprefix("test_")
+    if name in found_tests:
+        other = found_tests[name]
+        sys.exit(
+            f"Duplicate test name '{name}': {other['source-dir']}/{other['main']} "
+            f"and {f90.relative_to(root_path).as_posix()}. Rename one of them."
+        )
     found_tests[name] = {
         "name": name,
         "source-dir": f90.parent.relative_to(root_path).as_posix(),
@@ -60,7 +76,17 @@ to_update = {
 
 if not to_add and not to_remove and not to_update:
     print("fpm.toml is already up to date.")
-    exit(0)
+    sys.exit(0)
+
+if check_only:
+    print("fpm.toml is out of date. Run: python tools/dev/test_to_toml.py")
+    for name in sorted(to_add):
+        print(f"  + {name}")
+    for name in sorted(to_remove):
+        print(f"  - {name}")
+    for name in sorted(to_update):
+        print(f"  ~ {name}")
+    sys.exit(1)
 
 
 # Remove [[test]] blocks that no longer exist

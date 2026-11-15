@@ -27,8 +27,9 @@ module yaeos__equilibria_saturation_points
    integer :: max_iterations = 2000
    !! Maximum number of iterations for the full Newton solver
    integer :: iters_first_step = 30
-   !! Maximum iterations for the initial scalar Newton step.
-   !! Note: [[saturation_temperature]] overwrites it with 100.
+   !! Maximum iterations for the initial scalar Newton step of saturation_pressure.
+   integer :: iters_first_step_temperature = 100
+   !! Maximum iterations for the initial scalar Newton step of saturation_temperature.
    real(pr) :: step_tol = 0.1_pr
    !! Currently unused (the scalar pressure step is limited to \(0.1P\)
    !! in code).
@@ -167,7 +168,7 @@ contains
 
          P = exp(X(nc+2))
          y = z * exp(X(:nc))
-         call model%volume(n=n, P=P, T=T, V=Vz, root_type=main)
+         call model%volume(n=z, P=P, T=T, V=Vz, root_type=main)
          call model%volume(n=y, P=P, T=T, V=Vy, root_type=incipient)
       end if
 
@@ -305,10 +306,9 @@ contains
       ! ========================================================================
       !  Solve point
       ! ------------------------------------------------------------------------
-      iters_first_step = 100
       f = 10
       its = 0
-      do while(abs(f) > tol .and. its < iters_first_step)
+      do while(abs(f) > tol .and. its < iters_first_step_temperature)
          its = its + 1
          y = k*z
          call model%lnphi_pt(y, P, T, vy, incipient, lnPhi=lnfug_y, dlnphidt=dlnphi_dt_y)
@@ -330,7 +330,7 @@ contains
          if (abs(step) < tol .and. abs(f) < tol) exit
       end do
 
-      if (its >= iters_first_step) then
+      if (its >= iters_first_step_temperature) then
          nc = size(n)
          X(:nc) = log(k)
          X(nc+1) = log(T)
@@ -342,7 +342,7 @@ contains
 
          T = exp(X(nc+1))
          y = z * exp(X(:nc))
-         call model%volume(n=n, P=P, T=T, V=Vz, root_type=main)
+         call model%volume(n=z, P=P, T=T, V=Vz, root_type=main)
          call model%volume(n=y, P=P, T=T, V=Vy, root_type=incipient)
       end if
 

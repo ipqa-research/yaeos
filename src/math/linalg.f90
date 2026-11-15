@@ -245,7 +245,7 @@ contains
       call dsyev(jobz='V', uplo='U', n=n, A=Ain, lda=n, w=eigenvalues, &
          work=work, lwork=size(work, 1), info=istat &
       )
-      eigenvectors = Ain
+      if (present(eigenvectors)) eigenvectors = Ain
 
       ! call eigh(&
       !    A=A, lambda=eigenvalues, vectors=eigenvectors, err=stat  &

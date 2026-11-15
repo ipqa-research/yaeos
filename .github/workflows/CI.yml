@@ -11,12 +11,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        # Previous LTS plus the newest image: the newest runners use x86-64-v3
+        # (AVX2/FMA) builds of gfortran and BLAS/LAPACK, which change rounding.
+        os: [ubuntu-24.04, ubuntu-latest]
         python-version: [3.12]
         toolchain:
           # - {compiler: gcc, version: 10}
           - {compiler: gcc, version: 14}
-          - {compiler: gcc, version: 'latest'}
           # - {compiler: intel, version: '2024.2'}
           # - {compiler: intel, version: '2023.2'}
     steps:
@@ -50,26 +51,30 @@ jobs:
       run: |
         # TODO: update gcovr later
         python -m pip install --upgrade pip
-        pip install ford numpy matplotlib gcovr==8.6 numpy scipy coverage
+        pip install ford numpy matplotlib gcovr==8.6 numpy scipy coverage toml
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         sudo apt-get install libnlopt-dev libblas-dev liblapack-dev
 
+    - name: Check that fpm.toml lists every test program
+      run: python tools/dev/test_to_toml.py --check
+
     - name: Run tests without coverage
-      if: ${{ env.FC == 'gfortran' }}
+      if: startsWith(env.FC, 'gfortran')
       run: |
         fpm test --profile release --flag "-g -ffree-line-length-0" --compiler ${{ env.FC }} --c-compiler gcc
 
+    # Coverage is collected and uploaded once, from the newest image.
     - name: Run tests with coverage
-      if: ${{ env.FC == 'gfortran' }} && runner.os == 'Linux'
+      if: startsWith(env.FC, 'gfortran') && matrix.os == 'ubuntu-latest'
       run: |
         fpm test --profile release --flag "-g -coverage -ffree-line-length-0" --compiler ${{ env.FC }} --c-compiler gcc
 
     - name: Coverage
       run: bash ci/ci.sh coverage
-      if: ${{ env.FC == 'gfortran' }} && runner.os == 'Linux'
+      if: startsWith(env.FC, 'gfortran') && matrix.os == 'ubuntu-latest'
 
     - name: Upload coverage reports to Codecov
-      if: ${{ env.FC == 'gfortran' }} && runner.os == 'Linux'
+      if: startsWith(env.FC, 'gfortran') && matrix.os == 'ubuntu-latest'
       uses: codecov/codecov-action@v5
       with:
         token: ${{ secrets.CODECOV_TOKEN }}

@@ -241,8 +241,8 @@ contains
          integer :: its !! Iteration count.
          integer :: real_its
 
-         if (exp(X(4)) > max_P) then
-            max_P = exp(X(4)) + 100
+         if (exp(X0(4)) > max_P) then
+            max_P = exp(X0(4)) + 100
          end if
 
          X = X0
@@ -917,9 +917,10 @@ contains
          X(3) = log(sum(model%components%Tc * z))
       end if
 
-      if (ns == spec_CP%P) then
-         X(4) = S
-      else if (present(P0)) then
+      ! Initial pressure: P0 or a mole-fraction average of Pc. When P itself is
+      ! specified, X(4) is set to S below, after the initial volume is
+      ! computed at this initial pressure.
+      if (present(P0)) then
          X(4) = log(P0)
       else
          X(4) = log(sum(model%components%Pc * z))
@@ -940,6 +941,10 @@ contains
          Sin = S
          X(ns) = Sin
       end if
+
+      ! Initial eigenvector guess, as in critical_line. lambda1 evaluates
+      ! z + s*u*sqrt(z), so u must be defined even when s = 0.
+      u = (z0 + zi)/sum(z0 + zi)
 
       ! ========================================================================
       ! Solve the system of equations
