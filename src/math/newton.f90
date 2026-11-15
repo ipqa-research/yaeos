@@ -57,7 +57,7 @@ module yaeos__newton_solver
    integer, parameter :: NEWTON_SUCCESS          = 0 !! Converged by the residual or step criterion.
    integer, parameter :: NEWTON_MAX_ITS          = 1 !! Reached the Newton iteration limit.
    integer, parameter :: NEWTON_NAN_INF          = 2 !! Non-finite residual at the initial point.
-   integer, parameter :: NEWTON_SINGULAR         = 3 !! Reserved for a singular linear system (currently never returned).
+   integer, parameter :: NEWTON_SINGULAR         = 3 !! The LM system stayed singular with lambda at its ceiling.
    integer, parameter :: NEWTON_STAGNATION       = 4 !! Iteration stopped making measurable progress.
    integer, parameter :: NEWTON_LINE_SEARCH_FAIL = 5 !! Repeated line-search failures drove the LM \(\lambda\) to its ceiling.
 
@@ -400,6 +400,20 @@ contains
          call solve_lm(J, F, lambda, jscale, s, dX, cond_est)
 
          dx_norm = norm_inf(dX)
+
+         ! A singular LM system gives a zero step (cond_est = huge). That is
+         ! not convergence: retry with the larger lambda solve_lm has set,
+         ! and report NEWTON_SINGULAR once lambda is at its ceiling.
+         if (cond_est >= huge(1.0_pr)) then
+            if (lambda >= jscale * s%lambda_max) then
+               res%status = NEWTON_SINGULAR
+               call pack_result(res, result, s, hist_buf, its, &
+                  f_norm, dx_norm, lambda, cond_est)
+               if (s%verbosity >= 1) call print_summary(res)
+               return
+            end if
+            cycle main_loop
+         end if
 
          ! 4. Mixed convergence check on ||dX|| --------------------------------
          if (dx_norm < s%rtol * (norm_inf(x) + s%atol)) then

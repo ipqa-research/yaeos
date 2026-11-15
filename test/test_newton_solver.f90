@@ -392,28 +392,31 @@ contains
    end subroutine test_forced_lm_from_start
 
    subroutine test_singular_regularized_matrix()
-      !! With lambda_min = 1e-30 the LM shift is lost against J^T J ~ 2^81,
-      !! so the regularized matrix is exactly singular: the solver must produce
-      !! a zero step (x unchanged), an infinite condition estimate and ramp
-      !! lambda by lambda_up.
-      !! NOTE: the returned status is not asserted. The zero step satisfies the
-      !! step criterion and the solver currently reports NEWTON_SUCCESS with
-      !! ||F|| far above atol (reported as a library bug).
+      !! With lambda_min = 1e-30 the LM shift is lost against J^T J ~ 2^81, so
+      !! the first regularized matrix is exactly singular and the solver gets a
+      !! zero step. A zero step is not convergence: the solver must ramp lambda
+      !! and retry, reaching a real root on x1 + x2 = 2, or report
+      !! NEWTON_SINGULAR when lambda cannot grow any further.
       type(newton_settings) :: s
       type(newton_result) :: r
       real(pr) :: x(2)
-      real(pr) :: jscale
 
+      ! Room to grow lambda: the ramped regularization becomes nonsingular.
       x = [3.0_pr, 4.0_pr]
       s%lambda_min = 1.0e-30_pr
+      s%max_its = 500
       call newton(huge_rank_deficient, x, s, r)
-      jscale = 2.0_pr * (2.0_pr**40)**2
-      call assert(all(x == [3.0_pr, 4.0_pr]), "singular LM: zero step leaves x unchanged")
-      call assert(r%dx_norm == 0.0_pr, "singular LM: step is exactly zero")
-      call assert(r%cond_est == huge(1.0_pr), "singular LM: condition estimate is huge")
-      call assert(r%f_norm == 5.0_pr * 2.0_pr**40, "singular LM: residual norm stays at |F(x0)|")
-      call assert(abs(r%lambda - jscale * s%lambda_min * s%lambda_up) < 1e-6_pr * jscale * s%lambda_min, &
-         "singular LM: lambda ramped by lambda_up")
+      call assert(r%status == NEWTON_SUCCESS, "singular LM: recovers by ramping lambda")
+      call assert(abs(x(1) + x(2) - 2.0_pr) < 1e-8_pr, "singular LM: success means a real root (x1 + x2 = 2)")
+
+      ! No room to grow lambda: the matrix stays singular, so report it.
+      x = [3.0_pr, 4.0_pr]
+      s%lambda_min = 1.0e-30_pr
+      s%lambda_max = 1.0e-30_pr
+      call newton(huge_rank_deficient, x, s, r)
+      call assert(r%status == NEWTON_SINGULAR, "singular LM at the lambda ceiling: NEWTON_SINGULAR")
+      call assert(all(x == [3.0_pr, 4.0_pr]), "singular LM at the lambda ceiling: x unchanged")
+      call assert(r%f_norm == 5.0_pr * 2.0_pr**40, "singular LM at the lambda ceiling: residual still |F(x0)|")
    end subroutine test_singular_regularized_matrix
 
    subroutine test_status_messages()
