@@ -2,6 +2,7 @@
 title: Equations of State
 ordered_subpage: cubics
                  gerg2008.md
+                 gerg2008_parameters.md
                  pc_saft.md
 ---
 
