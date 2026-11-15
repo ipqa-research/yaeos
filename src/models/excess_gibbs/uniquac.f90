@@ -1,9 +1,16 @@
 module yaeos__models_ge_uniquac
    !! # UNIQUAC module
-   !! UNIQUAC (**uni**versal **qua**si**c**hemical) Excess Gibbs free energy
-   !! model.
+   !! Universal quasi-chemical excess-Gibbs model and constructor.
    !!
-   !! ## References
+   !! # Description
+   !! Implements the UNIQUAC combinatorial and residual contributions using
+   !! pure-component size/area parameters and temperature-dependent pair energy
+   !! parameters. The model returns excess-Gibbs derivatives through `GeModel`.
+   !!
+   !! # Examples
+   !! See the example in the [[UNIQUAC]] type documentation.
+   !!
+   !! # References
    !! 1. Maurer, G., & Prausnitz, J. M. (1978). On the derivation and extension
    !! of the UNIQUAC equation. Fluid Phase Equilibria, 2(2), 91-99.
    !! 2. Gmehling, Jurgen, Barbel Kolbe, Michael Kleiber, and Jurgen Rarey.
@@ -46,18 +53,20 @@ module yaeos__models_ge_uniquac
       !! d_{lk}T + e_{lk}{T^2}
       !! \]
       !!
-      !! # Example
+      !! # Examples
       !!
       !! ```fortran
       !! use yaeos, only: pr, setup_uniquac, UNIQUAC
       !!
       !! integer, parameter :: nc = 3
       !!
-      !! real(pr) :: rs(nc), qs(nc)
+      !! real(pr) :: rs(nc)
+      !! real(pr) :: qs(nc)
       !! real(pr) :: b(nc, nc)
       !! real(pr) :: n(nc)
       !!
-      !! real(pr) :: ln_gammas(nc), T
+      !! real(pr) :: ln_gammas(nc)
+      !! real(pr) :: T
       !!
       !! type(UNIQUAC) :: model
       !!
@@ -104,6 +113,9 @@ module yaeos__models_ge_uniquac
 
 contains
    subroutine excess_gibbs(self, n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)
+      !! # excess_gibbs
+      !!
+      !! # Description
       !! Calculate the excess Gibbs free energy and its derivatives of the
       !! UNIQUAC model.
       !!
@@ -131,21 +143,35 @@ contains
       real(pr) :: dthetak_dni(size(n), size(n))
       real(pr) :: d2thetak_dnidnj(size(n), size(n), size(n))
 
-      real(pr) :: tau(size(n), size(n))
+      real(pr) :: tau(size(n), size(n)) !! UNIQUAC \(\tau_{lk}\) matrix.
       real(pr) :: dtau(size(n), size(n))
       real(pr) :: d2tau(size(n), size(n))
 
       ! Indexes and lofical for optional arguments
-      integer :: i, j, k
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: k !! Loop index `k`.
 
-      logical :: dt, dt2, dn, dtn, dn2, dt_or_dtn
+      logical :: dt
+      logical :: dt2
+      logical :: dn
+      logical :: dtn
+      logical :: dn2
+      logical :: dt_or_dtn
 
       ! Auxiliars
-      integer :: nc
-      real(pr) :: n_tot
-      real(pr) :: r_i, q_i, r_j, q_j, r_k, q_k
-      real(pr) :: sum_nq, sum_nr
-      real(pr) :: Ge_comb, Ge_res
+      integer :: nc !! Number of components.
+      real(pr) :: n_tot !! Total number of moles.
+      real(pr) :: r_i
+      real(pr) :: q_i
+      real(pr) :: r_j
+      real(pr) :: q_j
+      real(pr) :: r_k
+      real(pr) :: q_k
+      real(pr) :: sum_nq
+      real(pr) :: sum_nr
+      real(pr) :: Ge_comb
+      real(pr) :: Ge_res
       real(pr) :: Ge_aux
 
       ! Auxiliars for temperature derivatives
@@ -153,17 +179,25 @@ contains
       real(pr) :: sum_theta_l_dtau_lk(size(n))
       real(pr) :: sum_theta_l_d2tau_lk(size(n))
 
-      real(pr) :: GeT_aux, GeT2_aux, diff_aux(size(n))
+      real(pr) :: GeT_aux
+      real(pr) :: GeT2_aux
+      real(pr) :: diff_aux(size(n))
 
       ! Auxiliars for compositionals derivatives
-      real(pr) :: Gen_comb(size(n)), Gen_res(size(n))
+      real(pr) :: Gen_comb(size(n))
+      real(pr) :: Gen_res(size(n))
       real(pr) :: Gen_aux(size(n))
 
       real(pr) :: dln_nk_dni(size(n), size(n))
 
       ! Auxiliars for second compositionals derivatives
       ! terms of the math expression
-      real(pr) :: trm1, trm2, trm3, trm4, trm5, trm6
+      real(pr) :: trm1
+      real(pr) :: trm2
+      real(pr) :: trm3
+      real(pr) :: trm4
+      real(pr) :: trm5
+      real(pr) :: trm6
 
       real(pr) :: sum_d2theta_tau_lk(size(n))
       real(pr) :: Gen2_aux(size(n), size(n))
@@ -411,6 +445,9 @@ contains
    end subroutine excess_gibbs
 
    subroutine taus(self, T, tau, tauT, tauT2)
+      !! # taus
+      !!
+      !! # Description
       !! Calculate the temperature dependence term of the UNIQUAC model.
       !!
       class(UNIQUAC), intent(in) :: self
@@ -431,7 +468,9 @@ contains
       real(pr) :: d2u(size(self%qs), size(self%qs))
 
       ! Logical
-      logical :: tt, dt, dt2
+      logical :: tt
+      logical :: dt
+      logical :: dt2
 
       tt = present(tau)
       dt = present(tauT)
@@ -460,24 +499,27 @@ contains
    end subroutine taus
 
    type(UNIQUAC) function setup_uniquac(qs, rs, aij, bij, cij, dij, eij)
+      !! # setup_uniquac
+      !!
+      !! # Description
       !! Instantiate a UNIQUAC model.
       !!
       !! Non provided interaction parameters are set to zero matrices.
       !!
       real(pr), intent(in) :: qs(:)
-      !! Molecule's relative volumes \(Q_i\)
+      !! Molecule's relative areas \(Q_i\)
       real(pr), intent(in) :: rs(size(qs))
-      !! Molecule's relative areas \(R_i\)
+      !! Molecule's relative volumes \(R_i\)
       real(pr), optional, intent(in) :: aij(size(qs),size(qs))
-      !! Interaction parameters matrix \(a_{ij}\), zero matrix if no provided.
+      !! Interaction parameters matrix \(a_{ij}\), zero matrix if not provided.
       real(pr), optional, intent(in) :: bij(size(qs),size(qs))
-      !! Interaction parameters matrix \(b_{ij}\), zero matrix if no provided.
+      !! Interaction parameters matrix \(b_{ij}\), zero matrix if not provided.
       real(pr), optional, intent(in) :: cij(size(qs),size(qs))
-      !! Interaction parameters matrix \(c_{ij}\), zero matrix if no provided.
+      !! Interaction parameters matrix \(c_{ij}\), zero matrix if not provided.
       real(pr), optional, intent(in) :: dij(size(qs),size(qs))
-      !! Interaction parameters matrix \(d_{ij}\), zero matrix if no provided.
+      !! Interaction parameters matrix \(d_{ij}\), zero matrix if not provided.
       real(pr), optional, intent(in) :: eij(size(qs),size(qs))
-      !! Interaction parameters matrix \(e_{ij}\), zero matrix if no provided.
+      !! Interaction parameters matrix \(e_{ij}\), zero matrix if not provided.
 
       ! aij
       if (present(aij)) then

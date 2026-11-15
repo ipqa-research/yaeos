@@ -1,4 +1,18 @@
 module yaeos__equilibria_flash
+   !! # Flash calculations
+   !!
+   !! # Description
+   !! Two-phase isothermal flash calculations at specified pressure or
+   !! volume. The main entry point is [[flash]], which uses successive
+   !! substitution with a Rachford-Rice inner solve. The module also provides
+   !! [[flash_no_beta_limits]], which does not force the K-factors into the
+   !! region where \(0 < \beta < 1\).
+   !!
+   !! # Examples
+   !! ```fortran
+   !! result = flash(model, z, T, p_spec=P)
+   !! if (result%kind == "split") print *, result%beta, result%x, result%y
+   !! ```
    use yaeos__constants, only: pr
    use yaeos__models_base, only: BaseModel
    use yaeos__models_ar, only: ArModel
@@ -18,7 +32,10 @@ module yaeos__equilibria_flash
 contains
 
    type(EquilibriumState) function flash(model, z, t, v_spec, p_spec, k0, iters)
-      !! Flash algorithm using sucessive substitutions.
+      !! # flash
+      !!
+      !! # Description
+      !! Flash algorithm using successive substitutions.
       !!
       !! Available specifications:
       !!
@@ -29,6 +46,11 @@ contains
       !! vapor-liquid separation predicted by the provided model (0<beta<1) and
       !! solves the equilibria and mass-balance equations with a fixed-point
       !! method.
+      !!
+      !! Iterates until \(\max|\Delta \ln K_i| \le 10^{-6}\) or 500
+      !! iterations. If the iteration fails or converges to the trivial
+      !! solution (\(K_i \approx 1\)), the result has `kind = "failed"` and
+      !! `P = -1`; otherwise `kind = "split"`.
       use yaeos__auxiliar, only: optval
       class(BaseModel), intent(in) :: model !! Thermodynamic model
       real(pr), intent(in) :: z(:) !! Global composition (molar fractions)
@@ -36,20 +58,30 @@ contains
       real(pr), optional, intent(in) :: v_spec !! Specified Volume [L/mol]
       real(pr), optional, intent(in) :: p_spec !! Specified Pressure [bar]
       real(pr), optional, intent(in) :: k0(:) !! Initial K factors (y/x)
-      integer, optional, intent(out) :: iters !! Number of iterations
+      integer, optional, intent(out) :: iters !! Number of iterations (also stored in the result's `iters`)
 
       ! Results from flash calculation
-      real(pr), dimension(size(z)) :: x  ! composition of liquid (molar fractions)
-      real(pr), dimension(size(z)) :: y  ! composition of vapour (molar fractions)
-      real(pr) :: beta             ! total fraction of vapour (molar base)
+      real(pr), dimension(size(z)) :: x !! composition of liquid (molar fractions)
+      real(pr), dimension(size(z)) :: y !! composition of vapour (molar fractions)
+      real(pr) :: beta !! total fraction of vapour (molar base)
 
       ! Intermediate variables during calculation process
-      real(pr) :: P, V
-      real(pr), dimension(size(z)) :: lnfug_y, lnfug_x
-      real(pr), dimension(size(z)) :: K, dK, lnK, dKold, lnKold
+      real(pr) :: P
+      real(pr) :: V
+      real(pr), dimension(size(z)) :: lnfug_y
+      real(pr), dimension(size(z)) :: lnfug_x
+      real(pr), dimension(size(z)) :: K !! Equilibrium ratios \(K_i = y_i/x_i\).
+      real(pr), dimension(size(z)) :: dK
+      real(pr), dimension(size(z)) :: lnK
+      real(pr), dimension(size(z)) :: dKold
+      real(pr), dimension(size(z)) :: lnKold
 
-      real(pr) :: g0, g1  ! function g valuated at beta=0 and 1, based on Wilson K factors
-      real(pr) :: bmin, bmax, Vy, Vx
+      real(pr) :: g0 !! function g valuated at beta=0 and 1, based on Wilson K factors
+      real(pr) :: g1 !! function g valuated at beta=0 and 1, based on Wilson K factors
+      real(pr) :: bmin
+      real(pr) :: bmax
+      real(pr) :: Vy
+      real(pr) :: Vx
 
       character(len=2) :: spec !! Flash specification [PT | VT]
 
@@ -100,7 +132,7 @@ contains
 
       ! now we must have  g0>0 and g1<0 and therefore 0<beta<1 (M&M page 252)
       call betalimits(z, K, bmin, bmax)
-      beta = (bmin + bmax)/2  ! first guess for beta
+      beta = (bmin + bmax)/2 ! first guess for beta
 
       lnK = log(K)
 
@@ -155,7 +187,7 @@ contains
          end if
 
          ! Assure that beta is between the limits
-         call betalimits(z, K, bmin, bmax)  ! 26/06/15
+         call betalimits(z, K, bmin, bmax) ! 26/06/15
          if ((beta < bmin) .or. (bmax < beta)) then
             beta = (bmin + bmax)/2
          end if
@@ -169,7 +201,7 @@ contains
                ! bring beta back to range, by touching K
                call betato01(z, K)
                call betalimits(z, K, bmin, bmax)
-               beta = (bmin + bmax)/2  ! new guess for beta
+               beta = (bmin + bmax)/2 ! new guess for beta
             end if
          end if
 
@@ -208,39 +240,51 @@ contains
    end function flash
 
    type(EquilibriumState) function flash_no_beta_limits(model, z, t, beta0, v_spec, p_spec, k0, iters) result(flash)
-      !! Flash algorithm using sucessive substitutions.
+      !! # flash_no_beta_limits
+      !!
+      !! # Description
+      !! Flash algorithm using successive substitutions that, unlike [[flash]],
+      !! does not rescale the K-factors with `betato01` to force
+      !! \(0 < \beta < 1\), so negative-flash solutions can be reached.
       !!
       !! Available specifications:
       !!
       !! - TP (with T and P_spec variables)
       !! - TV (with T and V_spec variables)
       !!
-      !! This algorithm assumes that the specified T and P/V correspond to
-      !! vapor-liquid separation predicted by the provided model (0<beta<1) and
-      !! solves the equilibria and mass-balance equations with a fixed-point
-      !! method.
+      !! Failure handling is the same as in [[flash]].
       use yaeos__auxiliar, only: optval
       class(BaseModel), intent(in) :: model !! Thermodynamic model
       real(pr), intent(in) :: z(:) !! Global composition (molar fractions)
       real(pr), intent(in) :: t !! Temperature [K]
-      real(pr), intent(in) :: beta0 !! Initial guess for vapor fraction
+      real(pr), intent(in) :: beta0 !! Initial guess for vapor fraction (currently unused)
       real(pr), optional, intent(in) :: v_spec !! Specified Volume [L/mol]
       real(pr), optional, intent(in) :: p_spec !! Specified Pressure [bar]
       real(pr), optional, intent(in) :: k0(:) !! Initial K factors (y/x)
-      integer, optional, intent(out) :: iters !! Number of iterations
+      integer, optional, intent(out) :: iters !! Number of iterations (also stored in the result's `iters`)
 
       ! Results from flash calculation
-      real(pr), dimension(size(z)) :: x  ! composition of liquid (molar fractions)
-      real(pr), dimension(size(z)) :: y  ! composition of vapour (molar fractions)
-      real(pr) :: beta             ! total fraction of vapour (molar base)
+      real(pr), dimension(size(z)) :: x !! composition of liquid (molar fractions)
+      real(pr), dimension(size(z)) :: y !! composition of vapour (molar fractions)
+      real(pr) :: beta !! total fraction of vapour (molar base)
 
       ! Intermediate variables during calculation process
-      real(pr) :: P, V
-      real(pr), dimension(size(z)) :: lnfug_y, lnfug_x
-      real(pr), dimension(size(z)) :: K, dK, lnK, dKold, lnKold
+      real(pr) :: P
+      real(pr) :: V
+      real(pr), dimension(size(z)) :: lnfug_y
+      real(pr), dimension(size(z)) :: lnfug_x
+      real(pr), dimension(size(z)) :: K !! Equilibrium ratios \(K_i = y_i/x_i\).
+      real(pr), dimension(size(z)) :: dK
+      real(pr), dimension(size(z)) :: lnK
+      real(pr), dimension(size(z)) :: dKold
+      real(pr), dimension(size(z)) :: lnKold
 
-      real(pr) :: g0, g1  ! function g valuated at beta=0 and 1, based on Wilson K factors
-      real(pr) :: bmin, bmax, Vy, Vx
+      real(pr) :: g0 !! function g valuated at beta=0 and 1, based on Wilson K factors
+      real(pr) :: g1 !! function g valuated at beta=0 and 1, based on Wilson K factors
+      real(pr) :: bmin
+      real(pr) :: bmax
+      real(pr) :: Vy
+      real(pr) :: Vx
 
       character(len=2) :: spec !! Flash specification [PT | VT]
 

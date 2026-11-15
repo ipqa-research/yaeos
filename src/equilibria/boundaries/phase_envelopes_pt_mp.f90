@@ -1,8 +1,17 @@
 module yaeos__equilibria_boundaries_phase_envelopes_mp
-   !! Multiphase PT envelope calculation module.
+   !! # Multiphase PT envelopes
+   !! Trace pressure-temperature boundaries for systems with multiple phases.
    !!
-   !! This module contains the functions to calculate the PT envelope of a
-   !! mixture with multiple phases.
+   !! # Description
+   !! Continues generalized multiphase equilibrium states and stores the
+   !! resulting states, phase kinds, and boundary metadata in the module's
+   !! envelope result type.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! env = pt_envelope(model, z, np, kinds_x, kind_w, x_l0, w0, betas0, &
+   !!                   P0, T0, ns0, dS0, beta_w)
+   !! ```
    use yaeos__constants, only: pr, R
    use yaeos__equilibria_equilibrium_state, only: EquilibriumState
    use yaeos__equilibria_boundaries_auxiliar, only: &
@@ -19,7 +28,15 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp
    public :: pt_envelope
 
    type :: PTEnvelMP
-      !! Multiphase PT envelope.
+      !! # PTEnvelMP
+      !! Multiphase pressure-temperature envelope at fixed overall composition.
+      !!
+      !! # Description
+      !! Stores continuation points containing phase compositions, conditions,
+      !! phase kinds, and stability metadata.
+      !!
+      !! # Examples
+      !! Access the calculated states through `line%points`.
       type(MPPoint), allocatable :: points(:) !! Array of converged points.
       real(pr), allocatable :: Tc(:) !! Critical temperatures.
       real(pr), allocatable :: Pc(:) !! Critical pressures.
@@ -30,7 +47,15 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp
    end type PTEnvelMP
 
    type :: MPPoint
-      !! Multiphase equilibria point.
+      !! # MPPoint
+      !! One converged multiphase state on a PT envelope.
+      !!
+      !! # Description
+      !! Records the phase compositions/fractions and the numerical
+      !! continuation information for one point.
+      !!
+      !! # Examples
+      !! Accessed as an element of `PTEnvelMP%points`.
       integer :: np
       !! Number of phases
       integer :: nc
@@ -74,19 +99,19 @@ contains
       !! Calculation of a multiphase PT envelope.
       !!
       !! # Description
-      !! Calculates a PT envelope is calculated using the continuation method.
+      !! Calculates a PT envelope using the continuation method.
       !! The envelope is calculated by solving the system of equations for each
       !! point of the envelope. The system of equations is solved using the
       !! Newton-Raphson method.
       !!
       !! This function requires the system specification conditions, which are
-      !! the fluid composition (\z\), the number of phases that are not
+      !! the fluid composition (\(z\)), the number of phases that are not
       !! incipient; defined as \(np\), proper intialization values, the
       !! variables that end with `0` are the initial guess; the mole fraction
       !! of the reference phase `beta_w` which when it is equal to 0 means that
       !! we are calculating a phase boundary.
       use yaeos__auxiliar, only: optval
-      class(ArModel), intent(in) :: model
+      class(ArModel), intent(in) :: model !! EOS used to evaluate phase properties.
       real(pr), intent(in) :: z(:)
       !! Mixture global composition.
       integer, intent(in) :: np
@@ -363,6 +388,9 @@ contains
    end function pt_envelope
 
    subroutine pt_F_NP(model, z, np, beta_w, kinds_x, kind_w, X, ns, S, F, dF, Vl, Vw)
+      !! # pt_F_NP
+      !!
+      !! # Description
       !! Function to solve at each point of a multi-phase envelope.
       use iso_fortran_env, only: error_unit
       class(ArModel), intent(in) :: model !! Model to use.
@@ -376,31 +404,47 @@ contains
       real(pr), intent(in)  :: S !! Specification value.
       real(pr), intent(out) :: F(size(X)) !! Vector of functions valuated.
       real(pr), intent(out) :: df(size(X), size(X)) !! Jacobian matrix.
-      real(pr), intent(out) :: Vw
-      real(pr), intent(out) :: Vl(np)
+      real(pr), intent(out) :: Vw !! Reference-phase molar volume [L/mol].
+      real(pr), intent(out) :: Vl(np) !! Molar volumes of the main phases [L/mol].
 
       ! X variables
       real(pr) :: K(np, size(z))
       real(pr) :: P
       real(pr) :: T
-      real(pr) :: betas(np)
+      real(pr) :: betas(np) !! Phase fractions for the main phases.
 
       ! Main phases variables
       real(pr) :: moles(size(z))
 
-      real(pr), dimension(np, size(z)) :: x_l, lnphi_l, dlnphi_dt_l, dlnphi_dp_l
+      real(pr), dimension(np, size(z)) :: x_l
+      real(pr), dimension(np, size(z)) :: lnphi_l
+      real(pr), dimension(np, size(z)) :: dlnphi_dt_l
+      real(pr), dimension(np, size(z)) :: dlnphi_dp_l
       real(pr), dimension(np, size(z), size(z)) :: dlnphi_dn_l
-      real(pr) :: dpdv_l(np), dpdn_l(np, size(z)), dpdt_l(np), dPdT
+      real(pr) :: dpdv_l(np)
+      real(pr) :: dpdn_l(np, size(z))
+      real(pr) :: dpdt_l(np)
+      real(pr) :: dPdT
 
-      real(pr) :: lnphi(size(z)), dlnphi_dt(size(z)), dlnphi_dp(size(z))
+      real(pr) :: lnphi(size(z))
+      real(pr) :: dlnphi_dt(size(z))
+      real(pr) :: dlnphi_dp(size(z))
       real(pr), dimension(size(z), size(z)) :: dlnphi_dn
-      real(pr) :: dpdv_w, dpdn_w(size(z)), dpdT_w
+      real(pr) :: dpdv_w
+      real(pr) :: dpdn_w(size(z))
+      real(pr) :: dpdT_w
 
-      real(pr) :: dPdV, dPdN(size(z))
-      real(pr) ::  dVwdn(size(z)), dVwdT, dVwdP
+      real(pr) :: dPdV
+      real(pr) :: dPdN(size(z))
+      real(pr) :: dVwdn(size(z))
+      real(pr) :: dVwdT
+      real(pr) :: dVwdP
 
       ! Incipient phase variables
-      real(pr), dimension(size(z)) :: w, lnphi_w, dlnphi_dt_w, dlnphi_dp_w
+      real(pr), dimension(size(z)) :: w
+      real(pr), dimension(size(z)) :: lnphi_w
+      real(pr), dimension(size(z)) :: dlnphi_dt_w
+      real(pr), dimension(size(z)) :: dlnphi_dp_w
       real(pr), dimension(size(z), size(z)) :: dlnphi_dn_w
 
       ! Derivatives of w wrt beta and K
@@ -413,9 +457,16 @@ contains
 
       real(pr) :: dx_l_dlnK(np, np, size(z))
 
-      integer :: i, j, l, ik, phase, nc
-      integer :: lb, ub
-      integer :: idx_1, idx_2
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: l !! Loop index `l`.
+      integer :: ik
+      integer :: phase
+      integer :: nc !! Number of components.
+      integer :: lb
+      integer :: ub
+      integer :: idx_1
+      integer :: idx_2
       integer :: nv !! Specified volume for ln(V(nv)/Vw)
 
       nc = size(z)
@@ -608,7 +659,7 @@ contains
       real(pr), intent(in out)  :: X(:) !! Vector of variables
       integer, intent(in)  :: ns !! Number of specification
       real(pr), intent(in)  :: S !! Specification value
-      real(pr), intent(in) :: dXdS(size(X))
+      real(pr), intent(in) :: dXdS(size(X)) !! Continuation tangent \(dX/dS\).
       real(pr), intent(out) :: F(size(X)) !! Vector of functions valuated
       real(pr), intent(out) :: df(size(X), size(X)) !! Jacobian matrix
       real(pr), intent(out) :: Vl(np) !! Main phases volumes
@@ -770,7 +821,8 @@ contains
       dXdS = dXdS/dXdS(ns)
 
       block
-         real(pr) :: delmax, updel
+         real(pr) :: delmax
+         real(pr) :: updel
          delmax = max(sqrt(abs(X(ns)))/10, 0.1)
          updel = dS * 3/its
          dS = sign(min(delmax, updel), dS)
@@ -868,21 +920,31 @@ contains
    end subroutine get_values_from_X
 
    subroutine write_envelope_PT_MP(env, unit)
-      class(PTEnvelMP), intent(in) :: env
-      integer, intent(in) :: unit
+      !! # write_envelope_PT_MP
+      !! Write a multiphase PT envelope with one block per phase-boundary section.
+      class(PTEnvelMP), intent(in) :: env !! Multiphase envelope to serialize.
+      integer, intent(in) :: unit !! Output unit number.
 
-      integer :: i, j, k
-      integer :: np, nc, n_beta, n_phase
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: k !! Loop index `k`.
+      integer :: np !! Number of phases.
+      integer :: nc !! Number of components.
+      integer :: n_beta
+      integer :: n_phase
       integer :: ns
-      integer :: its
+      integer :: its !! Iteration count.
       real(pr) :: S
       real(pr) :: dS
-      real(pr) :: P, T
-      real(pr), allocatable :: betas(:)
-      real(pr), allocatable :: w(:)
-      real(pr), allocatable :: x_l(:, :)
+      real(pr) :: P
+      real(pr) :: T
+      real(pr), allocatable :: betas(:) !! Phase fractions for the main phases.
+      real(pr), allocatable :: w(:) !! Reference/trial phase composition.
+      real(pr), allocatable :: x_l(:, :) !! Main-phase compositions.
 
-      character(len=20) :: str_k, str_ph, hdr
+      character(len=20) :: str_k
+      character(len=20) :: str_ph
+      character(len=20) :: hdr
 
       np = size(env%points)
 
@@ -947,10 +1009,15 @@ contains
 
       ! Helper function to center a string within a fixed width field
       pure function center_str(text, width) result(res)
-         character(len=*), intent(in) :: text
-         integer, intent(in) :: width
-         character(len=width) :: res
-         integer :: l, pad
+         !! # center_str
+         !!
+         !! # Description
+         !! Center a string in a fixed-width field for the formatted table header.
+         character(len=*), intent(in) :: text !! Text to center.
+         integer, intent(in) :: width !! Output field width in characters.
+         character(len=width) :: res !! Centered or truncated text.
+         integer :: l !! Loop/phase index.
+         integer :: pad
 
          l = len_trim(text)
          if (l >= width) then

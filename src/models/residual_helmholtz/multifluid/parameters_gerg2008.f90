@@ -1,64 +1,129 @@
 module yaeos__models_ar_multifluid_parameters_gerg2008
+   !! # GERG2008 parameters
+   !!
+   !! # Description
+   !! Pure-fluid and binary parameters of the GERG2008 equation of state,
+   !! together with [[get_original_parameters]], which loads them for a list
+   !! of component identifiers.
+   !! The loader returns pure-fluid coefficient arrays, pairwise departure
+   !! parameters, and component critical constants in the requested ordering.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! call get_original_parameters(ids, pures, binaries, components)
+   !! ```
    use yaeos__constants, only: pr
    use yaeos__models_base, only: Substances
    implicit none
 
-   integer :: max_residual_terms = 24, generalized_departure(8, 2)
-   integer, parameter :: N = 21
-   real(8), dimension(21, 21, 4) :: red_params
-   real(8), dimension(21, 21) :: Bv=0, Gv=0, Bt=0, Gt=0
-   real(8), dimension(21, 24) :: noik=0, toik=0
-   integer, dimension(21, 24) :: doik=0, coik=0
-   integer, dimension(21) :: Kpol=0, Kexp=0
-   real(8), dimension(21, 21) :: Fij=0
-   real(8), dimension(21, 21, 12) :: tij=0, nij=0, ethaij=0, epsij=0, betaij=0, gammaij=0
-   integer, dimension(21, 21, 12) :: dij=0
-   integer, dimension(21, 21) :: Kpolij=0, Kexpij=0
-   real(8), dimension(21) :: T_c=0, rho_c=0, M=0, P_c=0, acentric_factor=0
-   integer :: tmp1(3)=0, tmp2(14)=0 ! This variables are used to define indexes for repeated terms
-   real(8), dimension(21, 7) :: n0i=0, th0i=0
-   real(8) :: R=0, eps = 1d-10
+   integer :: max_residual_terms = 24 !! Maximum number of pure-fluid residual terms.
+   integer :: generalized_departure(8, 2) !! Index map for generalized binary departure terms.
+   integer, parameter :: N = 21 !! Number of fluids in the GERG2008 component set.
+   real(8), dimension(21, 21, 4) :: red_params !! Pair reducing parameters \((\beta_v, \gamma_v, \beta_T, \gamma_T)\), set for \(i<j\).
+   real(8), dimension(21, 21) :: Bv=0 !! Volume reducing parameters \(\beta_{v,ij}\) (\(\beta_{v,ji}=1/\beta_{v,ij}\)).
+   real(8), dimension(21, 21) :: Gv=0 !! Volume reducing parameters \(\gamma_{v,ij}\) (symmetric).
+   real(8), dimension(21, 21) :: Bt=0 !! Temperature reducing parameters \(\beta_{T,ij}\) (\(\beta_{T,ji}=1/\beta_{T,ij}\)).
+   real(8), dimension(21, 21) :: Gt=0 !! Temperature reducing parameters \(\gamma_{T,ij}\) (symmetric).
+   real(8), dimension(21, 24) :: noik=0 !! Pure-fluid residual Helmholtz coefficients.
+   real(8), dimension(21, 24) :: toik=0 !! Pure-fluid inverse-temperature exponents.
+   integer, dimension(21, 24) :: doik=0 !! Pure-fluid reduced-density exponents.
+   integer, dimension(21, 24) :: coik=0 !! Pure-fluid exponential density-damping powers.
+   integer, dimension(21) :: Kpol=0 !! Number of polynomial pure-fluid residual terms.
+   integer, dimension(21) :: Kexp=0 !! Number of exponential pure-fluid residual terms.
+   real(8), dimension(21, 21) :: Fij=0 !! Binary departure-function scaling factors.
+   real(8), dimension(21, 21, 12) :: tij=0 !! Inverse-temperature exponents of binary departure terms.
+   real(8), dimension(21, 21, 12) :: nij=0 !! Binary departure coefficients.
+   real(8), dimension(21, 21, 12) :: ethaij=0 !! Quadratic density-damping coefficients of binary departure terms.
+   real(8), dimension(21, 21, 12) :: epsij=0 !! Density offsets in the quadratic binary damping factors.
+   real(8), dimension(21, 21, 12) :: betaij=0 !! Linear density-damping coefficients of binary departure terms.
+   real(8), dimension(21, 21, 12) :: gammaij=0 !! Density offsets in the linear binary damping factors.
+   integer, dimension(21, 21, 12) :: dij=0 !! Reduced-density exponents of binary departure terms.
+   integer, dimension(21, 21) :: Kpolij=0 !! Number of polynomial binary departure terms.
+   integer, dimension(21, 21) :: Kexpij=0 !! Number of exponential binary departure terms.
+   real(8), dimension(21) :: T_c=0 !! Pure-fluid critical temperatures [K].
+   real(8), dimension(21) :: rho_c=0 !! Pure-fluid critical densities [mol/L].
+   real(8), dimension(21) :: M=0 !! Pure-fluid molar masses [g/mol].
+   real(8), dimension(21) :: P_c=0 !! Pure-fluid critical pressures [Pa].
+   real(8), dimension(21) :: acentric_factor=0 !! Pure-fluid acentric factors.
+   integer :: tmp1(3)=0 !! Fluid indices that share a repeated pure-fluid term set.
+   integer :: tmp2(14)=0 !! Fluid indices that share a repeated pure-fluid term set.
+   real(8), dimension(21, 7) :: n0i=0 !! Ideal-gas Helmholtz coefficients.
+   real(8), dimension(21, 7) :: th0i=0 !! Ideal-gas Helmholtz temperature parameters.
+   real(8) :: R=0 !! Gas constant of the original GERG2008 tables [J/(mol K)].
+   real(8) :: eps = 1d-10 !! Numerical tolerance.
 
    type :: Gerg2008Pure
-      integer :: Kpol
-      integer :: Kexp
-      real(8), allocatable :: n(:)
-      real(8), allocatable :: d(:)
-      real(8), allocatable :: t(:)
-      real(8), allocatable :: c(:)
+      !! # Gerg2008Pure
+      !! Coefficient arrays for one GERG2008 pure-fluid Helmholtz function.
+      !!
+      !! # Description
+      !! Stores the polynomial and exponential term counts and coefficients
+      !! needed to evaluate the pure-fluid residual contribution.
+      !!
+      !! # Examples
+      !! Filled by `get_original_parameters`; normally accessed through `Gerg2008`.
+      integer :: Kpol !! Number of polynomial terms
+      integer :: Kexp !! Number of exponential terms
+      real(8), allocatable :: n(:) !! Term coefficients (polynomial terms first, then exponential terms)
+      real(8), allocatable :: d(:) !! Density exponents
+      real(8), allocatable :: t(:) !! Temperature exponents
+      real(8), allocatable :: c(:) !! Density exponents \(c\) of the exponential damping factor \(\exp(-\delta^{c})\)
    end type Gerg2008Pure
 
    type :: Gerg2008Binary
+      !! # Gerg2008Binary
+      !! Reducing and departure parameters for one GERG2008 component pair.
+      !!
+      !! # Description
+      !! Stores binary reducing factors and polynomial/exponential departure
+      !! coefficients for the ordered component pair `(i,j)`.
+      !!
+      !! # Examples
+      !! Filled by `get_original_parameters` and consumed by `Gerg2008`.
       integer :: i !! Component i
       integer :: j !! Component j
-      real(8) :: Bv !! Binary volume interaction parameters
-      real(8) :: Gv !! Binary volume interaction parameters
-      real(8) :: Bt !! Binary temperature interaction parameters
-      real(8) :: Gt !! Binary temperature interaction parameters
-      integer :: Kpolij
-      integer :: Kexpij
-      real(8), allocatable :: nij(:)
-      real(8), allocatable :: dij(:)
-      real(8), allocatable :: tij(:)
-      real(8), allocatable :: ethaij(:)
-      real(8), allocatable :: epsij(:)
-      real(8), allocatable :: betaij(:)
-      real(8), allocatable :: gammaij(:)
-      real(8) :: Fij
+      real(8) :: Bv !! Volume reducing parameter \(\beta_{v,ij}\).
+      real(8) :: Gv !! Volume reducing parameter \(\gamma_{v,ij}\).
+      real(8) :: Bt !! Temperature reducing parameter \(\beta_{T,ij}\).
+      real(8) :: Gt !! Temperature reducing parameter \(\gamma_{T,ij}\).
+      integer :: Kpolij !! Number of polynomial terms in the binary departure function.
+      integer :: Kexpij !! Number of exponential terms in the binary departure function.
+      real(8), allocatable :: nij(:) !! Departure-term coefficients (polynomial terms first, then exponential terms).
+      real(8), allocatable :: dij(:) !! Density exponents for binary departure terms.
+      real(8), allocatable :: tij(:) !! Temperature exponents for binary departure terms.
+      real(8), allocatable :: ethaij(:) !! Coefficients \(\eta\) of the quadratic damping term \(-\eta(\delta-\varepsilon)^2\).
+      real(8), allocatable :: epsij(:) !! Density offsets \(\varepsilon\) of the quadratic damping term.
+      real(8), allocatable :: betaij(:) !! Coefficients \(\beta\) of the linear damping term \(-\beta(\delta-\gamma)\).
+      real(8), allocatable :: gammaij(:) !! Density offsets \(\gamma\) of the linear damping term.
+      real(8) :: Fij !! Weighting factor \(F_{ij}\) of the binary departure function (zero when the pair has none).
    end type Gerg2008Binary
 
 contains
 
    subroutine get_original_parameters(ids, pures, binaries, components)
-      integer, intent(in) :: ids(:)
-      type(Gerg2008Pure), intent(out) :: pures(:)
-      type(Gerg2008Binary), intent(out) :: binaries(:, :)
-      type(Substances), intent(out) :: components
+      !! # get_original_parameters
+      !!
+      !! # Description
+      !! Load the original GERG2008 parameters for the selected components.
+      !!
+      !! Returns the pure-fluid parameters, the binary interaction
+      !! parameters, and a [[Substances]] object with the critical constants
+      !! of the selected components (\(T_c\) [K], \(P_c\) [bar], \(V_c\) [L/mol],
+      !! acentric factor).
+      integer, intent(in) :: ids(:) !! GERG2008 component identifiers
+      type(Gerg2008Pure), intent(out) :: pures(:) !! Pure-fluid parameters
+      type(Gerg2008Binary), intent(out) :: binaries(:, :) !! Binary parameters
+      type(Substances), intent(out) :: components !! Component properties
 
-      integer :: i, j
-      integer :: nc
-      integer :: ikpol, ikexp
-      real(pr) :: Tc(size(ids)), Pc(size(ids)), w(size(ids)), Vc(size(ids))
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: nc !! Number of components.
+      integer :: ikpol
+      integer :: ikexp
+      real(pr) :: Tc(size(ids))
+      real(pr) :: Pc(size(ids))
+      real(pr) :: w(size(ids)) !! Acentric factors.
+      real(pr) :: Vc(size(ids))
 
       nc = size(ids)
       call original_parameters()
@@ -106,8 +171,13 @@ contains
    end subroutine get_original_parameters
 
    subroutine original_parameters()
+      !! # original_parameters
+      !!
+      !! # Description
       !! Parameter table of the original GERG 2008 model
-      integer :: i, j, k
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: k !! Loop index `k`.
       R = 8.314472d0
 
       P_c(1) = 46.0 * 1d5

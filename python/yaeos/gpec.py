@@ -26,7 +26,7 @@ class GPEC:
     model : ArModel
         The thermodynamic model to be used for phase equilibria calculations.
     max_pressure : float, optional
-        The maximum pressure for the calculations (default is 2500).
+        The maximum pressure for the calculations [bar] (default is 2500).
     max_points : int, optional
         The maximum number of points to be calculated in the critical line
         (default is 10000).
@@ -43,7 +43,7 @@ class GPEC:
         starting from the almost pure second component (default is 0.9999).
     x10 : float, optional
         Initial mole fraction of the first component for the critical line
-        starting from the almost pure first component (default is 0.99999).
+        starting from the almost pure first component (default is 1 - 1e-9).
 
     Attributes
     ----------
@@ -268,13 +268,13 @@ class GPEC:
         Parameters
         ----------
         temperature : float
-            The temperature at which to calculate the Pxy phase diagram.
+            The temperature at which to calculate the Pxy phase diagram [K].
         x10 : float, optional
             Initial molar fraction of the first component for the line that
-            starts from the almost pure first component (default is 1e-5).
+            starts from the almost pure first component (default is 0.9999).
         x20 : float, optional
             Initial molar fraction of the second component for the line that
-            starts from the almost pure second component (default is 1e-5).
+            starts from the almost pure second component (default is 0.9999).
         dx10 : float, optional
             Step size for the line that starts from the almost pure first
             component (default is 1e-3).
@@ -384,13 +384,13 @@ class GPEC:
         Parameters
         ----------
         temperature : float
-            The temperature at which to plot the Pxy phase diagram.
+            The temperature at which to plot the Pxy phase diagram [K].
         x10 : float, optional
             Initial molar fraction of the first component for the line that
-            starts from the almost pure first component (default is 1e-5).
+            starts from the almost pure first component (default is 0.9999).
         x20 : float, optional
             Initial molar fraction of the second component for the line that
-            starts from the almost pure second component (default is 1e-5).
+            starts from the almost pure second component (default is 0.9999).
         dx10 : float, optional
             Step size for the line that starts from the almost pure first
             component (default is 1e-3).
@@ -441,16 +441,16 @@ class GPEC:
         Parameters
         ----------
         pressure : float
-            The pressure at which to calculate the Txy phase diagram.
+            The pressure at which to calculate the Txy phase diagram [bar].
         y10 : float, optional
             Initial molar fraction of the first component for the line that
-            starts from the almost pure first component (default is 1e-5).
+            starts from the almost pure first component (default is 0.9999).
         y20 : float, optional
             Initial molar fraction of the second component for the line that
-            starts from the almost pure second component (default is 1e-5).
+            starts from the almost pure second component (default is 0.9999).
         dy10 : float, optional
             Step size for the line that starts from the almost pure first
-            component (default is -1e-3).
+            component (default is 1e-3).
         dy20 : float, optional
             Step size for the line that starts from the almost pure second
             component (default is 1e-3).
@@ -560,7 +560,7 @@ class GPEC:
         Parameters
         ----------
         pressure : float
-            The pressure at which to plot the Txy phase diagram.
+            The pressure at which to plot the Txy phase diagram [bar].
         y10 : float, optional
             Initial molar fraction of the first component for the line that
             starts from the almost pure first component (default is 0.9999).
@@ -569,7 +569,7 @@ class GPEC:
             starts from the almost pure second component (default is 0.9999).
         dy10 : float, optional
             Step size for the line that starts from the almost pure first
-            component (default is -1e-3).
+            component (default is 1e-3).
         dy20 : float, optional
             Step size for the line that starts from the almost pure second
             component (default is 1e-3).

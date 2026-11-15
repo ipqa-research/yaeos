@@ -13,6 +13,11 @@ def fmatrix_as_str(array: np.ndarray, array_name: str) -> str:
         precision variable `pr`
     array_name: str
         Name that the variable should have in the Fortran side
+
+    Returns
+    -------
+    str
+        Fortran assignment lines, one per matrix row.
     """
     array_str = ""
     n = len(array)
@@ -38,6 +43,12 @@ def f3dmatrix_as_str(array: np.ndarray, array_name: str) -> str:
         precision variable `pr`
     array_name: str
         Name that the variable should have in the Fortran side
+
+    Returns
+    -------
+    str
+        Fortran assignment lines, one per element. Unlike the 1D and 2D
+        writers, values are written without the ``_pr`` suffix.
     """
     array_str = ""
     n = len(array)
@@ -60,6 +71,11 @@ def f1darray_as_str(array: np.ndarray, array_name: str) -> str:
         precision variable `pr`
     array_name: str
         Name that the variable should have in the Fortran side
+
+    Returns
+    -------
+    str
+        Fortran assignment line.
     """
     array_str = f"{array_name} = ["
     n = len(array)

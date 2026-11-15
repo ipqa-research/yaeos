@@ -8,6 +8,20 @@ title: UNIFAC-LV
 
 ## Model description
 
+Choose original UNIFAC for a structure-based estimate of liquid activity
+coefficients when the original group's interaction table covers your chemistry.
+It was developed for liquid-vapor data: do not assume that availability of a
+parameter automatically establishes accurate liquid-liquid equilibria. For a
+well-measured binary, a validated molecular fit may be better; see the
+[model selection guide](../index.html).
+
+Like [UNIQUAC](../uniquac.html), it combines a size/shape term with an energetic
+term. Unlike a molecular UNIQUAC fit, it transfers interactions between
+functional groups. The prediction is an excess property relative to ideal
+liquid mixing, not an ideal-gas residual property. Its coefficients correct
+activity, \(a_i=x_i\gamma_i\), and are not vapor fugacity coefficients. See
+the [family overview](index.html) for reference states and input preparation.
+
 This is the original and classic Liquid-Vapor UNIFAC model. In this model, the
 parameters are defined as:
 $$
@@ -25,6 +39,21 @@ $$
     E_{jk} = \text{exp} \left(- \frac{U_{jk}}{RT} \right) = \text{exp} \left(- \frac{a_{jk}}{T} \right)
 $$
 
+Here `T` is absolute temperature in K, \(a_{jk}=U_{jk}/R\) is in K, and
+\(E_{jk}\) is dimensionless. A larger positive coefficient suppresses that
+directional contact factor at fixed temperature. In general \(a_{jk}\ne a_{kj}\).
+These are group interaction coefficients, not ordinary NRTL `a` coefficients
+or molecular UNIQUAC coefficients. `setup_unifac` supplies them from its default
+parameter table; you normally provide only subgroup IDs and counts.
+
+The single-coefficient law means the original model has no explicit
+temperature dependence beyond \(1/T\). That is a real limitation: a fit
+obtained at one temperature is used at another with no correction for how the
+interaction enthalpy changes with temperature. If you need temperature
+dependence over a wide range, or accurate excess enthalpies, compare with
+[Dortmund](dortmund.html), whose interaction law has fitted linear and
+quadratic temperature terms.
+
 ## Subgroups list
 
 The list of the functional groups and its interaction parameters could be 
@@ -34,6 +63,17 @@ accessed on the DDBST web page:
 We reproduce here the list of functional groups. To instantiate a UNIFAC model
 you must define which functional groups are used in a molecule by the Subgroup
 Number column.
+
+The main-group labels explain shared interaction parameters; they are **not**
+the IDs to enter. `R` and `Q` are dimensionless relative size and area. This
+published reference table is retained for convenience; verify availability and
+interaction coverage in the installed library rather than assuming the web
+table and the bundled parameter revision are identical.
+
+These numbers belong to the **original UNIFAC** variant only. Other variants
+reuse some of the same integers for different fragments, so do not copy a
+subgroup number from the [Dortmund](dortmund.html) or [PSRK](psrk.html) tables
+into this model.
 
 |   Subgroup number | Subgroup Name   | Maingroup    |      R |      Q |
 |:-----------------:|:---------------:|:------------:|:------:|:------:|
@@ -171,10 +211,12 @@ fortran_code = writers.to_yaeos(groups, unifac)
 print(fortran_code)
 ```
 
-And you will obtain:
+Typical generated output is a **setup snippet**, not a complete program. Inspect
+the proposed decomposition and ensure it uses the original UNIFAC variant;
+automatic group assignment does not validate mixture predictions:
 
 ```fortran
-use yaeos__models_ge_group_contribution_unifac, only: Groups
+use yaeos, only: Groups
 
 type(Groups) :: molecules(3)
 
@@ -204,13 +246,17 @@ the logarithm of activity coefficients of the model for a 0.5 mole fraction of
 each, and a temperature of 298.0 K.
 
 ```fortran
-use yaeos__constants, only: pr
-use yaeos__models_ge_group_contribution_unifac, only: Groups, UNIFAC, setup_unifac
+program original_unifac_activity
+use yaeos, only: pr, Groups, UNIFAC, setup_unifac
+implicit none
 
 ! Variables declarations
 type(UNIFAC) :: model
 type(Groups) :: molecules(2)
 real(pr) :: ln_gammas(2)
+real(pr) :: n(2)
+real(pr) :: T
+real(pr) :: Ge
 
 ! Variables instances
 ! Ethanol definition [CH3, CH2, OH]
@@ -225,10 +271,54 @@ molecules(2)%number_of_groups = [1]
 model = setup_unifac(molecules)
 
 ! Calculate ln_gammas
-call model%ln_activity_coefficient([0.5_pr, 0.5_pr], 298.0_pr, ln_gammas)
+n = [0.5_pr, 0.5_pr]
+T = 298.0_pr
+call model%ln_activity_coefficient(n, T, ln_gammas)
+call model%excess_gibbs(n, T, Ge=Ge)
 
-print *, ln_gammas
+print *, "ln(gamma): ethanol, water = ", ln_gammas
+print *, "gamma = ", exp(ln_gammas)
+print *, "Molar GE [bar L/mol] = ", Ge/sum(n)
+end program original_unifac_activity
 ```
+
+This is a complete program. Ethanol uses one CH3, one CH2, and one OH fragment;
+water uses one dedicated H2O subgroup. Counts are per molecule, independent of
+the mixture amounts. Results follow ethanol–water order, with dimensionless
+coefficients obtained by exponentiating the natural-log output. The printed
+molar excess Gibbs energy uses the library's bar L/mol convention (multiply by
+100 for J/mol); it is not the total Gibbs energy of mixing.
+
+## Checks, common errors, and next steps
+
+The most common failures with this model are input errors that the program
+cannot detect. Make sure `groups_ids` and `number_of_groups` have the same
+length, that counts are positive, and that each subgroup appears once with its
+total occurrence count. Check both directions of every interaction your
+mixtures need. An unavailable group-pair interaction is not a zero-energy
+contact: it means the prediction for that pair has no basis, and nothing in
+the output will say so.
+
+Two specific traps deserve naming. Do not enter main-group numbers in place of
+subgroup numbers; the constructor will accept any integer it finds in its
+table and produce a plausible-looking answer for the wrong fragment. And do not
+decompose methanol as an ordinary CH3 plus an OH when the model defines a
+dedicated CH3OH subgroup, because that changes both the size and the interaction
+of the molecule.
+
+Use nonnegative mole amounts with a positive total and kelvin temperatures.
+Scaling all amounts should leave `gamma` unchanged, and the pure component's
+coefficient should approach 1 as the mixture approaches that pure component.
+
+Know what the model does not do. It calculates no liquid density, no vapor
+fugacity, and no chemical speciation. Predictions outside a group's fitted
+range, particularly for very dilute solutes or for a different equilibrium type
+than the one the parameters were fitted to, need experimental checks. Continue
+to the [shared property methods](../index.html) for excess enthalpies and
+derivatives, or compare against [Dortmund](dortmund.html) using its **own**
+group definitions and parameters. A full
+[phase-equilibrium calculation](../../phase_equilibrium/index.html) requires more
+than evaluating a single liquid composition.
 
 ## References
 
@@ -247,19 +337,19 @@ Industrial & Engineering Chemistry Process Design and Development, 21(1),
 118–127.
 [https://doi.org/10.1021/i200016a021](https://doi.org/10.1021/i200016a021)
 4. Macedo, E. A., Weidlich, U., Gmehling, J., & Rasmussen, P. (1983).
-Vapor-liquid equilibriums by UNIFAC group contribution. Revision and extension.
-5. Industrial & Engineering Chemistry Process Design and Development, 22(4),
+Vapor-liquid equilibriums by UNIFAC group contribution. Revision and extension. 3.
+Industrial & Engineering Chemistry Process Design and Development, 22(4),
 676–678.
 [https://doi.org/10.1021/i200023a023](https://doi.org/10.1021/i200023a023)
-6. Tiegs, D., Rasmussen, P., Gmehling, J., & Fredenslund, A. (1987).
+5. Tiegs, D., Rasmussen, P., Gmehling, J., & Fredenslund, A. (1987).
 Vapor-liquid equilibria by UNIFAC group contribution. 4. Revision and
 extension. Industrial & Engineering Chemistry Research, 26(1), 159–161.
 [https://doi.org/10.1021/ie00061a030](https://doi.org/10.1021/ie00061a030)
-7. Hansen, H. K., Rasmussen, P., Fredenslund, A., Schiller, M., & Gmehling, J.
+6. Hansen, H. K., Rasmussen, P., Fredenslund, A., Schiller, M., & Gmehling, J.
 (1991). Vapor-liquid equilibria by UNIFAC group contribution. 5. Revision and
 extension. Industrial & Engineering Chemistry Research, 30 (10), 2352–2355.
 [https://doi.org/10.1021/ie00058a017](https://doi.org/10.1021/ie00058a017)
-8. Wittig, R., Lohmann, J., & Gmehling, J. (2003). Vapor−Liquid Equilibria by
+7. Wittig, R., Lohmann, J., & Gmehling, J. (2003). Vapor−Liquid Equilibria by
 UNIFAC Group Contribution. 6. Revision and Extension. Industrial & Engineering
 Chemistry Research, 42(1), 183–188.
 [https://doi.org/10.1021/ie020506l](https://doi.org/10.1021/ie020506l)

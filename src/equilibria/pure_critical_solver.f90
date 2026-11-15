@@ -1,7 +1,6 @@
 module yaeos__critical_pure_point_solver
-   !! # `critical_pure_point_solver`
-   !! Calculation of pure-component critical points
-   !! using the yaeos equation of state and numerical derivatives.
+   !! # Pure-component critical-point solver
+   !! Find pure-fluid critical constants for each component in an EOS model.
    !!
    !! # Description
    !! The critical point of a pure component is defined by the conditions:
@@ -13,6 +12,11 @@ module yaeos__critical_pure_point_solver
    !! This module solves the resulting nonlinear system in the variables
    !! `(V, T)` using a Newton-Raphson iteration. Each residual is evaluated
    !! from the equation-of-state pressure and its numerical derivatives.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! call find_critical_points_all_components(model, nc, Vc, Tc, Pc, converged)
+   !! ```
 
    use yaeos__constants, only: pr
    use yaeos__models_ar, only: ArModel
@@ -21,13 +25,13 @@ module yaeos__critical_pure_point_solver
    private
    public :: find_critical_points_all_components
 
-   integer, parameter :: MAX_ITER = 151
-   real(pr), parameter :: TOL_RES = 2.0e-8_pr      ! residual tolerance
-   real(pr), parameter :: TOL_STEP = 2.0e-6_pr     ! step tolerance
+   integer, parameter :: MAX_ITER = 151 !! Maximum Newton iterations per component.
+   real(pr), parameter :: TOL_RES = 2.0e-8_pr !! Convergence threshold for the critical residual norm.
+   real(pr), parameter :: TOL_STEP = 2.0e-6_pr !! Convergence threshold for the Newton step norm.
 
    ! Steps for numerical derivatives
-   real(pr), parameter :: DV_STEP = 2.0e-4_pr      ! L/mol
-   real(pr), parameter :: DT_STEP = 2.0e-2_pr      ! K
+   real(pr), parameter :: DV_STEP = 2.0e-4_pr !! Finite-difference increment in volume [L/mol].
+   real(pr), parameter :: DT_STEP = 2.0e-2_pr !! Finite-difference increment in temperature [K].
 
 contains
 
@@ -35,15 +39,31 @@ contains
    ! MAIN ROUTINE: Find critical point for each pure component
    ! ========================================================================
    subroutine find_critical_points_all_components(model, nc, Vc, Tc, Pc, converged)
-      class(ArModel), intent(in) :: model
-      integer, intent(in) :: nc
-      real(pr), intent(out) :: Vc(nc)
-      real(pr), intent(out) :: Tc(nc)
-      real(pr), intent(out) :: Pc(nc)
-      logical, intent(out) :: converged(nc)
+      !! # find_critical_points_all_components
+      !! Estimate pure-component critical constants for every model component.
+      !!
+      !! # Description
+      !! For each component, first obtains a starting estimate from pure-fluid
+      !! saturation calculations, then solves the criticality equations
+      !! \(P_V=0\) and \(P_{VV}=0\) with a two-variable Newton iteration.
+      !! A failed solve is reported in `converged`; the corresponding output
+      !! values contain the final iterate and must not be treated as validated
+      !! critical constants.
+      !!
+      !! # Examples
+      !! ```fortran
+      !! call find_critical_points_all_components(model, nc, Vc, Tc, Pc, ok)
+      !! ```
+      class(ArModel), intent(in) :: model !! Equation of state used for pure-fluid saturation properties.
+      integer, intent(in) :: nc !! Number of components; must match the model.
+      real(pr), intent(out) :: Vc(nc) !! Critical molar volumes [L/mol].
+      real(pr), intent(out) :: Tc(nc) !! Critical temperatures [K].
+      real(pr), intent(out) :: Pc(nc) !! Critical pressures [bar].
+      logical, intent(out) :: converged(nc) !! True for components whose solve converged.
 
-      integer :: i
-      real(pr) :: V_init, T_init
+      integer :: i !! Loop/index variable.
+      real(pr) :: V_init
+      real(pr) :: T_init
       logical :: conv
 
       ! Fixed: Loop should usually start at 1 to cover all components
@@ -59,18 +79,31 @@ contains
    ! INITIAL ESTIMATE of critical point
    ! ========================================================================
    subroutine estimate_critical_point(model, i, nc, V_est, T_est)
+      !! # estimate_critical_point
+      !! Construct an initial pure-component critical-point estimate.
+      !!
+      !! # Description
+      !! Uses successive pure-fluid saturation calculations and the ratio of
+      !! vapor to liquid volume to move the trial temperature toward the
+      !! critical region. The estimates are initial guesses, not final results.
       use yaeos__equilibria_boundaries_pure_saturation, only:pure_saturation_line, PurePsat
-      class(ArModel), intent(in) :: model
-      integer, intent(in) :: i
-      integer, intent(in) :: nc
-      real(pr), intent(out) :: V_est
-      real(pr), intent(out) :: T_est
+      class(ArModel), intent(in) :: model !! Equation of state used to evaluate pressure and derivatives.
+      integer, intent(in) :: i !! One-based component index.
+      integer, intent(in) :: nc !! Number of components in the model.
+      real(pr), intent(out) :: V_est !! Estimated critical volume [L/mol].
+      real(pr), intent(out) :: T_est !! Estimated critical temperature [K].
 
-      real(pr) :: z(nc), T, P_sat, VL, VV, ratio, dT
+      real(pr) :: z(nc) !! Feed or overall composition.
+      real(pr) :: T
+      real(pr) :: P_sat
+      real(pr) :: VL
+      real(pr) :: VV
+      real(pr) :: ratio
+      real(pr) :: dT
       logical :: psat_converged
-      integer :: iter
+      integer :: iter !! Iteration count.
 
-      type(PurePsat) :: psat
+      type(PurePsat) :: psat !! Declared saturation-line result; currently unused by this estimate.
 
       z = 0.0_pr
       z(i) = 1.0_pr
@@ -108,16 +141,35 @@ contains
    ! SOLVER: Newton-Raphson 2D to solve [dPdV, d²PdV²] = 0
    ! ========================================================================
    subroutine solve_critical_point(model, nc, i_comp, V_init, T_init, Vc, Tc, Pc, converged)
-      class(ArModel), intent(in) :: model
-      integer, intent(in) :: nc, i_comp
-      real(pr), intent(in) :: V_init, T_init
-      real(pr), intent(out) :: Vc, Tc, Pc
-      logical, intent(out) :: converged
+      !! # solve_critical_point
+      !! Solve the pure-component criticality equations from an initial guess.
+      !!
+      !! # Description
+      !! The residual vector is \((P_V,P_{VV})\). Its Jacobian with respect to
+      !! \((V,T)\) is approximated by centered finite differences, and a direct
+      !! 2-by-2 Newton step is applied. Non-positive trial volume or temperature
+      !! is reset to half the corresponding initial value.
+      class(ArModel), intent(in) :: model !! Equation of state used for pressure derivatives.
+      integer, intent(in) :: nc !! Number of components.
+      integer, intent(in) :: i_comp !! One-based index of the pure component.
+      real(pr), intent(in) :: V_init !! Initial molar volume [L/mol].
+      real(pr), intent(in) :: T_init !! Initial temperature [K].
+      real(pr), intent(out) :: Vc !! Critical molar volume [L/mol].
+      real(pr), intent(out) :: Tc !! Critical temperature [K].
+      real(pr), intent(out) :: Pc !! Critical pressure [bar].
+      logical, intent(out) :: converged !! Whether either convergence test succeeded.
 
-      real(pr) :: V, T, P
-      real(pr) :: f1, f2, norm_f
-      real(pr) :: J(2,2), J_inv(2,2), det, dX(2)
-      integer :: iter
+      real(pr) :: V
+      real(pr) :: T
+      real(pr) :: P
+      real(pr) :: f1
+      real(pr) :: f2
+      real(pr) :: norm_f
+      real(pr) :: J(2,2) !! Jacobian matrix.
+      real(pr) :: J_inv(2,2)
+      real(pr) :: det
+      real(pr) :: dX(2)
+      integer :: iter !! Iteration count.
 
       V = V_init
       T = T_init
@@ -180,12 +232,26 @@ contains
    ! Evaluate residuals: [f1, f2] = [dP/dV, d²P/dV²]
    ! ========================================================================
    subroutine residual_critical_eqs(model, nc, i_comp, V, T, f1, f2, P)
-      class(ArModel), intent(in) :: model
-      integer, intent(in) :: i_comp, nc
-      real(pr), intent(in) :: V, T
-      real(pr), intent(out) :: f1, f2, P
+      !! # residual_critical_eqs
+      !! Evaluate the two criticality residuals at a pure-fluid state.
+      !!
+      !! # Description
+      !! Computes \(f_1=P_V\) from the EOS and \(f_2=P_{VV}\) by a centered
+      !! finite difference of \(P_V\) in volume.
+      class(ArModel), intent(in) :: model !! Equation of state used for pressure derivatives.
+      integer, intent(in) :: i_comp !! One-based index of the pure component.
+      integer, intent(in) :: nc !! Number of components.
+      real(pr), intent(in) :: V !! Total volume [L].
+      real(pr), intent(in) :: T !! Temperature [K].
+      real(pr), intent(out) :: f1 !! First criticality residual, pressure differentiated with respect to volume.
+      real(pr), intent(out) :: f2 !! Second criticality residual, pressure differentiated twice with respect to volume.
+      real(pr), intent(out) :: P !! Pressure [bar].
 
-      real(pr) :: z(nc), dPdV, dPdV_plus, dPdV_minus, Pin
+      real(pr) :: z(nc)
+      real(pr) :: dPdV
+      real(pr) :: dPdV_plus
+      real(pr) :: dPdV_minus
+      real(pr) :: Pin
 
       ! Fixed: Pure component mole fraction is 1.0, others 0.0
       z = 0.0_pr
@@ -205,13 +271,27 @@ contains
    ! Jacobian: matrix of derivatives ∂f_i / ∂x_j
    ! ========================================================================
    subroutine jacobian_critical_eqs(model, nc, i_comp, V, T, J)
-      class(ArModel), intent(in) :: model
-      integer, intent(in) :: i_comp, nc
-      real(pr), intent(in) :: V, T
-      real(pr), intent(out) :: J(2,2)
+      !! # jacobian_critical_eqs
+      !! Approximate the Jacobian of \((P_V,P_{VV})\) with respect to \((V,T)\).
+      !!
+      !! # Description
+      !! Centered finite differences use the module increments `DV_STEP` and
+      !! `DT_STEP`.
+      class(ArModel), intent(in) :: model !! Equation of state used to evaluate the critical residual Jacobian.
+      integer, intent(in) :: i_comp !! One-based index of the pure component.
+      integer, intent(in) :: nc !! Number of components.
+      real(pr), intent(in) :: V !! Total volume [L].
+      real(pr), intent(in) :: T !! Temperature [K].
+      real(pr), intent(out) :: J(2,2) !! Jacobian rows \((P_V,P_{VV})\), columns \((V,T)\).
 
-      real(pr) :: f1_V_plus, f1_V_minus, f1_T_plus, f1_T_minus
-      real(pr) :: f2_V_plus, f2_V_minus, f2_T_plus, f2_T_minus
+      real(pr) :: f1_V_plus
+      real(pr) :: f1_V_minus
+      real(pr) :: f1_T_plus
+      real(pr) :: f1_T_minus
+      real(pr) :: f2_V_plus
+      real(pr) :: f2_V_minus
+      real(pr) :: f2_T_plus
+      real(pr) :: f2_T_minus
       real(pr) :: P_dummy
 
       ! ∂f1/∂V and ∂f2/∂V

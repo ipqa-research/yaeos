@@ -1,4 +1,19 @@
 module yaeos__equilibria_saturation_points
+   !! # Saturation points
+   !!
+   !! # Description
+   !! Bubble, dew, and liquid-liquid saturation points at specified
+   !! temperature or pressure. The module first iterates a scalar Newton
+   !! method on \(\sum_i z_i K_i - 1 = 0\) with successive-substitution
+   !! updates of \(K_i\), and falls back to a full Newton solve in
+   !! \(X = [\ln K_i, \ln T, \ln P]\) if that does not converge.
+   !! A non-converged result is returned with `kind = "failed"`.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! sat = saturation_pressure(model, z, T, kind="bubble")
+   !! sat = saturation_temperature(model, z, P, kind="dew")
+   !! ```
    use yaeos__constants, only: pr, R
    use yaeos__models_ar, only: ArModel
    use yaeos__equilibria_equilibrium_state, only: EquilibriumState
@@ -8,9 +23,15 @@ module yaeos__equilibria_saturation_points
    implicit none
 
    real(pr) :: tol = 1e-6_pr
+   !! Convergence tolerance for the saturation solvers
    integer :: max_iterations = 2000
+   !! Maximum number of iterations for the full Newton solver
    integer :: iters_first_step = 30
+   !! Maximum iterations for the initial scalar Newton step.
+   !! Note: [[saturation_temperature]] overwrites it with 100.
    real(pr) :: step_tol = 0.1_pr
+   !! Currently unused (the scalar pressure step is limited to \(0.1P\)
+   !! in code).
 
 contains
 
@@ -36,32 +57,43 @@ contains
       !!
       !! updating \(K_i\) at each step as the ratio of fugacities of the phases.
       !! If the solution does not converge, it will use a full Newton method to
-      !! solve the system of equations using the variables \(K_i\) and \(\ln P\).
+      !! solve the system in \(X = [\ln K_i, \ln T, \ln P]\) with \(\ln T\)
+      !! specified. On failure the returned state has `kind = "failed"`.
       use yaeos__auxiliar, only: optval
       use yaeos__m_s_sp, only: solve_TP
-      class(ArModel), target, intent(in) :: model
+      class(ArModel), target, intent(in) :: model !! EOS used to evaluate phase fugacities.
       real(pr), intent(in) :: n(:) !! Composition vector [moles / molar fraction]
       real(pr), intent(in) :: t !! Temperature [K]
       character(len=*), intent(in) :: kind !! [bubble|dew|liquid-liquid]
-      real(pr), optional, intent(in) :: p0 !! Initial pressure [bar]
-      real(pr), optional, intent(in) :: y0(:) !! Initial composition
-      integer, optional, intent(in) :: max_iters !! Maximum number of iterations
+      real(pr), optional, intent(in) :: p0 !! Initial pressure [bar], defaults to the Wilson estimate
+      real(pr), optional, intent(in) :: y0(:) !! Initial guess used as \(y\) to build \(K\) (`y/z` for bubble and liquid-liquid, `z/y` for dew); defaults to \(z K^{Wilson}\).
+      integer, optional, intent(in) :: max_iters !! Currently ignored: the full Newton solve uses the module variable `max_iterations`.
 
       real(pr) :: P
 
-      real(pr) :: k(size(n)), y(size(n)), z(size(n)), lnk(size(n))
-      real(pr) :: lnfug_y(size(n)), dlnphi_dp_y(size(n))
-      real(pr) :: lnfug_z(size(n)), dlnphi_dp_z(size(n))
-      real(pr) :: Vz, Vy
+      real(pr) :: k(size(n))
+      real(pr) :: y(size(n)) !! Incipient/second phase composition.
+      real(pr) :: z(size(n)) !! Feed or overall composition.
+      real(pr) :: lnk(size(n))
+      real(pr) :: lnfug_y(size(n))
+      real(pr) :: dlnphi_dp_y(size(n))
+      real(pr) :: lnfug_z(size(n))
+      real(pr) :: dlnphi_dp_z(size(n))
+      real(pr) :: Vz
+      real(pr) :: Vy
 
       character(len=50) :: incipient
       character(len=50) :: main
 
-      real(pr) :: f, step
-      integer :: its, iterations
+      real(pr) :: f
+      real(pr) :: step
+      integer :: its !! Iteration count.
+      integer :: iterations
 
-      real(pr) :: X(size(n)+2), S
-      integer :: ns, nc
+      real(pr) :: X(size(n)+2)
+      real(pr) :: S
+      integer :: ns
+      integer :: nc !! Number of components.
 
       ! =======================================================================
       ! Handle arguments
@@ -162,52 +194,71 @@ contains
    end function saturation_pressure
 
    type(EquilibriumState) function saturation_temperature(model, n, p, kind, t0, y0, max_iters)
+      !! # saturation_temperature
+      !!
+      !! # Description
       !! Saturation temperature calculation function.
       !!
-      !! Calculates the saturation pressure of a multicomponent mixture with
+      !! Calculates the saturation temperature of a multicomponent mixture with
       !! a given molar composition `n`.
       !! It is possible to calculate:
       !!
       !! - Bubble point: `kind="bubble"`
       !! - Dew point: `kind="dew"`
       !! - Liquid-Liquid point: `kind="liquid-liquid"`
+      !!
       !! It will first try to converge a solution using a \(1D\) Newton method to
       !! solve the equation
       !! \[
-      !!    f(P) = \sum_i z_i K_i - 1 = 0
+      !!    f(T) = \sum_i z_i K_i - 1 = 0
       !! \]
       !!
       !! updating \(K_i\) at each step as the ratio of fugacities of the phases.
       !! If the solution does not converge, it will use a full Newton method to
-      !! solve the system of equations using the variables \(K_i\) and \(\ln T\).
+      !! solve the system in \(X = [\ln K_i, \ln T, \ln P]\) with \(\ln P\)
+      !! specified. On failure the returned state has `kind = "failed"`.
       use yaeos__auxiliar, only: optval
       use yaeos__m_s_sp, only: solve_TP
-      class(ArModel), target, intent(in) :: model
+      class(ArModel), target, intent(in) :: model !! EOS used to evaluate phase fugacities.
       real(pr), intent(in) :: n(:) !! Composition vector [moles / molar fraction]
       real(pr), intent(in) :: p !! Pressure [bar]
       character(len=*), intent(in) :: kind !! [bubble|dew|liquid-liquid]
-      real(pr), optional, intent(in) :: t0 !! Initial temperature [K]
-      real(pr), optional, intent(in) :: y0(:) !! Initial composition
-      integer, optional, intent(in) :: max_iters !! Maximum number of iterations
+      real(pr), optional, intent(in) :: t0 !! Initial temperature [K], defaults to 250 K
+      real(pr), optional, intent(in) :: y0(:) !! Initial guess used as \(y\) to build \(K\) (`y/z` for bubble and liquid-liquid, `z/y` for dew); defaults to \(z K^{Wilson}\).
+      integer, optional, intent(in) :: max_iters !! Currently ignored: the full Newton solve uses the module variable `max_iterations`.
 
-      real(pr) :: t, vy, vz
+      real(pr) :: t
+      real(pr) :: vy
+      real(pr) :: vz
 
-      real(pr) :: k(size(n)), y(size(n)), z(size(n)), lnk(size(n))
-      real(pr) :: lnfug_y(size(n)), dlnphi_dt_y(size(n))
-      real(pr) :: lnfug_z(size(n)), dlnphi_dt_z(size(n))
+      real(pr) :: k(size(n))
+      real(pr) :: y(size(n)) !! Incipient/second phase composition.
+      real(pr) :: z(size(n)) !! Feed or overall composition.
+      real(pr) :: lnk(size(n))
+      real(pr) :: lnfug_y(size(n))
+      real(pr) :: dlnphi_dt_y(size(n))
+      real(pr) :: lnfug_z(size(n))
+      real(pr) :: dlnphi_dt_z(size(n))
 
       character(len=50) :: incipient
       character(len=50) :: main
 
-      real(pr) :: f, step
-      integer :: its, iterations
+      real(pr) :: f
+      real(pr) :: step
+      integer :: its !! Iteration count.
+      integer :: iterations
 
-      logical :: is_incipient(size(n))
+      logical :: is_incipient(size(n)) !! `.false.` for components absent from the initial `y`.
 
-      real(pr) :: T1, T2, f1, f2
+      real(pr) :: T1
+      real(pr) :: T2
+      real(pr) :: f1 !! Unused.
+      real(pr) :: f2 !! Unused.
 
-      integer :: nc, ns
-      real(pr) :: X(size(n)+2), S
+      integer :: nc !! Number of components.
+      integer :: ns
+      real(pr) :: X(size(n)+2)
+      real(pr) :: S
 
       ! =======================================================================
       ! Handle arguments

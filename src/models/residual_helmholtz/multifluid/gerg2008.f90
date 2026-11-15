@@ -1,4 +1,19 @@
 module yaeos__models_ar_gerg2008
+   !! # GERG2008 equation of state
+   !!
+   !! # Description
+   !! Multifluid equation of state for natural-gas mixtures based on the
+   !! reduced Helmholtz energy. The model is constructed with
+   !! [[gerg_2008]] from the component identifiers in
+   !! [[G2008Components]].
+   !! The model uses the composition-dependent reducing functions and binary
+   !! departure terms of the original 21-component formulation.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! model = gerg_2008([G2008Components%methane, G2008Components%nitrogen])
+   !! call model%pressure(n, V, T, P)
+   !! ```
    use yaeos__constants, only: Ryaeos => R, pr !! Ideal gas constants used on yaeos
    use yaeos__adiff_hyperdual_ar_api, only: ArModelAdiff
    use yaeos__models_ar_cubic_implementations, only: SoaveRedlichKwong
@@ -10,10 +25,26 @@ module yaeos__models_ar_gerg2008
    implicit none
 
    type, extends(ArModelAdiff) :: Gerg2008
-      type(Gerg2008Pure), allocatable :: pures(:)
-      type(Gerg2008Binary), allocatable :: binaries(:, :)
-      integer, allocatable :: ids(:)
-      type(CubicEoS) :: srk
+      !! # Gerg2008
+      !!
+      !! GERG2008 multifluid equation of state. Holds the pure-fluid and
+      !! binary parameters of the selected components and an SRK model used
+      !! to initialize the volume solver.
+      !!
+      !! # Description
+      !! Provides the standard residual Helmholtz properties through the
+      !! inherited hyperdual adapter and specializes volume solving with an
+      !! SRK initial estimate.
+      !!
+      !! # Examples
+      !! ```fortran
+      !! model = gerg_2008([G2008Components%methane, G2008Components%nitrogen])
+      !! call model%pressure(n, V, T, P)
+      !! ```
+      type(Gerg2008Pure), allocatable :: pures(:) !! Pure-fluid Helmholtz parameters, in model component order.
+      type(Gerg2008Binary), allocatable :: binaries(:, :) !! Pair interaction data indexed by component pair.
+      integer, allocatable :: ids(:) !! GERG2008 identifiers, in model component order.
+      type(CubicEoS) :: srk !! SRK helper used to initialize the volume root.
    contains
       procedure :: ar => arfun
       procedure :: get_v0 => volume_initalizer
@@ -22,36 +53,53 @@ module yaeos__models_ar_gerg2008
    end type Gerg2008
 
    type, private :: GERG2008Selector
-      integer :: methane=1
-      integer :: nitrogen=2
-      integer :: carbon_dioxide=3
-      integer :: ethane=4
-      integer :: propane=5
-      integer :: nbutane=6
-      integer :: isobutane=7
-      integer :: npentane=8
-      integer :: isopentane=9
-      integer :: nhexane=10
-      integer :: nheptane=11
-      integer :: noctane=12
-      integer :: nonane=13
-      integer :: decane=14
-      integer :: hydrogen=15
-      integer :: oxygen=16
-      integer :: carbon_monoxide=17
-      integer :: water=18
-      integer :: hydrogen_sulfide=19
-      integer :: helium=20
-      integer :: argon=21
+      !! # GERG2008Selector
+      !! Internal integer codes for the 21 components supported by GERG2008.
+      !!
+      !! # Description
+      !! The public `G2008Components` object exposes these code values as
+      !! named component selectors for model construction.
+      !!
+      !! # Examples
+      !! ```fortran
+      !! ids = [G2008Components%methane, G2008Components%nitrogen]
+      !! ```
+      integer :: methane=1 !! Methane.
+      integer :: nitrogen=2 !! Nitrogen.
+      integer :: carbon_dioxide=3 !! Carbon dioxide.
+      integer :: ethane=4 !! Ethane.
+      integer :: propane=5 !! Propane.
+      integer :: nbutane=6 !! n-Butane.
+      integer :: isobutane=7 !! Isobutane.
+      integer :: npentane=8 !! n-Pentane.
+      integer :: isopentane=9 !! Isopentane.
+      integer :: nhexane=10 !! n-Hexane.
+      integer :: nheptane=11 !! n-Heptane.
+      integer :: noctane=12 !! n-Octane.
+      integer :: nonane=13 !! n-Nonane.
+      integer :: decane=14 !! n-Decane.
+      integer :: hydrogen=15 !! Hydrogen.
+      integer :: oxygen=16 !! Oxygen.
+      integer :: carbon_monoxide=17 !! Carbon monoxide.
+      integer :: water=18 !! Water.
+      integer :: hydrogen_sulfide=19 !! Hydrogen sulfide.
+      integer :: helium=20 !! Helium.
+      integer :: argon=21 !! Argon.
    end type GERG2008Selector
 
    type(GERG2008Selector) :: G2008Components
+   !! Component identifiers for the GERG2008 model.
 
 contains
 
    type(Gerg2008) function gerg_2008(ids)
+      !! Create a GERG2008 model from a list of component identifiers.
+      !!
+      !! The identifiers are the fields of [[G2008Components]], for example
+      !! `G2008Components%methane`. The component order of the model is the
+      !! order of `ids`.
       use yaeos__models_ar_multifluid_parameters_gerg2008, only: get_original_parameters
-      integer, intent(in) :: ids(:)
+      integer, intent(in) :: ids(:) !! GERG2008 component identifiers
       type(Gerg2008Pure) :: pures(size(ids))
       type(Gerg2008Binary) :: binaries(size(ids), size(ids))
 
@@ -63,19 +111,32 @@ contains
    end function gerg_2008
 
    subroutine reducing_functions(self, n, Vr, Tr)
-      class(Gerg2008), intent(in) :: self
-      type(hyperdual), intent(in) :: n(:)
-      type(hyperdual), intent(out) :: Vr
-      type(hyperdual), intent(out) :: Tr
+      !! # reducing_functions
+      !! Evaluate composition-dependent GERG reducing volume and temperature.
+      !!
+      !! # Description
+      !! Normalizes the component amounts to mole fractions and combines pure
+      !! critical properties with binary reducing parameters. Hyperdual inputs
+      !! preserve composition derivatives for the mixture Helmholtz function.
+      class(Gerg2008), intent(in) :: self !! GERG model containing binary reducing data.
+      type(hyperdual), intent(in) :: n(:) !! Component mole amounts [mol].
+      type(hyperdual), intent(out) :: Vr !! Mixture reducing molar volume [L/mol].
+      type(hyperdual), intent(out) :: Tr !! Mixture reducing temperature [K].
 
-      type(hyperdual) :: X(size(n))
+      type(hyperdual) :: X(size(n)) !! Mole fractions.
 
-      real(8) :: Vc(size(n)), Tc(size(n)), rho_c(size(n))
+      real(8) :: Vc(size(n))
+      real(8) :: Tc(size(n))
+      real(8) :: rho_c(size(n))
 
-      real(8) :: Bv(size(n), size(n)), Gv(size(n), size(n))
-      real(8) :: Bt(size(n), size(n)), Gt(size(n), size(n))
+      real(8) :: Bv(size(n), size(n))
+      real(8) :: Gv(size(n), size(n))
+      real(8) :: Bt(size(n), size(n))
+      real(8) :: Gt(size(n), size(n))
 
-      integer :: i, j, nc
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: nc !! Number of components.
 
       Vc = self%components%Vc
       Tc = self%components%Tc
@@ -108,15 +169,27 @@ contains
    end subroutine reducing_functions
 
    subroutine ar_pure(pure, delta, tau, ar)
-      type(Gerg2008Pure), intent(in) :: pure
-      type(hyperdual), intent(in) :: delta
-      type(hyperdual), intent(in) :: tau
-      type(hyperdual), intent(out) :: ar
+      !! # ar_pure
+      !! Evaluate one GERG pure-fluid residual Helmholtz contribution.
+      !!
+      !! # Description
+      !! Sums the tabulated polynomial terms and exponentially damped terms in
+      !! reduced density and inverse reduced temperature.
+      type(Gerg2008Pure), intent(in) :: pure !! Pure-fluid coefficient arrays.
+      type(hyperdual), intent(in) :: delta !! Reduced density.
+      type(hyperdual), intent(in) :: tau !! Reduced inverse temperature.
+      type(hyperdual), intent(out) :: ar !! Pure-fluid residual Helmholtz contribution.
 
-      integer :: i, Kpol, Kexp
+      integer :: i !! Loop/index variable.
+      integer :: Kpol
+      integer :: Kexp
 
-      real(8) :: n_pol(pure%Kpol), d_pol(pure%Kpol), t_pol(pure%Kpol)
-      real(8) :: n_exp(pure%Kexp), d_exp(pure%Kexp), t_exp(pure%Kexp)
+      real(8) :: n_pol(pure%Kpol)
+      real(8) :: d_pol(pure%Kpol)
+      real(8) :: t_pol(pure%Kpol)
+      real(8) :: n_exp(pure%Kexp)
+      real(8) :: d_exp(pure%Kexp)
+      real(8) :: t_exp(pure%Kexp)
       real(8) :: c_exp(pure%Kexp)
 
       Kpol = pure%Kpol
@@ -136,16 +209,30 @@ contains
    end subroutine ar_pure
 
    subroutine ar_ij(delta, tau, binary, aij)
-      type(hyperdual), intent(in) :: delta
-      type(hyperdual), intent(in) :: tau
-      type(Gerg2008Binary), intent(in) :: binary
-      type(hyperdual), intent(out) :: aij
+      !! # ar_ij
+      !! Evaluate the GERG binary departure contribution for one component pair.
+      !!
+      !! # Description
+      !! Sums the pair's polynomial and exponentially damped departure terms
+      !! using its tabulated binary coefficients.
+      type(hyperdual), intent(in) :: delta !! Mixture reduced density.
+      type(hyperdual), intent(in) :: tau !! Mixture reduced inverse temperature.
+      type(Gerg2008Binary), intent(in) :: binary !! Binary departure coefficients for the pair.
+      type(hyperdual), intent(out) :: aij !! Pair departure contribution.
 
-      integer :: idx_poly, idx_exp
+      integer :: idx_poly
+      integer :: idx_exp
 
-      real(pr) :: n_pol(binary%Kpolij), d_pol(binary%Kpolij), t_pol(binary%Kpolij)
-      real(pr) :: n_exp(binary%Kexpij), d_exp(binary%Kexpij), t_exp(binary%Kexpij)
-      real(pr) :: etha(binary%Kexpij), eps(binary%Kexpij), beta(binary%Kexpij), gama(binary%Kexpij)
+      real(pr) :: n_pol(binary%Kpolij)
+      real(pr) :: d_pol(binary%Kpolij)
+      real(pr) :: t_pol(binary%Kpolij)
+      real(pr) :: n_exp(binary%Kexpij)
+      real(pr) :: d_exp(binary%Kexpij)
+      real(pr) :: t_exp(binary%Kexpij)
+      real(pr) :: etha(binary%Kexpij)
+      real(pr) :: eps(binary%Kexpij) !! Density offsets \(\varepsilon\) of the quadratic damping term.
+      real(pr) :: beta(binary%Kexpij) !! Coefficients \(\beta\) of the linear damping term.
+      real(pr) :: gama(binary%Kexpij)
 
       idx_poly = binary%Kpolij
       idx_exp = binary%Kexpij + idx_poly
@@ -168,12 +255,25 @@ contains
    end subroutine ar_ij
 
    function arfun(self, n, v, t) result(arval)
-      class(Gerg2008) :: self
-      type(hyperdual), intent(in) :: n(:), v, t
-      type(hyperdual) :: arval
+      !! # arfun
+      !! Evaluate the GERG2008 mixture residual Helmholtz energy.
+      !!
+      !! # Description
+      !! Forms mixture reducing functions, computes reduced density and
+      !! temperature, then sums composition-weighted pure-fluid contributions
+      !! and binary departure terms. Hyperdual arithmetic supplies derivatives.
+      class(Gerg2008) :: self !! Model with component and binary parameter data.
+      type(hyperdual), intent(in) :: n(:) !! Component mole amounts [mol].
+      type(hyperdual), intent(in) :: v !! Total volume [L].
+      type(hyperdual), intent(in) :: t !! Temperature [K].
+      type(hyperdual) :: arval !! Mixture residual Helmholtz energy [bar L].
 
-      type(hyperdual) :: Vr, Tr, X(size(n)), rho_r
-      type(hyperdual) :: delta, tau
+      type(hyperdual) :: Vr
+      type(hyperdual) :: Tr
+      type(hyperdual) :: X(size(n)) !! Mole fractions.
+      type(hyperdual) :: rho_r !! Mixture reducing density [mol/L].
+      type(hyperdual) :: delta !! Reduced density.
+      type(hyperdual) :: tau !! Reduced inverse temperature.
       type(hyperdual) :: aij
       type(hyperdual) :: ar_pures(size(n))
 
@@ -182,7 +282,9 @@ contains
 
       real(pr) :: rho_c(size(n))
       real(pr) :: Fij(size(n), size(n))
-      integer :: i, j, nc
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: nc !! Number of components.
 
       Fij = self%binaries%Fij
 
@@ -204,7 +306,7 @@ contains
       arval = sum(x * ar_pures)
 
       do i=1,nc
-         do j=1,nc!i+1,nc
+         do j=1,nc !i+1,nc
             if (Fij(i, j) == 0._pr) cycle
             binary = self%binaries(i, j)
             call ar_ij(delta, tau, binary, aij)
@@ -224,12 +326,14 @@ contains
       !! # Description
       !! This subroutine solves the volume using a newton method. The variable
       !! `root_type` is used to specify the desired root to solve. The options
-      !! are: `["liquid", "vapor", "stable"]`
+      !! are: `["liquid", "vapor", "stable"]`. The Newton iterations are done
+      !! in \(\ln V\); `"stable"` returns the root with lower residual Gibbs
+      !! energy. `V` is set to `-1` if the last Newton solve fails.
       !!
       !! # Examples
       !!
       !! ```fortran
-      !! eos = PengRobinson76(Tc, Pc, w)
+      !! eos = gerg_2008([G2008Components%methane, G2008Components%ethane])
       !!
       !! n = [1.0_pr, 1.0_pr]
       !! T = 300.0_pr
@@ -252,11 +356,15 @@ contains
       !! `["liquid", "vapor", "stable"]`
 
       integer :: max_iters=500
-      real(pr) :: tol=1e-8
+      real(pr) :: tol=1e-8 !! Numerical convergence tolerance.
 
-      real(pr) :: totnRT, GrL, GrV, Gr
-      real(pr) :: Vliq, Vvap
-      logical :: failed
+      real(pr) :: totnRT
+      real(pr) :: GrL
+      real(pr) :: GrV
+      real(pr) :: Gr
+      real(pr) :: Vliq
+      real(pr) :: Vvap
+      logical :: failed !! True when the solver did not converge.
 
       GrL = HUGE(GrL)
       GrV = HUGE(GrV)
@@ -299,9 +407,16 @@ contains
 
    contains
       subroutine foo(x, f, df)
-         real(pr), intent(in) :: x
-         real(pr), intent(out) :: f, df
-         real(pr) :: Ar, ArV, ArV2, Pcalc, dPcalcdV, Vin
+         !! Pressure residual callback used by the GERG volume Newton solve.
+         real(pr), intent(in) :: x !! Logarithm of the trial volume.
+         real(pr), intent(out) :: f !! Pressure residual [bar].
+         real(pr), intent(out) :: df !! Pressure-residual derivative with respect to log-volume.
+         real(pr) :: Ar
+         real(pr) :: ArV
+         real(pr) :: ArV2
+         real(pr) :: Pcalc
+         real(pr) :: dPcalcdV
+         real(pr) :: Vin
          Vin = exp(x)
          call eos%residual_helmholtz(n, Vin, T, Ar=Ar, ArV=ArV, ArV2=ArV2)
          Pcalc = totnRT / Vin - ArV
@@ -313,11 +428,17 @@ contains
    end subroutine volume
 
    function volume_initalizer(self, n, p, t) result(v0)
-      class(Gerg2008), intent(in) :: self
-      real(pr), intent(in) :: n(:)
-      real(pr), intent(in) :: p
-      real(pr), intent(in) :: t
-      real(pr) :: v0
+      !! # volume_initalizer
+      !! Return the SRK covolume used as the initial volume estimate for GERG.
+      !!
+      !! # Description
+      !! GERG has no simple analytic covolume, so its embedded SRK model supplies
+      !! the initial volume estimate expected by the `ArModel` interface.
+      class(Gerg2008), intent(in) :: self !! GERG model containing its SRK helper.
+      real(pr), intent(in) :: n(:) !! Component mole amounts [mol].
+      real(pr), intent(in) :: p !! Pressure [bar].
+      real(pr), intent(in) :: t !! Temperature [K].
+      real(pr) :: v0 !! Initial total volume [L].
       v0 = self%srk%get_v0(n, p, t)
    end function volume_initalizer
 
@@ -327,11 +448,19 @@ contains
       !! Calculate natural logarithm of activity coefficients and its
       !! derivatives given pressure and temperature.
       !!
+      !! # Description
+      !! The activity coefficient is \(\ln\gamma_i = \ln\hat\phi_i - \ln\phi_i^0\),
+      !! where the mixture uses `root_type` and each pure fluid \(\phi_i^0\)
+      !! uses its stable root at the same \(P\) and \(T\).
+      !!
       !! # Examples
       !!
-      !! ```fortran ! eos = PengRobinson76(Tc, Pc, w)
+      !! ```fortran
+      !! eos = gerg_2008([G2008Components%methane, G2008Components%ethane])
       !!
-      !! n = [1.0_pr, 1.0_pr] ! T = 300.0_pr ! P = 1.0_pr
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! P = 1.0_pr
       !!
       !! call eos%ln_activity_coefficient(&
       !!    n, P, T, root_type="stable", &
@@ -356,19 +485,30 @@ contains
       !! \(\frac{d\ln\gamma}{dn}\)
 
       ! Mixture properties
-      real(pr) :: lnPhi(size(n)), dlnPhidT(size(n))
+      real(pr) :: lnPhi(size(n)) !! Log fugacity coefficients.
+      real(pr) :: dlnPhidT(size(n))
       real(pr) :: dlnPhidn(size(n),size(n))
-      real(pr) :: dPdV, dPdn(size(n)), dVdn(size(n))
+      real(pr) :: dPdV
+      real(pr) :: dPdn(size(n))
+      real(pr) :: dVdn(size(n))
 
       ! Pure properties
-      real(pr) :: vi(size(n)), vi_temp, npure(size(n))
-      real(pr) :: lnPhi_i(size(n)), dlnPhi_i_dT(size(n))
-      real(pr) :: lnPhi_i_temp(1), dlnPhi_i_dT_temp(1)
+      real(pr) :: vi(size(n))
+      real(pr) :: vi_temp
+      real(pr) :: npure(size(n))
+      real(pr) :: lnPhi_i(size(n))
+      real(pr) :: dlnPhi_i_dT(size(n))
+      real(pr) :: lnPhi_i_temp(1)
+      real(pr) :: dlnPhi_i_dT_temp(1)
       type(GERG2008) :: eos_temp
 
-      integer :: i
+      integer :: i !! Loop/index variable.
 
-      logical :: gam, dp, dt, dn, present_derivs
+      logical :: gam
+      logical :: dp
+      logical :: dt
+      logical :: dn
+      logical :: present_derivs
 
       gam = present(lngamma)
       dp = present(dlngammadP)

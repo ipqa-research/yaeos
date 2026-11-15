@@ -1,15 +1,29 @@
 module yaeos__models_ge_group_contribution_dortmund_parameters
-
+   !! # Dortmund UNIFAC parameters
+   !!
+   !! # Description
+   !! Parameter set for the modified UNIFAC (Dortmund) model, returned by
+   !! [[DortmundParameters]].
+   !! The returned parameter type contains group identifiers, subgroup sizes,
+   !! and the Dortmund main-group interaction matrices.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! parameters = DortmundParameters()
+   !! call parameters%check_consistency()
+   !! ```
    use yaeos__constants, only: pr
    use yaeos__models_ge_group_contribution_model_parameters, only: GeGCModelParameters
    implicit none
 
 contains
    type(GeGCModelParameters) function DortmundParameters()
+      !! Return the Dortmund UNIFAC parameter set.
 
-      integer :: nmg, nsg
+      integer :: nmg
+      integer :: nsg
       ! ========================================================================
-      ! PSRK subgroups ids definition
+      ! Dortmund subgroups ids definition
       ! ------------------------------------------------------------------------
       DortmundParameters%subgroups_ids = [ &
          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, &
@@ -24,7 +38,7 @@ contains
          123, 124, 201, 209, 210, 211, 220]
 
       ! ========================================================================
-      ! PSRK maingroups ids definition
+      ! Dortmund maingroups ids definition
       ! ------------------------------------------------------------------------
       DortmundParameters%maingroups_ids = [&
          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, &
@@ -34,7 +48,7 @@ contains
          56, 84, 85, 87, 89, 90, 91, 61, 93, 98, 99]
 
       ! ========================================================================
-      ! PSRK subgroups maingroups
+      ! Dortmund subgroups maingroups
       ! ------------------------------------------------------------------------
       DortmundParameters%subgroups_maingroups = [&
          1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4, 4, 4, &
@@ -52,7 +66,7 @@ contains
       nmg = size(DortmundParameters%maingroups_ids)
 
       ! ========================================================================
-      ! PSRK subgroups Rs
+      ! Dortmund subgroups Rs
       ! ------------------------------------------------------------------------
       DortmundParameters%subgroups_Rs = [&
          0.632500_pr, 0.632500_pr, 0.632500_pr, 0.632500_pr, 1.283200_pr, &
@@ -83,7 +97,7 @@ contains
          ]
 
       ! ========================================================================
-      ! PSRK subgroups Qs
+      ! Dortmund subgroups Qs
       ! ------------------------------------------------------------------------
       DortmundParameters%subgroups_Qs = [&
          1.060800_pr, 0.708100_pr, 0.355400_pr, 0.000000_pr, 1.601600_pr, &
@@ -113,7 +127,7 @@ contains
          2.244000_pr, 3.524900_pr, 3.807600_pr, 3.601800_pr, 2.445700_pr &
          ]
       ! ========================================================================
-      ! PSRK aij
+      ! Dortmund aij
       ! ------------------------------------------------------------------------
       DortmundParameters%maingroups_aij = reshape([&
          0.0_pr, -95.41801_pr, 16.07_pr, 47.2_pr, 1606.0_pr, 82.593_pr, &
@@ -781,7 +795,7 @@ contains
          ], [nmg, nmg])
 
       ! ========================================================================
-      ! PSRK bij
+      ! Dortmund bij
       ! ------------------------------------------------------------------------
       DortmundParameters%maingroups_bij = reshape([&
          0.0_pr, 0.061708_pr, -0.2998_pr, 0.3575_pr, -4.746_pr, -0.48575_pr, &
@@ -1449,7 +1463,7 @@ contains
          ],[nmg,nmg])
 
       ! ========================================================================
-      ! PSRK cij
+      ! Dortmund cij
       ! ------------------------------------------------------------------------
       DortmundParameters%maingroups_cij = reshape([&
          0.0_pr, 0.0_pr, 0.0_pr, 0.0_pr, 0.0009181_pr, 0.0_pr, &

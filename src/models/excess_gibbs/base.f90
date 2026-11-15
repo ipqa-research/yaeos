@@ -1,7 +1,16 @@
 module yaeos__models_ge_base
-   !! Base module for excess Gibbs energy models in YAEOS
-   !! This module provides implementations of excess Gibbs energy models
-   !! using only Fortran native types.
+   !! # Excess-Gibbs derivative kernels
+   !! Shared thermodynamic equations used by activity-coefficient model implementations.
+   !!
+   !! # Description
+   !! Implements the Huron-Vidal-modified NRTL excess Gibbs energy and its
+   !! derivatives with respect to mole amounts and temperature, plus helpers
+   !! for the temperature dependence of \(\tau_{ij}\). These kernels are used
+   !! internally by the public `NRTL` and `NRTLHV` models.
+   !!
+   !! # Examples
+   !! The `NRTL` and `NRTLHV` models call these kernels; application code
+   !! should use their model methods.
    use yaeos__constants, only: pr, R
 contains
 
@@ -55,23 +64,43 @@ contains
       real(pr), optional, intent(out) :: Gen2(:, :)
       !! Excess Gibbs energy second derivative with respect to number of moles
 
-      real(pr) :: E(size(n), size(n)), U, D
-      real(pr) :: dEdT(size(n), size(n)), dEdT2(size(n), size(n))
+      real(pr) :: E(size(n), size(n))
+      real(pr) :: U
+      real(pr) :: D
+      real(pr) :: dEdT(size(n), size(n))
+      real(pr) :: dEdT2(size(n), size(n))
 
       real(pr) :: Dn(size(n))
 
-      real(pr) :: xi(size(n), size(n)), theta(size(n), size(n)) 
-      real(pr) :: omega(size(n), size(n)), eta(size(n), size(n))
-      real(pr) :: xiT(size(n)), etaT(size(n), size(n)), thetaT(size(n))
+      real(pr) :: xi(size(n), size(n))
+      real(pr) :: theta(size(n), size(n))
+      real(pr) :: omega(size(n), size(n))
+      real(pr) :: eta(size(n), size(n)) !! \(E_{ji} b_j \tau_{ji}\) terms (no \(n_j\) factor).
+      real(pr) :: xiT(size(n))
+      real(pr) :: etaT(size(n), size(n))
+      real(pr) :: thetaT(size(n))
       real(pr) :: omegaT(size(n), size(n))
-      real(pr) :: xiTT(size(n)), thetaTT(size(n))
+      real(pr) :: xiTT(size(n))
+      real(pr) :: thetaTT(size(n))
 
       real(pr) :: denom
 
-      integer :: i, j, k, l, nc
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: k !! Loop index `k`.
+      integer :: l !! Loop index `l`.
+      integer :: nc !! Number of components.
 
-      logical :: p_ge, p_get, p_get2, p_gent, p_gen2, p_gen
-      real(pr) :: aux_Ge, aux_Gen(size(n)), aux_GeT, aux_GeTn(size(n))
+      logical :: p_ge
+      logical :: p_get
+      logical :: p_get2
+      logical :: p_gent
+      logical :: p_gen2
+      logical :: p_gen
+      real(pr) :: aux_Ge
+      real(pr) :: aux_Gen(size(n))
+      real(pr) :: aux_GeT
+      real(pr) :: aux_GeTn(size(n))
 
       integer :: m
 

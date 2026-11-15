@@ -1,4 +1,17 @@
 module nonlinear_solvers
+   !! # Damped Newton solver
+   !! Solve small nonlinear systems using Newton steps and Armijo backtracking.
+   !!
+   !! # Description
+   !! `newton_solve` accepts a callback returning residuals and a dense Jacobian,
+   !! updates the initial guess in place, and reports a convergence code. It is
+   !! imported by `solve_TP` in this source file, although that routine
+   !! currently calls `newton` from `yaeos__math_nonlinearsolvers` instead.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! call newton_solve(fun, x, tol, max_iter, its, info)
+   !! ```
    use yaeos__constants, only: dp => pr
    use yaeos__math_linalg, only: solve_system
    implicit none
@@ -9,29 +22,50 @@ contains
    !  Single callback: fun(x, f, J)
    !============================================================
    subroutine newton_solve(fun, x, tol, max_iter, its, info)
+      !! # newton_solve
+      !! Solve a nonlinear system by damped Newton iteration.
+      !!
+      !! # Description
+      !! Forms the Newton direction from \(J\,dx=-F\), then applies
+      !! backtracking to reduce the squared-residual merit function. `info=0`
+      !! indicates residual convergence (max-norm below `tol`); `info=1`
+      !! indicates the iteration limit.
+      !!
+      !! # Examples
+      !! See the module-level callback example.
       implicit none
 
       ! ------ Interface to user-supplied function ------
       interface
          subroutine fun(x, f, J)
             import dp
-            real(dp), intent(in)  :: x(:)
-            real(dp), intent(out) :: f(:)
-            real(dp), intent(out) :: J(:,:)
+            real(dp), intent(in)  :: x(:) !! Current unknown vector.
+            real(dp), intent(out) :: f(:) !! Residual vector.
+            real(dp), intent(out) :: J(:,:) !! Residual Jacobian.
          end subroutine fun
       end interface
 
       ! ------ Arguments ------
-      real(dp), intent(inout) :: x(:)
-      real(dp), intent(in)    :: tol
-      integer, intent(in)     :: max_iter
-      integer, intent(out)    :: its
-      integer, intent(out)    :: info    ! 0 = converged, 1 = not
+      real(dp), intent(inout) :: x(:) !! Initial guess; last iterate on return.
+      real(dp), intent(in)    :: tol !! Absolute residual convergence tolerance.
+      integer, intent(in)     :: max_iter !! Maximum Newton iterations.
+      integer, intent(out)    :: its !! Iteration count at termination.
+      integer, intent(out)    :: info !! 0 = converged (max-norm of residuals below `tol`), 1 = iteration limit reached
 
       ! ------ Local variables ------
-      integer :: n, k
-      real(dp) :: f_norm, phi_x, phi_trial, grad_phi_p, alpha
-      real(dp) :: f(size(X)), J(size(X),size(X)), dx(size(X)), xtrial(size(X)), ftrial(size(X)), Jp(size(X))
+      integer :: n !! Number of unknowns
+      integer :: k !! Loop/index or term index.
+      real(dp) :: f_norm
+      real(dp) :: phi_x
+      real(dp) :: phi_trial
+      real(dp) :: grad_phi_p
+      real(dp) :: alpha !! Backtracking step length
+      real(dp) :: f(size(X)) !! Residual or scalar equation value.
+      real(dp) :: J(size(X),size(X)) !! Jacobian matrix
+      real(dp) :: dx(size(X))
+      real(dp) :: xtrial(size(X))
+      real(dp) :: ftrial(size(X))
+      real(dp) :: Jp(size(X))
 
       n = size(x)
 
@@ -72,7 +106,7 @@ contains
 
          do
             xtrial = x + alpha * dx
-            call fun(xtrial, ftrial, J)   ! J not needed but required by interface
+            call fun(xtrial, ftrial, J) ! J not needed but required by interface
 
             phi_trial = 0.5_dp * dot_product(ftrial, ftrial)
 
@@ -89,7 +123,18 @@ contains
 end module nonlinear_solvers
 
 module yaeos__m_s_sp
-   !! Module to calculate saturation points
+   !! # Saturation-point nonlinear systems
+   !! Residual equations, Jacobians, and point solvers for bubble, dew, and liquid-liquid states.
+   !!
+   !! # Description
+   !! The routines in this module encode saturation unknowns in logarithmic
+   !! coordinates and enforce isofugacity, material-balance, and specification
+   !! equations. They are implementation-level solvers used by the public
+   !! `saturation_pressure` and `saturation_temperature` routines.
+   !!
+   !! # Examples
+   !! Application code should call the public saturation-point functions rather
+   !! than these solver helpers.
    use yaeos__constants, only: pr
    use yaeos__models_ar, only: ArModel, size
    implicit none
@@ -97,34 +142,55 @@ module yaeos__m_s_sp
 contains
 
    subroutine saturation_F(model, z, X, ns, S, F, dF, dPdVz, dPdVy)
-      class(ArModel), intent(in) :: model
-      real(pr), intent(in) :: X(:)
-      integer, intent(in) :: ns
-      real(pr), intent(in) :: S
-      real(pr), intent(out) :: F(:)
-      real(pr), optional, intent(out) :: dF(:, :)
-      real(pr), intent(out) :: dPdVz, dPdVy
+      !! # saturation_F
+      !! Evaluate the saturation residual system in log-volume coordinates.
+      !!
+      !! # Description
+      !! With \(X = [\ln K_i, \ln V_z, \ln V_y, \ln T, \ln P]\) and
+      !! \(y = K z\), the residuals are
+      !! \(\ln f_i(y, V_y, T) - \ln f_i(z, V_z, T)\) (isofugacity),
+      !! \(\sum_i (y_i - z_i)\), \(P_y - P_z\), \(\ln P - \ln P_y\), and
+      !! \(X_{ns} - S\). The Jacobian is returned when `dF` is present.
+      class(ArModel), intent(in) :: model !! EOS used to evaluate phase fugacities.
+      real(pr), intent(in) :: X(:) !! Unknowns \([\ln K_i, \ln V_z, \ln V_y, \ln T, \ln P]\)
+      integer, intent(in) :: ns !! Index of the specified unknown.
+      real(pr), intent(in) :: S !! Value imposed on unknown `ns`.
+      real(pr), intent(out) :: F(:) !! Saturation residual vector.
+      real(pr), optional, intent(out) :: dF(:, :) !! Residual Jacobian.
+      real(pr), intent(out) :: dPdVz !! Pressure derivative with respect to the feed-phase volume.
+      real(pr), intent(out) :: dPdVy !! Pressure derivative with respect to the incipient-phase volume.
 
       ! Variables
-      real(pr) :: T, Vz, Vy
-      real(pr) :: z(size(model))
+      real(pr) :: T
+      real(pr) :: Vz
+      real(pr) :: Vy
+      real(pr) :: z(size(model)) !! Feed composition
 
       ! Main phase variables
-      real(pr) :: lnfug_z(size(model)), dlnfug_dn_z(size(model), size(model))
-      real(pr) :: dlnfug_dT_z(size(model)), dlnfug_dV_z(size(model))
+      real(pr) :: lnfug_z(size(model)) !! Logarithmic thermodynamic quantity or intermediate.
+      real(pr) :: dlnfug_dn_z(size(model), size(model))
+      real(pr) :: dlnfug_dT_z(size(model))
+      real(pr) :: dlnfug_dV_z(size(model))
       real(pr) :: dlnfug_dP_z(size(model))
-      real(pr) :: Pz, dPdTz, dPdn_z(size(z))
+      real(pr) :: Pz
+      real(pr) :: dPdTz
+      real(pr) :: dPdn_z(size(z))
 
       ! incipient phase variables
-      real(pr) :: y(size(z))
-      real(pr) :: lnfug_y(size(model)), dlnfug_dn_y(size(model), size(model))
-      real(pr) :: dlnfug_dT_y(size(model)), dlnfug_dV_y(size(model))
+      real(pr) :: y(size(z)) !! Incipient/second phase composition.
+      real(pr) :: lnfug_y(size(model)) !! Logarithmic thermodynamic quantity or intermediate.
+      real(pr) :: dlnfug_dn_y(size(model), size(model))
+      real(pr) :: dlnfug_dT_y(size(model))
+      real(pr) :: dlnfug_dV_y(size(model))
       real(pr) :: dlnfug_dP_y(size(model))
-      real(pr) :: Py, dPdTy, dPdn_y(size(z))
+      real(pr) :: Py
+      real(pr) :: dPdTy
+      real(pr) :: dPdn_y(size(z))
 
-      real(pr) :: lnPspec
+      real(pr) :: lnPspec !! Logarithmic thermodynamic quantity or intermediate.
 
-      integer :: j, nc
+      integer :: j !! Loop/index variable.
+      integer :: nc !! Number of components.
 
       nc = size(z)
 
@@ -191,30 +257,49 @@ contains
    end subroutine saturation_F
 
    subroutine saturation_TP(model, kind, z, X, ns, S, F, dF, dFdS)
-      class(ArModel), intent(in) :: model
-      character(len=*), intent(in) :: kind
-      real(pr), intent(in) :: z(size(model))
+      !! # saturation_TP
+      !! Evaluate a saturation residual system at fixed pressure or temperature.
+      !!
+      !! # Description
+      !! Reconstructs phase compositions from logarithmic K-factors, evaluates
+      !! fugacity coefficients with root selections determined by `kind`, and
+      !! returns isofugacity, material-balance, and specification residuals:
+      !! \(\ln K_i + \ln\phi_i(y) - \ln\phi_i(z)\), \(\sum_i (y_i - z_i)\),
+      !! and \(X_{ns} - S\).
+      class(ArModel), intent(in) :: model !! EOS used for phase properties.
+      character(len=*), intent(in) :: kind !! `"bubble"`, `"dew"`, or `"liquid-liquid"`; any other value uses stable roots.
+      real(pr), intent(in) :: z(size(model)) !! Feed composition.
 
-      real(pr), intent(in) :: X(:)
-      integer, intent(in) :: ns
-      real(pr), intent(in) :: S
+      real(pr), intent(in) :: X(:) !! Unknowns \([\ln K_i, \ln T, \ln P]\)
+      integer, intent(in) :: ns !! Index of the specified unknown.
+      real(pr), intent(in) :: S !! Value imposed on unknown `ns`.
 
-      real(pr), intent(out) :: F(:)
-      real(pr), intent(out) :: dF(:, :)
-      real(pr), intent(out) :: dFdS(:)
+      real(pr), intent(out) :: F(:) !! Residual vector.
+      real(pr), intent(out) :: dF(:, :) !! Jacobian with respect to the unknown vector.
+      real(pr), intent(out) :: dFdS(:) !! Residual derivative with respect to the specification.
 
-      character(len=14) :: kind_z, kind_y
+      character(len=14) :: kind_z
+      character(len=14) :: kind_y
 
-      real(pr) :: y(size(X)-2)
-      real(pr) :: Vz, Vy
-      real(pr) :: lnPhi_z(size(X)-2), lnPhi_y(size(X)-2)
-      real(pr) :: dlnphi_dt_z(size(X)-2), dlnphi_dt_y(size(X)-2)
-      real(pr) :: dlnphi_dp_z(size(X)-2), dlnphi_dp_y(size(X)-2)
-      real(pr) :: dlnphi_dn_z(size(X)-2, size(X)-2), dlnphi_dn_y(size(X)-2, size(X)-2)
+      real(pr) :: y(size(X)-2) !! Incipient/second phase composition.
+      real(pr) :: Vz
+      real(pr) :: Vy
+      real(pr) :: lnPhi_z(size(X)-2) !! Logarithmic thermodynamic quantity or intermediate.
+      real(pr) :: lnPhi_y(size(X)-2) !! Logarithmic thermodynamic quantity or intermediate.
+      real(pr) :: dlnphi_dt_z(size(X)-2)
+      real(pr) :: dlnphi_dt_y(size(X)-2)
+      real(pr) :: dlnphi_dp_z(size(X)-2)
+      real(pr) :: dlnphi_dp_y(size(X)-2)
+      real(pr) :: dlnphi_dn_z(size(X)-2, size(X)-2)
+      real(pr) :: dlnphi_dn_y(size(X)-2, size(X)-2)
 
-      real(pr) :: T, P, K(size(X)-2)
+      real(pr) :: T
+      real(pr) :: P
+      real(pr) :: K(size(X)-2) !! Equilibrium K-factors
 
-      integer :: i, j, nc
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: nc !! Number of components.
 
       nc = size(X)-2
 
@@ -276,22 +361,29 @@ contains
    end subroutine saturation_TP
 
    subroutine solve_TP(model, kind, z, X, ns, S, tol, max_iterations, its)
+      !! # solve_TP
+      !! Correct a fixed-pressure or fixed-temperature saturation point.
+      !!
+      !! # Description
+      !! Applies `newton` from `yaeos__math_nonlinearsolvers` to the residual
+      !! system assembled by `saturation_TP` and updates the packed unknown
+      !! vector in place.
       use nonlinear_solvers, only: newton_solve
       use yaeos__math, only: solve_system
       use yaeos__math_nonlinearsolvers, only: newton, homotopy
-      class(ArModel), intent(in) :: model
-      character(len=*), intent(in) :: kind
-      real(pr), intent(in) :: z(:)
-      real(pr), intent(inout) :: X(:)
-      integer, intent(in) :: ns
-      real(pr), intent(in) :: S
-      real(pr), intent(in) :: tol
-      integer, intent(in) :: max_iterations
-      integer, intent(out) :: its
+      class(ArModel), intent(in) :: model !! EOS used for phase fugacities.
+      character(len=*), intent(in) :: kind !! `"bubble"`, `"dew"`, or `"liquid-liquid"`; any other value uses stable roots.
+      real(pr), intent(in) :: z(:) !! Feed composition.
+      real(pr), intent(inout) :: X(:) !! Initial packed unknowns; corrected state on return.
+      integer, intent(in) :: ns !! Index of the specified variable.
+      real(pr), intent(in) :: S !! Specified value of `X(ns)` (log coordinates)
+      real(pr), intent(in) :: tol !! Residual tolerance.
+      integer, intent(in) :: max_iterations !! Maximum corrector iterations.
+      integer, intent(out) :: its !! Iterations used.
 
-      integer :: nc
+      integer :: nc !! Number of components.
 
-      real(pr) :: F(size(X))
+      real(pr) :: F(size(X)) !! Residual or scalar equation value.
       real(pr) :: dF(size(X), size(X))
       real(pr) :: dFdS(size(X))
       real(pr) :: dx(size(X))
@@ -303,9 +395,13 @@ contains
       real(pr) :: dH(size(X), size(X))
       real(pr) :: X0(size(X))
 
-      real(pr) :: alpha, phi_x, phi_ax, grad_phi_p, Jp(size(X))
+      real(pr) :: alpha !! Step length (unused)
+      real(pr) :: phi_x
+      real(pr) :: phi_ax
+      real(pr) :: grad_phi_p
+      real(pr) :: Jp(size(X))
       real(pr) :: Xnew(size(X))
-      integer :: info
+      integer :: info !! Solver status code.
 
       nc = size(X) - 2
 
@@ -318,31 +414,42 @@ contains
       ! print *, its, maxval(abs(F))
    contains
       subroutine wrap(X, F, J)
-         real(pr), intent(in) :: X(:)
-         real(pr), intent(out) :: F(:)
-         real(pr), intent(out) :: J(:, :)
+         real(pr), intent(in) :: X(:) !! Unknowns \([\ln K_i, \ln T, \ln P]\)
+         real(pr), intent(out) :: F(:) !! Residual vector
+         real(pr), intent(out) :: J(:, :) !! Jacobian matrix
          call saturation_TP(model, kind, z, X, ns, S=S, F=F, dF=J, dFdS=dFdS)
       end subroutine
    end subroutine solve_TP
 
    subroutine solve_VxVyT(model, z, X, ns, S, tol, max_iterations, its)
+      !! # solve_VxVyT
+      !! Solve saturation equations using log phase volumes and temperature.
+      !!
+      !! # Description
+      !! Undamped Newton correction of the `saturation_F` system, with unknowns
+      !! \([\ln K_i, \ln V_z, \ln V_y, \ln T, \ln P]\). Pressure is an unknown
+      !! tied to the incipient-phase pressure, and phase pressure equality is
+      !! one of the residuals.
       use yaeos__math, only: solve_system
-      class(ArModel), intent(in) :: model
-      real(pr), intent(in) :: z(:)
-      real(pr), intent(inout) :: X(:)
-      integer, intent(in) :: ns
-      real(pr), intent(in) :: S
-      real(pr), intent(in) :: tol
-      integer, intent(in) :: max_iterations
-      integer, intent(out) :: its
+      class(ArModel), intent(in) :: model !! EOS used for phase properties.
+      real(pr), intent(in) :: z(:) !! Feed composition.
+      real(pr), intent(inout) :: X(:) !! Initial unknown vector; corrected state on return.
+      integer, intent(in) :: ns !! Index of the specified variable.
+      real(pr), intent(in) :: S !! Specification value in solver coordinates.
+      real(pr), intent(in) :: tol !! Residual tolerance.
+      integer, intent(in) :: max_iterations !! Maximum Newton iterations.
+      integer, intent(out) :: its !! Iterations used.
 
-      real(pr) :: dPdVz, dPdVy
+      real(pr) :: dPdVz !! Pressure derivative with respect to the feed-phase volume.
+      real(pr) :: dPdVy !! Pressure derivative with respect to the incipient-phase volume.
 
-      integer :: nc
-      real(pr) :: F(size(X))
+      integer :: nc !! Number of components.
+      real(pr) :: F(size(X)) !! Residual or scalar equation value.
       real(pr) :: dF(size(X), size(X))
       real(pr) :: dFdS(size(X))
-      real(pr) :: Xold(size(X)), dx(size(X)), dx_old(size(x))
+      real(pr) :: Xold(size(X))
+      real(pr) :: dx(size(X))
+      real(pr) :: dx_old(size(x))
 
       nc = size(X) - 4
 

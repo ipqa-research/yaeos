@@ -1,23 +1,97 @@
 ---
 title: Cubics
+ordered_subpage: alpha.md
+                 mixing.md
 ---
 
 [TOC]
 
-Our Cubic Equations of State are implemented based on the generic Cubic
-Equation [1]:
+# Cubics
+
+## What a cubic model does
+
+A cubic equation of state is a compact way to estimate fluid pressure, density
+and phase behavior from a small set of pure-component data. PR and SRK are
+useful starting points for hydrocarbon mixtures; choosing one does not guarantee
+accurate liquid densities or strongly polar-mixture behavior. Compare with
+measurements in your temperature, pressure and composition range.
+
+Think of the model as a balance between molecules taking up space and molecules
+attracting one another. The first term below accounts for excluded volume; the
+second reduces pressure because of attraction. Here \(P\) is pressure, \(T\)
+is absolute temperature, \(R\) is the gas constant, and \(v\) is **molar** volume.
+The covolume \(b\) has units L/mol, the critical attraction parameter \(a_c\)
+has units bar L²/mol², and \(\delta_1\), \(\delta_2\) and the temperature
+correction \(\alpha\) are dimensionless. Reduced temperature is
+\(T_r=T/T_c\), where \(T_c\) is the pure-component critical temperature.
+The generic pure-fluid equation [1] is
 
 \[
-    P = \frac{RT}{V-b} - \frac{a_c\alpha(T_r)}{(V + \delta_1 b)(V + \delta_2 b)}
+    P = \frac{RT}{v-b} - \frac{a_c\alpha(T_r)}{(v + \delta_1 b)(v + \delta_2 b)}
 \]
 
-Cubic equation of state allows to include the \(k_{ij}\) and \(l_{ij}\)
-matrices. 
-Using by default Classic Van der Waals mixing rules.
-For more information about mixing rules look at [Mixing Rules](mixing.md).
-Moreover, cubic equations of state allows to modify their default 
-\(\alpha\) function, look at [Alpha functions](alpha.md).
+For a mixture, the [mixing rule](mixing.html) combines pure-component parameters.
+The [alpha function](alpha.html) first adjusts each pure component's attraction
+with temperature: these are different jobs. PR, SRK and RKPR default to quadratic
+mixing with zero binary corrections unless supplied; PSRK uses an excess-Gibbs
+mixing rule instead.
 
+## Required data and a first calculation
+
+For PR and SRK, supply arrays `tc` (K), `pc` (bar), and `w` (dimensionless
+acentric factor). The acentric factor summarizes pure-fluid vapor-pressure
+behavior; it is not a composition. Every array must use the same component
+order. Optional `kij` and `lij` are dimensionless square matrices in that order,
+normally symmetric with zero diagonals. They require a suitable parameter source
+or fitting; zero is a baseline, not a universal fit.
+
+This complete program uses methane then n-butane. It evaluates a specified
+homogeneous state without asking an equilibrium solver to find a state.
+The API takes mole **amounts** `n` (mol) and **total** `V` (L), not molar volume.
+Here the one-mole basis makes their numerical values coincide.
+
+```fortran
+program cubic_pressure
+   use yaeos, only: pr, R, CubicEoS, PengRobinson76
+   implicit none
+   type(CubicEoS) :: model
+   real(pr) :: tc(2)
+   real(pr) :: pc(2)
+   real(pr) :: w(2)
+   real(pr) :: n(2)
+   real(pr) :: T
+   real(pr) :: V
+   real(pr) :: P
+   real(pr) :: Pideal
+
+   tc = [190.564_pr, 425.12_pr]
+   pc = [45.99_pr, 37.96_pr]
+   w = [0.0115478_pr, 0.200164_pr]
+   model = PengRobinson76(tc, pc, w)
+   n = [0.3_pr, 0.7_pr]
+   T = 300.0_pr
+   V = 10.0_pr
+   call model%pressure(n, V, T, P)
+   Pideal = sum(n)*R*T/V
+   print *, "Pressure [bar]: ", P
+   print *, "Ideal-gas pressure [bar]: ", Pideal
+   print *, "Compressibility Z [-]: ", P/Pideal
+end program cubic_pressure
+```
+
+Link this program with `yaeos` and its dependencies in your configured Fortran/fpm
+environment. `pr` is the library's real kind; `_pr` literals avoid rounding inputs
+to default real precision. The dimensionless compressibility factor
+\(Z=Pv/(RT)\) should approach one at small density. Scaling both `n` and `V`
+by the same positive factor should leave pressure unchanged.
+
+## Model variants and their parameters
+
+Below, \(P_c\) is critical pressure and \(\omega\) is acentric factor.
+The dimensionless alpha coefficient \(k\) is a pure-component quantity,
+**not** a binary interaction \(k_{ij}\). The `b` listed for each model is the
+pure-component covolume; for PR and SRK it is also what the quadratic mixing
+rule combines.
 
 ## SoaveRedlichKwong
 Fortran definition: [[SoaveRedlichKwong]]. The SoaveRedlichKwong EoS uses the
@@ -26,7 +100,7 @@ following \(\alpha\) function and its respective correlation for \(k\).
 \[ \alpha(T_r) = (1 + k (1 - \sqrt{T_r}))^2 \]
 \[ k = 0.48 + 1.574 \omega - 0.175 \omega^2  \]
 \[ a_c = 0.427480  \frac{R^2 T_c^2}{P_c} \]
-\[ b_c = 0.086640  \frac{R T_c}{P_c} \]
+\[ b = 0.086640  \frac{R T_c}{P_c} \]
 \[ \delta_1 = 1 \]
 \[ \delta_2 = 0 \]
 
@@ -43,9 +117,8 @@ the following \(\alpha\) function and correlation for k.
 
 ## PengRobinson78
 Fortran definition: [[PengRobinson78]]. The Peng-Robinson (1978) EoS is an
-improved version of the original Peng-Robinson (1976) equation for heavier
-components. This equation ensures a monotonically increasing \(k\) as the
-values of \(\omega\) increases. It uses the following \(\alpha\) function and
+variant of the original Peng-Robinson (1976) equation with a different
+high-acentric-factor correlation. It uses the following \(\alpha\) function and
 correlation for k.
 
 \[ \alpha(T_r) = (1 + k (1 - \sqrt{T_r}))^2 \]
@@ -54,7 +127,7 @@ correlation for k.
 k =
 \begin{cases} 
 0.37464 + 1.54226 \omega - 0.26992 \omega^2 & \text{if} \quad \omega \leq 0.491 \\
-0.37464 + 1.48503 \omega - 0.16442 \omega^2 + 0.016666 \omega^3 & \text{if} \quad \omega > 0.491
+0.379642 + 1.48503 \omega - 0.164423 \omega^2 + 0.016666 \omega^3 & \text{if} \quad \omega > 0.491
 \end{cases}
 \]
 
@@ -83,27 +156,61 @@ function:
  \alpha(T_r) = \left(\frac{3}{2+T_r}\right)^k
 \]
 
-These two extra parameters can be provided as arguments. But, if they are
-not provided they will be calculated by the following correlations:
+Its constructor is `RKPR(tc, pc, w, zc, kij, lij, delta_1, k)`; arguments after
+`zc` are optional. Here `zc` is the experimental critical compressibility
+\(Z_c=P_c v_c/(RT_c)\), with \(v_c\) the critical molar volume. RKPR needs
+this additional pure-component information. Optional `delta_1` and `k` arrays
+each have one entry per component.
 
-\[ \delta_1 = d_1 + d_2 (d_3 - Z_c)^d_4 + d_5 (d_3 - Z_c) ^ {d_6} \]
-\[ k = (A_1  Z_c + A_0)\omega^2 + (B_1 Z_c + B_0)\omega + (C_1 Z_c + C_0) \]
+The implementation uses an effective critical compressibility `1.168*zc` in
+its default shape correlation and numerically readjusts unspecified `k` values
+to match the acentric-factor definition at \(T_r=0.7\). This numerical fit is
+not an unconditional convergence guarantee. The implemented correlations are
+documented with [[RKPR]]; do not substitute experimental `zc` directly into an
+unrelated published correlation. Check that correlated parameters are finite,
+particularly near the fractional-power correlation's domain boundary.
 
-In this implementation, the \(k\) constants (if not provided) will also 
-be readjusted to assure that \(\omega = -log_{10}\left(P_r^{sat}\right) - 1\) 
-at \(T_r = 0.7\).
-
-It is also possible to include the parameters as optional arguments.
+Because the \(k\) refit solves a saturation condition per component, building
+an RKPR model is noticeably more expensive than building PR or SRK, and it can
+be sensitive to the input `zc` values.
 
 
 ## PSRK
 [[PSRK]]
 
 The PSRK EoS [3,4] (Predictive Soave-Redlich-Kwong) is a Soave-Redlich-Kwong
-cubic equation of state that uses the [[MHV]] mixrule and the
-[[AlphaMathiasCopeman]] \(\alpha\) function. With the MHV mixrule, a Gibbs
-excess energy model is required, in the case of PSRK, the PSRK-UNIFAC model is
-used.
+cubic equation of state that uses the [[MHV]] mixrule and a PSRK-UNIFAC model.
+The alpha function is Soave by default, or [[AlphaMathiasCopeman]] when the
+optional `c1`, `c2`, and `c3` parameters are provided.
+
+PSRK additionally needs one group decomposition per component, using the
+PSRK-UNIFAC group definitions and available interaction parameters. It does not
+infer molecular structure from critical constants. Supply all three alpha
+coefficient arrays together if overriding its default. See the
+[group-contribution guide](../../excessmodels/unifac_models/index.html).
+
+## Interpreting results and avoiding false confidence
+
+- Use positive temperatures and volumes, nonnegative amounts and a positive
+  total amount. Volume must exceed the mixture covolume; approaching that
+  boundary makes pressure diverge.
+- `pressure` evaluates a mathematical homogeneous state. It does not decide
+  whether that state will separate into liquid and vapor.
+- At fixed pressure and temperature there can be several volume roots.
+  Requesting a liquid or vapor root is a branch choice, not proof that this
+  phase is globally stable. Negative pressures on stretched branches are not
+  a predicted operating pressure for an equilibrium vessel.
+- A converged flash cannot repair unsuitable parameters. Conversely, a failed
+  flash is not proof the EOS is invalid. Check units, root selection, initial
+  guesses and material balances separately.
+
+## Next reading
+
+Continue with [mixing rules](mixing.html), [alpha functions](alpha.html), and
+[phase equilibrium](../../phase_equilibrium/index.html). The
+[EOS property guide](../index.html) explains the shared API, and
+[thermodynamic fundamentals](../../fundamentals.html) covers amounts,
+compositions, units and the difference between a model and a solver.
 
 
 # References

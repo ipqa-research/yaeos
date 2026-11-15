@@ -1,6 +1,6 @@
 """Solvers.
 
-Module that contains different solvers for specific porpouses.
+Module that contains different solvers for specific purposes.
 """
 
 import numpy as np
@@ -11,7 +11,25 @@ from yaeos.core import ArModel
 
 
 def binary_isofugacity_x1y1pt(x, p, t, model: ArModel):
-    """Isofugacity evaluation at a given P and T."""
+    """Isofugacity evaluation at a given P and T.
+
+    Parameters
+    ----------
+    x : array_like
+        Mole fractions of component 1 in both phases, ordered as
+        ``[y1, x1]``.
+    p : float
+        Pressure [bar].
+    t : float
+        Temperature [K].
+    model : ArModel
+        yaeos ArModel object.
+
+    Returns
+    -------
+    np.ndarray
+        Squared isofugacity residual of each component.
+    """
     y1, x1 = x
 
     x = np.array([x1, 1 - x1])
@@ -44,6 +62,7 @@ def solve_pt(
         Temperature [K].
     kind : str
         Kind of phase equilibrium calculation. Options are:
+
         - "liquid-liquid": liquid-liquid equilibrium calculation.
         - "PT": pressure-temperature calculation.
 
@@ -85,6 +104,7 @@ def find_init_binary_ll(
         Temperature [K].
     kind : str
         Kind of phase equilibrium calculation. Options are:
+
         - "liquid-liquid": liquid-liquid equilibrium calculation.
         - "PT": pressure-temperature calculation.
 

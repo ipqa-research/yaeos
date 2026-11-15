@@ -1,5 +1,17 @@
 module yaeos__equilibria_binaries
-   !! Module with routines particular to binary mixtures.
+   !! # Binary three-phase equilibrium
+   !! Utilities for liquid-liquid-vapor lines and critical endpoints in binary systems.
+   !!
+   !! # Description
+   !! Provides initial guesses and nonlinear residuals for binary LLV
+   !! calculations, plus result storage in [[BinaryThreePhase]]. These routines
+   !! exploit the fact that a binary composition has one independent
+   !! composition coordinate per phase.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! line = binary_llv_from_cep(model, cep)
+   !! ```
    use yaeos__constants, only: pr
    use yaeos__models_ar, only: ArModel
    use yaeos__equilibria_equilibrium_state, only: EquilibriumState
@@ -10,11 +22,17 @@ module yaeos__equilibria_binaries
    public :: BinaryThreePhase, binary_llv_from_cep
 
    type :: BinaryThreePhase
-      !! # `BinaryThreePhase`
-      !! Structure to hold the results of a binary LLV line calculation.
+      !! # BinaryThreePhase
+      !! Tabulated state points along a binary liquid-liquid-vapor line.
+      !!
       !! # Description
-      !! This structure holds the results of a binary LLV line calculation.
-      !! Pressures are calculated using the composition of the liquid phase `x`.
+      !! Each component array stores one value per converged line point.
+      !! Pressures correspond to the equilibrium compositions at the same index.
+      !!
+      !! # Examples
+      !! ```fortran
+      !! write(*,*) line%P, line%T, line%x1, line%y1, line%w1
+      !! ```
       real(pr), allocatable :: x1(:) !! Mole fraction of component 1 in liquid phase x
       real(pr), allocatable :: y1(:) !! Mole fraction of component 1 in liquid phase y
       real(pr), allocatable :: w1(:) !! Mole fraction of component 1 in vapor phase w
@@ -26,21 +44,31 @@ module yaeos__equilibria_binaries
    end type BinaryThreePhase
 
    type :: LLVVarEnum
-      integer :: x1=1
-      integer :: x2=2
-      integer :: y1=3
-      integer :: y2=4
-      integer :: w1=5
-      integer :: w2=6
-      integer :: Vx=7
-      integer :: Vy=8
-      integer :: Vw=9
-      integer :: T=10
+      !! Indices of the binary LLV unknown vector used by the solver.
+      !!
+      !! # Description
+      !! Named offsets identify the (logarithmic) phase mole amounts, phase
+      !! volumes, and temperature in the packed nonlinear-solver vector.
+      !!
+      !! # Examples
+      !! ```fortran
+      !! X(llv_vars%Vx) = log(Vx)
+      !! ```
+      integer :: x1=1 !! \(\ln\) of component-1 amount in liquid phase x.
+      integer :: x2=2 !! \(\ln\) of component-2 amount in liquid phase x.
+      integer :: y1=3 !! \(\ln\) of component-1 amount in liquid phase y.
+      integer :: y2=4 !! \(\ln\) of component-2 amount in liquid phase y.
+      integer :: w1=5 !! \(\ln\) of component-1 amount in vapor phase w.
+      integer :: w2=6 !! \(\ln\) of component-2 amount in vapor phase w.
+      integer :: Vx=7 !! \(\ln V\) of liquid phase x (\(V\) in L).
+      integer :: Vy=8 !! \(\ln V\) of liquid phase y (\(V\) in L).
+      integer :: Vw=9 !! \(\ln V\) of vapor phase w (\(V\) in L).
+      integer :: T=10 !! \(\ln T\) (\(T\) in K).
    end type LLVVarEnum
 
-   type(LLVVarEnum), parameter :: llv_vars = LLVVarEnum()
+   type(LLVVarEnum), parameter :: llv_vars = LLVVarEnum() !! Named indices into the LLV unknown vector.
 
-   integer, parameter :: n_llv_vars = 10
+   integer, parameter :: n_llv_vars = 10 !! Number of unknowns in the binary LLV solver vector.
 
 contains
 
@@ -69,9 +97,11 @@ contains
       real(kind=pr), intent(out) :: V !! Volume [L/mol]
       real(kind=pr), intent(in out) :: T !! Temperature [K]
 
-      real(kind=pr) :: z(2), lnphi(2), dlnphidn(2, 2)
+      real(kind=pr) :: z(2) !! Feed or overall composition.
+      real(kind=pr) :: lnphi(2) !! Log fugacity coefficients.
+      real(kind=pr) :: dlnphidn(2, 2)
 
-      integer :: i
+      integer :: i !! Loop/index variable.
       integer :: tries
       real(kind=pr) :: as(50)
       real(kind=pr) :: lambdas(50)
@@ -130,19 +160,30 @@ contains
       integer, parameter :: nvars = 10
 
       real(pr) :: X(nvars)
-      real(pr) :: dFdS(nvars), F(nvars), dF(nvars, nvars)
+      real(pr) :: dFdS(nvars)
+      real(pr) :: F(nvars)
+      real(pr) :: dF(nvars, nvars)
       integer :: ns
-      real(pr) ::  dS, S, dXdS(nvars)
+      real(pr) :: dS
+      real(pr) :: S
+      real(pr) :: dXdS(nvars)
 
-      real(pr) :: T, P, Vx, Vy, Vw
-      real(pr) :: xx(2), y(2), w(2)
+      real(pr) :: T
+      real(pr) :: P
+      real(pr) :: Vx
+      real(pr) :: Vy
+      real(pr) :: Vw
+      real(pr) :: xx(2)
+      real(pr) :: y(2) !! Incipient/second phase composition.
+      real(pr) :: w(2) !! Reference/trial phase composition.
 
-      real(pr), allocatable :: Ts(:), Ps(:)
+      real(pr), allocatable :: Ts(:)
+      real(pr), allocatable :: Ps(:)
 
       integer :: points
       integer :: iters
 
-      real(pr) :: delta
+      real(pr) :: delta !! Initial composition offset of the two liquids from the CEP.
       real(pr) :: imin
 
       dFdS = 0
@@ -191,7 +232,7 @@ contains
          points = points + 1
          call three_phase_line_F_solve(model, X, ns, S, F, dF, iters)
          if (iters >= 1000) then
-            X = X - 0.9 * dXdS * dS 
+            X = X - 0.9 * dXdS * dS
             S = S - 0.9 * dS
             call three_phase_line_F_solve(model, X, ns, S, F, dF, iters)
          end if
@@ -286,23 +327,50 @@ contains
       real(kind=pr), intent(out) :: dF(:, :) !! Jacobian
 
       ! Variables describing the three phases
-      real(pr) :: x1, y1, w1
-      real(pr) :: vx, vy, vw, T
-      real(pr) :: x(2), y(2), w(2)
+      real(pr) :: x1
+      real(pr) :: y1
+      real(pr) :: w1
+      real(pr) :: vx
+      real(pr) :: vy
+      real(pr) :: vw
+      real(pr) :: T
+      real(pr) :: x(2)
+      real(pr) :: y(2) !! Incipient/second phase composition.
+      real(pr) :: w(2) !! Reference/trial phase composition.
 
-      real(pr) :: Px, Py, Pw
-      real(pr) :: isofug_1(2), isofug_2(2)
-      real(pr) :: Peq_1, Peq_2
+      real(pr) :: Px
+      real(pr) :: Py
+      real(pr) :: Pw
+      real(pr) :: isofug_1(2)
+      real(pr) :: isofug_2(2)
+      real(pr) :: Peq_1
+      real(pr) :: Peq_2
 
-      real(pr) :: lnf_x(2), lnf_y(2), lnf_w(2)
-      real(pr) :: dlnfxdn(2, 2), dlnfydn(2, 2), dlnfwdn(2, 2)
-      real(pr) :: dlnfxdv(2), dlnfydv(2), dlnfwdv(2)
-      real(pr) :: dlnfxdP(2), dlnfydP(2), dlnfwdP(2)
-      real(pr) :: dlnfxdT(2), dlnfydT(2), dlnfwdT(2)
+      real(pr) :: lnf_x(2)
+      real(pr) :: lnf_y(2)
+      real(pr) :: lnf_w(2)
+      real(pr) :: dlnfxdn(2, 2)
+      real(pr) :: dlnfydn(2, 2)
+      real(pr) :: dlnfwdn(2, 2)
+      real(pr) :: dlnfxdv(2)
+      real(pr) :: dlnfydv(2)
+      real(pr) :: dlnfwdv(2)
+      real(pr) :: dlnfxdP(2)
+      real(pr) :: dlnfydP(2)
+      real(pr) :: dlnfwdP(2)
+      real(pr) :: dlnfxdT(2)
+      real(pr) :: dlnfydT(2)
+      real(pr) :: dlnfwdT(2)
 
-      real(pr) :: dPxdN(2), dPydN(2), dPwdN(2)
-      real(pr) :: dPxdV, dPydV, dPwdV
-      real(pr) :: dPxdT, dPydT, dPwdT
+      real(pr) :: dPxdN(2)
+      real(pr) :: dPydN(2)
+      real(pr) :: dPwdN(2)
+      real(pr) :: dPxdV
+      real(pr) :: dPydV
+      real(pr) :: dPwdV
+      real(pr) :: dPxdT
+      real(pr) :: dPydT
+      real(pr) :: dPwdT
       real(pr) :: dxdn(2, 2)
 
       x = exp(XVars(llv_vars%x1:llv_vars%x2))
@@ -480,9 +548,9 @@ contains
       real(kind=pr), intent(out) :: dF(:, :) !! Jacobian
       integer, optional, intent(out) :: iters !! Number of iterations performed
 
-      integer :: i
+      integer :: i !! Loop/index variable.
       integer :: max_tries
-      real(kind=pr) :: tol
+      real(kind=pr) :: tol !! Numerical convergence tolerance.
       real(kind=pr) :: res_norm
       real(kind=pr) :: dX(size(X))
       real(kind=pr) :: Xold(size(X))

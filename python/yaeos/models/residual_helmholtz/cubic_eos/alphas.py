@@ -1,6 +1,6 @@
-"""Alpha Functions for CubicEoS
+"""Alpha Functions for CubicEoS.
 
-This module contain the setter functions for the different alpha
+This module contains the setter functions for the different alpha
 functions existing in yaeos.
 """
 
@@ -67,11 +67,11 @@ class AlphaSoave(CubicAlphaFunction):
 
     Example
     -------
-    .. code-block: python
+    .. code-block:: python
 
         from yaeos import AlphaSoave, SoaveRedlichKwong
 
-        k= [0.5, 0.6]
+        k = [0.5, 0.6]
 
         alphasoave = AlphaSoave(k)  # AlphaSoave with custom parameters
 
@@ -89,6 +89,13 @@ class AlphaSoave(CubicAlphaFunction):
         self.k = k
 
     def set_alpha(self, ar_model_id: int):
+        """Set the Soave alpha function in the given cubic EoS model.
+
+        Parameters
+        ----------
+        ar_model_id : int
+            ID of the cubic EoS model
+        """
         yaeos_c.set_alpha_soave(ar_model_id, self.k)
 
     def _model_params_as_str(self):
@@ -117,11 +124,11 @@ class AlphaRKPR(CubicAlphaFunction):
 
     Example
     -------
-    .. code-block: python
+    .. code-block:: python
 
         from yaeos import AlphaRKPR, SoaveRedlichKwong
 
-        k= [0.5, 0.6]
+        k = [0.5, 0.6]
 
         alphaRKPR = AlphaRKPR(k)    # AlphaRKPR with custom parameters
 
@@ -139,6 +146,13 @@ class AlphaRKPR(CubicAlphaFunction):
         self.k = k
 
     def set_alpha(self, ar_model_id: int):
+        """Set the RKPR alpha function in the given cubic EoS model.
+
+        Parameters
+        ----------
+        ar_model_id : int
+            ID of the cubic EoS model
+        """
         yaeos_c.set_alpha_rkpr(ar_model_id, self.k)
 
     def _model_params_as_str(self):
@@ -175,16 +189,16 @@ class AlphaMathiasCopeman(CubicAlphaFunction):
 
     Example
     -------
-    .. code-block: python
+    .. code-block:: python
 
-        from yaeos import AlphaRKPR, SoaveRedlichKwong
+        from yaeos import AlphaMathiasCopeman, SoaveRedlichKwong
 
         c1 = [0.5, 0.6]
         c2 = [3.5, 1.6]
         c3 = [0.0, 0.0]
 
         # AlphaMathiasCopeman with custom parameters
-        alphamc = AlphaMathiasCopeman(k)
+        alphamc = AlphaMathiasCopeman(c1, c2, c3)
 
         tc = [305.32, 469.7]        # critical temperature [K]
         pc = [48.72, 33.7]          # critical pressure [bar]
@@ -202,6 +216,13 @@ class AlphaMathiasCopeman(CubicAlphaFunction):
         self.c3 = c3
 
     def set_alpha(self, ar_model_id: int):
+        """Set the Mathias-Copeman alpha function in the given cubic EoS.
+
+        Parameters
+        ----------
+        ar_model_id : int
+            ID of the cubic EoS model
+        """
         yaeos_c.set_alpha_mathiascopeman(
             ar_model_id, self.c1, self.c2, self.c3
         )

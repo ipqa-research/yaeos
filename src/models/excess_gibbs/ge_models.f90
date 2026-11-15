@@ -1,11 +1,34 @@
 module yaeos__models_ge
-   !! Excess Gibbs Models.
+   !! # Excess-Gibbs models
+   !! Abstract API and thermodynamic property relations for activity models.
+   !!
+   !! # Description
+   !! A `GeModel` implementation supplies the excess Gibbs energy and its
+   !! temperature/composition derivatives. The base type derives activity
+   !! coefficients and excess enthalpy, entropy, and heat capacity from those
+   !! derivatives. Energies are extensive and expressed in the units of
+   !! \(nRT\), i.e. bar L with the library's `R` [bar L / (mol K)].
+   !!
+   !! # Examples
+   !! ```fortran
+   !! model = NRTL(A, B, alpha)
+   !! call model%ln_activity_coefficient(n, T, ln_gamma)
+   !! ```
    use yaeos__constants, only: pr, R
    use yaeos__models_base, only: BaseModel
    implicit none
 
    type, extends(BaseModel), abstract :: GeModel
-      !! Excess Gibbs energy model.
+      !! # GeModel
+      !! Abstract base for models defined by an excess Gibbs energy.
+      !!
+      !! # Description
+      !! Derived types implement the `excess_gibbs` deferred procedure. The
+      !! inherited methods calculate activity coefficients and excess
+      !! thermodynamic properties using the Gibbs-energy identities.
+      !!
+      !! # Examples
+      !! See `NRTL`, `UNIQUAC`, and `UNIFAC` for concrete models.
    contains
       procedure(excess_gibbs), deferred :: excess_gibbs
       procedure :: ln_activity_coefficient => ln_activity_coefficient
@@ -36,6 +59,9 @@ module yaeos__models_ge
 contains
 
    subroutine ln_activity_coefficient(self, n, T, lngamma, dlngammadT, dlngammadn)
+      !! # ln_activity_coefficient
+      !!
+      !! # Description
       !! Calculate natural logarithm of activity coefficients.
       !!
       !! \[
@@ -52,9 +78,14 @@ contains
       real(pr), optional, intent(out) :: dlngammadn(size(n),size(n))
       !! \(\frac{d\ln \gamma_i}{dn_j}\)
 
-      real(pr) :: Ge, Gen(size(n)), GeTn(size(n)), Gen2(size(n), size(n))
+      real(pr) :: Ge
+      real(pr) :: Gen(size(n))
+      real(pr) :: GeTn(size(n))
+      real(pr) :: Gen2(size(n), size(n))
 
-      logical :: tt, dt, dn
+      logical :: tt
+      logical :: dt
+      logical :: dn
 
       tt = present(lngamma)
       dt = present(dlngammadT)
@@ -90,7 +121,11 @@ contains
       real(pr), optional, intent(out) :: HeT !! \(\frac{dH^E}{dT}\)
       real(pr), optional, intent(out) :: Hen(:) !! \(\frac{dH^E}{dn}\)
 
-      real(pr) :: Ge, GeT, GeT2, Gen(size(n)), GeTn(size(n))
+      real(pr) :: Ge
+      real(pr) :: GeT
+      real(pr) :: GeT2
+      real(pr) :: Gen(size(n))
+      real(pr) :: GeTn(size(n))
 
       call self%excess_gibbs(&
          n, T, Ge=Ge, GeT=GeT, GeT2=GeT2, Gen=Gen, GeTn=GeTn &
@@ -102,6 +137,9 @@ contains
    end subroutine excess_enthalpy
 
    subroutine excess_entropy(self, n, T, Se, SeT, Sen)
+      !! # excess_entropy
+      !!
+      !! # Description
       !! Calculate Excess entropy and its derivatives.
       !!
       !! \[
@@ -115,7 +153,10 @@ contains
       real(pr), optional, intent(out) :: SeT !! \(\frac{dS^E}{dT}\)
       real(pr), optional, intent(out) :: Sen(:) !! \(\frac{dS^E}{dn}\)
 
-      real(pr) :: Ge, GeT, GeT2, GeTn(size(n))
+      real(pr) :: Ge
+      real(pr) :: GeT
+      real(pr) :: GeT2
+      real(pr) :: GeTn(size(n))
 
       call self%excess_gibbs(n, T, Ge=Ge, GeT=GeT, GeT2=GeT2, GeTn=GeTn)
 
@@ -125,6 +166,9 @@ contains
    end subroutine excess_entropy
 
    subroutine excess_Cp(self, n, T, Cpe)
+      !! # excess_Cp
+      !!
+      !! # Description
       !! Calculate Excess heat capacity.
       !!
       !! \[
@@ -136,7 +180,11 @@ contains
       real(pr), intent(in) :: T !! Temperature [K]
       real(pr), intent(out) :: Cpe !! Excess heat capacity [bar L / K]
 
-      real(pr) :: Ge, GeT, GeT2, Gen(size(n)), GeTn(size(n))
+      real(pr) :: Ge
+      real(pr) :: GeT
+      real(pr) :: GeT2
+      real(pr) :: Gen(size(n))
+      real(pr) :: GeTn(size(n))
 
       call self%excess_gibbs(&
          n, T, Ge=Ge, GeT=GeT, GeT2=GeT2, Gen=Gen, GeTn=GeTn &

@@ -1,5 +1,17 @@
 module yaeos__models_ar_cubic_quadratic_mixing
-   !! Quadratic Mixing Rules for Cubic EoS.
+   !! # Quadratic cubic-EOS mixing rules
+   !! Binary quadratic mixing rules for the attractive and repulsive parameters.
+   !!
+   !! # Description
+   !! Exports `QMR` with constant binary interactions and `QMRTD` with
+   !! temperature-dependent attractive interactions. `QMR` uses the classic
+   !! pair combining rules and can be configured with component-pair matrices.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! rule = QMR(k=kij, l=lij)
+   !! call model%set_mixrule(rule)
+   !! ```
    use yaeos__constants, only: pr, solving_volume
    use yaeos__substance, only: substances
    use yaeos__models_ar_genericcubic, only: CubicMixRule
@@ -7,19 +19,26 @@ module yaeos__models_ar_cubic_quadratic_mixing
    implicit none
 
    type, extends(CubicMixRule) :: QMR
-      !! Quadratic Mixing Rule (QMR) derived type. Classic Van der Waals mixing
-      !! rules.
+      !! # QMR
+      !! Classic quadratic (van der Waals one-fluid) mixing rule.
       !!
+      !! # Description
       !! QMR depends on binary interaction parameters, on a Cubic EoS
       !! the mixture is obtained by the combination of an attractive and
       !! repulsive parameter matrices.
       !!
       !! By default the attractive parameter matrix is calculated with:
       !! \[a_{ij} = \sqrt{a_i a_j}(1 - k_{ij})\]
-      !! generating the \(a_{ij}\) matrix, but this procedure can be overriden
-      !! replacing the `aij` pointer procedure.
-      real(pr), allocatable :: k(:, :) !! Attractive Binary Interatction parameter matrix
-      real(pr), allocatable :: l(:, :) !! Repulsive Binary Interatction parameter matrix
+      !! generating the \(a_{ij}\) matrix, but this procedure can be overridden
+      !! in an extended type by rebinding the `aij` type-bound procedure.
+      !!
+      !! # Examples
+      !! ```fortran
+      !! rule = QMR(k=kij, l=lij)
+      !! call model%set_mixrule(rule)
+      !! ```
+      real(pr), allocatable :: k(:, :) !! Attractive Binary Interaction parameter matrix
+      real(pr), allocatable :: l(:, :) !! Repulsive Binary Interaction parameter matrix
    contains
       procedure :: aij => kij_constant !! Default attractive parameter combining rule
       procedure :: Dmix !! Attractive parameter mixing rule
@@ -28,8 +47,20 @@ module yaeos__models_ar_cubic_quadratic_mixing
    end type QMR
 
    type, extends(QMR) :: QMRTD
-      real(pr), allocatable :: k0(:, :)
-      real(pr), allocatable :: Tref(:, :)
+      !! # QMRTD
+      !! Quadratic mixing rule with temperature-dependent binary interactions.
+      !!
+      !! # Description
+      !! Extends QMR by evaluating its attractive binary interaction parameter
+      !! as \(k_{ij}(T) = k_{ij} + k^0_{ij}\exp(-T/T^{ref}_{ij})\), where the
+      !! inherited `k` is the high-temperature limit.
+      !!
+      !! # Examples
+      !! ```fortran
+      !! rule = QMRTD(k=k_inf, k0=k0, Tref=Tref, l=l)
+      !! ```
+      real(pr), allocatable :: k0(:, :) !! Temperature-dependent interaction amplitudes.
+      real(pr), allocatable :: Tref(:, :) !! Pair-specific reference temperatures [K].
    contains
       procedure :: aij => kij_exp_tdep
    end type QMRTD
@@ -39,12 +70,16 @@ module yaeos__models_ar_cubic_quadratic_mixing
          !! Combining rule for the attractive parameter.
          !!
          !! From previously calculated attractive parameters calculate the
-         !! \(a_{ij}\) matrix and it's corresponding derivatives.
+         !! \(a_{ij}\) matrix and its corresponding derivatives.
          import pr, QMR
-         class(QMR), intent(in) :: self
-         real(pr), intent(in) :: T
-         real(pr), intent(in) :: ai(:), daidt(:), daidt2(:)
-         real(pr), intent(out):: aij(:, :), daijdt(:, :), daijdt2(:, :)
+         class(QMR), intent(in) :: self !! Mixing rule object.
+         real(pr), intent(in) :: T !! Temperature [K]
+         real(pr), intent(in) :: ai(:) !! Pure-component attractive parameters \(a_i\)
+         real(pr), intent(in) :: daidt(:) !! \(da_i/dT\)
+         real(pr), intent(in) :: daidt2(:) !! \(d^2a_i/dT^2\)
+         real(pr), intent(out) :: aij(:, :) !! \(a_{ij}\) matrix
+         real(pr), intent(out) :: daijdt(:, :) !! \(da_{ij}/dT\)
+         real(pr), intent(out) :: daijdt2(:, :) !! \(d^2a_{ij}/dT^2\)
       end subroutine get_aij
    end interface
 
@@ -55,6 +90,9 @@ contains
          D, &
          dDdV, dDdT, dDdV2, dDdT2, dDi, dDdTV, dDidV, dDidT, dDij &
       )
+      !! # Dmix
+      !!
+      !! # Description
       !! Attractive parameter mixing rule with quadratic mix.
       !!
       !! Takes the all the pure components attractive parameters and their
@@ -69,13 +107,18 @@ contains
       !! procedure contained in the `QMR` object, this procedures defaults
       !! to the common combining rule: \(a_{ij} = \sqrt{a_i a_j} (1 - k_{ij}) \)
       !!
-      !! The procedure can be overloaded by a common one that respects the
-      !! interface [[get_aij(interface)]]
+      !! The combining rule can be replaced by extending `QMR` and rebinding
+      !! `aij` to a procedure that respects the interface [[get_aij(interface)]]:
       !!
       !! ```fortran
-      !! type(QMR) :: my_mixing_rule
-      !! my_mixing_rule%aij => new_aij_procedure
+      !! type, extends(QMR) :: MyQMR
+      !! contains
+      !!    procedure :: aij => my_aij
+      !! end type MyQMR
       !! ```
+      !!
+      !! This rule is volume independent; the volume-derivative outputs are not
+      !! assigned here (`GenericCubic_Ar` zeroes them beforehand).
       class(QMR), intent(in) :: self !! Mixing rule object.
       real(pr), intent(in) :: V !! Volume [L] (unused)
       real(pr), intent(in) :: T !! Temperature [K]
@@ -85,18 +128,21 @@ contains
       real(pr), intent(in) :: daidt2(:) !! \(\frac{d^2a_i}{dT^2}\)
 
       real(pr), intent(out) :: D !! Mixture attractive parameter \(n^2a_{mix}\)
-      real(pr), intent(out) :: dDdV !! \(\frac{dD}{dT}\)
-      real(pr), intent(out) :: dDdT !! \(\frac{dD}{dV}\)
+      real(pr), intent(out) :: dDdV !! \(\frac{dD}{dV}\) (not assigned)
+      real(pr), intent(out) :: dDdT !! \(\frac{dD}{dT}\)
       real(pr), intent(out) :: dDdT2 !! \(\frac{d^2D}{dT^2}\)
       real(pr), intent(out) :: dDdV2 !! \(\frac{d^2D}{dV^2}\)
-      real(pr), intent(out) :: dDdTV !! \(\frac{d^2D}{dTV\)
+      real(pr), intent(out) :: dDdTV !! \(\frac{d^2D}{dTV}\)
       real(pr), intent(out) :: dDi(:) !! \(\frac{dD}{dn_i}\)
       real(pr), intent(out) :: dDidV(:) !! \(\frac{d^2D}{dVn_i}\)
       real(pr), intent(out) :: dDidT(:) !! \(\frac{d^2D}{dTn_i}\)
-      real(pr), intent(out) :: dDij(:, :)!! \(\frac{d^2D}{dn_{ij}}\)
+      real(pr), intent(out) :: dDij(:, :) !! \(\frac{d^2D}{dn_{ij}}\)
 
-      integer :: i, j, nc
-      real(pr) :: aux, aux2
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: nc !! Number of components.
+      real(pr) :: aux !! Intermediate accumulator.
+      real(pr) :: aux2 !! Second intermediate accumulator.
       real(pr) :: aij(size(ai), size(ai))
       real(pr) :: daijdt(size(ai), size(ai))
       real(pr) :: daijdt2(size(ai), size(ai))
@@ -137,26 +183,31 @@ contains
    end subroutine Dmix
 
    subroutine Bmix(self, n, bi, B, dBi, dBij)
+      !! # Bmix
+      !!
+      !! # Description
       !! Mixture repulsive parameter.
       !!
       !! Calculate the mixture's repulsive parameter and it's derivatives
       !! with respect to composition:
       !!
       !! \[
-      !!    nB = \sum_i \sum_j n_i n_j \frac{b_i + b_j}{2} (1 - l_{ij})
+      !!    n_T B = \sum_i \sum_j n_i n_j \frac{b_i + b_j}{2} (1 - l_{ij})
       !! \]
       !!
       class(QMR), intent(in) :: self !! Mixing rule object.
       real(pr), intent(in) :: n(:) !! Moles vector.
-      real(pr), intent(in) :: bi(:) !! Pure components repulsive parameters.
-      real(pr), intent(out) :: B !! Mixture repulsive parameter.
+      real(pr), intent(in) :: bi(:) !! Pure-component covolumes [L/mol]
+      real(pr), intent(out) :: B !! Mixture covolume \(B\) [L]
       real(pr), intent(out) :: dBi(:) !! \(\frac{dB}{dn_i}\)
-      real(pr), intent(out) :: dBij(:, :) !!\(\frac{d^2B}{dn_{ij}}\)
+      real(pr), intent(out) :: dBij(:, :) !! \(\frac{d^2B}{dn_{ij}}\)
       call bmix_qmr(n, bi, self%l, b, dbi, dbij)
    end subroutine Bmix
 
    subroutine RKPR_D1mix(self, n, d1i, D1, dD1i, dD1ij)
-      use yaeos__models_ar_cubic_mixing_base, only: d1mix_rkpr
+      !! # RKPR_D1mix
+      !!
+      !! # Description
       !! RKPR \(\delta_1\) parameter mixing rule.
       !!
       !! The RKPR EoS doesn't have a constant \(\delta_1\) value for each
@@ -164,15 +215,16 @@ contains
       !! combination is used.
       !!
       !! \[
-      !!     \Delta_1 = \sum_i^N n_i \delta_{1i}
+      !!     \Delta_1 = \frac{\sum_i^N n_i \delta_{1i}}{\sum_i^N n_i}
       !! \]
       !!
-      class(QMR), intent(in) :: self
-      real(pr), intent(in) :: n(:)
-      real(pr), intent(in) :: d1i(:)
-      real(pr), intent(out) :: D1
-      real(pr), intent(out) :: dD1i(:)
-      real(pr), intent(out) :: dD1ij(:, :)
+      use yaeos__models_ar_cubic_mixing_base, only: d1mix_rkpr
+      class(QMR), intent(in) :: self !! Mixing rule object.
+      real(pr), intent(in) :: n(:) !! Component mole amounts [mol]
+      real(pr), intent(in) :: d1i(:) !! Pure-component \(\delta_{1i}\) values
+      real(pr), intent(out) :: D1 !! Mixture \(\Delta_1\)
+      real(pr), intent(out) :: dD1i(:) !! \(\partial \Delta_1/\partial n_i\)
+      real(pr), intent(out) :: dD1ij(:, :) !! \(\partial^2 \Delta_1/\partial n_i \partial n_j\)
       call d1mix_rkpr(n, d1i, d1, dd1i, dd1ij)
    end subroutine RKPR_D1mix
 
@@ -180,21 +232,25 @@ contains
       self, T, a, dadt, dadt2, &
       aij, daijdt, daijdt2 &
       )
+      !! # kij_constant
+      !!
+      !! # Description
       !! Combining rule that uses constant \(k_{ij}\) values.
       !!
       !! \[
       !!  a_{ij} = \sqrt{a_i a_j} (1 - k_{ij})
-      !! ]
-      class(QMR), intent(in) :: self
+      !! \]
+      class(QMR), intent(in) :: self !! Mixing rule object.
       real(pr), intent(in) :: T !! Temperature [K]
-      real(pr), intent(in) :: a(:) !! Pure components attractive parameters (\a_i\)
+      real(pr), intent(in) :: a(:) !! Pure components attractive parameters \(a_i\)
       real(pr), intent(in) :: dadt(:) !! \(\frac{da_i}{dT}\)
       real(pr), intent(in) :: dadt2(:) !! \(\frac{d^2a_i}{dT^2}\)
       real(pr), intent(out) :: aij(:, :) !! \(a_{ij}\) Matrix
-      real(pr), intent(out) :: daijdt(:, :) !! \(\frac{da_{ij}{dT}\)
-      real(pr), intent(out) :: daijdt2(:, :)!! \(\frac{d^2a_{ij}{dT^2}\)
+      real(pr), intent(out) :: daijdt(:, :) !! \(\frac{da_{ij}}{dT}\)
+      real(pr), intent(out) :: daijdt2(:, :) !! \(\frac{d^2a_{ij}}{dT^2}\)
 
-      integer :: i, j
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
       real(pr) :: sqrt_aii_ajj
       real(pr) :: inner_sum
 
@@ -229,33 +285,37 @@ contains
       )
       !! # kij_exp_tdep
       !!
-      !! Combining rule that uses temperature dependant \(k_{ij}\) values.
+      !! Combining rule that uses temperature dependent \(k_{ij}\) values.
       !! With the following expression:
       !! \[
-      !! k_{ij}(T) = k_{ij}^0 + k_{ij}^\infty \exp\left(\frac{-T}{T^*}\right)
+      !! k_{ij}(T) = k_{ij}^\infty + k_{ij}^0 \exp\left(\frac{-T}{T^*}\right)
       !!  \]
       !!
       !! \[
       !!  a_{ij} = \sqrt{a_i a_j} (1 - k_{ij})
-      !! ]
+      !! \]
       use hyperdual_mod
-      class(QMRTD), intent(in) :: self
+      class(QMRTD), intent(in) :: self !! Mixing rule object.
       real(pr), intent(in) :: T !! Temperature [K]
-      real(pr), intent(in) :: a(:) !! Pure components attractive parameters (\a_i\)
+      real(pr), intent(in) :: a(:) !! Pure components attractive parameters \(a_i\)
       real(pr), intent(in) :: dadt(:) !! \(\frac{da_i}{dT}\)
       real(pr), intent(in) :: dadt2(:) !! \(\frac{d^2a_i}{dT^2}\)
       real(pr), intent(out) :: aij(:, :) !! \(a_{ij}\) Matrix
-      real(pr), intent(out) :: daijdt(:, :) !! \(\frac{da_{ij}{dT}\)
-      real(pr), intent(out) :: daijdt2(:, :)!! \(\frac{d^2a_{ij}{dT^2}\)
+      real(pr), intent(out) :: daijdt(:, :) !! \(\frac{da_{ij}}{dT}\)
+      real(pr), intent(out) :: daijdt2(:, :) !! \(\frac{d^2a_{ij}}{dT^2}\)
 
       real(pr) :: k0(size(a), size(a))
       real(pr) :: kinf(size(a), size(a))
       real(pr) :: Tstar(size(a), size(a))
 
-      type(hyperdual) :: aij_hd(size(a), size(a)), kij_hd(size(a), size(a)), T_hd
+      type(hyperdual) :: aij_hd(size(a), size(a))
+      type(hyperdual) :: kij_hd(size(a), size(a))
+      type(hyperdual) :: T_hd
       type(hyperdual) :: a_hd(size(a))
 
-      integer :: i, j, nc
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: nc !! Number of components.
 
       T_hd = T
       T_hd%f1 = 1

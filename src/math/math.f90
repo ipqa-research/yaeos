@@ -13,15 +13,15 @@ module yaeos__math
    !!
    !! ## Squared error calculation
    !! ```fortran
+   !!  use yaeos__constants, only: pr
    !!  use yaeos__math, only: sq_error
-   !!  real(pr) :: x = 2.5, y = 3.0, error
-   !!  print *, sq_error(2.5, 3.0)
-   !! ------------------------------------
+   !!  print *, sq_error(2.5_pr, 3.0_pr)
    !! ```
    !!
    !! ```fortran
+   !!  use yaeos__constants, only: pr
    !!  use yaeos__math, only: sq_error
-   !!  real(pr) :: x = [2.5, 5.0], y = [3.0, 4.5], error
+   !!  real(pr) :: x(2) = [2.5_pr, 5.0_pr], y(2) = [3.0_pr, 4.5_pr]
    !!  ! It also works with arrays
    !!  print *, sq_error(x, y)
    !! ```
@@ -56,10 +56,11 @@ module yaeos__math
 
    abstract interface
       subroutine f_1d(x, f, df)
+         !! Callback interface for a scalar residual and its derivative.
          import pr
-         real(pr), intent(in) :: x
-         real(pr), intent(out) :: f
-         real(pr), intent(out) :: df
+         real(pr), intent(in) :: x !! Current scalar iterate.
+         real(pr), intent(out) :: f !! Residual value \(f(x)\).
+         real(pr), intent(out) :: df !! Derivative \(df/dx\).
       end subroutine f_1d
    end interface
 
@@ -72,7 +73,9 @@ contains
       !! # Squared error between two values.
       !!
       !! # Description
-      !! ...
+      !! Returns the squared relative error \(((exp-pred)/exp)^2\). `exp`
+      !! must be nonzero; the result is dimensionless and elementally
+      !! applicable to scalar or array values.
       !!
       !! # Examples
       !!
@@ -80,25 +83,30 @@ contains
       !!  error = sq_error(true_value, model_value)
       !! ```
       use yaeos__constants, only: pr
-      real(pr), intent(in) :: exp
-      real(pr), intent(in) :: pred
+      real(pr), intent(in) :: exp !! Reference or expected value; must be nonzero.
+      real(pr), intent(in) :: pred !! Predicted value being compared with `exp`.
       sq_error = ((exp - pred)/exp)**2
    end function sq_error
 
    function central_numdiff(f, x, eps) result(df)
+      !! Approximate the Jacobian of a vector function by centered differences.
+      !! Column `i` is evaluated using a perturbation \(dx_i=x_i\,eps\); thus
+      !! this routine requires nonzero entries in `x` for finite differences.
       interface
          function f(x)
+            !! Vector-valued function differentiated by `central_numdiff`.
             import pr
-            real(pr), intent(in) :: x(:)
-            real(pr) :: f(size(x))
+            real(pr), intent(in) :: x(:) !! Function input vector.
+            real(pr) :: f(size(x)) !! Function output vector.
          end function f
       end interface
-      real(pr), intent(in) :: x(:)
-      real(pr), intent(in) :: eps
-      real(pr) :: df(size(x), size(x))
+      real(pr), intent(in) :: x(:) !! Evaluation point.
+      real(pr), intent(in) :: eps !! Relative finite-difference step multiplier.
+      real(pr) :: df(size(x), size(x)) !! Approximate Jacobian matrix.
 
-      integer :: i
-      real(pr) :: f1(size(x)), f2(size(x))
+      integer :: i !! Loop/index variable.
+      real(pr) :: f1(size(x))
+      real(pr) :: f2(size(x))
       real(pr) :: dx(size(x))
 
       do i=1,size(x)
@@ -116,10 +124,10 @@ contains
       !! so they do not sum to 1) to mole number derivatives (where the mole
       !! fractions do sum to one). Requires the derivatives and the mole fractions
       !! of the mixture.
-      !! From [https://chemicals.readthedocs.io/chemicals.utils.html?highlight=dxs_to_dns#chemicals.utils.dxs_to_dns](Chemicals (Python))
+      !! From [Chemicals (Python)](https://chemicals.readthedocs.io/chemicals.utils.html?highlight=dxs_to_dns#chemicals.utils.dxs_to_dns)
       use yaeos__constants, only: pr
-      real(pr), intent(in) :: x(:)
-      real(pr), intent(in) :: dx(:)
+      real(pr), intent(in) :: x(:) !! Mole-fraction vector.
+      real(pr), intent(in) :: dx(:) !! Derivative of the property with respect to mole fractions.
       real(pr) :: dn(size(x))
 
       real(pr) :: sum_xdx
@@ -137,11 +145,13 @@ contains
       !! # Description
       !! Calculate the mole fraction first derivatives respect to mole numbers
       !!
-      real(pr), intent(in) :: n(:)
-      real(pr) :: dxk_dni(size(n), size(n))
+      real(pr), intent(in) :: n(:) !! Component mole amounts.
+      real(pr) :: dxk_dni(size(n), size(n)) !! \(\partial x_k/\partial n_i\), indexed `(k,i)`.
 
-      real(pr) :: n_tot
-      integer :: nc, k, i
+      real(pr) :: n_tot !! Total number of moles.
+      integer :: nc !! Number of components.
+      integer :: k
+      integer :: i !! Loop/index variable.
 
       n_tot = sum(n)
       nc = size(n)
@@ -162,11 +172,14 @@ contains
       !! # Description
       !! Calculate the mole fraction second derivatives respect to mole numbers
       !!
-      real(pr), intent(in) :: n(:)
-      real(pr) :: d2xk_dnidnj(size(n), size(n), size(n))
+      real(pr), intent(in) :: n(:) !! Component mole amounts.
+      real(pr) :: d2xk_dnidnj(size(n), size(n), size(n)) !! \(\partial^2x_k/\partial n_i\partial n_j\), indexed `(k,i,j)`.
 
-      real(pr) :: n_tot
-      integer :: nc, k, i, j
+      real(pr) :: n_tot !! Total number of moles.
+      integer :: nc !! Number of components.
+      integer :: k !! Loop index `k`.
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
 
       n_tot = sum(n)
       nc = size(n)
@@ -186,14 +199,23 @@ contains
    end function derivative_d2xk_dnidnj
 
    subroutine newton_1d(f, x, tol, max_iters, failed)
-      procedure(f_1d) :: f
-      real(pr), intent(in out) :: x
-      real(pr), intent(in) :: tol
-      integer, intent(in) :: max_iters
-      logical, intent(out) :: failed
+      !! # newton_1d
+      !!
+      !! # Description
+      !! Find a root of a scalar function by damped Newton iteration.
+      !! Each step is halved until its magnitude is at most half the current
+      !! iterate's magnitude. This is a step-size safeguard, not a residual
+      !! line search.
+      procedure(f_1d) :: f !! Function and derivative callback.
+      real(pr), intent(in out) :: x !! Initial guess, replaced by the root estimate.
+      real(pr), intent(in) :: tol !! Absolute tolerance for residual and step size.
+      integer, intent(in) :: max_iters !! Maximum Newton iterations.
+      logical, intent(out) :: failed !! True when the iteration limit is exhausted.
 
-      integer :: i
-      real(pr) :: fval, df, step
+      integer :: i !! Loop/index variable.
+      real(pr) :: fval
+      real(pr) :: df
+      real(pr) :: step
 
 
       fval = 10
@@ -217,6 +239,9 @@ contains
    end subroutine newton_1d
 
    elemental function interpol(x1, x2, y1, y2, x_obj) result(y)
+      !! # interpol
+      !!
+      !! # Description
       !! Linear interpolation.
       !!
       !! Calculates the linear interpolation between two points at a desired
@@ -274,13 +299,19 @@ contains
       !!
       !! # References
       !!
-      real(pr), intent(in) :: lx(:), ly(:)
-      type(point), allocatable :: intersections(:)
+      real(pr), intent(in) :: lx(:) !! X coordinates of the polyline vertices.
+      real(pr), intent(in) :: ly(:) !! Y coordinates of the polyline vertices.
+      type(point), allocatable :: intersections(:) !! Detected non-adjacent segment intersections.
 
-      real(pr) :: s, t
-      integer :: i, j
+      real(pr) :: s
+      real(pr) :: t
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
 
-      real(pr) :: x, y, xold, yold
+      real(pr) :: x
+      real(pr) :: y
+      real(pr) :: xold
+      real(pr) :: yold
 
       xold = 9999
       yold = 9999
@@ -338,10 +369,20 @@ contains
       !!
       !! # References
       !!
-      real(pr), intent(in) :: x1, x2, x3, x4, y1, y2, y3, y4
-      real(pr), intent(out) :: s, t
+      real(pr), intent(in) :: x1 !! X coordinate of the first endpoint of segment 1.
+      real(pr), intent(in) :: x2 !! X coordinate of the second endpoint of segment 1.
+      real(pr), intent(in) :: x3 !! X coordinate of the first endpoint of segment 2.
+      real(pr), intent(in) :: x4 !! X coordinate of the second endpoint of segment 2.
+      real(pr), intent(in) :: y1 !! Y coordinate of the first endpoint of segment 1.
+      real(pr), intent(in) :: y2 !! Y coordinate of the second endpoint of segment 1.
+      real(pr), intent(in) :: y3 !! Y coordinate of the first endpoint of segment 2.
+      real(pr), intent(in) :: y4 !! Y coordinate of the second endpoint of segment 2.
+      real(pr), intent(out) :: s !! Normalized position along segment 1; `s` and `t` both in [0,1] iff the segments intersect.
+      real(pr), intent(out) :: t !! Normalized position along segment 2.
 
-      real(pr) :: A(2, 2), b(2), tmp
+      real(pr) :: A(2, 2)
+      real(pr) :: b(2)
+      real(pr) :: tmp !! Temporary intermediate value.
 
       A(1, :) = [x2 - x1, x3 - x4]
       A(2, :) = [y2 - y1, y3 - y4]
@@ -355,26 +396,35 @@ contains
    subroutine levenberg_marquardt(&
       fun, tol, X, F, info &
       )
+      !! Solve a nonlinear least-squares system with MINPACK's `lmdif1`.
+      !! The routine updates `X` and returns residuals and MINPACK status.
       use minpack_module, only: lmdif1, lmdif
       use yaeos__auxiliar, only: optval
       use yaeos__math_linalg, only: solve_system
 
       interface
          subroutine fun(m, n, x, fvec, iflag)
+            !! # fun
+            !!
+            !! # Description
+            !! MINPACK residual callback for rectangular least-squares systems.
             import pr
-            integer, intent(in) :: m, n
-            real(pr), intent(in) :: x(n)
-            real(pr), intent(out) :: fvec(m)
-            integer, intent(in out) :: iflag
+            integer, intent(in) :: m !! Number of residual equations.
+            integer, intent(in) :: n !! Number of unknowns.
+            real(pr), intent(in) :: x(n) !! Current unknown vector.
+            real(pr), intent(out) :: fvec(m) !! Residual vector.
+            integer, intent(in out) :: iflag !! MINPACK callback control/status flag.
          end subroutine fun
       end interface
 
-      real(pr), intent(in) :: tol
-      real(pr), intent(in out) :: X(:)  !! Variables vector
+      real(pr), intent(in) :: tol !! Convergence tolerance passed to MINPACK.
+      real(pr), intent(in out) :: X(:) !! Variables vector
       real(pr), intent(out) :: F(:) !! Function values at solved point
-      integer, intent(in out) :: info
+      integer, intent(in out) :: info !! MINPACK termination code.
 
-      integer :: m, n, iwa(size(x))
+      integer :: m
+      integer :: n
+      integer :: iwa(size(x))
       integer :: lwa
       real(pr) :: wa(size(F) * size(x) + 5*size(x) + size(f))
 
@@ -389,26 +439,36 @@ contains
    subroutine powel_hybrid(&
       fun, tol, X, F, info &
       )
+      !! # powel_hybrid
+      !!
+      !! # Description
+      !! Solve a square nonlinear system with MINPACK's Powell hybrid method.
       use minpack_module, only: hybrd1
       use yaeos__auxiliar, only: optval
       use yaeos__math_linalg, only: solve_system
 
       interface
          subroutine fun(n, x, fvec, iflag)
+            !! # fun
+            !!
+            !! # Description
+            !! MINPACK residual callback for a square nonlinear system.
             import pr
-            integer, intent(in) :: n
-            real(pr), intent(in) :: x(n)
-            real(pr), intent(out) :: fvec(n)
-            integer, intent(in out) :: iflag
+            integer, intent(in) :: n !! Number of unknowns and residuals.
+            real(pr), intent(in) :: x(n) !! Current unknown vector.
+            real(pr), intent(out) :: fvec(n) !! Residual vector.
+            integer, intent(in out) :: iflag !! MINPACK callback control/status flag.
          end subroutine fun
       end interface
 
-      real(pr), intent(in) :: tol
-      real(pr), intent(in out) :: X(:)  !! Variables vector
+      real(pr), intent(in) :: tol !! Convergence tolerance passed to MINPACK.
+      real(pr), intent(in out) :: X(:) !! Variables vector
       real(pr), intent(out) :: F(:) !! Function values at solved point
-      integer, intent(out) :: info
+      integer, intent(out) :: info !! MINPACK termination code.
 
-      integer :: m, n, iwa(size(x))
+      integer :: m
+      integer :: n
+      integer :: iwa(size(x))
       integer :: lwa
       real(pr) :: wa((size(X)*(3*size(X)+13))/2 + 5)
 

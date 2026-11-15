@@ -1,5 +1,18 @@
 module yaeos__equilibria_auxiliar
-   !! Auxiliar functions used for phase-equilibria calculation.
+   !! # Phase-equilibrium initialization utilities
+   !! Wilson correlations for initial K-factors and pressure estimates.
+   !!
+   !! # Description
+   !! `k_wilson` provides component volatility ratios for initializing flash
+   !! calculations; `p_wilson` estimates the pressure from a composition and
+   !! temperature. These are empirical initial estimates, not equilibrium
+   !! solutions.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! K0 = k_wilson(model, T, P)
+   !! P0 = p_wilson(model, z, T)
+   !! ```
    use yaeos__constants, only: pr
    use yaeos__models_base, only: BaseModel
    use yaeos__models_ar, only: ArModel
@@ -12,9 +25,14 @@ contains
       !!
       !! ## Description
       !! K-factors regression done by Wilson, used for initialization.
-      class(BaseModel), intent(in) :: model
-      real(pr), intent(in) :: T
-      real(pr), intent(in) :: P
+      !!
+      !! # Examples
+      !! ```fortran
+      !! K0 = k_wilson(model, T, P)
+      !! ```
+      class(BaseModel), intent(in) :: model !! Model supplying component critical constants.
+      real(pr), intent(in) :: T !! Temperature [K].
+      real(pr), intent(in) :: P !! Pressure [bar].
       real(pr)  :: K(size(model%components%pc))
 
       K = (model%components%Pc/P) &
@@ -29,7 +47,7 @@ contains
       !! Calculate the pressure at a given T of a mixture using the Wilson
       !! equation.
       class(BaseModel), intent(in) :: model !! Model of the mixture.
-      real(pr), intent(in) :: z(:) !! Mole fractions of the components.
+      real(pr), intent(in) :: z(:) !! Overall composition (mole fractions).
       real(pr), intent(in) :: T !! Temperature [K].
 
       P = 1.0_pr/sum(&

@@ -1,8 +1,16 @@
 module yaeos__equilibria_boundaries_phase_envelopes_mp_tx
-   !! Multiphase Px envelope calculation module.
+   !! # Multiphase temperature-composition envelopes
+   !! Continue multiphase phase boundaries in temperature and feed composition at fixed pressure.
    !!
-   !! This module contains the functions to calculate the PT envelope of a
-   !! mixture with multiple phases.
+   !! # Description
+   !! The module solves multiphase equilibrium residuals along a composition
+   !! interpolation path and records the resulting equilibrium states.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! env = tx_envelope(model, z0, zi, np, P, kinds_x, kind_w, &
+   !!                   x_l0, w0, betas0, T0, alpha0, ns0, dS0, beta_w)
+   !! ```
    use yaeos__constants, only: pr, R
    use yaeos__equilibria_equilibrium_state, only: EquilibriumState
    use yaeos__models_ar, only: ArModel
@@ -18,11 +26,21 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp_tx
    public :: tx_envelope
 
    type :: TXEnvelMP
-      !! Multiphase T\(alpha\) envelope.
+      !! # TXEnvelMP
+      !! Multiphase temperature-composition envelope at fixed pressure.
+      !!
+      !! # Description
+      !! Stores each converged multiphase point together with its feed
+      !! interpolation coordinate, critical markers, and phase-kind labels.
+      !!
+      !! # Examples
+      !! ```fortran
+      !! line = tx_envelope(model, z0, zi, P, state0)
+      !! ```
       type(MPPoint), allocatable :: points(:)
       !! Array of converged points.
       real(pr), allocatable :: alpha(:)
-      !! Array of \(alpha\) values for each point in the envelope.
+      !! Array of \(\alpha\) values for each point in the envelope.
       real(pr), allocatable :: z0(:)
       !! Initial mixture composition.
       real(pr), allocatable :: zi(:)
@@ -39,7 +57,15 @@ module yaeos__equilibria_boundaries_phase_envelopes_mp_tx
    end type TXEnvelMP
 
    type :: MPPoint
-      !! Multiphase equilibria point.
+      !! # MPPoint
+      !! One converged multiphase state on an envelope.
+      !!
+      !! # Description
+      !! Stores main-phase compositions and fractions, the reference phase,
+      !! conditions, phase kinds, and corrector diagnostics.
+      !!
+      !! # Examples
+      !! Accessed as an element of `TXEnvelMP%points`.
       integer :: np !! Number of phases
       integer :: nc !! Number of components
       real(pr) :: beta_w !! Fraction of the reference (incipient) phase.
@@ -96,16 +122,15 @@ contains
       real(pr), intent(in) :: T0
       !! Initial Temperature [K].
       real(pr), intent(in) :: alpha0
-      !! Initial value of the \(alpha\) variable.
+      !! Initial value of the \(\alpha\) variable.
       integer, intent(in) :: ns0
       !! Number of the specified variable. This is the variable that will be
-      !! used to specify the next point. the first \(nc \cdot  np\) variables
-      !! corresponds to the \(\ln K_i^l\) of each phase, sorted by phases
-      !! (\[\ln K_1^1, \ln K_2^1, \dots, \ln K_{nc}^1,
-      !! \dots, \ln K_{nc}^{np}]\).
+      !! used to specify the next point. The first \(nc \cdot np\) variables
+      !! correspond to the \(\ln K_i^l\) of each phase, sorted by phases
+      !! (\([\ln K_1^1, \ln K_2^1, \dots, \ln K_{nc}^1,
+      !! \dots, \ln K_{nc}^{np}]\)).
       !! The next \(np\) variables are the mole fractions of each main phase.
-      !! The last two variables are the temperature and the
-      !! \(alpha\) variable. Respectively
+      !! The last two variables are \(\ln T\) and \(\alpha\), respectively.
       real(pr), intent(in) :: dS0
       !! Step size of the specification for the next point.
       real(pr), intent(in) :: beta_w
@@ -117,7 +142,7 @@ contains
       type(MPPoint), allocatable :: env_points(:)
       !! Array of converged points in the envelope.
       real(pr), allocatable :: alphas(:)
-      !! Array of \(alpha\) values for each point in the envelope.
+      !! Array of \(\alpha\) values for each point in the envelope.
       type(MPPoint) :: point
       !! Point to store the information of the current point.
 
@@ -127,10 +152,11 @@ contains
       !! Jacobian matrix of the functions at the current point.
       real(pr) :: dXdS(size(z0) * np + np + 2)
       !! Sensitivity of the variables with respect to the specification.
-      real(pr) :: X(size(z0) * np + np + 2), dX(size(z0) * np + np + 2)
+      real(pr) :: X(size(z0) * np + np + 2)
+      real(pr) :: dX(size(z0) * np + np + 2)
       !! Vector of variables. It contains the \(\ln K_i^l\) of each phase,
       !! the mole fractions of each main phase, the temperature and the
-      !! \(alpha\) variable.
+      !! \(\alpha\) variable.
 
       integer :: nc
       !! Number of components in the mixture.
@@ -143,7 +169,11 @@ contains
       !! Number of points to calculate in the envelope.
 
 
-      real(pr) :: x_l(np, size(z0)), w(size(z0)), betas(np), T, alpha
+      real(pr) :: x_l(np, size(z0)) !! Main-phase compositions.
+      real(pr) :: w(size(z0)) !! Reference/trial phase composition.
+      real(pr) :: betas(np) !! Phase fractions for the main phases.
+      real(pr) :: T
+      real(pr) :: alpha
 
       integer :: i !! Point calculation index
       integer :: lb !! Lower bound, index of the first component of a phase
@@ -156,18 +186,19 @@ contains
 
       real(pr) :: X0(size(X)) !! Initial guess for the point
 
-      integer :: ia !! Index of the \(alpha\) variable in the vector X
+      integer :: ia !! Index of the \(\alpha\) variable in the vector X
       integer :: iT !! Index of the temperature variable in the vector X
-      real(pr) :: z(size(z0))
+      real(pr) :: z(size(z0)) !! Feed or overall composition.
 
       character(len=14) :: x_kinds(np) !! Kinds of the main phases
       character(len=14) :: w_kind !! Kind of the reference phase
       real(pr) :: X_last_converged(size(X)) !! Last converged point
       
       logical :: found_critical
-       !! If true, a critical point was found during the calculation.
+      !! If true, a critical point was found during the calculation.
       real(pr) :: Xc(size(X)) !! Vector of variables at the critical point.
-      real(pr) :: Tc, ac
+      real(pr) :: Tc
+      real(pr) :: ac
 
 
       nc = size(z0)
@@ -276,11 +307,14 @@ contains
 
    subroutine tx_F_NP(model, z0, zi, np, P, beta_w, kinds_x, kind_w, &
       X, ns, S, F, dF)
+      !! # tx_F_NP
+      !!
+      !! # Description
       !! Function to solve at each point of a multi-phase envelope.
       use iso_fortran_env, only: error_unit
-      class(ArModel), intent(in) :: model
-      real(pr), intent(in) :: z0(:)
-      real(pr), intent(in) :: zi(:)
+      class(ArModel), intent(in) :: model !! EOS used to evaluate phase properties.
+      real(pr), intent(in) :: z0(:) !! First limiting feed composition.
+      real(pr), intent(in) :: zi(:) !! Second limiting feed composition.
       integer, intent(in) :: np !! Number of main phases.
       real(pr), intent(in) :: P !! Pressure [bar]
       real(pr), intent(in) :: beta_w !! Fraction of the reference (incipient) phase.
@@ -295,23 +329,30 @@ contains
       ! X variables
       real(pr) :: K(np, size(z0))
       real(pr) :: T
-      real(pr) :: betas(np)
+      real(pr) :: betas(np) !! Phase fractions for the main phases.
 
-      real(pr) :: z(size(z0)), alpha, dzda(size(z0))
+      real(pr) :: z(size(z0)) !! Feed or overall composition.
+      real(pr) :: alpha
+      real(pr) :: dzda(size(z0))
 
       ! Main phases variables
       real(pr) :: moles(size(z0))
 
       real(pr) :: Vl(np)
-      real(pr), dimension(np, size(z0)) :: x_l, lnphi_l, dlnphi_dt_l
+      real(pr), dimension(np, size(z0)) :: x_l !! Main-phase compositions.
+      real(pr), dimension(np, size(z0)) :: lnphi_l
+      real(pr), dimension(np, size(z0)) :: dlnphi_dt_l
       real(pr), dimension(np, size(z0), size(z0)) :: dlnphi_dn_l
 
-      real(pr) :: lnphi(size(z0)), dlnphi_dt(size(z0))
+      real(pr) :: lnphi(size(z0)) !! Log fugacity coefficients.
+      real(pr) :: dlnphi_dt(size(z0))
       real(pr), dimension(size(z0), size(z0)) :: dlnphi_dn
 
       ! Incipient phase variables
       real(pr) :: Vw
-      real(pr), dimension(size(z0)) :: w, lnphi_w, dlnphi_dt_w
+      real(pr), dimension(size(z0)) :: w !! Reference/trial phase composition.
+      real(pr), dimension(size(z0)) :: lnphi_w
+      real(pr), dimension(size(z0)) :: dlnphi_dt_w
       real(pr), dimension(size(z0), size(z0)) :: dlnphi_dn_w
       real(pr) :: dwda(size(z0))
 
@@ -325,9 +366,15 @@ contains
 
       real(pr) :: dx_l_dlnK(np, np, size(z0))
 
-      integer :: i, j, l, phase, nc
-      integer :: lb, ub
-      integer :: idx_1, idx_2
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: l !! Loop index `l`.
+      integer :: phase
+      integer :: nc !! Number of components.
+      integer :: lb
+      integer :: ub
+      integer :: idx_1
+      integer :: idx_2
 
       nc = size(z0)
 
@@ -505,7 +552,7 @@ contains
       real(pr), intent(in out)  :: X(:) !! Vector of variables
       integer, intent(in)  :: ns !! Number of specification
       real(pr), intent(in)  :: S !! Specification value
-      real(pr), intent(in) :: dXdS(size(X))
+      real(pr), intent(in) :: dXdS(size(X)) !! Tangent direction from the preceding continuation point.
       real(pr), intent(out) :: F(size(X)) !! Vector of functions valuated
       real(pr), intent(out) :: df(size(X), size(X)) !! Jacobian matrix
       integer, intent(in) :: max_iterations
@@ -514,7 +561,7 @@ contains
       !! Number of iterations needed to converge the point.
 
 
-      integer :: ia !! Index of the \(alpha\) variable in the vector X
+      integer :: ia !! Index of the \(\alpha\) variable in the vector X
       integer :: iT !! Index of the temperature variable in the vector X
       integer :: nc !! Number of components in the mixture.
 
@@ -586,7 +633,7 @@ contains
       real(pr) :: dFdS(size(X))
       !! Sensitivity of the functions wrt the specification.
 
-      integer :: i
+      integer :: i !! Loop/index variable.
       integer :: lb !! Lower bound of each phase
       integer :: ub !! Upper bound of each phase
 
@@ -631,10 +678,10 @@ contains
       real(pr), intent(out) :: x_l(np, size(z0)) !! Mole fractions of the main phases.
       real(pr), intent(out) :: w(size(z0)) !! Mole fractions of the incipient phase.
       real(pr), intent(out) :: betas(np) !! Fractions of the main phases.
-      real(pr), intent(out) :: T !! Pressure [bar].
-      real(pr), intent(out) :: alpha !! \(alpha\).
+      real(pr), intent(out) :: T !! Temperature [K].
+      real(pr), intent(out) :: alpha !! \(\alpha\).
 
-      real(pr) :: z(size(z0))
+      real(pr) :: z(size(z0)) !! Feed or overall composition.
       real(pr) :: K(np, size(z0))
 
       integer :: nc !! Number of components.
@@ -672,12 +719,16 @@ contains
       class(TXEnvelMP), intent(in) :: env !! Envelope to write.
       integer, intent(in) :: unit !! Unit to write the envelope to.
 
-      integer :: i, j
-      integer :: np, nc
-      real(pr) :: P, T, alpha
-      real(pr), allocatable :: betas(:)
-      real(pr), allocatable :: w(:)
-      real(pr), allocatable :: x_l(:, :)
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: np !! Number of phases.
+      integer :: nc !! Number of components.
+      real(pr) :: P
+      real(pr) :: T
+      real(pr) :: alpha
+      real(pr), allocatable :: betas(:) !! Phase fractions for the main phases.
+      real(pr), allocatable :: w(:) !! Reference/trial phase composition.
+      real(pr), allocatable :: x_l(:, :) !! Main-phase compositions.
 
       np = size(env%points)
       nc = size(env%points(1)%w)

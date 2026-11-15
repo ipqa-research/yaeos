@@ -149,20 +149,21 @@ class PTEnvelope:
         """Get item from the envelope.
 
         This method allows for indexing into the envelope object to retrieve
-        specific data. It supports various types of keys, including slices,
-        numpy arrays, lists, and specific attributes like 'T', 'Pc', 'P',
-        'z', 'x', and 'w'.
+        specific data. It supports slices, numpy arrays and lists of point
+        indices (or boolean masks), and the string keys 'T', 'P', 'Tc', 'Pc',
+        'z', 'x' and 'w'.
 
         Parameters
         ----------
-        key : int, slice, np.ndarray, list, str
-            The key to index into the envelope. It can be an integer, a slice,
-            a numpy array, a list, or a string representing an attribute.
+        key : slice, np.ndarray, list, str
+            The key to index into the envelope. Integer keys are not
+            supported.
 
         Returns
         -------
-        PTEnvelope
-            A new PTEnvelope object with the selected data.
+        PTEnvelope or np.ndarray
+            A new PTEnvelope object with the selected points when `key` is a
+            slice, array or list; the requested array when `key` is a string.
         """
         if "key" in self.__dict__:
             return self.__dict__["key"]
@@ -274,14 +275,15 @@ class PXEnvelope:
         Shape is (n_points,).
     df : pd.DataFrame
         A DataFrame containing the data of the envelope. The columns are:
+
         - 'alpha': Molar fraction of the `global_composition_i`.
         - 'P': Pressures along the envelope.
         - 'x_i^j': Compositions of the main phases, where `i`
-        is the component index and `j` is the phase index.
+          is the component index and `j` is the phase index.
         - 'w_i': Compositions of the reference phase, where `i` is the
-        component index.
+          component index.
         - 'beta^j': Molar fractions of the main phases, where `j`
-        is the phase index.
+          is the phase index.
 
     """
 
@@ -375,20 +377,21 @@ class PXEnvelope:
         """Get item from the envelope.
 
         This method allows for indexing into the envelope object to retrieve
-        specific data. It supports various types of keys, including slices,
-        numpy arrays, lists, and specific attributes like 'alpha', 'P', 'z',
-        'x', and 'w'.
+        specific data. It supports slices, numpy arrays and lists of point
+        indices (or boolean masks), and the string keys 'alpha' (or 'a'),
+        'P', 'x' and 'w'.
 
         Parameters
         ----------
-        key : int, slice, np.ndarray, list, str
-            The key to index into the envelope. It can be an integer, a slice,
-            a numpy array, a list, or a string representing an attribute.
+        key : slice, np.ndarray, list, str
+            The key to index into the envelope. Integer keys are not
+            supported.
 
         Returns
         -------
-        PXEnvelope
-            A new PXEnvelope object with the selected data.
+        PXEnvelope or np.ndarray
+            A new PXEnvelope object with the selected points when `key` is a
+            slice, array or list; the requested array when `key` is a string.
         """
         if "key" in self.__dict__:
             return self.__dict__["key"]
@@ -492,18 +495,21 @@ class TXEnvelope:
         The temperatures along envelope. [K]
     critical_temperatures : np.ndarray
         The critical temperatures of the envelope.
-        It's shape is (n_critical_points,).
+        Its shape is (n_critical_points,).
     critical_alphas : np.ndarray
         The molar fractions of the `global_composition_i` at the critical
         points, :math:`\alpha`.  Shape is (n_critical_points,).
     df : pd.DataFrame
-        A DataFrame containing the data of the envelope. The columns are: -
-        'alpha': Molar fraction of the `global_composition_i`. - 'T':
-        Temperatures along the envelope. - 'x_i^j': Compositions of the main
-        phases, where `i` is the component index and `j` is the phase index. -
-        'w_i': Compositions of the reference phase, where `i` is the component
-        index. - 'beta^j': Molar fractions of the main phases, where `j` is the
-        phase index.
+        A DataFrame containing the data of the envelope. The columns are:
+
+        - 'alpha': Molar fraction of the `global_composition_i`.
+        - 'T': Temperatures along the envelope.
+        - 'x_i^j': Compositions of the main phases, where `i` is the
+          component index and `j` is the phase index.
+        - 'w_i': Compositions of the reference phase, where `i` is the
+          component index.
+        - 'beta^j': Molar fractions of the main phases, where `j` is the
+          phase index.
     """
 
     def __init__(
@@ -596,20 +602,21 @@ class TXEnvelope:
         """Get item from the envelope.
 
         This method allows for indexing into the envelope object to retrieve
-        specific data. It supports various types of keys, including slices,
-        numpy arrays, lists, and specific attributes like 'alpha', 'T', 'z',
-        'x', and 'w'.
+        specific data. It supports numpy arrays and lists of point indices
+        (or boolean masks), and the string keys 'alpha' (or 'a'), 'T', 'x'
+        and 'w'.
 
         Parameters
         ----------
-        key : int, slice, np.ndarray, list, str
-            The key to index into the envelope. It can be an integer, a slice,
-            a numpy array, a list, or a string representing an attribute.
+        key : np.ndarray, list, str
+            The key to index into the envelope. Integer and slice keys are
+            not supported.
 
         Returns
         -------
-        TXEnvelope
-            A new TXEnvelope object with the selected data.
+        TXEnvelope or np.ndarray
+            A new TXEnvelope object with the selected points when `key` is an
+            array or list; the requested array when `key` is a string.
         """
         if "key" in self.__dict__:
             return self.__dict__["key"]

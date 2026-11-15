@@ -1,25 +1,35 @@
 module yaeos__extra_fluids
-   !! # Predefined Fluids
-   !! Collection of predefined fluids to be used as examples and in tests.
+   !! # Predefined fluid fixtures
+   !! Ready-to-use EOS models and compositions for examples, tests, and tutorials.
    !!
    !! # Description
-   !! This module collects a set of different fluids intended to be used for tests
-   !! or in practice when training on using the library.
-   !!
-   !! The fluids are stored as functions that return a derived type `FixtureFluid`
-   !! which contains the instantiated ArModel of the fluid, and its relevant
-   !! compositions `z0` and `zi`
-   !!
+   !! Each constructor returns a `FixtureFluid` containing the model, number of
+   !! components, reference citation, and available feed/injection compositions.
+   !! These are curated example data sets, not a general-purpose fluid database.
    !!
    !! # Examples
-   !!
    !! ```fortran
-   !!  A basic code example
+   !! fluid = co2_h2o_isop()
+   !! call fluid%ar_model%pressure(fluid%z0, V, T, P)
    !! ```
    use yaeos__constants, only: pr, R
    use yaeos__models
 
    type :: FixtureFluid
+      !! # FixtureFluid
+      !! A predefined model and composition set for a documented fluid system.
+      !!
+      !! # Description
+      !! The derived type packages an allocatable EOS model with component
+      !! count, source citation, and one or two compositions. `z0` is the
+      !! reference feed; `zi` is present for systems with a second/injection
+      !! composition.
+      !!
+      !! # Examples
+      !! ```fortran
+      !! fluid = oil_gao()
+      !! print *, fluid%reference, fluid%z0
+      !! ```
       integer :: nc
       !! Number of components
       character(len=:), allocatable :: reference
@@ -28,23 +38,37 @@ module yaeos__extra_fluids
       !! Original composition
       real(pr), allocatable :: zi(:)
       !! Injection composition (if exists)
-      class(ArModel), allocatable :: ar_model
+      class(ArModel), allocatable :: ar_model !! Equation-of-state model associated with this fixture fluid.
    end type FixtureFluid
 
 contains
 
    type(FixtureFluid) function oil_gao()
+      !! # oil_gao
+      !! Construct the six-component bitumen/n-butane/water fixture from Gao et al.
+      !!
+      !! # Description
+      !! Builds a Peng-Robinson 1978 model with the reported binary interactions
+      !! and stores the experimental reference composition.
+      !!
+      !! # Examples
+      !! ```fortran
+      !! fluid = oil_gao()
+      !! ```
       !! J. Gao, R. Okuno, and H. A. Li,
       !! “An Experimental Study of Multiphase Behavior for n-Butane/Bitumen/Water Mixtures,”
       !! SPE Journal, 2016, doi: 10.2118/180736-pa.
-      integer, parameter :: nc=6
+      integer, parameter :: nc=6 !! Number of components.
 
       type(CubicEoS) :: ar_model
 
-      real(pr) :: tc(nc), pc(nc), w(nc)
+      real(pr) :: tc(nc)
+      real(pr) :: pc(nc)
+      real(pr) :: w(nc) !! Acentric factors.
 
       type(QMR) :: mixrule
-      real(pr) :: kij(nc, nc), lij(nc, nc)
+      real(pr) :: kij(nc, nc)
+      real(pr) :: lij(nc, nc)
 
 
       tc = [647.05_pr, 425.15_pr, 708.15_pr, 768.25_pr, 998.15_pr, 1346.05_pr]
@@ -78,9 +102,23 @@ contains
    end function oil_gao
 
    type(FixtureFluid) function co2_h2o_isop() result(fluid)
+      !! # co2_h2o_isop
+      !! Construct the CO2-water-isopropanol three-component fixture.
+      !!
+      !! # Description
+      !! Returns a Soave-Redlich-Kwong model with binary interaction parameters,
+      !! a reference composition, and a second composition for comparison.
+      !!
+      !! # Examples
+      !! ```fortran
+      !! fluid = co2_h2o_isop()
+      !! ```
       use yaeos__models, only: CubicEoS, SoaveRedlichKwong
-      integer, parameter :: nc = 3
-      real(pr) :: Tc(nc), Pc(nc), w(nc), kij(nc, nc)
+      integer, parameter :: nc = 3 !! Number of components.
+      real(pr) :: Tc(nc)
+      real(pr) :: Pc(nc)
+      real(pr) :: w(nc) !! Acentric factors.
+      real(pr) :: kij(nc, nc)
       Tc = [304.21, 647.13, 508.3]
       Pc = [73.3, 220.55, 47.64]
       w = [0.2236, 0.3449, 0.6669]
@@ -96,14 +134,28 @@ contains
    end function co2_h2o_isop
    
    type(FixtureFluid) function oil_b71() result(fluid)
-      integer, parameter :: nc=16
+      !! # oil_b71
+      !! Construct the 16-component B71 oil fixture.
+      !!
+      !! # Description
+      !! Returns a Peng-Robinson 1978 model with component critical properties
+      !! and binary interaction parameters for the B71 petroleum mixture.
+      !!
+      !! # Examples
+      !! ```fortran
+      !! fluid = oil_b71()
+      !! ```
+      integer, parameter :: nc=16 !! Number of components.
 
       type(CubicEoS) :: ar_model
 
-      real(pr) :: tc(nc), pc(nc), w(nc)
+      real(pr) :: tc(nc)
+      real(pr) :: pc(nc)
+      real(pr) :: w(nc) !! Acentric factors.
 
       type(QMR) :: mixrule
-      real(pr) :: kij(nc, nc), lij(nc, nc)
+      real(pr) :: kij(nc, nc)
+      real(pr) :: lij(nc, nc)
 
       tc = [304.2_pr, 126.2_pr, 190.6_pr, 305.4_pr, 369.8_pr, 408.1_pr, 425.2_pr, 460.4_pr, 469.6_pr, 506.35_pr, 566.55_pr, 647.06_pr, 719.44_pr, 784.93_pr, 846.33_pr, 919.39_pr]
       pc = [72.8_pr, 33.5_pr, 45.4_pr, 48.2_pr, 41.9_pr, 36.0_pr, 37.5_pr, 33.4_pr, 33.3_pr, 33.9_pr, 25.3_pr, 19.1_pr, 14.2_pr, 10.5_pr, 7.5_pr, 4.76_pr]

@@ -1,8 +1,13 @@
 """Gibbs Excess Models module.
 
-Yaeos Gibbs excess module. This module provides the following submodules:
+Yaeos Gibbs excess module. This module provides the following excess Gibbs
+energy models:
 
-Excess Gibbs energy models:
+- NRTL: non-random two-liquid model
+- UNIFACVLE: original UNIFAC VLE model
+- UNIFACPSRK: PSRK-UNIFAC model
+- UNIFACDortmund: UNIFAC Dortmund model
+- UNIQUAC: UNIversal QUAsiChemical model
 """
 
 from .dortmund import UNIFACDortmund

@@ -1,5 +1,19 @@
 module yaeos__equilibria
-   !! Module to handle phase equilibria calculations.
+   !! # Phase-equilibrium API
+   !! Public entry points for stability, saturation, flash, critical-point, and
+   !! binary three-phase calculations.
+   !!
+   !! # Description
+   !! This façade re-exports the principal equilibrium result types and
+   !! calculation routines from their implementation modules. Importing
+   !! `yaeos` is usually more convenient; this module is useful when a client
+   !! wants only the equilibrium API.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! use yaeos__equilibria, only: EquilibriumState, flash
+   !! result = flash(model, z, T, p_spec=P)
+   !! ```
 
    ! Stability analysis
    use yaeos__equilibria_stability, only: tm, min_tpd

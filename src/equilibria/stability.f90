@@ -38,8 +38,8 @@ module yaeos__equilibria_stability
 contains
 
    real(pr) function tm(model, z, w, P, T, d, dtpd)
-      !! # Alternative formulation of tangent-plane-distance
-      !! Michelsen's modified \(tpd\) function, \(tm\).
+      !! # tm
+      !! Evaluate Michelsen's modified reduced tangent-plane distance.
       !!
       !! # Description
       !! Alternative formulation of the reduced tangent plane \(tpd\) function,
@@ -53,21 +53,16 @@ contains
       !!
       !! ## Calculation of `tm`
       !! ```fortran
-      !!  tm = tpd(model, z, w, P, T)
-      !!  ---------------------------
+      !!  tpd_value = tm(model, z, w, P, T)
       !! ```
       !!
-      !! ## Using precalculated trial-phase data
-      !! It is possible to calculate externaly the `d_i` vector and use it for
+      !! ## Using precalculated feed data
+      !! It is possible to calculate externally the feed `d_i` vector and use it for
       !! later calculations.
       !! ```fortran
-      !! call fugacity_tp(&
-      !!   model, z, T=T, P=P, V=Vz, root_type="stable", lnphip=lnphi_z&
-      !! )
-      !! lnphi_z = lnphi_z - log(P)
-      !! di = log(z) + lnphi_z
-      !! tm = tpd(model, z, w, P, T, d=di)
-      !!  ---------------------------
+      !! call model%lnphi_pt(z, T=T, P=P, V=Vz, root_type="stable", lnPhi=lnphi_z)
+      !! d = log(z) + lnphi_z
+      !! tpd_value = tm(model, z, w, P, T, d=d)
       !! ```
       !!
       !! # References
@@ -80,10 +75,13 @@ contains
       real(pr), intent(in) :: P !! Pressure [bar]
       real(pr), intent(in) :: T !! Temperature [K]
       real(pr), optional, intent(in) :: d(:) !! \(d_i\) vector
-      real(pr), optional, intent(out) :: dtpd(:)
+      real(pr), optional, intent(out) :: dtpd(:) !! Gradient of `tm` with respect to trial-phase mole amounts.
 
-      real(pr) :: di(size(z)), vz, vw
-      real(pr) :: lnphi_z(size(z)), lnphi_w(size(z))
+      real(pr) :: di(size(z))
+      real(pr) :: vz
+      real(pr) :: vw
+      real(pr) :: lnphi_z(size(z))
+      real(pr) :: lnphi_w(size(z))
 
       select type (model)
        class is (ArModel)
@@ -119,6 +117,15 @@ contains
    end function tm
 
    subroutine min_tpd(model, z, P, T, mintpd, w, all_minima)
+      !! # min_tpd
+      !!
+      !! Find the minimum of the reduced tangent-plane distance.
+      !!
+      !! ## Description
+      !! Minimizes Michelsen's modified tangent-plane distance with respect to
+      !! the trial-phase mole numbers. A negative minimum indicates that the
+      !! feed is unstable. The routine can optionally return all the minima
+      !! found from different starting points.
       class(BaseModel), target :: model !! Thermodynamic model
       real(pr), intent(in) :: z(:) !! Feed composition
       real(pr), intent(in) :: P !! Pressure [bar]
@@ -129,14 +136,21 @@ contains
       !! All the found minima
 
       real(pr) :: dx(size(w))
-      real(pr) :: lnphi_z(size(z)), di(size(z))
+      real(pr) :: lnphi_z(size(z))
+      real(pr) :: di(size(z))
 
       real(pr) :: lnphi_w(size(w))
-      real(pr) :: dw(size(w)), mins(size(w)), ws(size(w), size(w)), V
-      integer :: i, j
+      real(pr) :: dw(size(w))
+      real(pr) :: mins(size(w))
+      real(pr) :: ws(size(w), size(w))
+      real(pr) :: V
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
 
-      integer :: nc, stat
-      integer :: max_iters, iters
+      integer :: nc !! Number of components.
+      integer :: stat
+      integer :: max_iters
+      integer :: iters
 
       nc = size(z)
 
