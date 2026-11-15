@@ -93,9 +93,10 @@ contains
    end subroutine flash_pt_fun
 end module flasher
 
-program test_lm
-   !! Test the Levenberg-Marquardt algorithm
-   use testing_aux, only: test_title, assert
+program aj
+   !! Multiple-contact flash method: repeated PT flashes between an oil
+   !! and an injection gas, using the Levenberg-Marquardt flash in
+   !! `flasher` and `flash_no_beta_limits`.
    use yaeos
    use yaeos__math, only: powel_hybrid, levenberg_marquardt
    use yaeos__equilibria_flash, only: flash_no_beta_limits
@@ -194,4 +195,4 @@ program test_lm
       P = P + 10 * min_tl
       call exit
    end do
-end program test_lm
+end program aj
