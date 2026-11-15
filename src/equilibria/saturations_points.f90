@@ -168,7 +168,7 @@ contains
 
          P = exp(X(nc+2))
          y = z * exp(X(:nc))
-         call model%volume(n=n, P=P, T=T, V=Vz, root_type=main)
+         call model%volume(n=z, P=P, T=T, V=Vz, root_type=main)
          call model%volume(n=y, P=P, T=T, V=Vy, root_type=incipient)
       end if
 
@@ -342,7 +342,7 @@ contains
 
          T = exp(X(nc+1))
          y = z * exp(X(:nc))
-         call model%volume(n=n, P=P, T=T, V=Vz, root_type=main)
+         call model%volume(n=z, P=P, T=T, V=Vz, root_type=main)
          call model%volume(n=y, P=P, T=T, V=Vy, root_type=incipient)
       end if
 
