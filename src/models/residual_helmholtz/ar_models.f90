@@ -1,36 +1,31 @@
 module yaeos__models_ar
-   !! # Module that defines the basics of a residual Helmholtz energy.
+   !! # Residual Helmholtz model API
+   !! Abstract model interface and property calculations based on \(A^r(n,V,T)\).
    !!
-   !! All the residual properties that are calculated in this library are
-   !! based on residual Helmholtz Equations of State. Following the book by
-   !! Michelsen and Mollerup.
+   !! # Description
+   !! `ArModel` is the base class for equations of state and other residual
+   !! Helmholtz models. Implementations provide the residual Helmholtz energy
+   !! and its derivatives plus a liquid-volume initializer. The inherited
+   !! methods derive pressure, fugacity coefficients, volume, and residual
+   !! caloric properties. Optional derivative arguments allow callers to
+   !! request only the quantities needed by their calculation.
    !!
-   !! In this library up to second derivatives of residual Helmholtz energy
-   !! are used. Because they're the fundamentals for phase equilibria
-   !! calculation.
+   !! The central pressure relation is
+   !! \[ P = \frac{nRT}{V} - \left(\frac{\partial A^r}{\partial V}\right)_{T,n}. \]
+   !! Second derivatives are also used by stability and phase-equilibrium
+   !! calculations.
    !!
-   !! @note
-   !! Later on, third derivative with respect to volume will be included
-   !! since it's importance on calculation of critical points.
-   !! @endnote
-   !!
-   !! # Properties
-   !!
-   !! ## Available properties:
-   !!
-   !! - pressure(n, V, T)
-   !! - fugacity(n, V, T)
-   !! - fugacity(n, P, T, root=[vapor, liquid, stable])
-   !! - volume
-   !!
-   !! Calculate thermodynamic properties using Helmholtz energy as a basis.
-   !! All the routines in this module work with the logic:
-   !!
+   !! # Examples
    !! ```fortran
-   !! call foo(x, V, T, [dfoodv, dfoodT, ...])
+   !! class(ArModel), allocatable :: model
+   !! real(pr) :: P, dPdV
+   !! model = PengRobinson76(Tc, Pc, omega)
+   !! call model%pressure(n, V, T, P, dPdV=dPdV)
    !! ```
-   !! Where the user can call the routine of the desired property. And include
-   !! as optional values the desired derivatives of said properties.
+   !!
+   !! # References
+   !! Michelsen, M. L., and J. M. Mollerup, *Thermodynamic Models:
+   !! Fundamentals & Computational Aspects*, 2nd ed., 2007.
    use yaeos__constants, only: pr, R
    use yaeos__models_base, only: BaseModel
    implicit none
@@ -40,14 +35,18 @@ module yaeos__models_ar
    public :: ArModel, size, volume
 
    type, abstract, extends(BaseModel) :: ArModel
-      !! Abstract residual Helmholtz model.
+      !! # ArModel
+      !! Abstract interface for residual Helmholtz energy models.
       !!
-      !! This derived type defines the basics needed for the calculation
-      !! of residual properties.
-      !! The basics of a residual Helmholtz model is a routine that calculates
-      !! all the needed derivatives of \(Ar\) `residual_helmholtz` and
-      !! a volume initializer function, that is used to initialize a Newton
-      !! solver of volume when specifying pressure.
+      !! # Description
+      !! A concrete extension implements `residual_helmholtz` and `get_v0`.
+      !! The first returns requested derivatives of \(A^r(n,V,T)\); the second
+      !! provides an initial volume for pressure-specified volume solves.
+      !! This type supplies the shared property methods listed in the type's
+      !! bound-procedure interface.
+      !!
+      !! # Examples
+      !! See `PengRobinson76`, `Gerg2008`, and `PcSaft` for concrete models.
       character(len=:), allocatable :: name !! Name of the model
    contains
       procedure(abs_residual_helmholtz), deferred :: residual_helmholtz
@@ -88,10 +87,13 @@ module yaeos__models_ar
       subroutine abs_residual_helmholtz(&
          self, n, v, t, Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2 &
          )
+         !! # abs_residual_helmholtz
+         !!
+         !! # Description
          !! Residual Helmholtz model generic interface.
          !!
          !! This interface represents how an Ar model should be implemented.
-         !! By our standard, a Resiudal Helmholtz model takes as input:
+         !! By our standard, a Residual Helmholtz model takes as input:
          !!
          !! - The mixture's number of moles vector.
          !! - Volume, by default in liters.
@@ -109,7 +111,7 @@ module yaeos__models_ar
          real(pr), intent(in) :: n(:) !! Moles vector
          real(pr), intent(in) :: v !! Volume [L]
          real(pr), intent(in) :: t !! Temperature [K]
-         real(pr), optional, intent(out) :: Ar !! Residual Helmoltz energy
+         real(pr), optional, intent(out) :: Ar !! Residual Helmholtz energy [bar L]
          real(pr), optional, intent(out) :: ArV !! \(\frac{dAr}{dV}\)
          real(pr), optional, intent(out) :: ArT !! \(\frac{dAr}{dT}\)
          real(pr), optional, intent(out) :: ArT2 !! \(\frac{d^2Ar}{dT^2}\)
@@ -118,10 +120,13 @@ module yaeos__models_ar
          real(pr), optional, intent(out) :: Arn(size(n)) !! \(\frac{dAr}{dn_i}\)
          real(pr), optional, intent(out) :: ArVn(size(n)) !! \(\frac{d^2Ar}{dVn_i}\)
          real(pr), optional, intent(out) :: ArTn(size(n)) !! \(\frac{d^2Ar}{dTn_i}\)
-         real(pr), optional, intent(out) :: Arn2(size(n), size(n))!! \(\frac{d^2Ar}{dn_{ij}}\)
+         real(pr), optional, intent(out) :: Arn2(size(n), size(n)) !! \(\frac{d^2Ar}{dn_{ij}}\)
       end subroutine abs_residual_helmholtz
 
       function abs_volume_initializer(self, n, p, t)
+         !! # abs_volume_initializer
+         !!
+         !! # Description
          !! Function that provides an initializer value for the liquid-root
          !! of newton solver of volume. In the case the model will use the
          !! `volume_michelsen` routine this value should provide the co-volume
@@ -139,7 +144,7 @@ contains
 
    integer pure function size_ar_model(eos)
       !! Get the size of the model.
-      class(ArModel), intent(in) :: eos
+      class(ArModel), intent(in) :: eos !! Model
       size_ar_model = size(eos%components%pc)
    end function size_ar_model
 
@@ -153,6 +158,10 @@ contains
       !! This subroutine solves the volume using a newton method. The variable
       !! `root_type` is used to specify the desired root to solve. The options
       !! are: `["liquid", "vapor", "stable"]`
+      !!
+      !! The liquid search starts from `get_v0` and the vapor search from
+      !! \(RT/P\); the stable root is the one with lower residual Gibbs
+      !! energy. `V` is set to `-1` if the last Newton solve failed.
       !!
       !! # Examples
       !!
@@ -179,35 +188,45 @@ contains
       !! `["liquid", "vapor", "stable"]`
 
       integer :: max_iters=30
-      real(pr) :: tol=1e-8
+      real(pr) :: tol=1e-8 !! Numerical convergence tolerance.
 
-      real(pr) :: totnRT, GrL, GrV, Gr
-      real(pr) :: Vliq, Vvap
-      logical :: failed
+      real(pr) :: totnRT
+      real(pr) :: GrL
+      real(pr) :: GrV
+      real(pr) :: Gr
+      real(pr) :: Vliq
+      real(pr) :: Vvap
+      logical :: failed_liq !! True when the liquid-root solve did not converge.
+      logical :: failed_vap !! True when the vapor-root solve did not converge.
 
       GrL = HUGE(GrL)
       GrV = HUGE(GrV)
+      failed_liq = .false.
+      failed_vap = .false.
 
       totnRT = sum(n) * R * T
       select case(root_type)
        case("liquid")
          Vliq = eos%get_v0(n, P, T) * 1.001_pr
-         call newton(foo, Vliq, tol=tol, max_iters=max_iters, failed=failed)
+         call newton(foo, Vliq, tol=tol, max_iters=max_iters, failed=failed_liq)
          GrL = Gr
        case("vapor")
-         ! Vvap = R * T / P
-         Vvap = R * T / P
-         call newton(foo, Vvap, tol=tol, max_iters=max_iters, failed=failed)
+         Vvap = totnRT / P ! ideal gas for the total moles
+         call newton(foo, Vvap, tol=tol, max_iters=max_iters, failed=failed_vap)
          GrV = Gr
        case("stable")
          Vliq = eos%get_v0(n, P, T)*1.00001_pr
-         call newton(foo, Vliq, tol=tol, max_iters=max_iters, failed=failed)
+         call newton(foo, Vliq, tol=tol, max_iters=max_iters, failed=failed_liq)
          GrL = Gr
 
-         Vvap = R * T / P
-         call newton(foo, Vvap, tol=tol, max_iters=max_iters, failed=failed)
+         Vvap = totnRT / P
+         call newton(foo, Vvap, tol=tol, max_iters=max_iters, failed=failed_vap)
          GrV = Gr
       end select
+
+      ! A root that did not converge cannot be selected.
+      if (failed_liq) GrL = huge(GrL)
+      if (failed_vap) GrV = huge(GrV)
 
       if (GrL < GrV) then
          V = Vliq
@@ -215,13 +234,20 @@ contains
          V = Vvap
       end if
 
-      if (failed) V = -1
+      if (GrL == huge(GrL) .and. GrV == huge(GrV)) V = -1
 
    contains
       subroutine foo(x, f, df)
-         real(pr), intent(in) :: x
-         real(pr), intent(out) :: f, df
-         real(pr) :: Ar, ArV, ArV2, Pcalc, dPcalcdV, Vin
+         !! Pressure residual callback for the volume Newton solve.
+         real(pr), intent(in) :: x !! Trial volume [L].
+         real(pr), intent(out) :: f !! Pressure residual [bar].
+         real(pr), intent(out) :: df !! Pressure-residual derivative with respect to volume.
+         real(pr) :: Ar
+         real(pr) :: ArV
+         real(pr) :: ArV2 !! Second-order intermediate quantity used by this procedure.
+         real(pr) :: Pcalc
+         real(pr) :: dPcalcdV
+         real(pr) :: Vin
          Vin = x
          call eos%residual_helmholtz(n, Vin, T, Ar=Ar, ArV=ArV, ArV2=ArV2)
          Pcalc = totnRT / Vin - ArV
@@ -253,13 +279,17 @@ contains
       real(pr), intent(in) :: T !! Temperature [K]
       real(pr), intent(in) :: V !! Volume [L]
       real(pr), intent(out) :: P !! Pressure [bar]
-      real(pr), optional, intent(out) :: dPdV !! \(\frac{dP}}{dV}\)
-      real(pr), optional, intent(out) :: dPdT !! \(\frac{dP}}{dT}\)
-      real(pr), optional, intent(out) :: dPdn(:) !! \(\frac{dP}}{dn_i}\)
+      real(pr), optional, intent(out) :: dPdV !! \(\frac{dP}{dV}\)
+      real(pr), optional, intent(out) :: dPdT !! \(\frac{dP}{dT}\)
+      real(pr), optional, intent(out) :: dPdn(:) !! \(\frac{dP}{dn_i}\)
 
-      real(pr) :: totn
+      real(pr) :: totn !! Total number of moles.
 
-      real(pr) :: Ar, ArV, ArV2, ArTV, ArVn(size(eos))
+      real(pr) :: Ar
+      real(pr) :: ArV
+      real(pr) :: ArV2 !! Second-order intermediate quantity used by this procedure.
+      real(pr) :: ArTV
+      real(pr) :: ArVn(size(eos))
 
       totn = sum(n)
 
@@ -298,10 +328,10 @@ contains
       !!
       !! n = [1.0_pr, 1.0_pr]
       !! T = 300.0_pr
-      !! V = 1.0_pr
+      !! P = 1.0_pr
       !!
       !! call eos%lnphi_pt(&
-      !!    n, V, T, lnPhi=lnPhi, &
+      !!    n, P, T, root_type="stable", lnPhi=lnPhi, &
       !!    dlnPhidP=dlnPhidP, dlnPhidT=dlnPhidT, dlnPhidn=dlnPhidn &
       !!    )
       !! ```
@@ -314,19 +344,20 @@ contains
       real(pr), intent(in) :: P !! Pressure [bar]
       real(pr), intent(in) :: T !! Temperature [K]
 
-      real(pr), optional, intent(out) :: lnPhi(size(n)) !! \(\ln(phi)\) vector
+      real(pr), optional, intent(out) :: lnPhi(size(n)) !! \(\ln(\phi_i)\) vector
       real(pr), optional, intent(out) :: V !! Volume [L]
-      real(pr), optional, intent(out) :: dlnPhidT(size(n)) !! ln(phi) Temperature derivative
-      real(pr), optional, intent(out) :: dlnPhidP(size(n)) !! ln(phi) Presssure derivative
-      real(pr), optional, intent(out) :: dlnPhidn(size(n), size(n)) !! ln(phi) compositional derivative
+      real(pr), optional, intent(out) :: dlnPhidT(size(n)) !! \(\partial \ln\phi_i/\partial T\) [1/K]
+      real(pr), optional, intent(out) :: dlnPhidP(size(n)) !! \(\partial \ln\phi_i/\partial P\) [1/bar]
+      real(pr), optional, intent(out) :: dlnPhidn(size(n), size(n)) !! \(\partial \ln\phi_i/\partial n_j\)
       real(pr), optional, intent(out) :: dPdV !! \(\frac{dP}{dV}\)
       real(pr), optional, intent(out) :: dPdT !! \(\frac{dP}{dT}\)
       real(pr), optional, intent(out) :: dPdn(size(n)) !! \(\frac{dP}{dn_i}\)
       real(pr), optional, intent(out) :: lnPhiP(:)
-      !! \(\ln(\phi_i)P \). It is useful to calculate fugacity coefficients
+      !! \(\ln(\phi_i P)\). It is useful to calculate fugacity coefficients
       !! at negatives pressures.
 
-      real(pr) :: V_in, P_in
+      real(pr) :: V_in
+      real(pr) :: P_in
 
       call eos%volume(n, P=P, T=T, V=V_in, root_type=root_type)
 
@@ -377,27 +408,38 @@ contains
 
       real(pr), optional, intent(out) :: P !! Pressure [bar]
       real(pr), optional, intent(out) :: lnPhi(size(n)) !! \(\ln(\phi_i)\) vector
-      real(pr), optional, intent(out) :: dlnPhidT(size(n)) !! \(ln(phi_i)\) Temp derivative
-      real(pr), optional, intent(out) :: dlnPhidP(size(n)) !! \(ln(phi_i)\) Presssure derivative
-      real(pr), optional, intent(out) :: dlnPhidn(size(n), size(n)) !! \(ln(phi_i)\) compositional derivative
+      real(pr), optional, intent(out) :: dlnPhidT(size(n)) !! \(\ln(\phi_i)\) Temp derivative
+      real(pr), optional, intent(out) :: dlnPhidP(size(n)) !! \(\ln(\phi_i)\) Pressure derivative
+      real(pr), optional, intent(out) :: dlnPhidn(size(n), size(n)) !! \(\ln(\phi_i)\) compositional derivative
       real(pr), optional, intent(out) :: dPdV !! \(\frac{dP}{dV}\)
       real(pr), optional, intent(out) :: dPdT !! \(\frac{dP}{dT}\)
       real(pr), optional, intent(out) :: dPdn(:) !! \(\frac{dP}{dn_i}\)
       real(pr), optional, intent(out) :: lnPhiP(:)
-      !! \(\ln(\phi_i)P \). It is useful to calculate fugacity coefficients
+      !! \(\ln(\phi_i P)\). It is useful to calculate fugacity coefficients
       !! at negatives pressures.
 
-      real(pr) :: Ar, ArTV, ArV, ArV2
-      real(pr), dimension(size(n)) :: Arn, ArVn, ArTn
-      real(pr) :: Arn2(size(n), size(n))
+      real(pr) :: Ar
+      real(pr) :: ArTV
+      real(pr) :: ArV
+      real(pr) :: ArV2 !! Second-order intermediate quantity used by this procedure.
+      real(pr), dimension(size(n)) :: Arn
+      real(pr), dimension(size(n)) :: ArVn
+      real(pr), dimension(size(n)) :: ArTn
+      real(pr) :: Arn2(size(n), size(n)) !! Second-order intermediate quantity used by this procedure.
 
-      real(pr) :: dPdV_in, dPdT_in, dPdn_in(size(n))
+      real(pr) :: dPdV_in
+      real(pr) :: dPdT_in
+      real(pr) :: dPdn_in(size(n))
       real(pr) :: P_in
 
-      real(pr) :: RT, Z, Z_P
+      real(pr) :: RT
+      real(pr) :: Z !! Compressibility factor \(PV/(n_TRT)\).
+      real(pr) :: Z_P
 
-      real(pr) :: totn
-      integer :: nc, i, j
+      real(pr) :: totn !! Total number of moles.
+      integer :: nc !! Number of components.
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
 
       totn = sum(n)
       nc = size(n)
@@ -506,26 +548,36 @@ contains
       real(pr), intent(in) :: T !! Temperature [K]
 
       real(pr), optional, intent(out) :: P !! Pressure [bar]
-      real(pr), optional, intent(out) :: lnf(size(n)) !! \(\ln(\f_i)\) vector
-      real(pr), optional, intent(out) :: dlnfdT(size(n)) !! \(ln(f_i)\) Temp derivative
-      real(pr), optional, intent(out) :: dlnfdV(size(n)) !! \(ln(f_i)\) Volume derivative
-      real(pr), optional, intent(out) :: dlnfdn(size(n), size(n)) !! \(ln(f_i)\) compositional derivative
+      real(pr), optional, intent(out) :: lnf(size(n)) !! \(\ln(f_i)\) vector
+      real(pr), optional, intent(out) :: dlnfdT(size(n)) !! \(\ln(f_i)\) Temp derivative
+      real(pr), optional, intent(out) :: dlnfdV(size(n)) !! \(\ln(f_i)\) Volume derivative
+      real(pr), optional, intent(out) :: dlnfdn(size(n), size(n)) !! \(\ln(f_i)\) compositional derivative
       real(pr), optional, intent(out) :: dPdV !! \(\frac{dP}{dV}\)
       real(pr), optional, intent(out) :: dPdT !! \(\frac{dP}{dT}\)
       real(pr), optional, intent(out) :: dPdn(:) !! \(\frac{dP}{dn_i}\)
 
-      real(pr) :: Ar, ArTV, ArV, ArV2
+      real(pr) :: Ar
+      real(pr) :: ArTV
+      real(pr) :: ArV
+      real(pr) :: ArV2 !! Second-order intermediate quantity used by this procedure.
 
-      real(pr), dimension(size(n)) :: Arn, ArVn, ArTn
-      real(pr) :: Arn2(size(n), size(n))
+      real(pr), dimension(size(n)) :: Arn
+      real(pr), dimension(size(n)) :: ArVn
+      real(pr), dimension(size(n)) :: ArTn
+      real(pr) :: Arn2(size(n), size(n)) !! Second-order intermediate quantity used by this procedure.
 
-      real(pr) :: dPdV_in, dPdT_in, dPdn_in(size(n))
+      real(pr) :: dPdV_in
+      real(pr) :: dPdT_in
+      real(pr) :: dPdn_in(size(n))
       real(pr) :: P_in
 
-      real(pr) :: RT, Z
+      real(pr) :: RT
+      real(pr) :: Z !! Compressibility factor \(PV/(n_TRT)\).
 
-      real(pr) :: totn
-      integer :: nc, i, j
+      real(pr) :: totn !! Total number of moles.
+      integer :: nc !! Number of components.
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
 
       totn = sum(n)
       nc = size(n)
@@ -624,12 +676,19 @@ contains
       real(pr), intent(in) :: T !! Temperature [K]
       real(pr), intent(in) :: V !! Volume [L]
       real(pr), optional, intent(out) :: Hr !! Residual enthalpy [bar L]
-      real(pr), optional, intent(out) :: HrV !! \(\frac{dH^r}}{dV}\)
-      real(pr), optional, intent(out) :: HrT !! \(\frac{dH^r}}{dT}\)
-      real(pr), optional, intent(out) :: Hrn(size(n)) !! \(\frac{dH^r}}{dn}\)
+      real(pr), optional, intent(out) :: HrV !! \(\frac{dH^r}{dV}\)
+      real(pr), optional, intent(out) :: HrT !! \(\frac{dH^r}{dT}\)
+      real(pr), optional, intent(out) :: Hrn(size(n)) !! \(\frac{dH^r}{dn}\)
 
-      real(pr) :: Ar, ArV, ArT, Arn(size(n))
-      real(pr) :: ArV2, ArT2, ArTV, ArVn(size(n)), ArTn(size(n))
+      real(pr) :: Ar
+      real(pr) :: ArV
+      real(pr) :: ArT
+      real(pr) :: Arn(size(n))
+      real(pr) :: ArV2 !! Second volume derivative of residual Helmholtz energy.
+      real(pr) :: ArT2 !! Second temperature derivative of residual Helmholtz energy.
+      real(pr) :: ArTV !! Mixed temperature/volume derivative of residual Helmholtz energy.
+      real(pr) :: ArVn(size(n)) !! Mixed volume/mole-number derivative of residual Helmholtz energy.
+      real(pr) :: ArTn(size(n)) !! Mixed temperature/mole-number derivative of residual Helmholtz energy.
 
       call eos%residual_helmholtz(&
          n, V, T, Ar=Ar, ArV=ArV, ArT=ArT, ArTV=ArTV, &
@@ -663,11 +722,17 @@ contains
       real(pr), intent(in) :: V !! Volume [L]
       real(pr), intent(in) :: T !! Temperature [K]
       real(pr), optional, intent(out) :: Gr !! Gibbs energy [bar L]
-      real(pr), optional, intent(out) :: GrV !! \(\frac{dG^r}}{dV}\)
-      real(pr), optional, intent(out) :: GrT !! \(\frac{dG^r}}{dT}\)
-      real(pr), optional, intent(out) :: Grn(size(n)) !! \(\frac{dG^r}}{dn}\)
+      real(pr), optional, intent(out) :: GrV !! \(\frac{dG^r}{dV}\)
+      real(pr), optional, intent(out) :: GrT !! \(\frac{dG^r}{dT}\)
+      real(pr), optional, intent(out) :: Grn(size(n)) !! \(\frac{dG^r}{dn}\)
 
-      real(pr) :: Ar, ArV, ArT, Arn(size(n)), ArTV, ArV2, ArVn(size(n))
+      real(pr) :: Ar
+      real(pr) :: ArV
+      real(pr) :: ArT
+      real(pr) :: Arn(size(n))
+      real(pr) :: ArTV
+      real(pr) :: ArV2 !! Second-order intermediate quantity used by this procedure.
+      real(pr) :: ArVn(size(n))
 
       call eos%residual_helmholtz(&
          n, v, t, Ar=Ar, ArV=ArV, &
@@ -701,11 +766,15 @@ contains
       real(pr), intent(in) :: V !! Volume [L]
       real(pr), intent(in) :: T !! Temperature [K]
       real(pr), optional, intent(out) :: Sr !! Entropy [bar L / K]
-      real(pr), optional, intent(out) :: SrV !! \(\frac{dS^r}}{dV}\)
-      real(pr), optional, intent(out) :: SrT !! \(\frac{dS^r}}{dT}\)
-      real(pr), optional, intent(out) :: Srn(size(n)) !! \(\frac{dS^r}}{dn}\)
+      real(pr), optional, intent(out) :: SrV !! \(\frac{dS^r}{dV}\)
+      real(pr), optional, intent(out) :: SrT !! \(\frac{dS^r}{dT}\)
+      real(pr), optional, intent(out) :: Srn(size(n)) !! \(\frac{dS^r}{dn}\)
 
-      real(pr) :: Ar, ArT, ArT2, ArTV, ArTn(size(n))
+      real(pr) :: Ar
+      real(pr) :: ArT
+      real(pr) :: ArT2 !! Second-order intermediate quantity used by this procedure.
+      real(pr) :: ArTV
+      real(pr) :: ArTn(size(n))
 
       call eos%residual_helmholtz(&
          n, v, t, Ar=Ar, ArT=ArT, ArTV=ArTV, ArT2=ArT2, ArTn=ArTn &
@@ -738,11 +807,17 @@ contains
       real(pr), intent(in) :: V !! Volume [L]
       real(pr), intent(in) :: T !! Temperature [K]
       real(pr), optional, intent(out) :: Ur !! Internal energy [bar L]
-      real(pr), optional, intent(out) :: UrV !! \(\frac{dU^r}}{dV}\)
-      real(pr), optional, intent(out) :: UrT !! \(\frac{dU^r}}{dT}\)
-      real(pr), optional, intent(out) :: Urn(size(n)) !! \(\frac{dU^r}}{dn}\)
+      real(pr), optional, intent(out) :: UrV !! \(\frac{dU^r}{dV}\)
+      real(pr), optional, intent(out) :: UrT !! \(\frac{dU^r}{dT}\)
+      real(pr), optional, intent(out) :: Urn(size(n)) !! \(\frac{dU^r}{dn}\)
 
-      real(pr) :: Ar, ArV, ArT, Arn(size(n)), ArT2, ArTV, ArTn(size(n))
+      real(pr) :: Ar
+      real(pr) :: ArV
+      real(pr) :: ArT
+      real(pr) :: Arn(size(n))
+      real(pr) :: ArT2 !! Second-order intermediate quantity used by this procedure.
+      real(pr) :: ArTV
+      real(pr) :: ArTn(size(n))
 
       call eos%residual_helmholtz(&
          n, v, t, Ar=Ar, ArV=ArV, ArT=ArT, Arn=Arn, &
@@ -775,7 +850,7 @@ contains
       real(pr), intent(in) :: V !! Volume [L]
       real(pr), intent(out) :: Cv !! heat capacity V constant [bar L / K]
 
-      real(pr) :: ArT2
+      real(pr) :: ArT2 !! Second-order intermediate quantity used by this procedure.
 
       call eos%residual_helmholtz(n, V, T, ArT2=ArT2)
 
@@ -803,7 +878,9 @@ contains
       real(pr), intent(out) :: Cp !! heat capacity P constant [bar L / K]
 
       real(pr) :: nt
-      real(pr) :: ArT2, ArTV, ArV2
+      real(pr) :: ArT2 !! Second temperature derivative of residual Helmholtz energy.
+      real(pr) :: ArTV !! Mixed temperature/volume derivative of residual Helmholtz energy.
+      real(pr) :: ArV2 !! Second volume derivative of residual Helmholtz energy.
 
       nt = sum(n)
 
@@ -843,17 +920,30 @@ contains
       !! `["liquid", "vapor", "stable"]`
       real(pr), optional, intent(out) :: Ar
       !! Residual Helmholtz energy [bar L]
-      real(pr), optional, intent(out) :: ArP !! \(\frac{dA^r}}{dP}\)
-      real(pr), optional, intent(out) :: ArT !! \(\frac{dA^r}}{dT}\)
-      real(pr), optional, intent(out) :: Arn(size(n)) !! \(\frac{dA^r}}{dn}\)
+      real(pr), optional, intent(out) :: ArP !! \(\frac{dA^r}{dP}\)
+      real(pr), optional, intent(out) :: ArT !! \(\frac{dA^r}{dT}\)
+      real(pr), optional, intent(out) :: Arn(size(n)) !! \(\frac{dA^r}{dn}\)
 
       ! Helmholtz at VT
-      real(pr) :: Ar_v, ArV_v, ArT_v, Arn_v(size(n))
-      real(pr) :: dPdV, dPdT, dPdn(size(n))
-      real(pr) :: dVdP, dVdT, dVdn(size(n))
-      real(pr) :: Z, nt, V, P_dummy
+      real(pr) :: Ar_v
+      real(pr) :: ArV_v
+      real(pr) :: ArT_v
+      real(pr) :: Arn_v(size(n))
+      real(pr) :: dPdV
+      real(pr) :: dPdT
+      real(pr) :: dPdn(size(n))
+      real(pr) :: dVdP
+      real(pr) :: dVdT
+      real(pr) :: dVdn(size(n))
+      real(pr) :: Z !! Compressibility factor \(PV/(n_TRT)\).
+      real(pr) :: nt
+      real(pr) :: V
+      real(pr) :: P_dummy
 
-      logical :: dp, dt, dn, present_derivs
+      logical :: dp
+      logical :: dt
+      logical :: dn
+      logical :: present_derivs
 
       dp = present(ArP)
       dt = present(ArT)
@@ -916,15 +1006,27 @@ contains
       !! Desired root-type to solve. Options are:
       !! `["liquid", "vapor", "stable"]`
       real(pr), optional, intent(out) :: Hr !! Residual enthalpy [bar L]
-      real(pr), optional, intent(out) :: HrP !! \(\frac{dH^r}}{dP}\)
-      real(pr), optional, intent(out) :: HrT !! \(\frac{dH^r}}{dT}\)
-      real(pr), optional, intent(out) :: Hrn(size(n)) !! \(\frac{dH^r}}{dn}\)
+      real(pr), optional, intent(out) :: HrP !! \(\frac{dH^r}{dP}\)
+      real(pr), optional, intent(out) :: HrT !! \(\frac{dH^r}{dT}\)
+      real(pr), optional, intent(out) :: Hrn(size(n)) !! \(\frac{dH^r}{dn}\)
 
-      real(pr) :: Hr_v, HrT_v, HrV_v, Hrn_v(size(n)) ! residual entralpy vt
-      real(pr) :: V, dPdV, dPdT, dPdn(size(n)), P_dummy
-      real(pr) :: dVdP, dVdT, dVdn(size(n))
+      real(pr) :: Hr_v !! residual enthalpy vt
+      real(pr) :: HrT_v !! residual enthalpy vt
+      real(pr) :: HrV_v !! residual enthalpy vt
+      real(pr) :: Hrn_v(size(n)) !! residual enthalpy vt
+      real(pr) :: V !! Total volume [L].
+      real(pr) :: dPdV
+      real(pr) :: dPdT
+      real(pr) :: dPdn(size(n))
+      real(pr) :: P_dummy
+      real(pr) :: dVdP
+      real(pr) :: dVdT
+      real(pr) :: dVdn(size(n))
 
-      logical :: dp, dT, dn, derivs_present
+      logical :: dp
+      logical :: dT
+      logical :: dn
+      logical :: derivs_present
 
       dp = present(HrP)
       dt = present(HrT)
@@ -979,15 +1081,29 @@ contains
       !! Desired root-type to solve. Options are:
       !! `["liquid", "vapor", "stable"]`
       real(pr), optional, intent(out) :: Gr !! Residual Gibbs energy [bar L]
-      real(pr), optional, intent(out) :: GrP !! \(\frac{dG^r}}{dP}\)
-      real(pr), optional, intent(out) :: GrT !! \(\frac{dG^r}}{dT}\)
-      real(pr), optional, intent(out) :: Grn(size(n)) !! \(\frac{dG^r}}{dn}\)
+      real(pr), optional, intent(out) :: GrP !! \(\frac{dG^r}{dP}\)
+      real(pr), optional, intent(out) :: GrT !! \(\frac{dG^r}{dT}\)
+      real(pr), optional, intent(out) :: Grn(size(n)) !! \(\frac{dG^r}{dn}\)
 
-      real(pr) :: Gr_v, GrT_v, GrV_v, Grn_v(size(n)) ! residual Gibbs energy vt
-      real(pr) :: Z, nt, V, dPdV, dPdT, dPdn(size(n)), P_dummy
-      real(pr) :: dVdP, dVdT, dVdn(size(n))
+      real(pr) :: Gr_v !! residual Gibbs energy vt
+      real(pr) :: GrT_v !! residual Gibbs energy vt
+      real(pr) :: GrV_v !! residual Gibbs energy vt
+      real(pr) :: Grn_v(size(n)) !! residual Gibbs energy vt
+      real(pr) :: Z
+      real(pr) :: nt
+      real(pr) :: V !! Total volume [L].
+      real(pr) :: dPdV
+      real(pr) :: dPdT
+      real(pr) :: dPdn(size(n))
+      real(pr) :: P_dummy
+      real(pr) :: dVdP
+      real(pr) :: dVdT
+      real(pr) :: dVdn(size(n))
 
-      logical :: dp, dt, dn, present_derivs
+      logical :: dp
+      logical :: dt
+      logical :: dn
+      logical :: present_derivs
 
       dp = present(GrP)
       dt = present(GrT)
@@ -1050,16 +1166,29 @@ contains
       !! Desired root-type to solve. Options are:
       !! `["liquid", "vapor", "stable"]`
       real(pr), optional, intent(out) :: Sr !! Residual entropy [bar L K^-1]
-      real(pr), optional, intent(out) :: SrP !! \(\frac{dS^r}}{dP}\)
-      real(pr), optional, intent(out) :: SrT !! \(\frac{dS^r}}{dT}\)
-      real(pr), optional, intent(out) :: Srn(size(n)) !! \(\frac{dS^r}}{dn}\)
+      real(pr), optional, intent(out) :: SrP !! \(\frac{dS^r}{dP}\)
+      real(pr), optional, intent(out) :: SrT !! \(\frac{dS^r}{dT}\)
+      real(pr), optional, intent(out) :: Srn(size(n)) !! \(\frac{dS^r}{dn}\)
 
-      real(pr) :: Sr_v, SrT_v, SrV_v, Srn_v(size(n)) ! residual entropy vt
-      real(pr) :: dPdV, dPdT, dPdn(size(n))
-      real(pr) :: dVdT, dVdP, dVdn(size(n))
-      real(pr) :: Z, nt, V, P_dummy
+      real(pr) :: Sr_v !! residual entropy vt
+      real(pr) :: SrT_v !! residual entropy vt
+      real(pr) :: SrV_v !! residual entropy vt
+      real(pr) :: Srn_v(size(n)) !! residual entropy vt
+      real(pr) :: dPdV
+      real(pr) :: dPdT
+      real(pr) :: dPdn(size(n))
+      real(pr) :: dVdT
+      real(pr) :: dVdP
+      real(pr) :: dVdn(size(n))
+      real(pr) :: Z !! Compressibility factor \(PV/(n_TRT)\).
+      real(pr) :: nt
+      real(pr) :: V
+      real(pr) :: P_dummy
 
-      logical :: dp, dt, dn, derivs_present
+      logical :: dp
+      logical :: dt
+      logical :: dn
+      logical :: derivs_present
 
       dp = present(SrP)
       dt = present(SrT)
@@ -1122,15 +1251,27 @@ contains
       !! Desired root-type to solve. Options are:
       !! `["liquid", "vapor", "stable"]`
       real(pr), optional, intent(out) :: Ur !! Residual internal energy [bar L]
-      real(pr), optional, intent(out) :: UrP !! \(\frac{dU^r}}{dP}\)
-      real(pr), optional, intent(out) :: UrT !! \(\frac{dU^r}}{dT}\)
-      real(pr), optional, intent(out) :: Urn(size(n)) !! \(\frac{dU^r}}{dn}\)
+      real(pr), optional, intent(out) :: UrP !! \(\frac{dU^r}{dP}\)
+      real(pr), optional, intent(out) :: UrT !! \(\frac{dU^r}{dT}\)
+      real(pr), optional, intent(out) :: Urn(size(n)) !! \(\frac{dU^r}{dn}\)
 
-      real(pr) :: Ur_v, UrT_v, UrV_v, Urn_v(size(n))
-      real(pr) :: V, dPdV, dPdT, dPdn(size(n)), P_dummy
-      real(pr) :: dVdP, dVdT, dVdn(size(n))
+      real(pr) :: Ur_v
+      real(pr) :: UrT_v
+      real(pr) :: UrV_v
+      real(pr) :: Urn_v(size(n))
+      real(pr) :: V !! Total volume [L].
+      real(pr) :: dPdV
+      real(pr) :: dPdT
+      real(pr) :: dPdn(size(n))
+      real(pr) :: P_dummy
+      real(pr) :: dVdP
+      real(pr) :: dVdT
+      real(pr) :: dVdn(size(n))
 
-      logical :: dp, dT, dn, derivs_present
+      logical :: dp
+      logical :: dT
+      logical :: dn
+      logical :: derivs_present
 
       dp = present(UrP)
       dt = present(UrT)
@@ -1238,9 +1379,12 @@ contains
       !!
       !! # Examples
       !!
-      !! ```fortran ! eos = PengRobinson76(Tc, Pc, w)
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
       !!
-      !! n = [1.0_pr, 1.0_pr] ! T = 300.0_pr ! P = 1.0_pr
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! P = 1.0_pr
       !!
       !! call eos%ln_activity_coefficient(&
       !!    n, P, T, root_type="stable", &
@@ -1258,25 +1402,36 @@ contains
       real(pr), intent(out), optional :: lngamma(size(n))
       !! Natural logarithm of activity coefficient
       real(pr), intent(out), optional :: dlngammadP(size(n))
-      !! \(\frac{d\ln\gamma}}{dP}\)
+      !! \(\frac{d\ln\gamma}{dP}\)
       real(pr), intent(out), optional :: dlngammadT(size(n))
-      !! \(\frac{d\ln\gamma}}{dT}\)
+      !! \(\frac{d\ln\gamma}{dT}\)
       real(pr), intent(out), optional :: dlngammadn(size(n),size(n))
-      !! \(\frac{d\ln\gamma}}{dn}\)
+      !! \(\frac{d\ln\gamma}{dn}\)
 
       ! Mixture properties
-      real(pr) :: lnPhi(size(n)), dlnPhidT(size(n))
+      real(pr) :: lnPhi(size(n)) !! Log fugacity coefficients.
+      real(pr) :: dlnPhidT(size(n))
       real(pr) :: dlnPhidn(size(n),size(n))
-      real(pr) :: dPdV, dPdn(size(n)), dVdn(size(n))
+      real(pr) :: dPdV
+      real(pr) :: dPdn(size(n))
+      real(pr) :: dVdn(size(n))
 
       ! Pure properties
-      real(pr) :: vi(size(n)), vi_temp, npure(size(n))
-      real(pr) :: lnPhi_i(size(n)), dlnPhi_i_dT(size(n))
-      real(pr) :: lnPhi_i_temp(size(n)), dlnPhi_i_dT_temp(size(n))
+      real(pr) :: vi(size(n))
+      real(pr) :: vi_temp
+      real(pr) :: npure(size(n))
+      real(pr) :: lnPhi_i(size(n)) !! Logarithmic thermodynamic quantity or intermediate.
+      real(pr) :: dlnPhi_i_dT(size(n))
+      real(pr) :: lnPhi_i_temp(size(n)) !! Logarithmic thermodynamic quantity or intermediate.
+      real(pr) :: dlnPhi_i_dT_temp(size(n))
 
-      integer :: i
+      integer :: i !! Loop/index variable.
 
-      logical :: gam, dp, dt, dn, present_derivs
+      logical :: gam
+      logical :: dp
+      logical :: dt
+      logical :: dn
+      logical :: present_derivs
 
       gam = present(lngamma)
       dp = present(dlngammadP)
@@ -1366,15 +1521,20 @@ contains
       real(pr), intent(out), optional :: Ge
       !! Excess Gibbs energy [bar L]
       real(pr), intent(out), optional :: GeP
-      !! \(\frac{dG^E}}{dP}\)
+      !! \(\frac{dG^E}{dP}\)
       real(pr), intent(out), optional :: GeT
-      !! \(\frac{dG^E}}{dT}\)
+      !! \(\frac{dG^E}{dT}\)
       real(pr), intent(out), optional :: Gen(size(n))
-      !! \(\frac{dG^E}}{dn}\)
+      !! \(\frac{dG^E}{dn}\)
 
-      real(pr) :: lngamma(size(n)), dlngammadP(size(n)), dlngammadT(size(n))
+      real(pr) :: lngamma(size(n))
+      real(pr) :: dlngammadP(size(n))
+      real(pr) :: dlngammadT(size(n))
 
-      logical :: dp, dt, dn, present_derivs
+      logical :: dp
+      logical :: dt
+      logical :: dn
+      logical :: present_derivs
 
       dp = present(GeP)
       dt = present(GeT)
@@ -1469,9 +1629,12 @@ contains
       !!
       !! # Examples
       !!
-      !! ```fortran ! eos = PengRobinson76(Tc, Pc, w)
+      !! ```fortran
+      !! eos = PengRobinson76(Tc, Pc, w)
       !!
-      !! n = [1.0_pr, 1.0_pr] ! T = 300.0_pr ! P = 1.0_pr
+      !! n = [1.0_pr, 1.0_pr]
+      !! T = 300.0_pr
+      !! P = 1.0_pr
       !!
       !! call eos%entropy_excess(n, P, T, root_type="stable", Se=Se)
       !! ```
@@ -1485,7 +1648,8 @@ contains
       real(pr), intent(out) :: Se
       !! Excess entropy [bar L K^-1]
 
-      real(pr) :: lngamma(size(n)), dlngammadT(size(n))
+      real(pr) :: lngamma(size(n)) !! Logarithmic thermodynamic quantity or intermediate.
+      real(pr) :: dlngammadT(size(n))
 
       call eos%ln_activity_coefficient(&
          n=n, P=P, T=T, root_type=root_type, &
@@ -1519,7 +1683,8 @@ contains
       real(pr), intent(out) :: Ae
       !! Excess Helmholtz energy [bar L]
 
-      real(pr) :: lngamma(size(n)), dlngammadP(size(n))
+      real(pr) :: lngamma(size(n)) !! Logarithmic thermodynamic quantity or intermediate.
+      real(pr) :: dlngammadP(size(n))
 
       call eos%ln_activity_coefficient(&
          n=n, P=P, T=T, root_type=root_type, &
@@ -1553,7 +1718,8 @@ contains
       real(pr), intent(out) :: Ue
       !! Excess internal energy [bar L]
 
-      real(pr) :: dlngammadP(size(n)), dlngammadT(size(n))
+      real(pr) :: dlngammadP(size(n))
+      real(pr) :: dlngammadT(size(n))
 
       call eos%ln_activity_coefficient(&
          n=n, P=P, T=T, root_type=root_type, &
@@ -1567,8 +1733,14 @@ contains
    ! Other methods
    ! --------------------------------------------------------------------------
    real(pr) function Psat_pure(eos, ncomp, T, Vl, Vv, converged)
-      !! Calculation of saturation pressure of a pure component using the
-      !! secant method.
+      !! # Psat_pure
+      !!
+      !! # Description
+      !! Calculation of saturation pressure of a pure component. Liquid and
+      !! vapor volumes are initialized at 100 bar and 0.001 bar, then
+      !! `solve_point_psat` applies Newton iterations at fixed temperature.
+      !! The returned value is the pressure evaluated at the converged liquid
+      !! volume [bar].
       class(ArModel), intent(in) :: eos !! Model that will be used
       integer, intent(in) :: ncomp
       !! Number of component in the mixture from which the saturation pressure
@@ -1578,10 +1750,13 @@ contains
       real(pr), intent(out) :: Vv !! Vapor volume [L]
       logical, optional, intent(out) :: converged !! The calculation converged
 
-      real(pr) :: n(size(eos))
-      real(pr) :: F(3), X(3), dF(3, 3), S
+      real(pr) :: n(size(eos)) !! Mole numbers selecting the pure component [mol]
+      real(pr) :: F(3) !! Residual or scalar equation value.
+      real(pr) :: X(3) !! Variables \([\ln V_l, \ln V_v, \ln T]\)
+      real(pr) :: dF(3, 3)
+      real(pr) :: S
       integer, parameter :: ns=3
-      integer :: its
+      integer :: its !! Iteration count.
       real(pr) :: Pc(size(eos))
 
       n = 0
@@ -1611,30 +1786,19 @@ contains
       !! Solve a saturation point for a pure component.
       !!
       !! ## Description
-      !! The set of equations to solve is:
+      !! The set of equations solved with Newton's method is:
       !!
       !! \[
       !! \begin{align*}
       !! f_1 &= \ln f_{z}(V_z, T) - \ln f_{y}(V_y, T) \\
-      !! f_2 &= \ln \left( \frac{P_z}{P_y} \right) \\
-      !! f_3 &= \ln P_z - \ln P \\
-      !! f_4 &= g(X, ns)
+      !! f_2 &= P_z(V_z, T) - P_y(V_y, T) \\
+      !! f_3 &= X_{ns} - S
       !! \end{align*}
       !! \]
       !!
-      !! Where \(f_4\) is an specification function defined as:
-      !!
-      !! \[
-      !! g(X, ns) = \left\{
-      !! \begin{array}{lr}
-      !! \ln \left( \frac{V_z}{V_y} \right) - S & \text{if } ns = 1 \text{ or } ns = 2 \\
-      !! X(ns) - S & \text{otherwise}
-      !! \end{array}
-      !! \right\}
-      !! \]
-      !!
-      !! The vector of variables \(X\) is equal to
-      !! \([ \ln V_z, \ln V_y, \ln P, \ln T ]\).
+      !! where \(z\) and \(y\) denote the liquid and vapor phases of the pure
+      !! component. The vector of variables \(X\) is
+      !! \([ \ln V_z, \ln V_y, \ln T ]\).
       use yaeos__math, only: solve_system
 
       class(ArModel), intent(in) :: model
@@ -1644,32 +1808,40 @@ contains
       integer, intent(in) :: nc
       !! Total number of components
       real(pr), intent(in out) :: X(3)
-      !! Variables \([ln V_z, lnV_y, lnP, lnT]\)
+      !! Variables \([\ln V_z, \ln V_y, \ln T]\)
       integer, intent(in) :: ns
-      !! Variable index to solve. If the
+      !! Index of the specified variable in `X`.
       real(pr), intent(in) :: S
       !! Variable value specified to solve
       real(pr), intent(out) :: F(3)
-      !! Function
+      !! Residual vector
       real(pr), intent(out) :: dF(3, 3)
       !! Jacobian
       integer, intent(out) :: its
       !! Number of iterations
 
-      real(pr) :: z(nc)
-      real(pr) :: lnfug_z(nc), lnfug_y(nc)
-      real(pr) :: dlnfdv_z(nc), dlnfdv_y(nc)
-      real(pr) :: dlnfdt_z(nc), dlnfdt_y(nc)
-      real(pr) :: dPdTz, dPdTy
-      real(pr) :: dPdVz, dPdVy
-      real(pr) :: Vz, Vy
+      real(pr) :: z(nc) !! Pure-component mole vector
+      real(pr) :: lnfug_z(nc) !! Logarithmic thermodynamic quantity or intermediate.
+      real(pr) :: lnfug_y(nc) !! Logarithmic thermodynamic quantity or intermediate.
+      real(pr) :: dlnfdv_z(nc)
+      real(pr) :: dlnfdv_y(nc)
+      real(pr) :: dlnfdt_z(nc)
+      real(pr) :: dlnfdt_y(nc)
+      real(pr) :: dPdTz
+      real(pr) :: dPdTy
+      real(pr) :: dPdVz !! Pressure derivative with respect to the feed-phase volume.
+      real(pr) :: dPdVy !! Pressure derivative with respect to the incipient-phase volume.
+      real(pr) :: Vz
+      real(pr) :: Vy
 
       real(pr) :: T
-      real(pr) :: Pz, Py
-      real(pr) :: dX(3), B
+      real(pr) :: Pz
+      real(pr) :: Py
+      real(pr) :: dX(3)
+      real(pr) :: B
       real(pr) :: Xnew(3)
 
-      integer :: i
+      integer :: i !! Loop/index variable.
 
       i = ncomp
 
@@ -1698,9 +1870,14 @@ contains
       end do
    contains
       subroutine isofugacity(X, F, dF)
-         real(pr), intent(inout) :: X(3)
-         real(pr), intent(out) :: F(3)
-         real(pr), intent(out) :: dF(3,3)
+         !! # isofugacity
+         !! Evaluate pure-fluid saturation residuals for the volume solver.
+         !! The log-state vector contains liquid volume, vapor volume, and
+         !! temperature; residuals enforce fugacity and pressure equality plus
+         !! the variable specification.
+         real(pr), intent(inout) :: X(3) !! Variables \([\ln V_z, \ln V_y, \ln T]\)
+         real(pr), intent(out) :: F(3) !! Residual vector
+         real(pr), intent(out) :: dF(3,3) !! Jacobian \(\partial F_i/\partial X_j\)
 
          F = 0
          dF = 0

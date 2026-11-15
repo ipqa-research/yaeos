@@ -1,5 +1,16 @@
 module yaeos__equilibria_boundaries_phase_envelopes_tx
-   !! Phase boundaries line on the \(T\alpha\) plane calculation procedures.
+   !! # Temperature-composition phase envelopes
+   !! Continuation routines for phase boundaries in the \(T-\alpha\) plane.
+   !!
+   !! # Description
+   !! These procedures trace phase-equilibrium states while temperature and
+   !! the feed interpolation parameter vary. They are useful for isobaric
+   !! sections through a phase diagram and return arrays of equilibrium states.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! line = tx_envelope_2ph(model, z0, alpha0, z_injection, first_point)
+   !! ```
    use yaeos__constants, only: pr
    use yaeos__models_ar, only: ArModel
    use yaeos__equilibria_equilibrium_state, only: EquilibriumState
@@ -14,15 +25,32 @@ module yaeos__equilibria_boundaries_phase_envelopes_tx
    public :: tx_envelope_2ph
 
    type :: CriticalPoint
-      !! Critical point
+      !! # CriticalPoint
+      !! Critical point marker for a TX envelope.
+      !!
+      !! # Description
+      !! Stores the feed interpolation coordinate and temperature of the point.
+      !!
+      !! # Examples
+      !! Access through the critical-point array on `TXEnvel2`.
       real(pr) :: alpha !! \(\alpha\)
       real(pr) :: T !! Temperature [K]
    end type CriticalPoint
 
    type :: TXEnvel2
+      !! # TXEnvel2
       !! Two-phase TX envelope.
       !! Phase boundary line of a fluid at constant temperature
       !! with variation in composition.
+      !!
+      !! # Description
+      !! Stores converged equilibrium states, feed interpolation coordinates,
+      !! and detected critical points along the temperature-composition line.
+      !!
+      !! # Examples
+      !! ```fortran
+      !! line = tx_envelope_2ph(model, z0, alpha0, z_injection, first_point)
+      !! ```
       real(pr), allocatable :: alpha(:) !! Second fluid molar fraction
       real(pr), allocatable :: z0(:) !! Original fluid composition
       real(pr), allocatable :: z_inj(:) !! Second fluid composition
@@ -44,34 +72,37 @@ contains
       points, iterations, delta_0, specified_variable_0, &
       solver, stop_conditions &
       ) result(envelopes)
+      !! # tx_envelope_2ph
+      !!
+      !! # Description
       !! TX two-phase envelope calculation procedure.
       !!
       !! Phase envelope calculation using the continuation method.
-      !! Defaults to solving the saturation temperature and continues with
-      !! an increment in it. The variable to specify can be changed by modifying
+      !! Defaults to specifying \(\alpha\) (`specified_variable_0 = nc+2`)
+      !! and continuing with increments in it. The variable to specify can be changed by modifying
       !! `specified_variable_0` with the corresponding variable number.
       ! ========================================================================
       use yaeos__auxiliar, only: optval
       class(ArModel), intent(in) :: model
-      !! Thermodyanmic model
+      !! Thermodynamic model
       real(pr), intent(in) :: z0(:)
       !! Vector of molar fractions of the global composition (main phase)
       real(pr), intent(in) :: alpha0
-      !! First point of \(alpha\)
+      !! First point of \(\alpha\)
       real(pr), intent(in) :: z_injection(:)
       !! Vector of molar fractions of the injection fluid
       type(EquilibriumState) :: first_point
       integer, optional, intent(in) :: points
-      !! Maxmimum number of points, defaults to 500
+      !! Maximum number of points, defaults to 500
       integer, optional, intent(in) :: iterations
       !! Point solver maximum iterations, defaults to 100
       real(pr), optional, intent(in) :: delta_0
-      !! Initial extrapolation \(\Delta\)
+      !! Initial specification step \(\Delta S\), defaults to 0.1
       integer, optional, intent(in) :: specified_variable_0
       !! Position of specified variable, since the vector of variables is
-      !! \(X = [lnK_i, \dots, lnP, \alpha]\) the values for specification
+      !! \(X = [lnK_i, \dots, lnT, \alpha]\) the values for specification
       !! will be \([1 \dots nc]\) for the equilibria constants, \(nc+1\) for
-      !! \(lnP\) and \(nc + 2\) for \(\alpha\).
+      !! \(lnT\) and \(nc + 2\) for \(\alpha\).
       procedure(continuation_solver), optional :: solver
       !! Specify solver for each point, defaults to a full newton procedure
       procedure(continuation_stopper), optional :: stop_conditions
@@ -88,7 +119,8 @@ contains
       integer :: max_points !! Maximum number of points
       integer :: max_iterations !! Maximum number of iterations
 
-      real(pr) :: X(size(z) + 2), P
+      real(pr) :: X(size(z) + 2)
+      real(pr) :: P
       real(pr), allocatable :: XS(:, :)
 
       character(len=14) :: kind
@@ -122,10 +154,14 @@ contains
       allocate(envelopes%points(0), envelopes%cps(0), envelopes%alpha(0))
 
       test_numdiff: block
-         real(pr) :: F(size(X)), df(size(X), size(X)), numdiff(size(X), size(X))
-         real(pr) :: FdX(size(X)), dx(size(X)), dFdS(size(X))
+         real(pr) :: F(size(X))
+         real(pr) :: df(size(X), size(X))
+         real(pr) :: numdiff(size(X), size(X))
+         real(pr) :: FdX(size(X))
+         real(pr) :: dx(size(X))
+         real(pr) :: dFdS(size(X))
          real(pr) :: FdX2(size(X))
-         integer :: i
+         integer :: i !! Loop/index variable.
          integer :: loc(2)
          real(pr) :: maxerr
          exit test_numdiff
@@ -166,26 +202,38 @@ contains
    contains
 
       recursive subroutine foo(X, ns, S, F, dF, dFdS)
-         !! Function that needs to be solved at each envelope point
-         real(pr), intent(in) :: X(:)
-         integer, intent(in) :: ns
-         real(pr), intent(in) :: S
+         !! # foo
+         !!
+         !! # Description
+         !! Evaluate the two-phase TX saturation equations at a continuation state.
+         real(pr), intent(in) :: X(:) !! Packed log-K, temperature, and composition unknowns.
+         integer, intent(in) :: ns !! Index of the specified unknown.
+         real(pr), intent(in) :: S !! Value of the continuation specification.
 
-         real(pr), intent(out) :: F(:)
-         real(pr), intent(out) :: dF(:, :)
-         real(pr), intent(out) :: dFdS(:)
+         real(pr), intent(out) :: F(:) !! Phase-equilibrium residuals.
+         real(pr), intent(out) :: dF(:, :) !! Residual Jacobian with respect to `X`.
+         real(pr), intent(out) :: dFdS(:) !! Residual derivative with respect to `S`.
 
-         character(len=14) :: kind_z, kind_y
+         character(len=14) :: kind_z
+         character(len=14) :: kind_y
 
-         real(pr) :: y(nc)
-         real(pr) :: lnphip_z(nc), lnphip_y(nc)
-         real(pr) :: dlnphi_dt_z(nc), dlnphi_dt_y(nc)
-         real(pr) :: dlnphi_dp_z(nc), dlnphi_dp_y(nc)
-         real(pr) :: dlnphi_dn_z(nc, nc), dlnphi_dn_y(nc, nc)
+         real(pr) :: y(nc) !! Incipient/second phase composition.
+         real(pr) :: lnphip_z(nc)
+         real(pr) :: lnphip_y(nc)
+         real(pr) :: dlnphi_dt_z(nc)
+         real(pr) :: dlnphi_dt_y(nc)
+         real(pr) :: dlnphi_dp_z(nc)
+         real(pr) :: dlnphi_dp_y(nc)
+         real(pr) :: dlnphi_dn_z(nc, nc)
+         real(pr) :: dlnphi_dn_y(nc, nc)
 
-         real(pr) :: T, K(nc), alpha, dzda(nc)
+         real(pr) :: T
+         real(pr) :: K(nc)
+         real(pr) :: alpha
+         real(pr) :: dzda(nc)
 
-         integer :: i, j
+         integer :: i !! Loop index `i`.
+         integer :: j !! Loop index `j`.
 
          F = 0
          dF = 0
@@ -247,9 +295,12 @@ contains
       end subroutine foo
 
       subroutine update_spec(X, ns, S, dS, dXdS, step_iters)
+         !! # update_spec
+         !!
+         !! # Description
          !! Update the specification during continuation.
          real(pr), intent(in out) :: X(:)
-         !! Vector of variables \([lnK_i \dots , lnT, lnP]\)
+         !! Vector of variables \([\ln K_i \dots, \ln T, \alpha]\)
          integer, intent(in out) :: ns
          !! Number of specified variable in the vector
          real(pr), intent(in out) :: S
@@ -298,12 +349,17 @@ contains
       end subroutine update_spec
 
       subroutine save_point(X, iters)
+         !! # save_point
+         !!
+         !! # Description
          !! Save the converged point
-         real(pr), intent(in) :: X(:)
-         integer, intent(in) :: iters
+         real(pr), intent(in) :: X(:) !! Converged variables \([\ln K_i, \ln T, \alpha]\).
+         integer, intent(in) :: iters !! Newton iterations used to converge the point.
          type(EquilibriumState) :: point
 
-         real(pr) :: y(nc), T, alpha
+         real(pr) :: y(nc) !! Incipient/second phase composition.
+         real(pr) :: T
+         real(pr) :: alpha
 
          T = exp(X(nc+1))
          alpha = X(nc+2)

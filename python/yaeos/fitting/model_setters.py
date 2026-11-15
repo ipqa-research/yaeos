@@ -8,7 +8,30 @@ import numpy as np
 
 
 def fit_kij_lij(x, model, fit_kij, fit_lij):
-    """Set the kij and/or lij parameter of the model."""
+    """Set the kij and/or lij parameter of the model.
+
+    Intended to be used as `model_setter` in
+    :class:`~yaeos.fitting.core.BinaryFitter` with
+    ``model_setter_args=(model, fit_kij, fit_lij)``.
+
+    Parameters
+    ----------
+    x : array_like
+        Optimization parameters: ``[kij, lij]`` if both are fitted,
+        otherwise ``[kij]`` or ``[lij]``.
+    model : CubicEoS
+        Binary cubic EoS whose mixing rule has `kij` and `lij` attributes
+        (e.g. :class:`~yaeos.models.residual_helmholtz.cubic_eos.QMR`).
+    fit_kij : bool
+        Whether to fit the kij parameter.
+    fit_lij : bool
+        Whether to fit the lij parameter.
+
+    Returns
+    -------
+    CubicEoS
+        The same model object with its mixing rule updated.
+    """
     mr = model.mixrule
 
     if fit_kij and fit_lij:
@@ -28,7 +51,24 @@ def fit_kij_lij(x, model, fit_kij, fit_lij):
 
 
 def fit_mhv_nrtl(x, args):
-    """Fit the MHV mixing rule for Cubic EoS with NRTL GE."""
+    """Set an MHV mixing rule with NRTL GE in a binary cubic EoS.
+
+    Parameters
+    ----------
+    x : array_like
+        Optimization parameters ``[a12, a21, b12, b21, alpha]`` of the NRTL
+        model.
+    args : tuple
+        ``(model, q)``: the cubic EoS and the MHV `q` parameter. Note that
+        :class:`~yaeos.fitting.core.BinaryFitter` calls the setter as
+        ``model_setter(x, *model_setter_args)``, so this tuple must be
+        wrapped: ``model_setter_args=((model, q),)``.
+
+    Returns
+    -------
+    CubicEoS
+        The same model object with its mixing rule updated.
+    """
     from yaeos.models import NRTL, MHV
 
     a12, a21, b12, b21, alpha = x
@@ -53,7 +93,24 @@ def fit_mhv_nrtl(x, args):
 
 
 def fit_hv_nrtl(x, args):
-    """Fit the HV mixing rule for Cubic EoS with NRTL GE."""
+    """Set an HV mixing rule with NRTL GE in a binary cubic EoS.
+
+    Parameters
+    ----------
+    x : array_like
+        Optimization parameters ``[a12, a21, b12, b21, alpha]`` of the NRTL
+        model.
+    args : tuple
+        ``(model,)``: the cubic EoS. Note that
+        :class:`~yaeos.fitting.core.BinaryFitter` calls the setter as
+        ``model_setter(x, *model_setter_args)``, so this tuple must be
+        wrapped: ``model_setter_args=((model,),)``.
+
+    Returns
+    -------
+    CubicEoS
+        The same model object with its mixing rule updated.
+    """
     from yaeos.models.excess_gibbs import NRTL
     from yaeos.models.residual_helmholtz.cubic_eos.mixing_rules import HV
 

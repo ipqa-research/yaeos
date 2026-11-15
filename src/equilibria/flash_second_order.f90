@@ -4,7 +4,7 @@ module yaeos__equilibria_flash_second_order
    !! ## Description
    !! Two-phase flash at specified temperature and pressure by direct
    !! minimization of the reduced Gibbs energy, following the formulation of
-   !! Michelsen (1982) described in `AGENTS.md`.
+   !! Michelsen (1982).
    !!
    !! The minimization variables are the scaled heavy-phase mole numbers
    !! \(\theta_i = l_i/z_i\), so the light phase is \(v_i = z_i(1-\theta_i)\)
@@ -18,6 +18,17 @@ module yaeos__equilibria_flash_second_order
    !! the liquid root with `light_root="liquid"` (useful for liquid-liquid
    !! splits). For `GeModel`, both phases are described by activity
    !! coefficients and the initial split is obtained from stability analysis.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! result = flash_second_order(model, z, T, P)
+   !! ```
+   !!
+   !! # References
+   !! 1. M. L. Michelsen, "The isothermal flash problem. Part II. Phase-split
+   !!    calculation", Fluid Phase Equilibria 9 (1982) 21-40.
+   !! 2. W. Murray (ed.), Numerical Methods for Unconstrained Optimization,
+   !!    Academic Press (1972).
    use yaeos__constants, only: pr
    use yaeos__models_base, only: BaseModel
    use yaeos__models_ar, only: ArModel
@@ -66,21 +77,38 @@ contains
       real(pr), optional, intent(in) :: tol !! Convergence tolerance
       integer, optional, intent(in) :: max_iters !! Maximum iterations
 
-      real(pr) :: tolerance, grad_norm
-      integer :: max_iterations, i, iterations
+      real(pr) :: tolerance
+      real(pr) :: grad_norm
+      integer :: max_iterations
+      integer :: i !! Loop/index variable.
+      integer :: iterations
 
-      real(pr) :: theta(size(z)), theta_trial(size(z))
-      real(pr) :: l(size(z)), v(size(z)), x(size(z)), y(size(z))
-      real(pr) :: K(size(z)), w(size(z))
-      real(pr) :: Ltot, Vtot, beta
+      real(pr) :: theta(size(z))
+      real(pr) :: theta_trial(size(z))
+      real(pr) :: l(size(z)) !! Heavy-phase mole numbers \(l_i = \theta_i z_i\).
+      real(pr) :: v(size(z))
+      real(pr) :: x(size(z))
+      real(pr) :: y(size(z)) !! Light-phase composition.
+      real(pr) :: K(size(z))
+      real(pr) :: w(size(z)) !! Reference/trial phase composition.
+      real(pr) :: Ltot
+      real(pr) :: Vtot
+      real(pr) :: beta !! Phase fraction.
       real(pr) :: mintpd
 
-      real(pr) :: Gibbs, g_l(size(z)), H_l(size(z), size(z))
-      real(pr) :: g(size(z)), H(size(z), size(z))
+      real(pr) :: Gibbs
+      real(pr) :: g_l(size(z))
+      real(pr) :: H_l(size(z), size(z))
+      real(pr) :: g(size(z))
+      real(pr) :: H(size(z), size(z))
       real(pr) :: step(size(z))
-      real(pr) :: alpha, alpha_max, G_trial, tolG
-      logical :: accepted, evaluated
-      integer :: j
+      real(pr) :: alpha
+      real(pr) :: alpha_max
+      real(pr) :: G_trial
+      real(pr) :: tolG
+      logical :: accepted
+      logical :: evaluated
+      integer :: j !! Loop/index variable.
 
       character(len=:), allocatable :: light_root_type
 
@@ -258,24 +286,34 @@ contains
    end function flash_second_order
 
    subroutine evaluate_gibbs(model, z, l, T, P, light_root, Gibbs, g, H)
+      !! # evaluate_gibbs
+      !!
+      !! # Description
       !! Evaluate the reduced Gibbs energy, its gradient and its Hessian with
       !! respect to the heavy-phase mole numbers.
       !!
-      class(BaseModel), intent(in) :: model
+      class(BaseModel), intent(in) :: model !! Thermodynamic model.
       real(pr), intent(in) :: z(:) !! Global mole numbers (1 mol feed)
       real(pr), intent(in) :: l(:) !! Heavy-phase mole numbers
       real(pr), intent(in) :: T !! Temperature [K]
       real(pr), intent(in) :: P !! Pressure [bar]
-      character(len=*), intent(in) :: light_root
+      character(len=*), intent(in) :: light_root !! Volume-root choice for the light phase.
       real(pr), intent(out) :: Gibbs !! \(G/RT\)
       real(pr), intent(out) :: g(:) !! Gradient
       real(pr), intent(out) :: H(:, :) !! Hessian
 
-      integer :: i, j, nc
-      real(pr) :: v(size(z)), x(size(z)), y(size(z))
-      real(pr) :: Ltot, Vtot
-      real(pr) :: lnphi_l(size(z)), lnphi_v(size(z))
-      real(pr) :: dlnphi_l(size(z), size(z)), dlnphi_v(size(z), size(z))
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: nc !! Number of components.
+      real(pr) :: v(size(z))
+      real(pr) :: x(size(z))
+      real(pr) :: y(size(z)) !! Light-phase composition.
+      real(pr) :: Ltot
+      real(pr) :: Vtot
+      real(pr) :: lnphi_l(size(z))
+      real(pr) :: lnphi_v(size(z))
+      real(pr) :: dlnphi_l(size(z), size(z))
+      real(pr) :: dlnphi_v(size(z), size(z))
 
       nc = size(z)
       v = z - l
@@ -317,6 +355,9 @@ contains
    end subroutine evaluate_gibbs
 
    subroutine solve_modified_cholesky(H, b, x)
+      !! # solve_modified_cholesky
+      !!
+      !! # Description
       !! Solve \((H + D)x = b\) with a modified Cholesky factorisation after
       !! Murray (1972), Sec. 4.9, with the choice of \(\beta\) from
       !! Gill and Murray (1974).
@@ -342,9 +383,18 @@ contains
       real(pr), intent(in)  :: b(:) !! Right-hand side
       real(pr), intent(out) :: x(:) !! Variable vector
 
-      integer  :: i, j, n
-      real(pr) :: gamma, xi, beta, delta, theta, lh
-      real(pr) :: Lb(size(H, 1), size(H, 1)), lj(size(H, 1)), y(size(H, 1))
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: n
+      real(pr) :: gamma
+      real(pr) :: xi
+      real(pr) :: beta !! Bound \(\beta\) on the elements of the modified factor.
+      real(pr) :: delta !! Diagonal floor \(\delta = \sqrt{\varepsilon}\).
+      real(pr) :: theta
+      real(pr) :: lh
+      real(pr) :: Lb(size(H, 1), size(H, 1))
+      real(pr) :: lj(size(H, 1))
+      real(pr) :: y(size(H, 1)) !! Forward-substitution intermediate \(L y = b\).
 
       n = size(H, 1)
 

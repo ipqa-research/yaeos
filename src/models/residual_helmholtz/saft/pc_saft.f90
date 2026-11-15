@@ -1,4 +1,23 @@
 MODULE YAEOS__MODELS_AR_SAFT_PCSAFT
+   !! # PC-SAFT equation of state
+   !! Implementation of the non-associating PC-SAFT residual Helmholtz model.
+   !!
+   !! # Description
+   !! The module defines the model type [[PCSAFT]], its parameter constructor
+   !! [[init_pcsaft]], and the primal and Tapenade-generated directional and
+   !! adjoint derivative routines. PC-SAFT includes hard-chain and dispersion
+   !! contributions but not the association contribution.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! model = init_pcsaft(m, sigma, epsilon_k, kij)
+   !! call model%pressure(n, V, T, P)
+   !! ```
+   !!
+   !! # References
+   !! Gross, J., and G. Sadowski (2001). Perturbed-Chain SAFT: An Equation of
+   !! State Based on a Perturbation Theory for Chain Molecules. *Industrial &
+   !! Engineering Chemistry Research*, 40, 1244-1260.
    USE YAEOS__TAPENADE_AR_API, ONLY: armodeltapenade
    USE YAEOS__TAPENADE_INTERFACES
    use yaeos__constants, only: pr, R
@@ -13,20 +32,33 @@ MODULE YAEOS__MODELS_AR_SAFT_PCSAFT
    &   26.547362491, 21.419793629, -1.7241829131, 97.759208784, -&
    &   65.255885330, -4.1302112531, -159.59154087, 83.318680481, &
    &   13.776631870, 91.297774084, -33.746922930, -8.6728470368/), (/3, 7/)&
-   &   )
+   &   ) !! Universal PC-SAFT constants \(a_{ji}\) of the dispersion integral \(I_1\); second index is the power of \(\eta\).
    REAL(pr), DIMENSION(0:2, 0:6), SAVE :: b_coeffs = RESHAPE((/0.7240946941, &
    &   -0.5755498075, 0.0976883116, 2.2382791861, 0.6995095521, -&
    &   0.2557574982, -4.0025849485, 3.8925673390, -9.1558561530, -&
    &   21.003576815, -17.215471648, 20.642075974, 26.855641363, &
    &   192.67226447, -38.804430052, 206.55133841, -161.82646165, &
    &   93.626774077, -355.60235612, -165.20769346, -29.666905585/), (/3, 7&
-   &   /))
+   &   /)) !! Universal PC-SAFT constants \(b_{ji}\) of the dispersion integral \(I_2\); second index is the power of \(\eta\).
 
    type, extends(ArModelTapenade) :: PCSAFT
-      REAL(pr), ALLOCATABLE :: m(:)           !! Number of segments
-      REAL(pr), ALLOCATABLE :: sigma(:)       !! Segment diameter [Angstrom]
-      REAL(pr), ALLOCATABLE :: epsilon_k(:)   !! Energy / k_B [K]
-      REAL(pr), ALLOCATABLE :: kij(:, :)      !! Binary interaction parameters (optional)
+      !! # PCSAFT
+      !! Non-associating perturbed-chain statistical associating fluid model.
+      !!
+      !! # Description
+      !! Stores segment parameters and implements the residual Helmholtz
+      !! energy through Tapenade-generated derivatives. The constructor
+      !! calculates the critical properties needed by inherited EOS methods.
+      !!
+      !! # Examples
+      !! ```fortran
+      !! model = init_pcsaft(m, sigma, epsilon_k, kij)
+      !! call model%pressure(n, V, T, P)
+      !! ```
+      REAL(pr), ALLOCATABLE :: m(:) !! Number of segments
+      REAL(pr), ALLOCATABLE :: sigma(:) !! Segment diameter [Angstrom]
+      REAL(pr), ALLOCATABLE :: epsilon_k(:) !! Energy / k_B [K]
+      REAL(pr), ALLOCATABLE :: kij(:, :) !! Binary interaction parameters (optional)
    contains
       procedure :: ar
       procedure :: ar_d
@@ -37,12 +69,12 @@ MODULE YAEOS__MODELS_AR_SAFT_PCSAFT
       procedure :: volume => volume
    end type PCSAFT
    ! Module private constants
-   REAL(pr), PARAMETER :: pi = 3.14159265359_pr
-   REAL(pr), PARAMETER :: n_avo = 6.02214076e23_pr
+   REAL(pr), PARAMETER :: pi = 3.14159265359_pr !! Mathematical constant \(\pi\).
+   REAL(pr), PARAMETER :: n_avo = 6.02214076e23_pr !! Avogadro constant [molecules/mol].
    ! Conversion factor:
    ! Zeta must be dimensionless. V comes in Liters. Sigma in Angstroms.
    ! 1 L = 10^27 A^3. rho_num [1/A^3] = (n [mol] * N_AVO) / (V [L] * 10^27)
-   REAL(pr), PARAMETER :: units_factor = 0.000602214086_pr
+   REAL(pr), PARAMETER :: units_factor = 0.000602214086_pr !! Converts mol/L and Angstrom-based packing calculations to dimensionless density.
 
 CONTAINS
    !  Differentiation of ar_d_d in forward (tangent) mode (with options noISIZE):
@@ -61,27 +93,48 @@ CONTAINS
    SUBROUTINE AR_D_D_D(model, n, nd, v, vd1, vd0, vd, t, td1, td0, td, &
    &   arval, arvald1, arvald0, arvald0d, arvald, arvaldd0, arvaldd, &
    &   arvalddd)
+      !! # AR_D_D_D
+      !! Evaluate the primal PC-SAFT Helmholtz energy and third-level tangent outputs.
+      !!
+      !! # Description
+      !! Tapenade-generated nested forward-mode routine used internally when
+      !! constructing higher-order derivatives. Direction seeds are supplied
+      !! for composition, volume, and temperature; output suffixes identify
+      !! propagated first, mixed, and higher directional derivatives. Most
+      !! callers should use inherited `ArModel` property methods instead.
+      !!
+      !! # Examples
+      !! Internal derivative API; use `model%pressure`, `model%volume`, or
+      !! residual-property methods for application calculations.
       IMPLICIT NONE
-      class(PCSAFT), INTENT(IN) :: model
-      REAL(pr), INTENT(IN) :: n(:), v, t
-      REAL(pr), INTENT(IN) :: vd1, td1
-      REAL(pr), INTENT(IN) :: vd0, td0
-      REAL(pr), INTENT(IN) :: nd(:), vd, td
-      REAL(pr), INTENT(OUT) :: arval
-      REAL(pr), INTENT(OUT) :: arvald1
-      REAL(pr), INTENT(OUT) :: arvald0
-      REAL(pr), INTENT(OUT) :: arvald0d
-      REAL(pr), INTENT(OUT) :: arvald
-      REAL(pr), INTENT(OUT) :: arvaldd0
-      REAL(pr), INTENT(OUT) :: arvaldd
-      REAL(pr), INTENT(OUT) :: arvalddd
+      class(PCSAFT), INTENT(IN) :: model !! Model supplying PC-SAFT segment parameters.
+      REAL(pr), INTENT(IN) :: n(:) !! Component mole amounts [mol].
+      REAL(pr), INTENT(IN) :: v !! Total volume [L].
+      REAL(pr), INTENT(IN) :: t !! Temperature [K].
+      REAL(pr), INTENT(IN) :: vd1 !! Tangent seed for volume (vd1).
+      REAL(pr), INTENT(IN) :: td1 !! Tangent seed for temperature (td1).
+      REAL(pr), INTENT(IN) :: vd0 !! Tangent seed for volume (vd0).
+      REAL(pr), INTENT(IN) :: td0 !! Tangent seed for temperature (td0).
+      REAL(pr), INTENT(IN) :: nd(:) !! Tangent seed for component mole amounts (nd).
+      REAL(pr), INTENT(IN) :: vd !! Tangent seed for volume (vd).
+      REAL(pr), INTENT(IN) :: td !! Tangent seed for temperature (td).
+      REAL(pr), INTENT(OUT) :: arval !! Primal residual Helmholtz energy.
+      REAL(pr), INTENT(OUT) :: arvald1 !! First tangent output for direction 1.
+      REAL(pr), INTENT(OUT) :: arvald0 !! First tangent output for direction 0.
+      REAL(pr), INTENT(OUT) :: arvald0d !! Mixed tangent output for directions 0 and d.
+      REAL(pr), INTENT(OUT) :: arvald !! First tangent output for direction d.
+      REAL(pr), INTENT(OUT) :: arvaldd0 !! Mixed second tangent output for directions d and 0.
+      REAL(pr), INTENT(OUT) :: arvaldd !! Second tangent output for the d direction.
+      REAL(pr), INTENT(OUT) :: arvalddd !! Third nested tangent output.
       ! Auxiliars
-      INTEGER :: i, j, k
+      INTEGER :: i
+      INTEGER :: j
+      INTEGER :: k
       ! Mole fractions
-      REAL(pr) :: x(SIZE(n))
+      REAL(pr) :: x(SIZE(n)) !! Mole fractions.
       REAL(pr) :: xd(SIZE(n))
       ! Total moles
-      REAL(pr) :: n_tot
+      REAL(pr) :: n_tot !! Total number of moles.
       REAL(pr) :: n_totd
       ! Number of components
       INTEGER :: nc
@@ -107,7 +160,7 @@ CONTAINS
       REAL(pr) :: zetasdd0(0:3)
       REAL(pr) :: zetasdd(0:3)
       REAL(pr) :: zetasddd(0:3)
-      REAL(pr) :: rho
+      REAL(pr) :: rho !! Number density [1/Angstrom^3].
       REAL(pr) :: rhod1
       REAL(pr) :: rhod0
       REAL(pr) :: rhod0d
@@ -115,7 +168,7 @@ CONTAINS
       REAL(pr) :: rhodd0
       REAL(pr) :: rhodd
       REAL(pr) :: rhoddd
-      REAL(pr) :: eta
+      REAL(pr) :: eta !! One minus the packing fraction, \(1-\zeta_3\).
       REAL(pr) :: etad1
       REAL(pr) :: etad0
       REAL(pr) :: etad0d
@@ -124,14 +177,30 @@ CONTAINS
       REAL(pr) :: etadd
       REAL(pr) :: etaddd
       ! Ar hard-sphere contribution declarations
-      REAL(pr) :: term1_hs, term2_hs, term3_hs
-      REAL(pr) :: term1_hsd1, term2_hsd1, term3_hsd1
-      REAL(pr) :: term1_hsd0, term2_hsd0, term3_hsd0
-      REAL(pr) :: term1_hsd0d, term2_hsd0d, term3_hsd0d
-      REAL(pr) :: term1_hsd, term2_hsd, term3_hsd
-      REAL(pr) :: term1_hsdd0, term2_hsdd0, term3_hsdd0
-      REAL(pr) :: term1_hsdd, term2_hsdd, term3_hsdd
-      REAL(pr) :: term1_hsddd, term2_hsddd, term3_hsddd
+      REAL(pr) :: term1_hs
+      REAL(pr) :: term2_hs
+      REAL(pr) :: term3_hs
+      REAL(pr) :: term1_hsd1
+      REAL(pr) :: term2_hsd1
+      REAL(pr) :: term3_hsd1
+      REAL(pr) :: term1_hsd0
+      REAL(pr) :: term2_hsd0
+      REAL(pr) :: term3_hsd0
+      REAL(pr) :: term1_hsd0d
+      REAL(pr) :: term2_hsd0d
+      REAL(pr) :: term3_hsd0d
+      REAL(pr) :: term1_hsd
+      REAL(pr) :: term2_hsd
+      REAL(pr) :: term3_hsd
+      REAL(pr) :: term1_hsdd0
+      REAL(pr) :: term2_hsdd0
+      REAL(pr) :: term3_hsdd0
+      REAL(pr) :: term1_hsdd
+      REAL(pr) :: term2_hsdd
+      REAL(pr) :: term3_hsdd
+      REAL(pr) :: term1_hsddd
+      REAL(pr) :: term2_hsddd
+      REAL(pr) :: term3_hsddd
       REAL(pr) :: ar_hs
       REAL(pr) :: ar_hsd1
       REAL(pr) :: ar_hsd0
@@ -174,25 +243,71 @@ CONTAINS
       REAL(pr) :: rho_dispdd0
       REAL(pr) :: rho_dispdd
       REAL(pr) :: rho_dispddd
-      REAL(pr) :: m2_es3, m2_e2s3, i1, i2, c1
-      REAL(pr) :: m2_es3d1, m2_e2s3d1, i1d1, i2d1, c1d1
-      REAL(pr) :: m2_es3d0, m2_e2s3d0, i1d0, i2d0, c1d0
-      REAL(pr) :: m2_es3d0d, m2_e2s3d0d, i1d0d, i2d0d, c1d0d
-      REAL(pr) :: m2_es3d, m2_e2s3d, i1d, i2d, c1d
-      REAL(pr) :: m2_es3dd0, m2_e2s3dd0, i1dd0, i2dd0, c1dd0
-      REAL(pr) :: m2_es3dd, m2_e2s3dd, i1dd, i2dd, c1dd
-      REAL(pr) :: m2_es3ddd, m2_e2s3ddd, i1ddd, i2ddd, c1ddd
-      REAL(pr) :: term_disp, a_k, b_k
-      REAL(pr) :: term_dispd, a_kd, b_kd
-      REAL(pr) :: a1_term_disp, a2_term_disp
-      REAL(pr) :: a1_term_dispd1, a2_term_dispd1
-      REAL(pr) :: a1_term_dispd0, a2_term_dispd0
-      REAL(pr) :: a1_term_dispd0d, a2_term_dispd0d
-      REAL(pr) :: a1_term_dispd, a2_term_dispd
-      REAL(pr) :: a1_term_dispdd0, a2_term_dispdd0
-      REAL(pr) :: a1_term_dispdd, a2_term_dispdd
-      REAL(pr) :: a1_term_dispddd, a2_term_dispddd
-      REAL(pr) :: eps_ij, sig_ij, kij_val
+      REAL(pr) :: m2_es3
+      REAL(pr) :: m2_e2s3
+      REAL(pr) :: i1
+      REAL(pr) :: i2
+      REAL(pr) :: c1
+      REAL(pr) :: m2_es3d1
+      REAL(pr) :: m2_e2s3d1
+      REAL(pr) :: i1d1
+      REAL(pr) :: i2d1
+      REAL(pr) :: c1d1
+      REAL(pr) :: m2_es3d0
+      REAL(pr) :: m2_e2s3d0
+      REAL(pr) :: i1d0
+      REAL(pr) :: i2d0
+      REAL(pr) :: c1d0
+      REAL(pr) :: m2_es3d0d
+      REAL(pr) :: m2_e2s3d0d
+      REAL(pr) :: i1d0d
+      REAL(pr) :: i2d0d
+      REAL(pr) :: c1d0d
+      REAL(pr) :: m2_es3d
+      REAL(pr) :: m2_e2s3d
+      REAL(pr) :: i1d
+      REAL(pr) :: i2d
+      REAL(pr) :: c1d
+      REAL(pr) :: m2_es3dd0
+      REAL(pr) :: m2_e2s3dd0
+      REAL(pr) :: i1dd0
+      REAL(pr) :: i2dd0
+      REAL(pr) :: c1dd0
+      REAL(pr) :: m2_es3dd
+      REAL(pr) :: m2_e2s3dd
+      REAL(pr) :: i1dd
+      REAL(pr) :: i2dd
+      REAL(pr) :: c1dd
+      REAL(pr) :: m2_es3ddd
+      REAL(pr) :: m2_e2s3ddd
+      REAL(pr) :: i1ddd
+      REAL(pr) :: i2ddd
+      REAL(pr) :: c1ddd
+      REAL(pr) :: term_disp
+      REAL(pr) :: a_k
+      REAL(pr) :: b_k
+      REAL(pr) :: term_dispd
+      REAL(pr) :: a_kd
+      REAL(pr) :: b_kd
+      REAL(pr) :: a1_term_disp
+      REAL(pr) :: a2_term_disp
+      REAL(pr) :: a1_term_dispd1
+      REAL(pr) :: a2_term_dispd1
+      REAL(pr) :: a1_term_dispd0
+      REAL(pr) :: a2_term_dispd0
+      REAL(pr) :: a1_term_dispd0d
+      REAL(pr) :: a2_term_dispd0d
+      REAL(pr) :: a1_term_dispd
+      REAL(pr) :: a2_term_dispd
+      REAL(pr) :: a1_term_dispdd0
+      REAL(pr) :: a2_term_dispdd0
+      REAL(pr) :: a1_term_dispdd
+      REAL(pr) :: a2_term_dispdd
+      REAL(pr) :: a1_term_dispddd
+      REAL(pr) :: a2_term_dispddd
+      REAL(pr) :: eps_ij
+      REAL(pr) :: sig_ij
+      REAL(pr) :: kij_val
       REAL(pr) :: ar_dispersion
       REAL(pr) :: ar_dispersiond1
       REAL(pr) :: ar_dispersiond0
@@ -1261,22 +1376,39 @@ CONTAINS
    !   RW status of diff variables: n:in t:in v:in arval:out
    SUBROUTINE AR_D_D(model, n, nd, v, vd0, vd, t, td0, td, arval, arvald0&
    &   , arvald, arvaldd)
+      !! # AR_D_D
+      !! Evaluate the primal energy, two first tangents, and their mixed second tangent.
+      !!
+      !! # Description
+      !! Tapenade-generated nested forward-mode routine used by the
+      !! `ArModelTapenade` wrapper to obtain second derivatives.
+      !!
+      !! # Examples
+      !! Internal derivative API; application code should use the model's
+      !! `residual_helmholtz` binding or thermodynamic property routines.
       IMPLICIT NONE
-      class(PCSAFT), INTENT(IN) :: model
-      REAL(pr), INTENT(IN) :: n(:), v, t
-      REAL(pr), INTENT(IN) :: vd0, td0
-      REAL(pr), INTENT(IN) :: nd(:), vd, td
-      REAL(pr), INTENT(OUT) :: arval
-      REAL(pr), INTENT(OUT) :: arvald0
-      REAL(pr), INTENT(OUT) :: arvald
-      REAL(pr), INTENT(OUT) :: arvaldd
+      class(PCSAFT), INTENT(IN) :: model !! Model supplying PC-SAFT segment parameters.
+      REAL(pr), INTENT(IN) :: n(:) !! Component mole amounts [mol].
+      REAL(pr), INTENT(IN) :: v !! Total volume [L].
+      REAL(pr), INTENT(IN) :: t !! Temperature [K].
+      REAL(pr), INTENT(IN) :: vd0 !! Tangent seed for volume (vd0).
+      REAL(pr), INTENT(IN) :: td0 !! Tangent seed for temperature (td0).
+      REAL(pr), INTENT(IN) :: nd(:) !! Tangent seed for component mole amounts (nd).
+      REAL(pr), INTENT(IN) :: vd !! Tangent seed for volume (vd).
+      REAL(pr), INTENT(IN) :: td !! Tangent seed for temperature (td).
+      REAL(pr), INTENT(OUT) :: arval !! Primal residual Helmholtz energy.
+      REAL(pr), INTENT(OUT) :: arvald0 !! Tangent of `arval` along the `(vd0, td0)` seed.
+      REAL(pr), INTENT(OUT) :: arvald !! Tangent of `arval` along the `(nd, vd, td)` seed.
+      REAL(pr), INTENT(OUT) :: arvaldd !! Mixed second directional derivative.
       ! Auxiliars
-      INTEGER :: i, j, k
+      INTEGER :: i
+      INTEGER :: j
+      INTEGER :: k
       ! Mole fractions
-      REAL(pr) :: x(SIZE(n))
+      REAL(pr) :: x(SIZE(n)) !! Mole fractions.
       REAL(pr) :: xd(SIZE(n))
       ! Total moles
-      REAL(pr) :: n_tot
+      REAL(pr) :: n_tot !! Total number of moles.
       REAL(pr) :: n_totd
       ! Number of components
       INTEGER :: nc
@@ -1294,19 +1426,27 @@ CONTAINS
       REAL(pr) :: zetasd0(0:3)
       REAL(pr) :: zetasd(0:3)
       REAL(pr) :: zetasdd(0:3)
-      REAL(pr) :: rho
+      REAL(pr) :: rho !! Number density [1/Angstrom^3].
       REAL(pr) :: rhod0
       REAL(pr) :: rhod
       REAL(pr) :: rhodd
-      REAL(pr) :: eta
+      REAL(pr) :: eta !! One minus the packing fraction, \(1-\zeta_3\).
       REAL(pr) :: etad0
       REAL(pr) :: etad
       REAL(pr) :: etadd
       ! Ar hard-sphere contribution declarations
-      REAL(pr) :: term1_hs, term2_hs, term3_hs
-      REAL(pr) :: term1_hsd0, term2_hsd0, term3_hsd0
-      REAL(pr) :: term1_hsd, term2_hsd, term3_hsd
-      REAL(pr) :: term1_hsdd, term2_hsdd, term3_hsdd
+      REAL(pr) :: term1_hs
+      REAL(pr) :: term2_hs
+      REAL(pr) :: term3_hs
+      REAL(pr) :: term1_hsd0
+      REAL(pr) :: term2_hsd0
+      REAL(pr) :: term3_hsd0
+      REAL(pr) :: term1_hsd
+      REAL(pr) :: term2_hsd
+      REAL(pr) :: term3_hsd
+      REAL(pr) :: term1_hsdd
+      REAL(pr) :: term2_hsdd
+      REAL(pr) :: term3_hsdd
       REAL(pr) :: ar_hs
       REAL(pr) :: ar_hsd0
       REAL(pr) :: ar_hsd
@@ -1329,17 +1469,43 @@ CONTAINS
       REAL(pr) :: rho_dispd0
       REAL(pr) :: rho_dispd
       REAL(pr) :: rho_dispdd
-      REAL(pr) :: m2_es3, m2_e2s3, i1, i2, c1
-      REAL(pr) :: m2_es3d0, m2_e2s3d0, i1d0, i2d0, c1d0
-      REAL(pr) :: m2_es3d, m2_e2s3d, i1d, i2d, c1d
-      REAL(pr) :: m2_es3dd, m2_e2s3dd, i1dd, i2dd, c1dd
-      REAL(pr) :: term_disp, a_k, b_k
-      REAL(pr) :: term_dispd, a_kd, b_kd
-      REAL(pr) :: a1_term_disp, a2_term_disp
-      REAL(pr) :: a1_term_dispd0, a2_term_dispd0
-      REAL(pr) :: a1_term_dispd, a2_term_dispd
-      REAL(pr) :: a1_term_dispdd, a2_term_dispdd
-      REAL(pr) :: eps_ij, sig_ij, kij_val
+      REAL(pr) :: m2_es3
+      REAL(pr) :: m2_e2s3
+      REAL(pr) :: i1
+      REAL(pr) :: i2
+      REAL(pr) :: c1
+      REAL(pr) :: m2_es3d0
+      REAL(pr) :: m2_e2s3d0
+      REAL(pr) :: i1d0
+      REAL(pr) :: i2d0
+      REAL(pr) :: c1d0
+      REAL(pr) :: m2_es3d
+      REAL(pr) :: m2_e2s3d
+      REAL(pr) :: i1d
+      REAL(pr) :: i2d
+      REAL(pr) :: c1d
+      REAL(pr) :: m2_es3dd
+      REAL(pr) :: m2_e2s3dd
+      REAL(pr) :: i1dd
+      REAL(pr) :: i2dd
+      REAL(pr) :: c1dd
+      REAL(pr) :: term_disp
+      REAL(pr) :: a_k
+      REAL(pr) :: b_k
+      REAL(pr) :: term_dispd
+      REAL(pr) :: a_kd
+      REAL(pr) :: b_kd
+      REAL(pr) :: a1_term_disp
+      REAL(pr) :: a2_term_disp
+      REAL(pr) :: a1_term_dispd0
+      REAL(pr) :: a2_term_dispd0
+      REAL(pr) :: a1_term_dispd
+      REAL(pr) :: a2_term_dispd
+      REAL(pr) :: a1_term_dispdd
+      REAL(pr) :: a2_term_dispdd
+      REAL(pr) :: eps_ij
+      REAL(pr) :: sig_ij
+      REAL(pr) :: kij_val
       REAL(pr) :: ar_dispersion
       REAL(pr) :: ar_dispersiond0
       REAL(pr) :: ar_dispersiond
@@ -1810,25 +1976,46 @@ CONTAINS
    !   RW status of diff variables: n:in t:in v:in arval:out
    SUBROUTINE AR_D_B(model, n, nb, nd, ndb, v, vb, vd, vdb, t, tb, td, &
    &   tdb, arval, arvalb, arvald, arvaldb)
+      !! # AR_D_B
+      !! Evaluate mixed tangent-adjoint derivatives for PC-SAFT.
+      !!
+      !! # Description
+      !! This Tapenade-generated routine propagates a forward tangent and a
+      !! reverse adjoint together. The wrapper uses it to construct mixed
+      !! composition, volume, and temperature derivatives.
+      !!
+      !! # Examples
+      !! Internal derivative API; prefer inherited property methods in user
+      !! applications.
       IMPLICIT NONE
-      class(PCSAFT), INTENT(IN) :: model
-      REAL(pr), INTENT(IN) :: n(:), v, t
-      REAL(pr) :: nb(:), vb, tb
-      REAL(pr), INTENT(IN) :: nd(:), vd, td
-      REAL(pr) :: ndb(:), vdb, tdb
+      class(PCSAFT), INTENT(IN) :: model !! Model supplying PC-SAFT segment parameters.
+      REAL(pr), INTENT(IN) :: n(:) !! Component mole amounts [mol].
+      REAL(pr), INTENT(IN) :: v !! Total volume [L].
+      REAL(pr), INTENT(IN) :: t !! Temperature [K].
+      REAL(pr) :: nb(:) !! Adjoint value for component mole amounts.
+      REAL(pr) :: vb !! Adjoint value for volume.
+      REAL(pr) :: tb !! Adjoint value for temperature.
+      REAL(pr), INTENT(IN) :: nd(:) !! Tangent seed for component mole amounts (nd).
+      REAL(pr), INTENT(IN) :: vd !! Tangent seed for volume (vd).
+      REAL(pr), INTENT(IN) :: td !! Tangent seed for temperature (td).
+      REAL(pr) :: ndb(:) !! Mixed tangent-adjoint value for component mole amounts.
+      REAL(pr) :: vdb !! Mixed tangent-adjoint value for volume.
+      REAL(pr) :: tdb !! Mixed tangent-adjoint value for temperature.
       REAL(pr) :: arval
       REAL(pr) :: arvalb
       REAL(pr) :: arvald
       REAL(pr) :: arvaldb
       ! Auxiliars
-      INTEGER :: i, j, k
+      INTEGER :: i
+      INTEGER :: j
+      INTEGER :: k
       ! Mole fractions
-      REAL(pr) :: x(SIZE(n))
+      REAL(pr) :: x(SIZE(n)) !! Mole fractions.
       REAL(pr) :: xb(SIZE(n))
       REAL(pr) :: xd(SIZE(n))
       REAL(pr) :: xdb(SIZE(n))
       ! Total moles
-      REAL(pr) :: n_tot
+      REAL(pr) :: n_tot !! Total number of moles.
       REAL(pr) :: n_totb
       REAL(pr) :: n_totd
       REAL(pr) :: n_totdb
@@ -1850,19 +2037,27 @@ CONTAINS
       REAL(pr) :: zetasb(0:3)
       REAL(pr) :: zetasd(0:3)
       REAL(pr) :: zetasdb(0:3)
-      REAL(pr) :: rho
+      REAL(pr) :: rho !! Number density [1/Angstrom^3].
       REAL(pr) :: rhob
       REAL(pr) :: rhod
       REAL(pr) :: rhodb
-      REAL(pr) :: eta
+      REAL(pr) :: eta !! One minus the packing fraction, \(1-\zeta_3\).
       REAL(pr) :: etab
       REAL(pr) :: etad
       REAL(pr) :: etadb
       ! Ar hard-sphere contribution declarations
-      REAL(pr) :: term1_hs, term2_hs, term3_hs
-      REAL(pr) :: term1_hsb, term2_hsb, term3_hsb
-      REAL(pr) :: term1_hsd, term2_hsd, term3_hsd
-      REAL(pr) :: term1_hsdb, term2_hsdb, term3_hsdb
+      REAL(pr) :: term1_hs
+      REAL(pr) :: term2_hs
+      REAL(pr) :: term3_hs
+      REAL(pr) :: term1_hsb
+      REAL(pr) :: term2_hsb
+      REAL(pr) :: term3_hsb
+      REAL(pr) :: term1_hsd
+      REAL(pr) :: term2_hsd
+      REAL(pr) :: term3_hsd
+      REAL(pr) :: term1_hsdb
+      REAL(pr) :: term2_hsdb
+      REAL(pr) :: term3_hsdb
       REAL(pr) :: ar_hs
       REAL(pr) :: ar_hsb
       REAL(pr) :: ar_hsd
@@ -1885,19 +2080,49 @@ CONTAINS
       REAL(pr) :: rho_dispb
       REAL(pr) :: rho_dispd
       REAL(pr) :: rho_dispdb
-      REAL(pr) :: m2_es3, m2_e2s3, i1, i2, c1
-      REAL(pr) :: m2_es3b, m2_e2s3b, i1b, i2b, c1b
-      REAL(pr) :: m2_es3d, m2_e2s3d, i1d, i2d, c1d
-      REAL(pr) :: m2_es3db, m2_e2s3db, i1db, i2db, c1db
-      REAL(pr) :: term_disp, a_k, b_k
-      REAL(pr) :: term_dispb, a_kb, b_kb
-      REAL(pr) :: term_dispd, a_kd, b_kd
-      REAL(pr) :: term_dispdb, a_kdb, b_kdb
-      REAL(pr) :: a1_term_disp, a2_term_disp
-      REAL(pr) :: a1_term_dispb, a2_term_dispb
-      REAL(pr) :: a1_term_dispd, a2_term_dispd
-      REAL(pr) :: a1_term_dispdb, a2_term_dispdb
-      REAL(pr) :: eps_ij, sig_ij, kij_val
+      REAL(pr) :: m2_es3
+      REAL(pr) :: m2_e2s3
+      REAL(pr) :: i1
+      REAL(pr) :: i2
+      REAL(pr) :: c1
+      REAL(pr) :: m2_es3b
+      REAL(pr) :: m2_e2s3b
+      REAL(pr) :: i1b
+      REAL(pr) :: i2b
+      REAL(pr) :: c1b
+      REAL(pr) :: m2_es3d
+      REAL(pr) :: m2_e2s3d
+      REAL(pr) :: i1d
+      REAL(pr) :: i2d
+      REAL(pr) :: c1d
+      REAL(pr) :: m2_es3db
+      REAL(pr) :: m2_e2s3db
+      REAL(pr) :: i1db
+      REAL(pr) :: i2db
+      REAL(pr) :: c1db
+      REAL(pr) :: term_disp
+      REAL(pr) :: a_k
+      REAL(pr) :: b_k
+      REAL(pr) :: term_dispb
+      REAL(pr) :: a_kb
+      REAL(pr) :: b_kb
+      REAL(pr) :: term_dispd
+      REAL(pr) :: a_kd
+      REAL(pr) :: b_kd
+      REAL(pr) :: term_dispdb
+      REAL(pr) :: a_kdb
+      REAL(pr) :: b_kdb
+      REAL(pr) :: a1_term_disp
+      REAL(pr) :: a2_term_disp
+      REAL(pr) :: a1_term_dispb
+      REAL(pr) :: a2_term_dispb
+      REAL(pr) :: a1_term_dispd
+      REAL(pr) :: a2_term_dispd
+      REAL(pr) :: a1_term_dispdb
+      REAL(pr) :: a2_term_dispdb
+      REAL(pr) :: eps_ij
+      REAL(pr) :: sig_ij
+      REAL(pr) :: kij_val
       REAL(pr) :: ar_dispersion
       REAL(pr) :: ar_dispersionb
       REAL(pr) :: ar_dispersiond
@@ -2623,19 +2848,34 @@ CONTAINS
    !   with respect to varying inputs: n t v
    !   RW status of diff variables: n:in t:in v:in arval:out
    SUBROUTINE AR_D(model, n, nd, v, vd, t, td, arval, arvald)
+      !! # AR_D
+      !! Evaluate the PC-SAFT primal residual Helmholtz energy and one tangent.
+      !!
+      !! # Description
+      !! Tapenade-generated forward-mode routine. The tangent is the directional
+      !! derivative along the supplied `(nd, vd, td)` seed.
+      !!
+      !! # Examples
+      !! Internal derivative API; application code should use `ArModel` methods.
       IMPLICIT NONE
-      class(PCSAFT), INTENT(IN) :: model
-      REAL(pr), INTENT(IN) :: n(:), v, t
-      REAL(pr), INTENT(IN) :: nd(:), vd, td
-      REAL(pr), INTENT(OUT) :: arval
-      REAL(pr), INTENT(OUT) :: arvald
+      class(PCSAFT), INTENT(IN) :: model !! Model supplying PC-SAFT segment parameters.
+      REAL(pr), INTENT(IN) :: n(:) !! Component mole amounts [mol].
+      REAL(pr), INTENT(IN) :: v !! Total volume [L].
+      REAL(pr), INTENT(IN) :: t !! Temperature [K].
+      REAL(pr), INTENT(IN) :: nd(:) !! Tangent seed for component mole amounts (nd).
+      REAL(pr), INTENT(IN) :: vd !! Tangent seed for volume (vd).
+      REAL(pr), INTENT(IN) :: td !! Tangent seed for temperature (td).
+      REAL(pr), INTENT(OUT) :: arval !! Primal residual Helmholtz energy.
+      REAL(pr), INTENT(OUT) :: arvald !! Directional derivative of `arval` along the input seeds.
       ! Auxiliars
-      INTEGER :: i, j, k
+      INTEGER :: i
+      INTEGER :: j
+      INTEGER :: k
       ! Mole fractions
-      REAL(pr) :: x(SIZE(n))
+      REAL(pr) :: x(SIZE(n)) !! Mole fractions.
       REAL(pr) :: xd(SIZE(n))
       ! Total moles
-      REAL(pr) :: n_tot
+      REAL(pr) :: n_tot !! Total number of moles.
       REAL(pr) :: n_totd
       ! Number of components
       INTEGER :: nc
@@ -2649,13 +2889,17 @@ CONTAINS
       ! Zetas declarations
       REAL(pr) :: zetas(0:3)
       REAL(pr) :: zetasd(0:3)
-      REAL(pr) :: rho
+      REAL(pr) :: rho !! Number density [1/Angstrom^3].
       REAL(pr) :: rhod
-      REAL(pr) :: eta
+      REAL(pr) :: eta !! One minus the packing fraction, \(1-\zeta_3\).
       REAL(pr) :: etad
       ! Ar hard-sphere contribution declarations
-      REAL(pr) :: term1_hs, term2_hs, term3_hs
-      REAL(pr) :: term1_hsd, term2_hsd, term3_hsd
+      REAL(pr) :: term1_hs
+      REAL(pr) :: term2_hs
+      REAL(pr) :: term3_hs
+      REAL(pr) :: term1_hsd
+      REAL(pr) :: term2_hsd
+      REAL(pr) :: term3_hsd
       REAL(pr) :: ar_hs
       REAL(pr) :: ar_hsd
       ! Ar chain contribution declarations
@@ -2668,13 +2912,29 @@ CONTAINS
       ! Ar dispersion contribution declarations
       REAL(pr) :: rho_disp
       REAL(pr) :: rho_dispd
-      REAL(pr) :: m2_es3, m2_e2s3, i1, i2, c1
-      REAL(pr) :: m2_es3d, m2_e2s3d, i1d, i2d, c1d
-      REAL(pr) :: term_disp, a_k, b_k
-      REAL(pr) :: term_dispd, a_kd, b_kd
-      REAL(pr) :: a1_term_disp, a2_term_disp
-      REAL(pr) :: a1_term_dispd, a2_term_dispd
-      REAL(pr) :: eps_ij, sig_ij, kij_val
+      REAL(pr) :: m2_es3
+      REAL(pr) :: m2_e2s3
+      REAL(pr) :: i1
+      REAL(pr) :: i2
+      REAL(pr) :: c1
+      REAL(pr) :: m2_es3d
+      REAL(pr) :: m2_e2s3d
+      REAL(pr) :: i1d
+      REAL(pr) :: i2d
+      REAL(pr) :: c1d
+      REAL(pr) :: term_disp
+      REAL(pr) :: a_k
+      REAL(pr) :: b_k
+      REAL(pr) :: term_dispd
+      REAL(pr) :: a_kd
+      REAL(pr) :: b_kd
+      REAL(pr) :: a1_term_disp
+      REAL(pr) :: a2_term_disp
+      REAL(pr) :: a1_term_dispd
+      REAL(pr) :: a2_term_dispd
+      REAL(pr) :: eps_ij
+      REAL(pr) :: sig_ij
+      REAL(pr) :: kij_val
       REAL(pr) :: ar_dispersion
       REAL(pr) :: ar_dispersiond
       ! Attributes declarations as variables
@@ -2901,19 +3161,35 @@ CONTAINS
    !   with respect to varying inputs: n t v arval
    !   RW status of diff variables: n:out t:out v:out arval:in-zero
    SUBROUTINE AR_B(model, n, nb, v, vb, t, tb, arval, arvalb)
+      !! # AR_B
+      !! Evaluate the primal PC-SAFT energy and reverse-mode sensitivities.
+      !!
+      !! # Description
+      !! Tapenade-generated adjoint routine. Given an adjoint seed on the
+      !! energy, accumulates sensitivities with respect to composition, volume,
+      !! and temperature.
+      !!
+      !! # Examples
+      !! Internal derivative API; application code should use `ArModel` methods.
       IMPLICIT NONE
-      class(PCSAFT), INTENT(IN) :: model
-      REAL(pr), INTENT(IN) :: n(:), v, t
-      REAL(pr) :: nb(:), vb, tb
-      REAL(pr) :: arval
-      REAL(pr) :: arvalb
+      class(PCSAFT), INTENT(IN) :: model !! Model supplying PC-SAFT segment parameters.
+      REAL(pr), INTENT(IN) :: n(:) !! Component mole amounts [mol].
+      REAL(pr), INTENT(IN) :: v !! Total volume [L].
+      REAL(pr), INTENT(IN) :: t !! Temperature [K].
+      REAL(pr) :: nb(:) !! Adjoint value for component mole amounts.
+      REAL(pr) :: vb !! Adjoint value for volume.
+      REAL(pr) :: tb !! Adjoint value for temperature.
+      REAL(pr) :: arval !! Primal residual Helmholtz energy.
+      REAL(pr) :: arvalb !! Incoming adjoint seed for the energy output.
       ! Auxiliars
-      INTEGER :: i, j, k
+      INTEGER :: i
+      INTEGER :: j
+      INTEGER :: k
       ! Mole fractions
-      REAL(pr) :: x(SIZE(n))
+      REAL(pr) :: x(SIZE(n)) !! Mole fractions.
       REAL(pr) :: xb(SIZE(n))
       ! Total moles
-      REAL(pr) :: n_tot
+      REAL(pr) :: n_tot !! Total number of moles.
       REAL(pr) :: n_totb
       ! Number of components
       INTEGER :: nc
@@ -2927,13 +3203,17 @@ CONTAINS
       ! Zetas declarations
       REAL(pr) :: zetas(0:3)
       REAL(pr) :: zetasb(0:3)
-      REAL(pr) :: rho
+      REAL(pr) :: rho !! Number density [1/Angstrom^3].
       REAL(pr) :: rhob
-      REAL(pr) :: eta
+      REAL(pr) :: eta !! One minus the packing fraction, \(1-\zeta_3\).
       REAL(pr) :: etab
       ! Ar hard-sphere contribution declarations
-      REAL(pr) :: term1_hs, term2_hs, term3_hs
-      REAL(pr) :: term1_hsb, term2_hsb, term3_hsb
+      REAL(pr) :: term1_hs
+      REAL(pr) :: term2_hs
+      REAL(pr) :: term3_hs
+      REAL(pr) :: term1_hsb
+      REAL(pr) :: term2_hsb
+      REAL(pr) :: term3_hsb
       REAL(pr) :: ar_hs
       REAL(pr) :: ar_hsb
       ! Ar chain contribution declarations
@@ -2946,13 +3226,29 @@ CONTAINS
       ! Ar dispersion contribution declarations
       REAL(pr) :: rho_disp
       REAL(pr) :: rho_dispb
-      REAL(pr) :: m2_es3, m2_e2s3, i1, i2, c1
-      REAL(pr) :: m2_es3b, m2_e2s3b, i1b, i2b, c1b
-      REAL(pr) :: term_disp, a_k, b_k
-      REAL(pr) :: term_dispb, a_kb, b_kb
-      REAL(pr) :: a1_term_disp, a2_term_disp
-      REAL(pr) :: a1_term_dispb, a2_term_dispb
-      REAL(pr) :: eps_ij, sig_ij, kij_val
+      REAL(pr) :: m2_es3
+      REAL(pr) :: m2_e2s3
+      REAL(pr) :: i1
+      REAL(pr) :: i2
+      REAL(pr) :: c1
+      REAL(pr) :: m2_es3b
+      REAL(pr) :: m2_e2s3b
+      REAL(pr) :: i1b
+      REAL(pr) :: i2b
+      REAL(pr) :: c1b
+      REAL(pr) :: term_disp
+      REAL(pr) :: a_k
+      REAL(pr) :: b_k
+      REAL(pr) :: term_dispb
+      REAL(pr) :: a_kb
+      REAL(pr) :: b_kb
+      REAL(pr) :: a1_term_disp
+      REAL(pr) :: a2_term_disp
+      REAL(pr) :: a1_term_dispb
+      REAL(pr) :: a2_term_dispb
+      REAL(pr) :: eps_ij
+      REAL(pr) :: sig_ij
+      REAL(pr) :: kij_val
       REAL(pr) :: ar_dispersion
       REAL(pr) :: ar_dispersionb
       ! Attributes declarations as variables
@@ -3235,12 +3531,27 @@ CONTAINS
    end subroutine AR_B
 
    SUBROUTINE AR(model, n, v, t, arval)
+      !! # AR
+      !! Evaluate the primal PC-SAFT residual Helmholtz energy.
+      !!
+      !! # Description
+      !! Computes the dimensionless hard-sphere, chain, and dispersion
+      !! contributions and returns their total in the library energy units.
+      !! The routine is also the primal entry point differentiated by Tapenade.
+      !!
+      !! # Examples
+      !! Use `model%pressure` or `model%residual_helmholtz` in client code;
+      !! direct calls to this low-level routine are mainly for derivative tests.
       IMPLICIT NONE
-      class(PCSAFT), INTENT(IN) :: model
-      REAL(pr), INTENT(IN) :: n(:), v, t
-      REAL(pr), INTENT(OUT) :: arval
+      class(PCSAFT), INTENT(IN) :: model !! Model supplying segment parameters.
+      REAL(pr), INTENT(IN) :: n(:) !! Component mole amounts [mol].
+      REAL(pr), INTENT(IN) :: v !! Total volume [L].
+      REAL(pr), INTENT(IN) :: t !! Temperature [K].
+      REAL(pr), INTENT(OUT) :: arval !! Residual Helmholtz energy in library units.
       ! Auxiliars
-      INTEGER :: i, j, k
+      INTEGER :: i
+      INTEGER :: j
+      INTEGER :: k
       ! Mole fractions
       REAL(pr) :: x(SIZE(n))
       ! Total moles
@@ -3254,10 +3565,12 @@ CONTAINS
       REAL(pr) :: d(SIZE(n))
       ! Zetas declarations
       REAL(pr) :: zetas(0:3)
-      REAL(pr) :: rho
+      REAL(pr) :: rho !! Number density [1/Angstrom^3].
       REAL(pr) :: eta
       ! Ar hard-sphere contribution declarations
-      REAL(pr) :: term1_hs, term2_hs, term3_hs
+      REAL(pr) :: term1_hs
+      REAL(pr) :: term2_hs
+      REAL(pr) :: term3_hs
       REAL(pr) :: ar_hs
       ! Ar chain contribution declarations
       REAL(pr) :: g_ii
@@ -3265,10 +3578,19 @@ CONTAINS
       REAL(pr) :: ar_chain
       ! Ar dispersion contribution declarations
       REAL(pr) :: rho_disp
-      REAL(pr) :: m2_es3, m2_e2s3, i1, i2, c1
-      REAL(pr) :: term_disp, a_k, b_k
-      REAL(pr) :: a1_term_disp, a2_term_disp
-      REAL(pr) :: eps_ij, sig_ij, kij_val
+      REAL(pr) :: m2_es3
+      REAL(pr) :: m2_e2s3
+      REAL(pr) :: i1
+      REAL(pr) :: i2
+      REAL(pr) :: c1
+      REAL(pr) :: term_disp
+      REAL(pr) :: a_k
+      REAL(pr) :: b_k
+      REAL(pr) :: a1_term_disp
+      REAL(pr) :: a2_term_disp
+      REAL(pr) :: eps_ij
+      REAL(pr) :: sig_ij
+      REAL(pr) :: kij_val
       REAL(pr) :: ar_dispersion
       ! Attributes declarations as variables
       REAL(pr) :: m(SIZE(n))
@@ -3381,6 +3703,14 @@ CONTAINS
    end subroutine AR
 
    type(PCSAFT) function init_pcsaft(m, sigma, epsilon_k, kij) result(model)
+      !! # init_pcsaft
+      !!
+      !! # Description
+      !! Create a PC-SAFT model.
+      !!
+      !! Computes the pure-component critical constants and acentric factors
+      !! from the PC-SAFT parameters, so that the model can be used with the
+      !! standard [[ArModel]] property and phase-equilibrium routines.
       use yaeos__equilibria_critical, only: get_critical_constants
       use yaeos__critical_pure_point_solver, only: find_critical_points_all_components
       real(8), intent(in) :: m(:)
@@ -3392,12 +3722,18 @@ CONTAINS
       real(8), intent(in), optional :: kij(:, :)
       !! Binary interaction parameters (optional)
 
-      real(pr) :: Vc(size(m)), Pc(size(m)), Tc(size(m)), w(size(m))
-      logical :: converged(size(m))
+      real(pr) :: Vc(size(m))
+      real(pr) :: Pc(size(m))
+      real(pr) :: Tc(size(m))
+      real(pr) :: w(size(m)) !! Acentric factors (not used; values are stored in `model%components%w`).
+      logical :: converged(size(m)) !! Convergence flags of the pure-component critical-point solver.
 
-      real(pr) :: P_sat_i, Vl, Vv
+      real(pr) :: P_sat_i
+      real(pr) :: Vl
+      real(pr) :: Vv
 
-      integer :: i, nc
+      integer :: i !! Loop/index variable.
+      integer :: nc !! Number of components.
       nc = size(m)
 
       model%m = m
@@ -3429,13 +3765,25 @@ CONTAINS
    ! Represents the physical volume occupied by the segments
    ! ---------------------------------------------------------
    function get_v0(self, n, P, T) result(v0)
-      class(PCSAFT), intent(in) :: self
-      real(pr), intent(in) :: n(:)  ! Moles of each component
-      real(pr), intent(in) :: P     ! System pressure
-      real(pr), intent(in) :: T     ! System temperature
+      !! # get_v0
+      !! Return the close-packed segment volume used to initialize a volume solve.
+      !!
+      !! # Description
+      !! Computes the volume at which the segment packing fraction would reach
+      !! unity, \(V_0=(\pi/6)N_A 10^{-27}\sum_i n_i m_i\sigma_i^3\). This
+      !! provides a composition-dependent lower-volume estimate for the liquid
+      !! root; `P` and `T` are accepted to satisfy the `ArModel` initializer
+      !! interface but are not used in this expression.
+      !!
+      !! # Examples
+      !! The initializer is called internally by the inherited volume solver.
+      class(PCSAFT), intent(in) :: self !! PC-SAFT model and segment data.
+      real(pr), intent(in) :: n(:) !! Component mole amounts [mol].
+      real(pr), intent(in) :: P !! Pressure [bar]; unused in the close-packed initializer.
+      real(pr), intent(in) :: T !! Temperature [K]; unused in the close-packed initializer.
       real(pr) :: v0
 
-      integer :: i
+      integer :: i !! Loop/index variable.
       real(pr) :: sum_seg_vol
 
       ! v0 = (Pi/6) * Sum(n_i * m_i * sigma_i^3) * Factor_Conversion
@@ -3453,11 +3801,17 @@ CONTAINS
    end function get_v0
 
    subroutine volume(eos, n, P, T, V, root_type)
-      !! # PC-SAFT volume solver
-      !! Volume solver optimized for PC-SAFT
+      !! # volume
+      !! Find a PC-SAFT volume root at specified pressure and temperature.
       !!
       !! # Description
-      !! Uses the solver proposed by Michelsen.
+      !! Delegates to Michelsen's volume algorithm specialized for PC-SAFT.
+      !! `root_type` selects the liquid, vapor, or stable root.
+      !!
+      !! # Examples
+      !! ```fortran
+      !! call model%volume(n, P, T, V, root_type="liquid")
+      !! ```
       !! # References
       !!
       !! - [1] "Thermodynamic Models: Fundamental and Computational Aspects",
@@ -3467,10 +3821,12 @@ CONTAINS
       use yaeos__constants, only: R
       use yaeos__math_linalg, only: cubic_roots, cubic_roots_rosendo
       use yaeos__models_solvers, only: volume_michelsen
-      class(PCSAFT), intent(in) :: eos
-      real(pr), intent(in) :: n(:), P, T
-      real(pr), intent(out) :: V
-      character(len=*), intent(in) :: root_type
+      class(PCSAFT), intent(in) :: eos !! PC-SAFT equation-of-state model.
+      real(pr), intent(in) :: n(:) !! Component mole amounts [mol].
+      real(pr), intent(in) :: P !! Pressure [bar].
+      real(pr), intent(in) :: T !! Temperature [K].
+      real(pr), intent(out) :: V !! Selected total volume [L].
+      character(len=*), intent(in) :: root_type !! Root selector: `liquid`, `vapor`, or `stable`.
       call volume_michelsen(eos, n=n, P=P, T=T, V=V, root_type=root_type)
    end subroutine volume
 

@@ -1,4 +1,16 @@
 module yaeos__equilibria_boundaries_phase_envelopes_px3
+   !! # Three-phase PX envelopes
+   !! Continue a three-phase boundary at fixed temperature while pressure and feed composition vary.
+   !!
+   !! # Description
+   !! The overall feed is interpolated between two limiting compositions. A
+   !! continuation solve follows the three-phase equilibrium equations and
+   !! returns states in [[PXEnvel3]].
+   !!
+   !! # Examples
+   !! ```fortran
+   !! envelope = px_envelope_3ph(model, z0, zi, T, x0, y0, w0, beta0, P0, a0, ns0, dS0, points)
+   !! ```
    use yaeos__constants, only: pr, R
    use yaeos__equilibria_equilibrium_state, only: EquilibriumState
    use yaeos__models_ar, only: ArModel
@@ -15,10 +27,24 @@ module yaeos__equilibria_boundaries_phase_envelopes_px3
    public :: get_values_from_X
 
    type :: PXEnvel3
+      !! # PXEnvel3
+      !!
+      !! Three-phase envelope at constant temperature. Each array stores one
+      !! value per envelope point.
+      !!
+      !! # Description
+      !! Phase composition arrays use `(point, component)` indexing. The
+      !! pressure, feed interpolation coordinate, phase fractions, and phase
+      !! compositions correspond by point index.
+      !!
+      !! # Examples
+      !! ```fortran
+      !! print *, envelope%alpha, envelope%P, envelope%beta
+      !! ```
       real(pr), allocatable :: beta(:) !! Mole fraction between phase x and phase y
       real(pr), allocatable :: x(:, :) !! Mole fraction of phase x
-      real(pr), allocatable :: y(:, :) !! Mole fraction of phase x
-      real(pr), allocatable :: w(:, :) !! Mole fraction of phase x
+      real(pr), allocatable :: y(:, :) !! Mole fraction of phase y
+      real(pr), allocatable :: w(:, :) !! Mole fraction of phase w
       real(pr) :: T !! Temperature [K]
       real(pr), allocatable :: P(:) !! Pressure [bar]
       real(pr), allocatable :: alpha(:) !! Mole fraction of other fluid
@@ -26,7 +52,7 @@ module yaeos__equilibria_boundaries_phase_envelopes_px3
       real(pr), allocatable :: S(:) !! Specified value to solve point `i`
    end type PXEnvel3
 
-   real(pr), parameter :: lnK_min = 2.0_pr
+   real(pr), parameter :: lnK_min = 2.0_pr !! Log-K threshold (currently unused in this module).
 
 contains
 
@@ -34,27 +60,36 @@ contains
       model, z0, zi, T, x0, y0, w0, beta0, P0, a0, ns0, dS0, &
       points &
       ) result(envelope)
-      class(ArModel), intent(in) :: model
-      real(pr), intent(in) :: z0(:)
-      real(pr), intent(in) :: zi(:)
-      real(pr), intent(in) :: T
-      real(pr), intent(in) :: x0(:)
-      real(pr), intent(in) :: y0(:)
-      real(pr), intent(in) :: w0(:)
-      real(pr), intent(in) :: beta0
-      real(pr), intent(in) :: P0
-      real(pr), intent(in) :: a0
-      integer, intent(in) :: ns0
-      real(pr), intent(in) :: dS0
-      integer, intent(in) :: points
+      !! # px_envelope_3ph
+      !!
+      !! # Description
+      !! Trace a three-phase pressure-composition envelope at fixed temperature.
+      !! The overall mixture varies as \(z=\alpha z_0+(1-\alpha)z_i\); the
+      !! initial phase states and continuation step define the branch. Points
+      !! are stored only after the equilibrium equations converge.
+      class(ArModel), intent(in) :: model !! Residual Helmholtz model.
+      real(pr), intent(in) :: z0(:) !! First limiting composition.
+      real(pr), intent(in) :: zi(:) !! Second limiting composition.
+      real(pr), intent(in) :: T !! Fixed temperature [K].
+      real(pr), intent(in) :: x0(:) !! Initial composition of phase x.
+      real(pr), intent(in) :: y0(:) !! Initial composition of phase y.
+      real(pr), intent(in) :: w0(:) !! Initial composition of phase w.
+      real(pr), intent(in) :: beta0 !! Initial phase-split parameter.
+      real(pr), intent(in) :: P0 !! Initial pressure [bar].
+      real(pr), intent(in) :: a0 !! Initial composition interpolation parameter.
+      integer, intent(in) :: ns0 !! Index of the specified variable in \(X=[\ln K^x_i, \ln K^y_i, \ln P, \alpha, \beta]\), with \(K^x=x/w\), \(K^y=y/w\).
+      real(pr), intent(in) :: dS0 !! Initial signed continuation step.
+      integer, intent(in) :: points !! Maximum number of envelope points.
       real(pr) :: kx(size(z0))
       real(pr) :: ky(size(z0))
 
-      integer :: i
-      integer :: nc
+      integer :: i !! Loop/index variable.
+      integer :: nc !! Number of components.
 
-      real(pr) :: Xvars(size(z0)*2 + 3), dX(size(z0)*2 + 3)
-      real(pr) :: F(size(z0)*2+3), dF(size(z0)*2 + 3, size(z0)*2 + 3)
+      real(pr) :: Xvars(size(z0)*2 + 3)
+      real(pr) :: dX(size(z0)*2 + 3)
+      real(pr) :: F(size(z0)*2+3)
+      real(pr) :: dF(size(z0)*2 + 3, size(z0)*2 + 3)
 
       integer :: ns !! Specified variable
       real(pr) :: S !! Specified value
@@ -62,13 +97,13 @@ contains
       real(pr) :: dXdS(size(z0)*2 + 3)
 
       real(pr) :: x(points, size(z0))
-      real(pr) :: y(points, size(z0))
-      real(pr) :: w(points, size(z0))
-      real(pr) :: beta(points)
+      real(pr) :: y(points, size(z0)) !! Phase-y composition at each point.
+      real(pr) :: w(points, size(z0)) !! Reference/trial phase composition.
+      real(pr) :: beta(points) !! Phase fraction.
       real(pr) :: P(points)
       real(pr) :: a(points)
 
-      integer :: its
+      integer :: its !! Iteration count.
       integer :: max_its=500
 
       nc = size(z0)
@@ -112,19 +147,24 @@ contains
    end function px_envelope_3ph
 
    subroutine get_values_from_X(z0, zi, Xvars, x, y, w, P, alpha, beta)
-      real(pr), intent(in) :: z0(:)
-      real(pr), intent(in) :: zi(:)
-      real(pr), intent(in) :: Xvars(size(z0)*2 + 3)
-      real(pr), intent(out) :: x(size(z0))
-      real(pr), intent(out) :: y(size(z0))
-      real(pr), intent(out) :: w(size(z0))
-      real(pr), intent(out) :: P
-      real(pr), intent(out) :: alpha
-      real(pr), intent(out) :: beta
+      !! # get_values_from_X
+      !!
+      !! # Description
+      !! Decode logarithmic K-factors and state variables into phase compositions.
+      real(pr), intent(in) :: z0(:) !! First limiting feed composition.
+      real(pr), intent(in) :: zi(:) !! Second limiting feed composition.
+      real(pr), intent(in) :: Xvars(size(z0)*2 + 3) !! Packed log-K, log-pressure, alpha, and beta vector.
+      real(pr), intent(out) :: x(size(z0)) !! Reconstructed phase-x composition.
+      real(pr), intent(out) :: y(size(z0)) !! Reconstructed phase-y composition.
+      real(pr), intent(out) :: w(size(z0)) !! Reconstructed reference-phase composition.
+      real(pr), intent(out) :: P !! Pressure [bar].
+      real(pr), intent(out) :: alpha !! Feed interpolation parameter.
+      real(pr), intent(out) :: beta !! Phase-split parameter.
 
-      integer :: nc
-      real(pr) :: Kx((Size(Xvars)-3)/2), Ky((Size(Xvars)-3)/2)
-      real(pr) :: z(size(z0))
+      integer :: nc !! Number of components.
+      real(pr) :: Kx((Size(Xvars)-3)/2)
+      real(pr) :: Ky((Size(Xvars)-3)/2)
+      real(pr) :: z(size(z0)) !! Feed or overall composition.
 
       nc = (Size(Xvars)-3)/2
 
@@ -143,14 +183,20 @@ contains
    end subroutine get_values_from_X
 
    subroutine update_specification(its, X, dF, dXdS, ns, dS)
-      integer, intent(in) :: its
-      real(pr), intent(in out) :: X(:)
-      real(pr), intent(in out) :: dF(:, :)
-      real(pr), intent(in out) :: dXdS(:)
-      integer, intent(in out) :: ns
-      real(pr), intent(in out) :: dS
+      !! # update_specification
+      !! Select a continuation variable using the local tangent and update the step.
+      !!
+      !! # Description
+      !! Solves the tangent system, selects the unknown with the largest
+      !! sensitivity, and rescales the continuation direction and step.
+      integer, intent(in) :: its !! Corrector iteration count at the current point.
+      real(pr), intent(in out) :: X(:) !! Current packed equilibrium unknowns.
+      real(pr), intent(in out) :: dF(:, :) !! Current residual Jacobian.
+      real(pr), intent(in out) :: dXdS(:) !! Tangent vector; normalized on return.
+      integer, intent(in out) :: ns !! Index of the selected specification variable.
+      real(pr), intent(in out) :: dS !! Signed continuation step, updated in place.
 
-      integer :: nc
+      integer :: nc !! Number of components.
       real(pr) :: dFdS(size(X))
 
       dFdS = 0
@@ -198,12 +244,15 @@ contains
       real(pr) :: Xold(size(X)) !! Old value of X
       real(pr) :: Xnew(size(X)) !! Value of the next initialization
 
-      logical :: found_critical
+      logical :: found_critical !! Logical state flag controlling this algorithm branch.
 
-      integer :: nc
+      integer :: nc !! Number of components.
 
-      integer :: first_set((size(X)-3)/2), second_set((size(X)-3)/2), idx((size(X)-3)/2)
-      integer :: i, critical_set((size(X)-3)/2)
+      integer :: first_set((size(X)-3)/2)
+      integer :: second_set((size(X)-3)/2)
+      integer :: idx((size(X)-3)/2)
+      integer :: i !! Loop/index variable.
+      integer :: critical_set((size(X)-3)/2)
       real(pr) :: step(size(X))
 
       nc = (size(X)-3)/2
@@ -280,6 +329,9 @@ contains
    end function critical_interpol
 
    subroutine px_F_three_phases(model, z0, zi, T, Xvars, ns, S, F, dF)
+      !! # px_F_three_phases
+      !!
+      !! # Description
       !! Function to solve at each point of a three phase envelope.
       !!
       !! The vector of variables X corresponds to:
@@ -295,10 +347,10 @@ contains
       !!        X_{ns} - S
       !! ] \)
       use iso_fortran_env, only: error_unit
-      class(ArModel), intent(in) :: model
-      real(pr), intent(in) :: z0(:)
-      real(pr), intent(in) :: zi(:)
-      real(pr), intent(in) :: T
+      class(ArModel), intent(in) :: model !! Thermodynamic model.
+      real(pr), intent(in) :: z0(:) !! First mixture composition (mole fractions).
+      real(pr), intent(in) :: zi(:) !! Second mixture composition (mole fractions).
+      real(pr), intent(in) :: T !! Temperature [K].
       real(pr), intent(in)  :: Xvars(:) !! Vector of variables
       integer, intent(in)  :: ns !! Number of specification
       real(pr), intent(in)  :: S !! Specification value
@@ -310,23 +362,32 @@ contains
       real(pr) :: Ky(size(z0))
       real(pr) :: P
       real(pr) :: alpha
-      real(pr) :: beta
+      real(pr) :: beta !! Phase fraction.
 
-      real(pr) :: z(size(z0))
+      real(pr) :: z(size(z0)) !! Feed or overall composition.
 
       ! Main phase 1 variables
       real(pr) :: Vx
-      real(pr), dimension(size(z0)) :: x, lnphi_x, dlnphi_dt_x, dlnphi_dp_x
+      real(pr), dimension(size(z0)) :: x
+      real(pr), dimension(size(z0)) :: lnphi_x
+      real(pr), dimension(size(z0)) :: dlnphi_dt_x
+      real(pr), dimension(size(z0)) :: dlnphi_dp_x
       real(pr), dimension(size(z0), size(z0)) :: dlnphi_dn_x
 
       ! Main phase 2 variables
       real(pr) :: Vy
-      real(pr), dimension(size(z0)) :: y, lnphi_y, dlnphi_dt_y, dlnphi_dp_y
+      real(pr), dimension(size(z0)) :: y
+      real(pr), dimension(size(z0)) :: lnphi_y
+      real(pr), dimension(size(z0)) :: dlnphi_dt_y
+      real(pr), dimension(size(z0)) :: dlnphi_dp_y
       real(pr), dimension(size(z0), size(z0)) :: dlnphi_dn_y
 
       ! Incipient phase variables
       real(pr) :: Vw
-      real(pr), dimension(size(z0)) :: w, lnphi_w, dlnphi_dt_w, dlnphi_dp_w
+      real(pr), dimension(size(z0)) :: w
+      real(pr), dimension(size(z0)) :: lnphi_w
+      real(pr), dimension(size(z0)) :: dlnphi_dt_w
+      real(pr), dimension(size(z0)) :: dlnphi_dp_w
       real(pr), dimension(size(z0), size(z0)) :: dlnphi_dn_w
 
       ! Derivative of w wrt beta
@@ -336,10 +397,16 @@ contains
 
       real(pr) :: dwda(size(z0))
 
-      real(pr) :: dwdKx(size(z0)), dxdKx(size(z0)), dydKx(size(z0))
-      real(pr) :: dwdKy(size(z0)), dxdKy(size(z0)), dydKy(size(z0))
+      real(pr) :: dwdKx(size(z0))
+      real(pr) :: dxdKx(size(z0))
+      real(pr) :: dydKx(size(z0))
+      real(pr) :: dwdKy(size(z0))
+      real(pr) :: dxdKy(size(z0))
+      real(pr) :: dydKy(size(z0))
 
-      integer :: i, j, nc
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: nc !! Number of components.
 
       nc = size(z0)
 
@@ -438,20 +505,25 @@ contains
    end subroutine px_F_three_phases
 
    subroutine solve_point(model, z0, zi, T, ns, S, X, F, dF, its, maxits)
-      class(ArModel), intent(in) :: model
-      real(pr), intent(in) :: z0(:)
-      real(pr), intent(in) :: zi(:)
-      real(pr), intent(in) :: T
-      integer, intent(in) :: ns
-      real(pr), intent(in) :: S
-      real(pr), intent(in out) :: X(:)
-      real(pr), intent(out) :: F(:)
-      real(pr), intent(out) :: dF(:,:)
-      integer, intent(in out) :: its
-      integer, intent(in) :: maxits
+      !! # solve_point
+      !!
+      !! # Description
+      !! Correct a predicted three-phase PX-envelope point with Newton iteration.
+      !! Returns the equilibrium residual and Jacobian at the corrected state.
+      class(ArModel), intent(in) :: model !! Thermodynamic model.
+      real(pr), intent(in) :: z0(:) !! First limiting composition.
+      real(pr), intent(in) :: zi(:) !! Second limiting composition.
+      real(pr), intent(in) :: T !! Fixed temperature [K].
+      integer, intent(in) :: ns !! Index of the specified unknown.
+      real(pr), intent(in) :: S !! Value imposed on unknown `ns`.
+      real(pr), intent(in out) :: X(:) !! Initial unknown vector; corrected in place.
+      real(pr), intent(out) :: F(:) !! Three-phase equilibrium residuals.
+      real(pr), intent(out) :: dF(:,:) !! Jacobian of the residual system.
+      integer, intent(in out) :: its !! Iteration count from the point solver.
+      integer, intent(in) :: maxits !! Maximum Newton iterations.
 
       real(pr) :: dX(size(X))
-      integer :: nc
+      integer :: nc !! Number of components.
 
       its = 0
       F = 1

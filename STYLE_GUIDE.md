@@ -32,9 +32,9 @@ This style guide is a living document and proposed changes may be adopted after 
 ## File naming conventions
 * Source files should contain at most one `program`, `module`, or `submodule`
 * The filename should match the program or module name and have the file extension `.f90` or `.F90` if preprocessing is required
-* `module` names should include it's subdirectory, using `yaeos__` for the parent
-  `src` directory. For example the module in `src/phase_equilibria/flash.f90`
-  should be named `yaeos__phase_equilibria_flash`. If the module name is longer that the accepted number of columns of the compiler, it is possible to simplify to just initials of each word: `yaeos__p_e_f`
+* `module` names should include its subdirectory, using `yaeos__` for the parent
+  `src` directory. For example the module in `src/equilibria/flash.f90`
+  is named `yaeos__equilibria_flash`. If the module name is longer than the accepted number of columns of the compiler, it is possible to simplify to just initials of each word: `yaeos__p_e_f`
 * If the interface and implementation is split using submodules the implementation submodule file should have the same name as the
   interface (parent) module but end in `_implementation`
   E.g., `string_class.f90` and `string_class_implementation.f90`
@@ -85,7 +85,7 @@ The convention adopted herein is to include procedure names, `module` names and 
 Documentation strings should be provided for all public and protected entities and their arguments or parameters.
 This is currently accomplished using the [FORD tool](https://github.com/Fortran-FOSS-Programmers/ford).
 For help writing FORD style documentation please see the [FORD wiki](https://github.com/Fortran-FOSS-Programmers/ford/wiki).
-The following two sections are most relevant for contributing new code:
+The following sections are most relevant for contributing new code:
 
 * [Writing Documentation](https://github.com/Fortran-FOSS-Programmers/ford/wiki/Writing-Documentation)
 * [Documentation Meta Data](https://github.com/Fortran-FOSS-Programmers/ford/wiki/Documentation-Meta-Data)
@@ -93,7 +93,7 @@ The following two sections are most relevant for contributing new code:
 
 To write the "spec" (specification) for a new proposal, please place it in the
 [FORD "pages"](https://github.com/Fortran-FOSS-Programmers/ford/wiki/Writing-Pages) directory at
-[`doc/specs/`](https://github.com/fortran-lang/stdlib/tree/HEAD/doc/specs).
+`doc/page/`.
 To get help please see the ["Writing Pages"](https://github.com/Fortran-FOSS-Programmers/ford/wiki/Writing-Pages)
 and ["Writing Documentation"](https://github.com/Fortran-FOSS-Programmers/ford/wiki/Writing-Documentation) pages
 on the [FORD wiki](https://github.com/Fortran-FOSS-Programmers/ford/wiki).

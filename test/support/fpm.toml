@@ -1,0 +1,19 @@
+# Shared helpers for the yaeos test programs: `testing_aux` (assert,
+# test_title) and the model fixtures. It is a separate local package because
+# fpm only lets a test program use modules from its own directory or below,
+# and the tests live in subdirectories that mirror `src/`. The root fpm.toml
+# lists it as a dev-dependency, so it is never part of the yaeos library.
+name = "yaeos_test_support"
+
+[build]
+auto-executables = false
+auto-tests = false
+auto-examples = false
+
+[fortran]
+implicit-typing = false
+implicit-external = true
+source-form = "free"
+
+[dependencies]
+yaeos = { path = "../.." }

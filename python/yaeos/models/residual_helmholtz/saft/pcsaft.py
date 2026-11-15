@@ -60,12 +60,14 @@ class PCSAFT(ArModel):
     def set_kij(self, i, j, kij):
         """Set the kij value between component i and j.
 
-        Arguments
-        ---------
+        Parameters
+        ----------
         i: int
-            Component i. Counting from 0
+            Component i. Counting from 0 (negative indices count from the
+            end)
         j: int
-            Component j. Counting from 0
+            Component j. Counting from 0 (negative indices count from the
+            end)
         kij: float
             kij value
         """

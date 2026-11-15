@@ -11,4 +11,5 @@ are helpful for it's usage.
 ## Dev tools
 
 - [test_to_toml](./dev/test_to_toml.py): Tool to automatically add the Fortran
-  tests to the fpm.toml file.
+  tests to the fpm.toml file. Run it after adding, moving or removing a test
+  program; `--check` only reports (CI uses it to fail on a stale fpm.toml).

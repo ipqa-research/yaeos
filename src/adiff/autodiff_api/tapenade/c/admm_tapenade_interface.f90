@@ -18,9 +18,12 @@ MODULE ADMM_TAPENADE_INTERFACE
       SUBROUTINE ADMM_REGISTERSHADOWED(base, obase, size, baseb, obaseb&
 &       , sizeb, nbelem) BIND(c, name='ADMM_registerShadowed')
         USE ISO_C_BINDING
-        TYPE(C_PTR), VALUE :: base, obase
-        TYPE(C_PTR), VALUE :: baseb, obaseb
-        INTEGER, VALUE :: size, sizeb
+        TYPE(C_PTR), VALUE :: base
+        TYPE(C_PTR), VALUE :: obase
+        TYPE(C_PTR), VALUE :: baseb
+        TYPE(C_PTR), VALUE :: obaseb
+        INTEGER, VALUE :: size
+        INTEGER, VALUE :: sizeb
         INTEGER, VALUE :: nbelem
       END SUBROUTINE ADMM_REGISTERSHADOWED
   END INTERFACE ADMM_REGISTERSHADOWED
@@ -29,7 +32,8 @@ MODULE ADMM_TAPENADE_INTERFACE
       SUBROUTINE ADMM_REGISTER(base, obase, size, nbelem) BIND(c, name=&
 &     'ADMM_register')
         USE ISO_C_BINDING
-        TYPE(C_PTR), VALUE :: base, obase
+        TYPE(C_PTR), VALUE :: base
+        TYPE(C_PTR), VALUE :: obase
         INTEGER, VALUE :: size
         INTEGER, VALUE :: nbelem
       END SUBROUTINE ADMM_REGISTER
@@ -39,7 +43,8 @@ MODULE ADMM_TAPENADE_INTERFACE
       SUBROUTINE ADMM_UNREGISTERSHADOWED(base, baseb, nbelem) BIND(c, &
 &     name='ADMM_unregisterShadowed')
         USE ISO_C_BINDING
-        TYPE(C_PTR), VALUE :: base, baseb
+        TYPE(C_PTR), VALUE :: base
+        TYPE(C_PTR), VALUE :: baseb
         INTEGER :: nbelem
       END SUBROUTINE ADMM_UNREGISTERSHADOWED
   END INTERFACE ADMM_UNREGISTERSHADOWED
@@ -57,7 +62,8 @@ MODULE ADMM_TAPENADE_INTERFACE
       SUBROUTINE ADMM_REBASESHADOWED(base, baseb) BIND(c, name=&
 &     'ADMM_rebaseShadowed')
         USE ISO_C_BINDING
-        TYPE(C_PTR) :: base, baseb
+        TYPE(C_PTR) :: base
+        TYPE(C_PTR) :: baseb
       END SUBROUTINE ADMM_REBASESHADOWED
   END INTERFACE ADMM_REBASESHADOWED
 

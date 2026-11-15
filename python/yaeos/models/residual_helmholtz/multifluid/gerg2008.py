@@ -44,7 +44,9 @@ class GERG2008(ArModel):
         methane, nitrogen, carbon dioxide, ethane, propane, n-butane,
         isobutane, n-pentane, isopentane, n-hexane, n-heptane, n-octane,
         nonane, decane, hydrogen, oxygen, carbon monoxide, water,
-        hydrogen sulfide, helium, argon.
+        hydrogen sulfide, helium, argon. Short aliases such as "c1", "co2",
+        "nc4" or "h2o" are also accepted. Names are case-sensitive and an
+        invalid name raises ``ValueError``.
 
     Example
     -------

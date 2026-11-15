@@ -1,6 +1,19 @@
 module yaeos__tapenade_ar_api
-   !! Module that wraps tapenade generated routines to calculate !
-   !! Ar and derivatives.
+   !! # Tapenade residual Helmholtz API
+   !! Abstract interface and adapter for source-to-source differentiated EOS models.
+   !!
+   !! # Description
+   !! `ArModelTapenade` requires primal, forward, reverse, mixed, and second
+   !! directional derivative routines. Its implementation of
+   !! `residual_helmholtz` dispatches to those routines to populate requested
+   !! derivative outputs.
+   !!
+   !! # Examples
+   !! See `PCSAFT` in `src/models/residual_helmholtz/saft/pc_saft.f90` for a
+   !! production implementation and `tools/tapenade_diff/` for the generator.
+   !!
+   !! # References
+   !! Tapenade documentation: https://tapenade.gitlabpages.inria.fr/
    use yaeos__constants, only: pr
    use yaeos__models_ar, only: ArModel
    implicit none
@@ -10,6 +23,16 @@ module yaeos__tapenade_ar_api
    public :: ArModelTapenade
 
    type, abstract, extends(ArModel) :: ArModelTapenade
+      !! # ArModelTapenade
+      !! Base class for EOS models with Tapenade-generated derivatives.
+      !!
+      !! # Description
+      !! Concrete extensions provide the primal `ar` routine and its
+      !! forward/reverse derivative variants. The inherited adapter evaluates
+      !! requested `ArModel` derivatives by dispatching to those routines.
+      !!
+      !! # Examples
+      !! See the `PCSAFT` model for an integrated implementation.
    contains
       procedure(tapenade_ar), deferred :: ar
       procedure(tapenade_ar_d), deferred :: ar_d
@@ -21,55 +44,92 @@ module yaeos__tapenade_ar_api
 
    abstract interface
       subroutine tapenade_ar(model, n, v, t, arval)
+         !! # tapenade_ar
+         !! Primal residual Helmholtz callback required by `ArModelTapenade`.
          import pr, ArModelTapenade
-         class(ArModelTapenade), intent(in) :: model
-         real(pr), intent(in) :: n(:), v, t
-         real(pr), intent(out) :: arval
+         class(ArModelTapenade), intent(in) :: model !! Model parameters.
+         real(pr), intent(in) :: n(:) !! Component mole amounts [mol].
+         real(pr), intent(in) :: v !! Total volume [L].
+         real(pr), intent(in) :: t !! Temperature [K].
+         real(pr), intent(out) :: arval !! Residual Helmholtz energy.
       end subroutine tapenade_ar
 
       subroutine tapenade_ar_d(model, n, nd, v, vd, t, td, arval, arvald)
+         !! # tapenade_ar_d
+         !! Forward directional derivative callback for the residual Helmholtz energy.
          import pr, ArModelTapenade
-         class(ArModelTapenade), intent(in) :: model
-         real(pr), intent(in) :: n(:), v, t
-         real(pr), intent(in) :: nd(:), vd, td
-         real(pr), intent(out) :: arval, arvald
+         class(ArModelTapenade), intent(in) :: model !! Model parameters.
+         real(pr), intent(in) :: n(:) !! Component mole amounts [mol].
+         real(pr), intent(in) :: v !! Total volume [L].
+         real(pr), intent(in) :: t !! Temperature [K].
+         real(pr), intent(in) :: nd(:) !! Tangent seed for component mole amounts (nd).
+         real(pr), intent(in) :: vd !! Tangent seed for volume (vd).
+         real(pr), intent(in) :: td !! Tangent seed for temperature (td).
+         real(pr), intent(out) :: arval !! Primal residual Helmholtz energy.
+         real(pr), intent(out) :: arvald !! Forward directional derivative of residual Helmholtz energy.
       end subroutine tapenade_ar_d
 
       subroutine tapenade_ar_b(model, n, nb, v, vb, t, tb, arval, arvalb)
+         !! # tapenade_ar_b
+         !! Reverse-mode adjoint callback for the residual Helmholtz energy.
          import pr, ArModelTapenade
-         class(ArModelTapenade), intent(in) :: model
-         real(pr), intent(in) :: n(:), v, t
-         real(pr) :: arvalb
-         real(pr) :: nb(:), vb, tb
-         real(pr) :: arval
+         class(ArModelTapenade), intent(in) :: model !! Model parameters.
+         real(pr), intent(in) :: n(:) !! Component mole amounts [mol].
+         real(pr), intent(in) :: v !! Total volume [L].
+         real(pr), intent(in) :: t !! Temperature [K].
+         real(pr) :: arvalb !! Incoming adjoint seed on the energy.
+         real(pr) :: nb(:) !! Adjoint value for component mole amounts.
+         real(pr) :: vb !! Adjoint value for volume.
+         real(pr) :: tb !! Adjoint value for temperature.
+         real(pr) :: arval !! Primal energy value.
       end subroutine tapenade_ar_b
 
       subroutine tapenade_ar_d_b(model, &
          n, nb, nd, ndb, v, vb, vd, vdb, t, tb, td, tdb, &
          arval, arvalb, arvald, arvaldb)
+         !! # tapenade_ar_d_b
+         !! Mixed forward/reverse callback used for Hessian and mixed derivatives.
          import pr, ArModelTapenade
-         class(ArModelTapenade), intent(in) :: model
-         real(pr), intent(in) :: n(:), v, t
-         real(pr) :: arval
+         class(ArModelTapenade), intent(in) :: model !! Model parameters.
+         real(pr), intent(in) :: n(:) !! Component mole amounts [mol].
+         real(pr), intent(in) :: v !! Total volume [L].
+         real(pr), intent(in) :: t !! Temperature [K].
+         real(pr) :: arval !! Primal energy value.
 
-         real(pr), intent(in) :: nd(:), vd, td
-         real(pr) :: arvald
+         real(pr), intent(in) :: nd(:) !! Forward tangent seed for the mole amounts.
+         real(pr), intent(in) :: vd !! Forward tangent seed for the volume.
+         real(pr), intent(in) :: td !! Forward tangent seed for the temperature.
+         real(pr) :: arvald !! Forward directional energy derivative.
 
-         real(pr) :: nb(:), vb, tb
-         real(pr) :: arvalb
+         real(pr) :: nb(:) !! Adjoint value for component mole amounts.
+         real(pr) :: vb !! Adjoint value for volume.
+         real(pr) :: tb !! Adjoint value for temperature.
+         real(pr) :: arvalb !! Adjoint seed for the primal energy output.
 
-         real(pr) :: ndb(:), vdb, tdb
-         real(pr) :: arvaldb
+         real(pr) :: ndb(:) !! Mixed tangent-adjoint value for component mole amounts.
+         real(pr) :: vdb !! Mixed tangent-adjoint value for volume.
+         real(pr) :: tdb !! Mixed tangent-adjoint value for temperature.
+         real(pr) :: arvaldb !! Mixed tangent-adjoint energy output.
       end subroutine tapenade_ar_d_b
 
       subroutine tapenade_ar_d_d(model, n, nd, v, vd0, vd, t, td0, td, &
          arval, arvald0, arvald, arvaldd)
+         !! # tapenade_ar_d_d
+         !! Nested forward-mode callback for second directional derivatives.
          import pr, ArModelTapenade
-         class(ArModelTapenade), intent(in) :: model
-         real(pr), intent(in) :: n(:), v, t
-         real(pr), intent(in) :: vd0, td0
-         real(pr), intent(in) :: nd(:), vd, td
-         real(pr), intent(out) :: arval, arvald0, arvald, arvaldd
+         class(ArModelTapenade), intent(in) :: model !! Model parameters.
+         real(pr), intent(in) :: n(:) !! Component mole amounts [mol].
+         real(pr), intent(in) :: v !! Total volume [L].
+         real(pr), intent(in) :: t !! Temperature [K].
+         real(pr), intent(in) :: vd0 !! Tangent seed for volume (vd0).
+         real(pr), intent(in) :: td0 !! Tangent seed for temperature (td0).
+         real(pr), intent(in) :: nd(:) !! Tangent seed for component mole amounts (nd).
+         real(pr), intent(in) :: vd !! Tangent seed for volume (vd).
+         real(pr), intent(in) :: td !! Tangent seed for temperature (td).
+         real(pr), intent(out) :: arval !! Primal residual Helmholtz energy.
+         real(pr), intent(out) :: arvald0 !! First nested tangent of residual Helmholtz energy.
+         real(pr), intent(out) :: arvald !! Forward directional derivative of residual Helmholtz energy.
+         real(pr), intent(out) :: arvaldd !! Mixed second tangent of residual Helmholtz energy.
       end subroutine tapenade_ar_d_d
    end interface
 
@@ -79,22 +139,49 @@ contains
       self, n, v, t, Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2 &
       )
       !! Residual Helmholtz model generic interface
-      class(ArModelTapenade), intent(in) :: self
-      real(pr), intent(in) :: n(:)
-      real(pr), intent(in) :: v, t
-      real(pr), optional, intent(out) :: Ar, ArV, ArT, ArT2, ArTV, ArV2
-      real(pr), optional, dimension(size(n)), intent(out) :: Arn, ArVn, ArTn
-      real(pr), optional, intent(out) :: Arn2(size(n), size(n))
+      class(ArModelTapenade), intent(in) :: self !! Model instance.
+      real(pr), intent(in) :: n(:) !! Component mole amounts [mol].
+      real(pr), intent(in) :: v !! Total volume [L].
+      real(pr), intent(in) :: t !! Temperature [K].
+      real(pr), optional, intent(out) :: Ar !! Residual Helmholtz energy [bar L].
+      real(pr), optional, intent(out) :: ArV !! \(\partial A^r/\partial V\) [bar].
+      real(pr), optional, intent(out) :: ArT !! \(\partial A^r/\partial T\) [bar L/K].
+      real(pr), optional, intent(out) :: ArT2 !! \(\partial^2 A^r/\partial T^2\) [bar L/K^2].
+      real(pr), optional, intent(out) :: ArTV !! \(\partial^2 A^r/\partial T\partial V\) [bar/K].
+      real(pr), optional, intent(out) :: ArV2 !! \(\partial^2 A^r/\partial V^2\) [bar/L].
+      real(pr), optional, dimension(size(n)), intent(out) :: Arn !! \(\partial A^r/\partial n_i\) [bar L/mol].
+      real(pr), optional, dimension(size(n)), intent(out) :: ArVn !! \(\partial^2 A^r/\partial V\partial n_i\) [bar/mol].
+      real(pr), optional, dimension(size(n)), intent(out) :: ArTn !! \(\partial^2 A^r/\partial T\partial n_i\) [bar L/(K mol)].
+      real(pr), optional, intent(out) :: Arn2(size(n), size(n)) !! \(\partial^2 A^r/\partial n_i\partial n_j\) [bar L/mol^2].
 
-      real(pr) :: nb(size(n)), nd(size(n)), ndb(size(n))
-      real(pr) :: vb, vd, vdb, vd0
-      real(pr) :: tb, td, tdb, td0
-      real(pr) :: arval, arvalb, arvald, arvaldb, arvald0, arvaldd
+      real(pr) :: nb(size(n))
+      real(pr) :: nd(size(n))
+      real(pr) :: ndb(size(n))
+      real(pr) :: vb
+      real(pr) :: vd
+      real(pr) :: vdb
+      real(pr) :: vd0
+      real(pr) :: tb
+      real(pr) :: td
+      real(pr) :: tdb
+      real(pr) :: td0
+      real(pr) :: arval
+      real(pr) :: arvalb
+      real(pr) :: arvald
+      real(pr) :: arvaldb
+      real(pr) :: arvald0
+      real(pr) :: arvaldd
 
-      integer :: i, nc
-      logical :: need_Arn2, need_ArVn, need_ArTn
-      logical :: need_ArV2, need_ArT2, need_ArTV
-      logical :: need_grad, need_val
+      integer :: i !! Loop/index variable.
+      integer :: nc !! Number of components.
+      logical :: need_Arn2
+      logical :: need_ArVn
+      logical :: need_ArTn
+      logical :: need_ArV2
+      logical :: need_ArT2
+      logical :: need_ArTV
+      logical :: need_grad
+      logical :: need_val
 
       nc = size(n)
 
@@ -187,7 +274,7 @@ contains
             need_ArT2 = .false.
          end if
          if (need_ArTV) then
-            ArTV = vb  ! vb is d2Ar/(dt*dv)
+            ArTV = vb ! vb is d2Ar/(dt*dv)
             need_ArTV = .false.
          end if
          if (need_grad) then

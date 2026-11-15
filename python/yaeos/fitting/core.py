@@ -48,25 +48,29 @@ class BinaryFitter:
     Parameters
     ----------
     model_setter : Callable
-        A function that returns a model object. The function should take the
-        optimization parameters as the first argument and any other arguments
-        as the following arguments.
+        A function that returns a model object. It is called as
+        ``model_setter(x, *model_setter_args)``, so it should take the
+        optimization parameters as the first argument and the elements of
+        `model_setter_args` as the following arguments.
     model_setter_args : tuple
         A tuple with the arguments to pass to the model_setter function.
     data : pandas.DataFrame
         A DataFrame with the experimental data.
         The DataFrame should have the following columns:
-        - kind: str, the kind of data point (bubble, dew, liquid-liquid, PT,
-        critical)
+
+        - kind: str, the kind of data point. Accepted values are "bubble"
+          (or "bubbleP"), "bubbleT", "dew" (or "dewP"), "dewT", "PT",
+          "liquid-liquid" and "critical".
         - x1: float, the mole fraction of component 1 (lightest component) in
-        heavy phase.
+          heavy phase.
         - y1: float, the mole fraction of component 1 (lightest component) in
-        light phase.
+          light phase.
         - T: float, the temperature in K
         - P: float, the pressure in bar
         - weight: float, optional, the weight of the data point (default is 1)
     verbose : bool, optional
         If True, print the objective function value and the optimization
+        parameters at each evaluation.
     pressure_error : Callable, optional
         A function `f(Pexp, Pmodel)` that calculates the pressure error between
         the experimental and model values.
@@ -96,8 +100,11 @@ class BinaryFitter:
         The experimental data.
     evaluations : dict
         A dictionary with the evaluations of the objective function. The keys
-        are 'fobj', and 'x'. 'fobj' is the objective function value,
-        'x' is the optimization parameters.
+        are 'fobj' and 'x'. 'fobj' is the objective function value,
+        'x' is the optimization parameters. After each evaluation the keys
+        'residuals' and 'contributions' hold the residuals and the weighted
+        objective function contributions of each data point of the last
+        evaluation.
     """
 
     def __init__(
@@ -324,16 +331,20 @@ class BinaryFitter:
         Fit the model to the data using the objective function defined in
         the objective_function method. The optimization is performed using
         the scipy.optimize.minimize function.
-        The optimization result is stored in the `.solution` property. Which
+        The optimization result is stored in the `.solution` property, and
+        the fitted model can be obtained with the `.model` property.
 
         Parameters
         ----------
         x0 : array-like
             Initial guess for the fitting parameters.
-        bounds : array-like
-            Bounds for the fitting parameters.
+        bounds : array-like, optional
+            Bounds for the fitting parameters, by default None.
         method : str, optional
             The optimization method to use. Default is 'Nelder-Mead'.
+        optimizer_options : dict, optional
+            Options passed to ``scipy.optimize.minimize`` as `options`, by
+            default None.
 
         Returns
         -------

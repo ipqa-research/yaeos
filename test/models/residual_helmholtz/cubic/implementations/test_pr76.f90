@@ -1,0 +1,771 @@
+program test_pr76
+   use yaeos, only: pr
+   use testing_aux, only: assert, test_title
+   use auxiliar_functions, only: allclose, rel_error
+   implicit none
+
+   write(*, *) test_title("PengRobinson76")
+
+   call test_pr76_individual_calls()
+   call test_pr76_cons_mixture()
+   call test_pr76_cons_pure()
+   call test_pr76_compressibility_factor()
+   call test_pr76_co2_volume()
+   call test_pr76_fugacities()
+   call test_pr76_txy_methanol_benzene()
+   call test_pr76_pxy_nitrogen_methane()
+   call test_pr76_envelope_ethane_heptane()
+
+contains
+
+   subroutine test_pr76_individual_calls()
+      use yaeos, only: pr, PengRobinson76, ArModel
+      use yaeos__consistency, only: individual_ar_calls
+
+      class(ArModel), allocatable :: model, model_kij
+      real(pr) :: tc(4), pc(4), w(4), kij(4, 4), lij(4, 4)
+
+      real(pr) :: n(4), t, v
+
+      logical :: passed
+
+      n = [1.5, 0.2, 0.7, 2.3]
+      tc = [190.564, 425.12, 300.11, 320.25]
+      pc = [45.99, 37.96, 39.23, 40.21]
+      w = [0.0115478, 0.200164, 0.3624, 0.298]
+
+      t = 600_pr
+      v = 0.5_pr
+
+      ! =======================================================================
+      ! Without kij
+      ! -----------------------------------------------------------------------
+      model = PengRobinson76(tc, pc, w)
+
+      call individual_ar_calls(model, n, v, t, passed=passed)
+      call assert(passed, "PR76 Ar individual calls (no kij): individual Ar calls match full call")
+
+      ! =======================================================================
+      ! With kij
+      ! -----------------------------------------------------------------------
+      kij = reshape([&
+         0.0_pr, 0.1_pr, 0.2_pr, 0.1_pr, &
+         0.1_pr, 0.0_pr, 0.3_pr, 0.25_pr, &
+         0.2_pr, 0.3_pr, 0.0_pr, 0.18_pr, &
+         0.1_pr, 0.25_pr, 0.18_pr, 0.0_pr], [size(n), size(n)])
+
+      lij = reshape([&
+         0.0_pr, 0.001_pr, 0.002_pr, 0.001_pr, &
+         0.001_pr, 0.0_pr, 0.003_pr, 0.0025_pr, &
+         0.002_pr, 0.003_pr, 0.0_pr, 0.0018_pr, &
+         0.001_pr, 0.0025_pr, 0.0018_pr, 0.0_pr], [size(n), size(n)])
+
+
+      model_kij = PengRobinson76(tc, pc, w, kij, lij)
+
+      call individual_ar_calls(model_kij, n, v, t, passed=passed)
+      call assert(passed, "PR76 Ar individual calls (kij/lij): individual Ar calls match full call")
+   end subroutine test_pr76_individual_calls
+
+   subroutine test_pr76_cons_mixture()
+      use yaeos, only: pr, PengRobinson76, ArModel
+      use yaeos__consistency, only: numeric_ar_derivatives, ar_consistency
+
+      class(ArModel), allocatable :: model, model_kij
+      real(pr) :: tc(4), pc(4), w(4)
+
+      real(pr) :: n(4), t, v
+
+      real(pr) :: Ar, ArV, ArT, Arn(size(n)), ArV2, ArT2, ArTV
+      real(pr) :: ArVn(size(n)), ArTn(size(n)), Arn2(size(n), size(n))
+
+      real(pr) :: Ar_num, ArV_num, ArT_num, Arn_num(size(n)), ArV2_num, ArT2_num
+      real(pr) :: ArTV_num, ArVn_num(size(n)), ArTn_num(size(n))
+      real(pr) :: Arn2_num(size(n), size(n))
+      real(pr) :: eq31, eq33(size(n), size(n)), eq34(size(n)), eq36, eq37
+
+      real(pr) :: kij(size(n), size(n)), lij(size(n), size(n))
+
+      n = [1.5, 0.2, 0.7, 2.3]
+      tc = [190.564, 425.12, 300.11, 320.25]
+      pc = [45.99, 37.96, 39.23, 40.21]
+      w = [0.0115478, 0.200164, 0.3624, 0.298]
+
+      t = 600_pr
+      v = 0.5_pr
+
+      ! ========================================================================
+      ! Model without kij and lij
+      ! ------------------------------------------------------------------------
+      model = PengRobinson76(tc, pc, w)
+
+      call model%residual_helmholtz(&
+         n, v, t, Ar=Ar, ArV=ArV, ArT=ArT, Arn=Arn, &
+         ArTV=ArTV, ArV2=ArV2, ArT2=ArT2, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2)
+
+      ! Calling individually just because coverage
+      call numeric_ar_derivatives(&
+         model, n, v, t, d_n = 0.0001_pr, d_v = 0.00001_pr, d_t = 0.001_pr, &
+         Ar=Ar_num, ArV=ArV_num)
+
+      call numeric_ar_derivatives(&
+         model, n, v, t, d_n = 0.0001_pr, d_v = 0.00001_pr, d_t = 0.001_pr, &
+         Ar=Ar_num, ArT=ArT_num)
+
+      call numeric_ar_derivatives(&
+         model, n, v, t, d_n = 0.0001_pr, d_v = 0.00001_pr, d_t = 0.001_pr, &
+         Ar=Ar_num, ArTV=ArTV_num)
+
+      call numeric_ar_derivatives(&
+         model, n, v, t, d_n = 0.0001_pr, d_v = 0.00001_pr, d_t = 0.001_pr, &
+         Ar=Ar_num, ArV2=ArV2_num)
+
+      call numeric_ar_derivatives(&
+         model, n, v, t, d_n = 0.0001_pr, d_v = 0.00001_pr, d_t = 0.001_pr, &
+         Ar=Ar_num, ArT2=ArT2_num)
+
+      call numeric_ar_derivatives(&
+         model, n, v, t, d_n = 0.0001_pr, d_v = 0.00001_pr, d_t = 0.001_pr, &
+         Ar=Ar_num, Arn=Arn_num)
+
+      call numeric_ar_derivatives(&
+         model, n, v, t, d_n = 0.0001_pr, d_v = 0.00001_pr, d_t = 0.001_pr, &
+         Ar=Ar_num, ArVn=ArVn_num)
+
+      call numeric_ar_derivatives(&
+         model, n, v, t, d_n = 0.0001_pr, d_v = 0.00001_pr, d_t = 0.001_pr, &
+         Ar=Ar_num, ArTn=ArTn_num)
+
+      call numeric_ar_derivatives(&
+         model, n, v, t, d_n = 0.0001_pr, d_v = 0.00001_pr, d_t = 0.001_pr, &
+         Ar=Ar_num, Arn2=Arn2_num)
+
+      ! Calling individually just because coverage
+      call ar_consistency(model, n, V, T, eq31=eq31)
+      call ar_consistency(model, n, V, T, eq33=eq33)
+      call ar_consistency(model, n, V, T, eq34=eq34)
+      call ar_consistency(model, n, V, T, eq36=eq36)
+      call ar_consistency(model, n, V, T, eq37=eq37)
+
+      ! Numeric derivatives
+      call assert(rel_error(Ar, Ar_num) < 1e-6, "PR76 Ar consistency mix (no kij): Ar vs numeric derivative")
+      call assert(rel_error(ArV, ArV_num) < 1e-6, "PR76 Ar consistency mix (no kij): ArV vs numeric derivative")
+      call assert(rel_error(ArT, ArT_num) < 1e-6, "PR76 Ar consistency mix (no kij): ArT vs numeric derivative")
+      call assert(allclose(Arn, Arn_num, 1e-6_pr), "PR76 Ar consistency mix (no kij): Arn vs numeric derivative")
+      call assert(rel_error(ArV2, ArV2_num) < 1e-5, "PR76 Ar consistency mix (no kij): ArV2 vs numeric derivative")
+      call assert(rel_error(ArT2, ArT2_num) < 1e-4, "PR76 Ar consistency mix (no kij): ArT2 vs numeric derivative")
+      call assert(rel_error(ArTV, ArTV_num) < 1e-5, "PR76 Ar consistency mix (no kij): ArTV vs numeric derivative")
+      call assert(allclose(ArVn, ArVn_num, 1e-5_pr), "PR76 Ar consistency mix (no kij): ArVn vs numeric derivative")
+      call assert(allclose(ArTn, ArTn_num, 1e-5_pr), "PR76 Ar consistency mix (no kij): ArTn vs numeric derivative")
+      call assert(maxval(rel_error(Arn2, Arn2_num)) < 1e-5, &
+         "PR76 Ar consistency mix (no kij): Arn2 vs numeric derivative")
+
+      ! Consistency tests
+      call assert(abs(eq31) <= 1e-13, "PR76 Ar consistency mix (no kij): eq31 (sum n_i lnphi_i = Gr/RT)")
+      call assert(maxval(abs(eq33)) < 1e-13, "PR76 Ar consistency mix (no kij): eq33 (symmetric dlnphi/dn)")
+      call assert(maxval(abs(eq34)) < 1e-13, "PR76 Ar consistency mix (no kij): eq34 (sum_i n_i dlnphi_i/dn_j = 0)")
+      call assert(abs(eq36) <= 1e-13, "PR76 Ar consistency mix (no kij): eq36 (sum n_i dlnphi_i/dP = (Z-1)n/P)")
+      call assert(abs(eq37) <= 1e-13, "PR76 Ar consistency mix (no kij): eq37 (sum n_i dlnphi_i/dT = -Hr/RT^2)")
+
+      ! ========================================================================
+      ! Model with kij and lij
+      ! ------------------------------------------------------------------------
+      kij = reshape([&
+         0.0_pr, 0.1_pr, 0.2_pr, 0.1_pr, &
+         0.1_pr, 0.0_pr, 0.3_pr, 0.25_pr, &
+         0.2_pr, 0.3_pr, 0.0_pr, 0.18_pr, &
+         0.1_pr, 0.25_pr, 0.18_pr, 0.0_pr], [size(n), size(n)])
+
+      lij = reshape([&
+         0.0_pr, 0.001_pr, 0.002_pr, 0.001_pr, &
+         0.001_pr, 0.0_pr, 0.003_pr, 0.0025_pr, &
+         0.002_pr, 0.003_pr, 0.0_pr, 0.0018_pr, &
+         0.001_pr, 0.0025_pr, 0.0018_pr, 0.0_pr], [size(n), size(n)])
+
+
+      model_kij = PengRobinson76(tc, pc, w, kij, lij)
+
+      call model_kij%residual_helmholtz(&
+         n, v, t, Ar=Ar, ArV=ArV, ArT=ArT, Arn=Arn, &
+         ArTV=ArTV, ArV2=ArV2, ArT2=ArT2, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2)
+
+      call numeric_ar_derivatives(&
+         model_kij, n, v, t, d_n = 0.0001_pr, d_v = 0.0001_pr, d_t = 0.01_pr, &
+         Ar=Ar_num, ArV=ArV_num, ArT=ArT_num, ArTV=ArTV_num, ArV2=ArV2_num, &
+         ArT2=ArT2_num, Arn=Arn_num, ArVn=ArVn_num, ArTn=ArTn_num, &
+         Arn2=Arn2_num &
+         )
+
+      call ar_consistency(&
+         model_kij, n, v, t, eq31=eq31, eq33=eq33, &
+         eq34=eq34, eq36=eq36, eq37=eq37 &
+         )
+
+      ! Numeric derivatives
+      call assert(rel_error(Ar, Ar_num) < 1e-6, "PR76 Ar consistency mix (kij/lij): Ar vs numeric derivative")
+      call assert(rel_error(ArV, ArV_num) < 1e-6, "PR76 Ar consistency mix (kij/lij): ArV vs numeric derivative")
+      call assert(rel_error(ArT, ArT_num) < 1e-6, "PR76 Ar consistency mix (kij/lij): ArT vs numeric derivative")
+      call assert(allclose(Arn, Arn_num, 1e-6_pr), "PR76 Ar consistency mix (kij/lij): Arn vs numeric derivative")
+      call assert(rel_error(ArV2, ArV2_num) < 1e-5, "PR76 Ar consistency mix (kij/lij): ArV2 vs numeric derivative")
+      call assert(rel_error(ArT2, ArT2_num) < 1e-5, "PR76 Ar consistency mix (kij/lij): ArT2 vs numeric derivative")
+      call assert(rel_error(ArTV, ArTV_num) < 1e-5, "PR76 Ar consistency mix (kij/lij): ArTV vs numeric derivative")
+      call assert(allclose(ArVn, ArVn_num, 1e-5_pr), "PR76 Ar consistency mix (kij/lij): ArVn vs numeric derivative")
+      call assert(allclose(ArTn, ArTn_num, 1e-5_pr), "PR76 Ar consistency mix (kij/lij): ArTn vs numeric derivative")
+      call assert(maxval(rel_error(Arn2, Arn2_num)) < 1e-5, &
+         "PR76 Ar consistency mix (kij/lij): Arn2 vs numeric derivative")
+
+      ! Consistency tests
+      call assert(abs(eq31) <= 1e-13, "PR76 Ar consistency mix (kij/lij): eq31 (sum n_i lnphi_i = Gr/RT)")
+      call assert(maxval(abs(eq33)) < 1e-13, "PR76 Ar consistency mix (kij/lij): eq33 (symmetric dlnphi/dn)")
+      call assert(maxval(abs(eq34)) < 1e-13, "PR76 Ar consistency mix (kij/lij): eq34 (sum_i n_i dlnphi_i/dn_j = 0)")
+      call assert(abs(eq36) <= 1e-13, "PR76 Ar consistency mix (kij/lij): eq36 (sum n_i dlnphi_i/dP = (Z-1)n/P)")
+      call assert(abs(eq37) <= 1e-13, "PR76 Ar consistency mix (kij/lij): eq37 (sum n_i dlnphi_i/dT = -Hr/RT^2)")
+   end subroutine test_pr76_cons_mixture
+
+   subroutine test_pr76_cons_pure()
+      use yaeos, only: pr, PengRobinson76, ArModel
+      use yaeos__consistency, only: numeric_ar_derivatives, ar_consistency
+
+      class(ArModel), allocatable :: model
+      real(pr) :: tc(1), pc(1), w(1)
+
+      real(pr) :: n(1), t, v
+
+      real(pr) :: Ar, ArV, ArT, Arn(size(n)), ArV2, ArT2, ArTV
+      real(pr) :: ArVn(size(n)), ArTn(size(n)), Arn2(size(n), size(n))
+
+      real(pr) :: Ar_num, ArV_num, ArT_num, Arn_num(size(n)), ArV2_num, ArT2_num
+      real(pr) :: ArTV_num, ArVn_num(size(n)), ArTn_num(size(n))
+      real(pr) :: Arn2_num(size(n), size(n))
+      real(pr) :: eq31, eq33(size(n), size(n)), eq34(size(n)), eq36, eq37
+
+      n = [5.0]
+      tc = [190.564]
+      pc = [45.99]
+      w = [0.0115478]
+
+      model = PengRobinson76(tc, pc, w)
+
+      t = 600_pr
+      v = 0.5_pr
+
+      call model%residual_helmholtz(&
+         n, v, t, Ar=Ar, ArV=ArV, ArT=ArT, Arn=Arn, &
+         ArTV=ArTV, ArV2=ArV2, ArT2=ArT2, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2)
+
+      call numeric_ar_derivatives(&
+         model, n, v, t, d_n = 0.0001_pr, d_v = 0.0001_pr, d_t = 0.01_pr, &
+         Ar=Ar_num, ArV=ArV_num, ArT=ArT_num, ArTV=ArTV_num, ArV2=ArV2_num, &
+         ArT2=ArT2_num, Arn=Arn_num, ArVn=ArVn_num, ArTn=ArTn_num, &
+         Arn2=Arn2_num &
+         )
+
+      call ar_consistency(&
+         model, n, v, t, eq31=eq31, eq33=eq33, eq34=eq34, eq36=eq36, eq37=eq37 &
+         )
+
+      ! Numeric derivatives
+      call assert(rel_error(Ar, Ar_num) < 1e-5, "PR76 Ar consistency pure: Ar vs numeric derivative")
+      call assert(rel_error(ArV, ArV_num) < 1e-5, "PR76 Ar consistency pure: ArV vs numeric derivative")
+      call assert(rel_error(ArT, ArT_num) < 1e-5, "PR76 Ar consistency pure: ArT vs numeric derivative")
+      call assert(allclose(Arn, Arn_num, 1e-5_pr), "PR76 Ar consistency pure: Arn vs numeric derivative")
+      call assert(rel_error(ArV2, ArV2_num) < 1e-5, "PR76 Ar consistency pure: ArV2 vs numeric derivative")
+      call assert(rel_error(ArT2, ArT2_num) < 1e-5, "PR76 Ar consistency pure: ArT2 vs numeric derivative")
+      call assert(rel_error(ArTV, ArTV_num) < 1e-5, "PR76 Ar consistency pure: ArTV vs numeric derivative")
+      call assert(allclose(ArVn, ArVn_num, 1e-5_pr), "PR76 Ar consistency pure: ArVn vs numeric derivative")
+      call assert(allclose(ArTn, ArTn_num, 1e-5_pr), "PR76 Ar consistency pure: ArTn vs numeric derivative")
+      call assert(maxval(rel_error(Arn2, Arn2_num)) < 1e-5, "PR76 Ar consistency pure: Arn2 vs numeric derivative")
+
+      ! Consistency tests
+      call assert(abs(eq31) <= 1e-13, "PR76 Ar consistency pure: eq31 (sum n_i lnphi_i = Gr/RT)")
+      call assert(maxval(abs(eq33)) < 1e-13, "PR76 Ar consistency pure: eq33 (symmetric dlnphi/dn)")
+      call assert(maxval(abs(eq34)) < 1e-13, "PR76 Ar consistency pure: eq34 (sum_i n_i dlnphi_i/dn_j = 0)")
+      call assert(abs(eq36) <= 1e-13, "PR76 Ar consistency pure: eq36 (sum n_i dlnphi_i/dP = (Z-1)n/P)")
+      call assert(abs(eq37) <= 1e-13, "PR76 Ar consistency pure: eq37 (sum n_i dlnphi_i/dT = -Hr/RT^2)")
+   end subroutine test_pr76_cons_pure
+
+   subroutine test_pr76_compressibility_factor()
+      ! From original paper.
+      use yaeos, only: pr, R, PengRobinson76, ArModel
+
+      integer :: i
+
+      class(ArModel), allocatable :: model
+
+      real(pr) :: T, P, v, Zcomp, z(2)
+      real(pr) :: P1(5), Z1(5)
+      real(pr) :: P2(4), Z2(4)
+      real(pr) :: P3(5), Z3(5)
+      real(pr) :: P4(4), Z4(4)
+      real(pr) :: P5(5), Z5(5)
+      real(pr) :: P6(5), Z6(5)
+
+      model = PengRobinson76(&
+         [425.12_pr, 304.21_pr], &
+         [37.96_pr, 73.83_pr], &
+         [0.200164_pr, 0.223621_pr], &
+         kij=reshape([0.0_pr, 0.130_pr, 0.130_pr, 0.0_pr], shape=[2,2]) &
+         )
+
+      ! =======================================================================
+      ! Composition 0.9
+      ! -----------------------------------------------------------------------
+      T = 310.928_pr ! 100 F
+      z = [0.9_pr, 0.1_pr]
+      P1 = [41.3685_pr, 68.9476_pr, 137.8951_pr, 206.8427_pr, 275.7903_pr]
+      Z1 = [0.151_pr, 0.248_pr, 0.482_pr, 0.707_pr, 0.926_pr]
+
+      do i=1,5
+         call model%volume(z, P1(i), T, V=v, root_type="stable")
+         Zcomp = P1(i) * v / (R * T)
+
+         call assert(abs(Zcomp - Z1(i)) < 1e-3, "PR76 Z: Z vs paper, data set Z1 (point i)")
+      end do
+
+      T = 410.928_pr ! 280 F
+      z = [0.9_pr, 0.1_pr]
+      P2 = [68.9476_pr, 137.8951_pr, 206.8427_pr, 275.7903_pr]
+      Z2 = [0.289_pr, 0.482_pr, 0.665_pr, 0.840_pr]
+
+      do i=1,4
+         call model%volume(z, P2(i), T, V=v, root_type="stable")
+         Zcomp = P2(i) * v / (R * T)
+
+         call assert(abs(Zcomp - Z2(i)) < 1e-3, "PR76 Z: Z vs paper, data set Z2 (point i)")
+      end do
+
+      T = 510.928_pr ! 460 F
+      z = [0.9_pr, 0.1_pr]
+      P3 = [41.3685_pr, 68.9476_pr, 137.8951_pr, 206.8427_pr, 275.7903_pr]
+      Z3 = [0.804_pr, 0.696_pr, 0.643_pr, 0.744_pr, 0.869_pr]
+
+      do i=1,5
+         call model%volume(z, P3(i), T, V=v, root_type="stable")
+         Zcomp = P3(i) * v / (R * T)
+
+         call assert(abs(Zcomp - Z3(i)) < 1e-3, "PR76 Z: Z vs paper, data set Z3 (point i)")
+      end do
+
+      ! =======================================================================
+      ! Composition 0.5
+      ! -----------------------------------------------------------------------
+      T = 310.928_pr ! 100 F
+      z = [0.5_pr, 0.5_pr]
+      P4 = [68.9476_pr, 137.8951_pr, 206.8427_pr, 275.7903_pr]
+      Z4 = [0.215_pr, 0.404_pr, 0.580_pr, 0.750_pr]
+
+      do i=1,4
+         call model%volume(z, P4(i), T, V=v, root_type="stable")
+         Zcomp = P4(i) * v / (R * T)
+
+         call assert(abs(Zcomp - Z4(i)) < 1e-3, "PR76 Z: Z vs paper, data set Z4 (point i)")
+      end do
+
+      T = 410.928_pr ! 280 F
+      z = [0.5_pr, 0.5_pr]
+      P5 = [41.3685_pr, 68.9476_pr, 137.8951_pr, 206.8427_pr, 275.7903_pr]
+      Z5 = [0.782_pr, 0.638_pr, 0.545_pr, 0.645_pr, 0.765_pr]
+
+      do i=1,5
+         call model%volume( z, P5(i), T, V=v, root_type="stable")
+         Zcomp = P5(i) * v / (R * T)
+
+         call assert(abs(Zcomp - Z5(i)) < 1e-3, "PR76 Z: Z vs paper, data set Z5 (point i)")
+      end do
+
+      T = 510.928_pr ! 460 F
+      z = [0.5_pr, 0.5_pr]
+      P6 = [41.3685_pr, 68.9476_pr, 137.8951_pr, 206.8427_pr, 275.7903_pr]
+      Z6 = [0.920_pr, 0.870_pr, 0.796_pr, 0.806_pr, 0.877_pr]
+
+      do i=1,5
+         call model%volume(z, P6(i), T, V=v, root_type="stable")
+         Zcomp = P6(i) * v / (R * T)
+
+         call assert(abs(Zcomp - Z6(i)) < 2e-2, "PR76 Z: Z vs paper, data set Z6 (point i)")
+      end do
+   end subroutine test_pr76_compressibility_factor
+
+   subroutine test_pr76_co2_volume()
+      ! From Elliot's book.
+      use yaeos, only : pr, PengRobinson76, ArModel
+      use yaeos__models_ar, only: volume
+
+      class(ArModel), allocatable :: model
+
+      real(pr) :: mw, V, n(1)
+
+      model = PengRobinson76([304.2_pr], [73.82_pr], [0.228_pr])
+      n = [1.0_pr]
+      mw = 44.01 ! g / mol
+
+      call model%volume(n, 8.0_pr, 310.0_pr, V=V, root_type="stable")
+      call assert(abs(V / mw * 1000 - 70.37) < 0.06, &
+         "PR76 CO2 isotherm: CO2 liquid-like volume at 8 bar, 310 K (70.37 cm3/g)")
+
+      call model%volume(n, 75.0_pr, 310.0_pr, V=V, root_type="stable")
+      call assert(abs(V / mw * 1000 - 3.84) < 0.01, &
+         "PR76 CO2 isotherm: CO2 liquid volume at 75 bar, 310 K (3.84 cm3/g), model%volume")
+
+      call volume(model, n, 75.0_pr, 310.0_pr, V=V, root_type="stable")
+      call assert(abs(V / mw * 1000 - 3.84) < 0.01, &
+         "PR76 CO2 isotherm: CO2 liquid volume at 75 bar, 310 K (3.84 cm3/g), yaeos__models_ar volume")
+   end subroutine test_pr76_co2_volume
+
+   subroutine test_pr76_fugacities()
+      ! K values of N2-CH4 (0.5, 0.5) mixture from Elliot's book.
+      use yaeos, only: pr, R, PengRobinson76, ArModel
+
+      class(ArModel), allocatable :: model
+
+      real(pr) :: T, P, z_v(2), z_l(2), v_v, lnphi_l(2), lnphi_v(2)
+
+      T = 100 ! K
+      P = 4.119 ! bar
+      z_v = [0.958_pr, 1.0_pr - 0.958_pr]
+      z_l = [0.5_pr, 0.5_pr]
+
+      model = PengRobinson76(&
+         [126.1_pr, 190.6_pr], &
+         [33.94_pr, 46.04_pr], &
+         [0.040_pr, 0.011_pr] &
+         )
+
+      call model%volume(z_v, P, T, root_type="vapor", V=v_v)
+      call model%lnphi_pt(z_v, P, T, root_type="vapor", lnPhi = lnphi_v)
+      call model%lnphi_pt(z_l, P, T, root_type="liquid", lnPhi = lnphi_l)
+
+      ! Elliot Z value of vapor
+      call assert(abs(P * v_v / R / T - 0.9059) <  1e-4, "PR76 Fugacities Elliot: vapor Z vs Elliot (0.9059)")
+
+      ! Elliot vapor fugacities
+      call assert(abs(exp(lnPhi_v(1)) - 0.9162) < 1e-4, "PR76 Fugacities Elliot: vapor phi_N2 vs Elliot (0.9162)")
+      call assert(abs(exp(lnPhi_v(2)) - 0.8473) < 1e-4, "PR76 Fugacities Elliot: vapor phi_CH4 vs Elliot (0.8473)")
+
+      ! Elliot liquid fugacities
+      call assert(abs(exp(lnPhi_l(1)) - 1.791) < 1e-3, "PR76 Fugacities Elliot: liquid phi_N2 vs Elliot (1.791)")
+      call assert(abs(exp(lnPhi_l(2)) - 0.0937) < 1e-4, "PR76 Fugacities Elliot: liquid phi_CH4 vs Elliot (0.0937)")
+   end subroutine test_pr76_fugacities
+
+   subroutine test_pr76_txy_methanol_benzene()
+      ! Txy methanol-benzene from Elliot's book using saturation_temperature
+      ! function.
+      use yaeos, only: pr, PengRobinson76, ArModel, EquilibriumState
+      use yaeos, only: saturation_temperature
+
+      class(ArModel), allocatable :: model
+      type(EquilibriumState) :: sat_t
+
+      real(pr) :: z(2), error_sum
+      real(pr) :: x_bubble_nokij(18), t_bubble_nokij(18)
+      real(pr) :: y_dew_nokij(18), t_dew_nokij(18)
+      real(pr) :: x_bubble_kij(20), t_bubble_kij(20)
+      real(pr) :: y_dew_kij(20), t_dew_kij(20)
+
+      integer :: i
+
+      ! =======================================================================
+      ! No kij simulation points
+      ! -----------------------------------------------------------------------
+      x_bubble_nokij = [&
+         0.010, 0.036, 0.071, 0.118, 0.163, 0.226, &
+         0.282, 0.341, 0.410, 0.481, 0.546, 0.626, &
+         0.720, 0.796, 0.864, 0.903, 0.948, 0.984  &
+         ]
+
+      t_bubble_nokij = [&
+         352.584, 351.494, 350.013, 348.455, 347.052, 345.26, &
+         343.857, 342.766, 341.675, 340.584, 339.727, 338.87, &
+         338.247, 337.857, 337.701, 337.701, 337.701, 337.779 &
+         ]
+
+      y_dew_nokij = [&
+         0.010, 0.032, 0.058, 0.097, 0.137, 0.182, &
+         0.231, 0.270, 0.370, 0.442, 0.492, 0.533, &
+         0.583, 0.649, 0.713, 0.809, 0.864, 0.967  &
+         ]
+
+      t_dew_nokij = [&
+         352.896, 352.429, 351.883, 351.182, 350.325, 349.390, &
+         348.377, 347.597, 345.571, 344.013, 343.000, 342.221, &
+         341.286, 340.117, 339.104, 338.013, 337.701, 337.623  &
+         ]
+
+      ! =======================================================================
+      ! kij simulation points
+      ! -----------------------------------------------------------------------
+      x_bubble_kij = [&
+         0.005, 0.017, 0.042, 0.073, 0.098, 0.135, 0.161, 0.222, &
+         0.279, 0.348, 0.396, 0.436, 0.491, 0.559, 0.655, 0.688, &
+         0.764, 0.847, 0.904, 0.980&
+         ]
+
+      t_bubble_kij = [&
+         352.412, 350.876, 347.884, 345.054, 343.194, 340.606, &
+         338.908, 336.402, 334.461, 333.248, 332.844, 332.520, &
+         331.954, 331.469, 331.388, 331.307, 331.388, 331.873, &
+         332.439, 335.836 &
+         ]
+
+      y_dew_kij = [&
+         0.029, 0.082, 0.146, 0.201, 0.236, 0.286, 0.345, 0.392, &
+         0.462, 0.529, 0.568, 0.607, 0.652, 0.688, 0.744, 0.793, &
+         0.845, 0.880, 0.927, 0.977 &
+         ]
+
+      t_dew_kij = [&
+         352.251, 350.795, 348.854, 347.156, 346.024, 344.488, &
+         342.466, 340.849, 338.342, 335.916, 334.542, 333.248, &
+         332.035, 331.388, 332.278, 333.329, 334.461, 335.189, &
+         336.240, 337.372 &
+         ]
+
+      ! methanol - benzene no kij
+      model = PengRobinson76(&
+         [512.5_pr, 562.05_pr], &
+         [80.84_pr, 48.95_pr], &
+         [0.565831_pr, 0.2103_pr] &
+         )
+
+      ! bubble no kij
+      error_sum = 0.0_pr
+
+      do i = 1, 18
+         z = [x_bubble_nokij(i), 1.0_pr - x_bubble_nokij(i)]
+         sat_t = saturation_temperature(&
+            model, z, p=1.01325_pr, kind="bubble", t0=t_bubble_nokij(i) &
+            )
+
+         error_sum = error_sum + (sat_t%T - t_bubble_nokij(i))**2
+      end do
+      call assert(sqrt(error_sum) / 18 < 2e-2, "PR76 Txy methanol-benzene Elliot: bubble T RMS error, no kij")
+
+      ! dew no kij
+      error_sum = 0.0_pr
+
+      do i = 1, 18
+         z = [y_dew_nokij(i), 1.0_pr - y_dew_nokij(i)]
+         sat_t = saturation_temperature(&
+            model, z, p=1.01325_pr, kind="dew", t0=t_dew_nokij(i)&
+            )
+
+         error_sum = error_sum + (sat_t%T - t_bubble_nokij(i))**2
+      end do
+      call assert(sqrt(error_sum) / 18 < 0.7, "PR76 Txy methanol-benzene Elliot: dew T RMS error, no kij")
+
+      ! methanol - benzene kij
+      model = PengRobinson76(&
+         [512.5_pr, 562.05_pr], &
+         [80.84_pr, 48.95_pr], &
+         [0.565831_pr, 0.2103_pr], &
+         kij=reshape([0.0_pr, 0.084_pr, 0.084_pr, 0.0_pr], shape=[2, 2]) &
+         )
+
+      ! bubble kij
+      error_sum = 0.0_pr
+
+      do i = 1, 20
+         z = [x_bubble_kij(i), 1.0_pr - x_bubble_kij(i)]
+         sat_t = saturation_temperature(&
+            model, z, p=1.01325_pr, kind="bubble", t0=t_bubble_kij(i) &
+            )
+
+         error_sum = error_sum + (sat_t%T - t_bubble_kij(i))**2
+      end do
+      call assert(sqrt(error_sum) / 20 < 6e-2, "PR76 Txy methanol-benzene Elliot: bubble T RMS error, kij")
+
+      ! Dew kij
+      error_sum = 0.0_pr
+
+      do i = 1, 20
+         z = [y_dew_kij(i), 1.0_pr - y_dew_kij(i)]
+         sat_t = saturation_temperature(&
+            model, z, p=1.01325_pr, kind="dew", t0=t_dew_kij(i) &
+            )
+
+         error_sum = error_sum + (sat_t%T - t_bubble_kij(i))**2
+      end do
+      call assert(sqrt(error_sum) / 20 < 0.6, "PR76 Txy methanol-benzene Elliot: dew T RMS error, kij")
+   end subroutine test_pr76_txy_methanol_benzene
+
+   subroutine test_pr76_pxy_nitrogen_methane()
+      ! Pxy nitrogen-methane from Elliot's book using saturation_pressure
+      ! function.
+      use yaeos, only: pr, PengRobinson76, ArModel, EquilibriumState
+      use yaeos, only: saturation_pressure
+
+
+      class(ArModel), allocatable :: model
+      type(EquilibriumState) :: psat
+      real(pr) :: T, y_dew(9), p_dew(9), x_bubble(10), p_bubble(10), z(2)
+      real(pr) :: error_sum
+
+      integer :: i
+
+      y_dew = [0.05545, 0.1349, 0.2237, 0.3420, 0.4344, 0.5287, 0.6118, 0.6765, 0.7006]
+      p_dew = [10.97, 12.71, 13.96, 16.45, 19.20, 23.43, 29.67, 35.65, 40.89]
+
+      x_bubble = [0.06839, 0.1257, 0.1848, 0.2791, 0.2292, 0.3475, 0.4122, 0.4621, 0.5379, 0.6100]
+      p_bubble = [14.71, 18.20, 21.44, 26.68, 24.18, 30.17, 33.91, 36.90, 40.89, 44.63]
+
+      T = 150.0_pr
+
+      model = PengRobinson76(&
+         [126.2_pr, 190.564_pr], &
+         [34.0_pr, 45.99_pr], &
+         [0.0377215_pr, 0.0115478_pr] &
+         )
+
+      error_sum = 0.0_pr
+      do i = 1,9
+         z = [y_dew(i), 1.0_pr - y_dew(i)]
+         psat = saturation_pressure(model, z, T, kind="dew", p0=p_dew(i))
+
+         error_sum = error_sum + (psat%P - p_dew(i))**2
+      end do
+      call assert(sqrt(error_sum) / 9 < 0.15, "PR76 Pxy nitrogen-methane Elliot: dew P RMS error")
+
+      error_sum = 0.0_pr
+      do i = 1,10
+         z = [x_bubble(i), 1.0_pr - x_bubble(i)]
+         psat = saturation_pressure(model, z, T, kind="bubble", p0=p_bubble(i))
+
+         error_sum = error_sum + (psat%P - p_bubble(i))**2
+      end do
+      call assert(sqrt(error_sum) / 10 < 0.07, "PR76 Pxy nitrogen-methane Elliot: bubble P RMS error")
+   end subroutine test_pr76_pxy_nitrogen_methane
+
+   subroutine test_pr76_envelope_ethane_heptane()
+      use yaeos, only: pr, ArModel, EquilibriumState, PTEnvel2, PengRobinson76
+      use yaeos, only: saturation_pressure, pt_envelope_2ph
+
+
+      class(ArModel), allocatable :: model
+      type(EquilibriumState) :: bubble
+      type(PTEnvel2) :: envelope
+
+      real(pr) :: z(2)
+      real(pr), allocatable :: bubble_points_t(:), dew_points_t(:)
+      real(pr), allocatable :: bubble_points_p(:), dew_points_p(:)
+      real(pr) :: t_bub(21), p_bub(21), t_dew(14), p_dew(14)
+      real(pr) :: p_env, T, y1, y2, y3, x1, x2, x3, term1, term2, term3
+      real(pr) :: error_sum
+      ! real(pr) :: crit_point_t, crit_point_p
+
+      integer :: i, j, index
+
+      model = PengRobinson76( &
+         [305.32_pr, 540.2_pr], &
+         [48.72_pr, 27.4_pr], &
+         [0.099493_pr, 0.349469_pr] &
+         )
+
+      z = [0.1_pr, 0.9_pr]
+
+      bubble = saturation_pressure(model, z, T=230._pr, kind="bubble", p0=5.0_pr)
+
+      envelope = pt_envelope_2ph(model, z, bubble)
+
+      allocate(bubble_points_t(0))
+      allocate(bubble_points_p(0))
+      allocate(dew_points_t(0))
+      allocate(dew_points_p(0))
+
+      do i = 1, size(envelope%points)
+         if (envelope%points(i)%kind .eq. "bubble") then
+            bubble_points_t = [bubble_points_t, envelope%points(i)%T]
+            bubble_points_p = [bubble_points_p, envelope%points(i)%P]
+         elseif (envelope%points(i)%kind .eq. "dew") then
+            dew_points_t = [dew_points_t, envelope%points(i)%T]
+            dew_points_p = [dew_points_p, envelope%points(i)%P]
+         end if
+      end do
+
+      ! =======================================================================
+      ! Critical point check
+      ! -----------------------------------------------------------------------
+      call assert(abs(envelope%cps(1)%T - 532.9_pr) < 1, &
+         "PR76 ethane-heptane envelope Elliot: critical temperature (532.9 K)")
+      call assert(abs(envelope%cps(1)%P - 32.95_pr) < 0.2, &
+         "PR76 ethane-heptane envelope Elliot: critical pressure (32.95 bar)")
+      ! =======================================================================
+      ! Bubble points check
+      ! -----------------------------------------------------------------------
+      t_bub = [&
+         241.0, 252.4, 262.0, 272.3, 283.1, 295.6, 309.8, &
+         326.9, 344.0, 361.1, 374.1, 395.2, 408.3, 419.1, &
+         433.9, 451.0, 469.2, 484.0, 501.1, 513.6, 524.4  &
+         ]
+      p_bub = [&
+         0.8238, 1.236, 1.442, 1.854, 2.471, 3.089, 3.913, &
+         4.943, 6.178, 7.414, 8.650, 10.71, 12.15, 13.59,  &
+         15.45, 17.92, 21.01, 23.89, 27.39, 30.07, 32.33   &
+         ]
+
+      error_sum = 0.0_pr
+      do i = 1, size(t_bub)
+         do j = 1, size(bubble_points_t)
+            if (bubble_points_t(j) > t_bub(i)) then
+               ! lagrange polynomics
+               x1 = bubble_points_t(j-1)
+               x2 = bubble_points_t(j)
+               x3 = bubble_points_t(j+1)
+
+               y1 = bubble_points_p(j-1)
+               y2 = bubble_points_p(j)
+               y3 = bubble_points_p(j+1)
+               exit
+            end if
+         end do
+         T = t_bub(i)
+         term1 = y1 * (T - x2) * (T - x3) / ((x1 - x2) * (x1 - x3))
+         term2 = y2 * (T - x1) * (T - x3) / ((x2 - x1) * (x2 - x3))
+         term3 = y3 * (T - x1) * (T - x2) / ((x3 - x1) * (x3 - x2))
+
+         p_env = term1 + term2 + term3
+
+         error_sum = error_sum + (p_env - p_bub(i))**2
+      end do
+
+      call assert(sqrt(error_sum) / size(t_bub) < 0.03, "PR76 ethane-heptane envelope Elliot: bubble line P RMS error")
+
+      ! =======================================================================
+      ! Dew points check
+      ! -----------------------------------------------------------------------
+      t_dew = [&
+         368.5, 387.8, 406.6, 420.8, 437.3, 450.4, 464.1, &
+         474.9, 489.1, 497.6, 507.9, 515.9, 524.4, 531.2  &
+         ]
+
+      p_dew= [&
+         0.8238, 1.854, 2.883, 3.913, 5.561, 7.208, 9.474, &
+         11.53, 14.83, 17.09, 20.18, 23.07, 26.57, 30.48   &
+         ]
+
+      error_sum = 0.0_pr
+      do i = 1, size(t_dew)
+         do j = 1, size(dew_points_t)
+            if (dew_points_t(j) < t_dew(i)) then
+               x1 = dew_points_t(j-1)
+               x2 = dew_points_t(j)
+               x3 = dew_points_t(j+1)
+
+               y1 = dew_points_p(j-1)
+               y2 = dew_points_p(j)
+               y3 = dew_points_p(j+1)
+               exit
+            end if
+         end do
+         T = t_dew(i)
+         term1 = y1 * (T - x2) * (T - x3) / ((x1 - x2) * (x1 - x3))
+         term2 = y2 * (T - x1) * (T - x3) / ((x2 - x1) * (x2 - x3))
+         term3 = y3 * (T - x1) * (T - x2) / ((x3 - x1) * (x3 - x2))
+
+         p_env = term1 + term2 + term3
+
+         error_sum = error_sum + (p_env - p_dew(i))**2
+      end do
+
+      call assert(sqrt(error_sum) / size(t_dew) < 0.04, "PR76 ethane-heptane envelope Elliot: dew line P RMS error")
+   end subroutine test_pr76_envelope_ethane_heptane
+end program test_pr76

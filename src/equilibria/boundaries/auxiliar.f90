@@ -1,38 +1,54 @@
 module yaeos__equilibria_boundaries_auxiliar
-   !! Equilibria boundaries auxiliar module
-   !! This module contains the auxiliar functions and subroutines
-   !! used in the phase-boundaries calculations.
+   !! # Phase-boundary helper utilities
+   !! Composition interpolation and critical-region detection used by envelope solvers.
+   !!
+   !! # Description
+   !! Provides linear feed interpolation, its derivative, and state/index helpers
+   !! that detect passage near a critical point. These are lower-level building
+   !! blocks used by phase-envelope routines.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! call get_z(alpha, z0, zi, z, dzda)
+   !! ```
    use yaeos__constants, only: R, pr
    use yaeos__math, only: interpol
    implicit none
 
    type :: NearCritical
-      !! Near critical point information.
-      logical :: near_critical = .false.
-      !! If we are satisfying the condition of being near a critical point.
-      logical :: entering = .false.
-      !! Entering a critical region. This attribute is used to ensure that the
-      !! correct indexes are used since they should not be updated while inside
-      !! the region, just on the first point.
-      integer :: l 
-      !! Index of the phase that is becoming critical with the reference phase.
-      integer :: i
-      !! Index of the component with the max \(\ln K_i^l\)
-      integer :: j
-      !! Index of the component with the minimum \(\ln K_j^l\)
+      !! # NearCritical
+      !! State used to track a critical region during continuation.
+      !!
+      !! # Description
+      !! Records whether the line is near or entering a critical point and
+      !! which phase/component indices define the current critical direction.
+      !!
+      !! # Examples
+      !! Used internally by the phase-boundary continuation callbacks.
+      logical :: near_critical = .false. !! True while the critical-proximity criterion is met.
+      logical :: entering = .false. !! True at the first point entering the critical region.
+      integer :: l !! Phase index approaching the reference phase.
+      integer :: i !! Component index with maximum \(\ln K_i^l\).
+      integer :: j !! Component index with minimum \(\ln K_j^l\).
    end type NearCritical
 
 contains
    subroutine get_z(alpha, z_0, z_inj, z, dzda)
-      !! Calculate the fluid composition based on an amount of addition
-      !! of second fluid.
+      !! # get_z
+      !! Interpolate a feed between two limiting compositions.
       !!
-      !! The injection can be considered as two kinds of injection:
-      !! - Displacement: \( z = \alpha z_i + (1-\alpha) z_0 \)
-      !! - Addition:  \( z = \frac{\alpha z_i + (1-\alpha) z_0}{\sum_{i=1}^N \alpha z_i + (1-\alpha) z_0} \)
-      real(pr), intent(in)  :: alpha !! Addition percentaje \( \alpha \)
-      real(pr), intent(in) :: z_inj(:)
-      real(pr), intent(in) :: z_0(:)
+      !! # Description
+      !! Computes \(z=\alpha z_{inj}+(1-\alpha)z_0\) and, when requested,
+      !! \(dz/d\alpha=z_{inj}-z_0\). The caller is responsible for supplying
+      !! normalized endpoints when normalized mole fractions are required.
+      !!
+      !! # Examples
+      !! ```fortran
+      !! call get_z(alpha, z0, zi, z, dzda)
+      !! ```
+      real(pr), intent(in)  :: alpha !! Interpolation fraction \(\alpha\).
+      real(pr), intent(in) :: z_inj(:) !! Second limiting composition.
+      real(pr), intent(in) :: z_0(:) !! First limiting composition.
       real(pr), intent(out) :: z(size(z_0)) !! New composition
       real(pr), optional, intent(out) :: dzda(size(z_0)) !! Derivative wrt \(\alpha\)
 
@@ -84,13 +100,18 @@ contains
       !! Vector of variables at the critical point.
 
       character(len=14) :: incipient_kind
-      integer :: i, lb, ub
+      integer :: i !! Loop/index variable.
+      integer :: lb
+      integer :: ub
       integer :: ncomp
-      real(pr) :: a,  Xnew(size(X))
+      real(pr) :: a
+      real(pr) :: Xnew(size(X))
 
-      real(pr) :: lnKold(nc), lnK(nc)
+      real(pr) :: lnKold(nc)
+      real(pr) :: lnK(nc)
 
-      real(pr) :: T, P
+      real(pr) :: T
+      real(pr) :: P
 
       real(pr) :: limit
 
@@ -163,6 +184,12 @@ contains
    end subroutine detect_critical
 
    subroutine check_critical_jump(nc, np, ns, kinds_x, kind_w, X, X_last_converged, Xc, found_critical, jumped_critical)
+      !! # check_critical_jump
+      !! Detect and handle a continuation step that crosses a critical point.
+      !!
+      !! # Description
+      !! Uses phase-equilibrium K-factor and continuation information to detect
+      !! a near-critical crossing and update state used by the boundary tracker.
       use yaeos__math, only: interpol
       integer, intent(in) :: nc !! Number of components
       integer, intent(in) :: np !! Number of main phases
@@ -177,7 +204,9 @@ contains
 
       character(len=14) :: incipient_kind
 
-      integer :: l, lb, ub
+      integer :: l !! Loop/phase index.
+      integer :: lb
+      integer :: ub
       integer :: ncomp
       jumped_critical = .false.
       do l=1,np
@@ -200,6 +229,12 @@ contains
    end subroutine check_critical_jump
 
    subroutine near_critical(nc, np, X, near_crit, l, i, j)
+      !! # near_critical
+      !! Identify whether a multiphase continuation state is near criticality.
+      !!
+      !! # Description
+      !! Inspects logarithmic equilibrium ratios in the packed unknown vector
+      !! and returns phase/component indices used by critical-continuation logic.
       integer, intent(in) :: nc !! Number of components
       integer, intent(in) :: np !! Number of main phases
       real(pr), intent(in) :: X(nc*np+np+2) !! Vector of variables
@@ -210,9 +245,11 @@ contains
       integer, intent(out) :: j !! Index of the component with the minimum lnK
 
 
-      integer :: lb, ub
+      integer :: lb
+      integer :: ub
 
-      real(pr) :: cf, lnK(nc)
+      real(pr) :: cf
+      real(pr) :: lnK(nc)
 
       near_crit = .false.
 

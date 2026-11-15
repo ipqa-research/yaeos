@@ -25,7 +25,7 @@ run_test() {
     DID_TEST=1
     echo Checking tests files names...
     NAMING_ERRORS=0
-    for file in $(find test/*f90); do
+    for file in $(find test -name "*.f90" -not -path "test/support/*"); do
         filename="$(basename $file)"
         prefix="$(echo $filename | cut -d '_' -f1)"
 
@@ -40,6 +40,9 @@ run_test() {
     [ $NAMING_ERRORS -ge 1 ] && 
         echoerr "There are wrongly named files in the test directory"
 
+    echo Checking that fpm.toml lists every test program...
+    python tools/dev/test_to_toml.py --check || exit 1
+
     echo Running tests...
     fpm test --flag "--coverage -g" || exit 1
 }
@@ -47,8 +50,7 @@ run_test() {
 run_coverage() {
     gcovr \
         --exclude "build" \
-        --exclude "test/test_runner.f90" \
-        --exclude "test/fixtures/taperobinson.f90" \
+        --exclude "test/support/src/taperobinson.f90" \
         --exclude "test" \
         --exclude "src/adiff/hyperdual.f90" \
         --exclude "example" \
@@ -60,8 +62,7 @@ run_coverage() {
     
     gcovr \
         --exclude "build" \
-        --exclude "test/test_runner.f90" \
-        --exclude "test/fixtures/taperobinson.f90" \
+        --exclude "test/support/src/taperobinson.f90" \
         --exclude "test" \
         --exclude "src/adiff/hyperdual.f90" \
         --exclude "example" \

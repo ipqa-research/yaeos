@@ -1,23 +1,55 @@
 module yaeos__models_ar_genericcubic
+   !! # Generic cubic equation of state
+   !!
+   !! # Description
+   !! Base types and the generic implementation of a cubic equation of state.
+   !! The module defines the abstract [[AlphaFunction]] and [[CubicMixRule]]
+   !! types, and the [[CubicEoS]] model that combines them. Specific cubic
+   !! equations are provided in
+   !! [[yaeos__models_ar_cubic_implementations(module)]].
+   !! Defines the alpha-function and mixing-rule contracts, evaluates generic
+   !! cubic Helmholtz expressions, and provides model configuration methods.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! model = PengRobinson76(Tc, Pc, omega)
+   !! call model%set_alpha(alpha_function)
+   !! ```
    use yaeos__constants, only: pr
    use yaeos__models_ar, only: ArModel
    use yaeos__substance, only: Substances
    implicit none
 
    type, abstract :: AlphaFunction
-      !! Abstract derived type that describe the required
-      !! procedure for an alpha function.
+      !! # AlphaFunction
+      !! Abstract contract for temperature corrections to cubic attraction.
+      !!
+      !! # Description
+      !! Implementations return component-wise \(\alpha(T_r)\) and its first
+      !! two derivatives with respect to reduced temperature. `CubicEoS`
+      !! converts those derivatives to absolute-temperature derivatives.
+      !!
+      !! # Examples
+      !! See `AlphaSoave`, `AlphaRKPR`, and `AlphaMathiasCopeman`.
    contains
       procedure(abs_alpha), deferred :: alpha
    end type AlphaFunction
 
    type, abstract :: CubicMixRule
-      !! Abstract derived type that describe the required
-      !! procedure for a mixing rule on a Cubic EoS
+      !! # CubicMixRule
+      !! Abstract contract for cubic-EOS mixture parameter calculations.
+      !!
+      !! # Description
+      !! Concrete mixing rules implement attractive, repulsive, and cubic
+      !! denominator parameter mixing, including derivatives needed for
+      !! residual properties and phase equilibrium.
+      !!
+      !! # Examples
+      !! See `QMR`, `CMR`, `MHV`, and `HV_NRTL` for implementations.
       logical :: is_D_ddlc = .false.
-      !! Mixing rule D parameter dependant on density
+      !! Mixing rule D parameter depends on volume (density)
       logical :: dn2 = .false.
-      !! Calculate second order derivatives
+      !! Calculate second-order mole-number derivatives
    contains
       procedure(abs_Dmix), deferred :: Dmix
       procedure(abs_Bmix), deferred :: Bmix
@@ -25,8 +57,10 @@ module yaeos__models_ar_genericcubic
    end type CubicMixRule
 
    type, extends(ArModel) :: CubicEoS
-      !! # Cubic Equation of State.
+      !! # CubicEoS
+      !! Generic cubic equation of state with configurable alpha and mixing rules.
       !!
+      !! # Description
       !! Generic Cubic Equation of State as defined by Michelsen and Mollerup
       !! with a \(\delta_1\) parameter that is not constant,
       !! and a \(\delta_2\) parameter that depends on it. In the case of a
@@ -38,6 +72,12 @@ module yaeos__models_ar_genericcubic
       !!   P = \frac{RT}{V-B}
       !!       - \frac{D(T_r)}{(V+B\delta_1)(V+B\delta_2)}
       !! \]
+      !!
+      !! # Examples
+      !! ```fortran
+      !! model = PengRobinson76(Tc, Pc, omega)
+      !! call model%pressure(n, V, T, P)
+      !! ```
       class(CubicMixRule), allocatable :: mixrule
       !! # CubicMixRule derived type.
       !! Uses the abstract derived type `CubicMixRule` to define the
@@ -64,9 +104,12 @@ module yaeos__models_ar_genericcubic
       !! call eos%alpha%alpha(Tr, a, dadt, dadt2)
       !! a = a * eos%ac
       !! dadt = dadt * eos%ac / eos%components%Tc
-      !! dadt = dadt * eos%ac / eos%components%Tc**2
+      !! dadt2 = dadt2 * eos%ac / eos%components%Tc**2
       !! ! Calculate parameter
-      !! call eos%mixrule%Dmix(n, T, a, dadt, dadt2, D, dDdT, dDdT2, dDi, dDidT, dDij)
+      !! call eos%mixrule%Dmix(&
+      !!    n, V, T, a, dadt, dadt2, D, &
+      !!    dDdV, dDdT, dDdV2, dDdT2, dDi, dDdTV, dDidV, dDidT, dDij &
+      !!    )
       !! ```
       !! ## Calculation of the D1 parameter.
       !! ```fortran
@@ -83,7 +126,7 @@ module yaeos__models_ar_genericcubic
       !! and its derivatives, named `a`, `dadt` and `dadt2` respectively.
       !!
       !! # Examples
-      !! ## Callign the AlphaFunction of a setted up model.
+      !! ## Calling the AlphaFunction of a configured model.
       !! ```fortran
       !! use yaeos, only: CubicEoS, PengRobinson76
       !!
@@ -91,10 +134,10 @@ module yaeos__models_ar_genericcubic
       !! eos = PengRobinson76(tc, pc, w)
       !! call eos%alpha%alpha(Tr, a, dadt, dadt2)
       !! ```
-      real(pr), allocatable :: ac(:) !! Attractive critical parameter
-      real(pr), allocatable :: b(:) !! Repulsive parameter
-      real(pr), allocatable :: del1(:) !! \(\delta_1\) paramter
-      real(pr), allocatable :: del2(:) !! \(\delta_2\) paramter
+      real(pr), allocatable :: ac(:) !! Pure-component attractive parameters at \(T_c\), \(a_{c,i}\) [bar L^2/mol^2]
+      real(pr), allocatable :: b(:) !! Pure-component covolumes \(b_i\) [L/mol]
+      real(pr), allocatable :: del1(:) !! \(\delta_1\) parameter
+      real(pr), allocatable :: del2(:) !! \(\delta_2\) parameter
    contains
       procedure :: residual_helmholtz => GenericCubic_Ar
       procedure :: get_v0 => v0
@@ -107,10 +150,16 @@ module yaeos__models_ar_genericcubic
 
    abstract interface
       subroutine abs_alpha(self, Tr, a, dadt, dadt2)
+         !! # abs_alpha
+         !!
+         !! # Description
+         !! Evaluate a cubic alpha function and its reduced-temperature derivatives.
          import AlphaFunction, pr
-         class(AlphaFunction), intent(in) :: self
-         real(pr), intent(in) :: Tr(:)
-         real(pr), intent(out) :: a(:), dadt(:), dadt2(:)
+         class(AlphaFunction), intent(in) :: self !! Alpha-function implementation.
+         real(pr), intent(in) :: Tr(:) !! Reduced temperatures, one per component.
+         real(pr), intent(out) :: a(:) !! Alpha-function values.
+         real(pr), intent(out) :: dadt(:) !! First reduced-temperature derivative of alpha.
+         real(pr), intent(out) :: dadt2(:) !! Second reduced-temperature derivative of alpha.
       end subroutine abs_alpha
 
       subroutine abs_Dmix(self, n, V, T, &
@@ -118,29 +167,57 @@ module yaeos__models_ar_genericcubic
          D, &
          dDdV, dDdT, dDdV2, dDdT2, dDi, dDdTV, dDidV, dDidT, dDij &
          )
+         !! # abs_Dmix
+         !!
+         !! # Description
+         !! Evaluate the attractive mixture parameter and its state/composition
+         !! derivatives for a cubic mixing rule.
          import CubicMixRule, pr
-         class(CubicMixRule), intent(in) :: self
-         real(pr), intent(in) :: V, T, n(:)
-         real(pr), intent(in) :: ai(:), daidt(:), daidt2(:)
-         real(pr), intent(out) :: D, dDdV, dDdT, dDdV2, dDdT2, dDdTV, dDi(:), dDidV(:), dDidT(:), dDij(:, :)
+         class(CubicMixRule), intent(in) :: self !! Mixing-rule implementation.
+         real(pr), intent(in) :: V !! Total volume [L].
+         real(pr), intent(in) :: T !! Temperature [K].
+         real(pr), intent(in) :: n(:) !! Component mole amounts [mol].
+         real(pr), intent(in) :: ai(:) !! Pure-component attractive parameters.
+         real(pr), intent(in) :: daidt(:) !! Temperature derivatives of pure-component attractive parameters.
+         real(pr), intent(in) :: daidt2(:) !! Second temperature derivatives of pure-component attractive parameters.
+         real(pr), intent(out) :: D !! Attractive mixture parameter.
+         real(pr), intent(out) :: dDdV !! Volume derivative of the attractive mixture parameter.
+         real(pr), intent(out) :: dDdT !! Temperature derivative of the attractive mixture parameter.
+         real(pr), intent(out) :: dDdV2 !! Second volume derivative of the attractive mixture parameter.
+         real(pr), intent(out) :: dDdT2 !! Second temperature derivative of the attractive mixture parameter.
+         real(pr), intent(out) :: dDdTV !! Mixed temperature/volume derivative of the attractive mixture parameter.
+         real(pr), intent(out) :: dDi(:) !! Mole-number gradient of the attractive mixture parameter.
+         real(pr), intent(out) :: dDidV(:) !! Volume derivative of the attractive mole-number gradient.
+         real(pr), intent(out) :: dDidT(:) !! Temperature derivative of the attractive mole-number gradient.
+         real(pr), intent(out) :: dDij(:, :) !! Mole-number Hessian of the attractive mixture parameter.
       end subroutine abs_Dmix
 
       subroutine abs_Bmix(self, n, bi, B, dBi, dBij)
+         !! # abs_Bmix
+         !!
+         !! # Description
+         !! Evaluate the repulsive mixture parameter and its composition derivatives.
          import CubicMixRule, pr
-         class(CubicMixRule), intent(in) :: self
-         real(pr), intent(in) :: n(:)
-         real(pr), intent(in) :: bi(:)
-         real(pr), intent(out) :: B, dBi(:), dBij(:, :)
+         class(CubicMixRule), intent(in) :: self !! Mixing-rule implementation.
+         real(pr), intent(in) :: n(:) !! Component mole amounts [mol].
+         real(pr), intent(in) :: bi(:) !! Pure-component covolumes.
+         real(pr), intent(out) :: B !! Mixture covolume \(B\) [L].
+         real(pr), intent(out) :: dBi(:) !! Mole-number gradient of the mixture covolume.
+         real(pr), intent(out) :: dBij(:, :) !! Mole-number Hessian of the mixture covolume.
       end subroutine abs_Bmix
 
       subroutine abs_D1mix(self, n, d1i, D1, dD1i, dD1ij)
+         !! # abs_D1mix
+         !!
+         !! # Description
+         !! Evaluate the first denominator parameter and its composition derivatives.
          import pr, CubicMixRule
-         class(CubicMixRule), intent(in) :: self
-         real(pr), intent(in) :: n(:)
-         real(pr), intent(in) :: d1i(:)
-         real(pr), intent(out) :: D1
-         real(pr), intent(out) :: dD1i(:)
-         real(pr), intent(out) :: dD1ij(:, :)
+         class(CubicMixRule), intent(in) :: self !! Mixing-rule implementation.
+         real(pr), intent(in) :: n(:) !! Component mole amounts [mol].
+         real(pr), intent(in) :: d1i(:) !! Pure-component \(\delta_1\) values.
+         real(pr), intent(out) :: D1 !! Mixture \(\delta_1\) parameter.
+         real(pr), intent(out) :: dD1i(:) !! Gradient of `D1` with respect to mole amounts.
+         real(pr), intent(out) :: dD1ij(:, :) !! Hessian of `D1` with respect to mole amounts.
       end subroutine abs_D1mix
    end interface
 
@@ -149,14 +226,17 @@ contains
    subroutine GenericCubic_Ar(&
       self, n, V, T, Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2&
       )
+      !! # GenericCubic_Ar
+      !!
+      !! # Description
       !! Residual Helmholtz Energy for a generic Cubic Equation of State.
       !!
       !! Calculates the residual Helmholtz Energy for a generic Cubic EoS as
       !! defined by Michelsen and Møllerup:
       !!
       !! \[
-      !!   P = \frac{RT}{V-b}
-      !!       - \frac{a_c\alpha(T_r)}{(V+b\delta_1)(V+b\delta_2)}
+      !!   P = \frac{nRT}{V-B}
+      !!       - \frac{D(T,n)}{(V+B\delta_1)(V+B\delta_2)}
       !! \]
       !!
       !! This routine assumes that the \(\delta_1\) is not a constant parameter
@@ -168,7 +248,7 @@ contains
          generic => GenericCubic_Ar, &
          generic_dddlc => GenericCubic_Ar_dddlc
       use yaeos__constants, only: R
-      class(CubicEoS), intent(in) :: self
+      class(CubicEoS), intent(in) :: self !! Cubic model containing parameters and mixing-rule state.
       real(pr), intent(in) :: n(:) !! Number of moles
       real(pr), intent(in) :: v !! Volume [L]
       real(pr), intent(in) :: t !! Temperature [K]
@@ -185,18 +265,31 @@ contains
       real(pr), optional, intent(out) :: Arn2(size(n), size(n)) !! \(\frac{d^2Ar}{dn_{ij}}\)
 
 
-      real(pr) :: B, dBi(size(n)), dBij(size(n), size(n))
-      real(pr) :: D, dDi(size(n)), dDij(size(n), size(n)), dDidT(size(n)), dDdT, dDdT2
-      real(pr) :: dDdV, dDdV2, dDdTV, dDidV(size(n))
+      real(pr) :: B
+      real(pr) :: dBi(size(n)) !! Mole-number gradient of the mixture covolume.
+      real(pr) :: dBij(size(n), size(n)) !! Mole-number Hessian of the mixture covolume.
+      real(pr) :: D !! Attractive mixture parameter.
+      real(pr) :: dDi(size(n)) !! Mole-number gradient of the attractive mixture parameter.
+      real(pr) :: dDij(size(n), size(n)) !! Mole-number Hessian of the attractive mixture parameter.
+      real(pr) :: dDidT(size(n)) !! Temperature derivative of the attractive mole-number gradient.
+      real(pr) :: dDdT !! Temperature derivative of the attractive mixture parameter.
+      real(pr) :: dDdT2 !! Second temperature derivative of the attractive mixture parameter.
+      real(pr) :: dDdV !! Volume derivative of the attractive mixture parameter.
+      real(pr) :: dDdV2 !! Second volume derivative of the attractive mixture parameter.
+      real(pr) :: dDdTV !! Mixed temperature/volume derivative of the attractive mixture parameter.
+      real(pr) :: dDidV(size(n)) !! Volume derivative of the attractive mole-number gradient.
 
-      real(pr) :: totn
+      real(pr) :: totn !! Total number of moles.
       real(pr) d1, dD1i(size(n)), dD1ij(size(n), size(n))
 
 
-      real(pr) :: Tr(size(n)), a(size(n)), dadt(size(n)), dadt2(size(n))
+      real(pr) :: Tr(size(n))
+      real(pr) :: a(size(n))
+      real(pr) :: dadt(size(n))
+      real(pr) :: dadt2(size(n))
 
 
-      integer :: nc
+      integer :: nc !! Number of components.
 
       nc = size(n)
       TOTN = sum(n)
@@ -252,32 +345,53 @@ contains
    end subroutine GenericCubic_Ar
 
    subroutine set_delta1(self, delta1)
+      !! # set_delta1
+      !!
+      !! # Description
+      !! Set the \(\delta_1\) parameter of the cubic equation.
+      !!
+      !! The \(\delta_2\) parameter is recalculated from
+      !! \(\delta_2 = (1 - \delta_1)/(1 + \delta_1)\).
       class(CubicEoS) :: self
-      real(pr), intent(in) :: delta1(:)
+      real(pr), intent(in) :: delta1(:) !! \(\delta_1\) values
       self%del1 = delta1
       self%del2 = (1._pr - delta1)/(1._pr + delta1)
    end subroutine set_delta1
 
    subroutine set_mixrule(self, mixrule)
-      class(CubicEoS), intent(in out) :: self
-      class(CubicMixRule), intent(in) :: mixrule
+      !! # set_mixrule
+      !!
+      !! # Description
+      !! Set the mixing rule used to calculate mixture attractive parameters.
+      class(CubicEoS), intent(in out) :: self !! Model whose mixing rule is replaced.
+      class(CubicMixRule), intent(in) :: mixrule !! Mixing rule
       if (allocated(self%mixrule)) deallocate(self%mixrule)
       self%mixrule = mixrule
    end subroutine set_mixrule
 
    subroutine set_alpha(self, alpha)
-      class(CubicEoS), intent(in out) :: self
-      class(AlphaFunction), intent(in) :: alpha
+      !! # set_alpha
+      !!
+      !! # Description
+      !! Set the alpha function used to calculate the attractive parameter.
+      class(CubicEoS), intent(in out) :: self !! Model whose alpha function is replaced.
+      class(AlphaFunction), intent(in) :: alpha !! Alpha function
       if (allocated(self%alpha)) deallocate(self%alpha)
       self%alpha = alpha
    end subroutine set_alpha
 
    subroutine calculate_attractive_parameters(self, T, a, dadt, dadt2)
+      !! # calculate_attractive_parameters
+      !! Pure-component attractive parameters and their temperature derivatives.
+      !!
+      !! # Description
+      !! Evaluates the alpha function at \(T_r = T/T_{c,i}\) and returns
+      !! \(a_i = a_{c,i}\alpha_i\), \(da_i/dT\), and \(d^2a_i/dT^2\).
       class(CubicEoS), intent(in out) :: self !! Model
       real(pr), intent(in) :: T !! Temperature [K]
-      real(pr), intent(out) :: a(:) !! Attractive parameter
-      real(pr), intent(out) :: dadt(:) !! Derivative wrt temperature
-      real(pr), intent(out) :: dadt2(:) !! Second derivative wrt temperature
+      real(pr), intent(out) :: a(:) !! Attractive parameters \(a_i(T) = a_{c,i}\alpha_i\) [bar L^2/mol^2]
+      real(pr), intent(out) :: dadt(:) !! \(da_i/dT\) [bar L^2/(mol^2 K)]
+      real(pr), intent(out) :: dadt2(:) !! \(d^2a_i/dT^2\) [bar L^2/(mol^2 K^2)]
 
       real(pr) :: Tr(size(a)) !! Reduced temperatures for each pure component
 
@@ -294,11 +408,14 @@ contains
       !! For a Cubic Equation of State, the covolume calculated with the mixing
       !! rule is a good estimate for the initial volume solver on the liquid
       !! region.
-      class(CubicEoS), intent(in) :: self
-      real(pr), intent(in) :: n(:), p, t
+      class(CubicEoS), intent(in) :: self !! Cubic model with component covolumes and mixing rule.
+      real(pr), intent(in) :: n(:) !! Component mole amounts [mol].
+      real(pr), intent(in) :: p !! Pressure [bar].
+      real(pr), intent(in) :: t !! Temperature [K].
       real(pr) :: v0
 
-      real(pr) :: dbi(size(n)), dbij(size(n), size(n))
+      real(pr) :: dbi(size(n))
+      real(pr) :: dbij(size(n), size(n))
       call self%mixrule%Bmix(n, self%b, v0, dbi, dbij)
    end function v0
 
@@ -308,13 +425,14 @@ contains
       !!
       !! # Description
       !! Uses the solver proposed by Michelsen.
+      !!
       !! # Examples
       !!
       !! ```fortran
-      !!  use yaeos, only: CubicEoS, PengRobinson
+      !!  use yaeos, only: CubicEoS, PengRobinson76
       !!  type(CubicEoS) :: eos
       !!
-      !!  eos = PengRobinson(tc, pc, w)
+      !!  eos = PengRobinson76(tc, pc, w)
       !!  ! Possible roots to solve
       !!  call eos%volume(n, P, T, V, "liquid")
       !!  call eos%volume(n, P, T, V, "vapor")
@@ -334,25 +452,43 @@ contains
       use yaeos__constants, only: R
       use yaeos__math_linalg, only: cubic_roots, cubic_roots_rosendo
       use yaeos__models_solvers, only: volume_michelsen
-      class(CubicEoS), intent(in) :: eos
-      real(pr), intent(in) :: n(:), P, T
-      real(pr), intent(out) :: V
-      character(len=*), intent(in) :: root_type
+      class(CubicEoS), intent(in) :: eos !! Cubic EOS and mixing-rule parameters.
+      real(pr), intent(in) :: n(:) !! Component mole amounts [mol].
+      real(pr), intent(in) :: P !! Pressure [bar].
+      real(pr), intent(in) :: T !! Temperature [K].
+      real(pr), intent(out) :: V !! Selected total volume [L].
+      character(len=*), intent(in) :: root_type !! Requested `liquid`, `vapor`, or `stable` root.
 
-      real(pr) :: z(size(n))
-      real(pr) :: cp(4), rr(3)
+      real(pr) :: z(size(n)) !! Feed or overall composition.
+      real(pr) :: cp(4)
+      real(pr) :: rr(3)
       complex(pr) :: cr(3)
-      integer :: flag
+      integer :: flag !! Root/solver classification code.
 
-      real(pr) :: V_liq, V_vap
-      real(pr) :: Ar, AT_Liq, AT_Vap
+      real(pr) :: V_liq
+      real(pr) :: V_vap
+      real(pr) :: Ar
+      real(pr) :: AT_Liq
+      real(pr) :: AT_Vap
 
-      real(pr) :: Bmix, dBi(size(n)), dBij(size(n), size(n))
-      real(pr) :: D, dDi(size(n)), dDij(size(n), size(n)), dDidT(size(n)), dDdT, dDdT2
-      real(pr) :: D1, D2, dD1i(size(n)), dD1ij(size(n), size(n))
+      real(pr) :: Bmix !! Mixture covolume.
+      real(pr) :: dBi(size(n)) !! Mole-number gradient of the mixture covolume.
+      real(pr) :: dBij(size(n), size(n)) !! Mole-number Hessian of the mixture covolume.
+      real(pr) :: D !! Attractive mixture parameter.
+      real(pr) :: dDi(size(n)) !! Mole-number gradient of the attractive mixture parameter.
+      real(pr) :: dDij(size(n), size(n)) !! Mole-number Hessian of the attractive mixture parameter.
+      real(pr) :: dDidT(size(n)) !! Temperature derivative of the attractive mole-number gradient.
+      real(pr) :: dDdT !! Temperature derivative of the attractive mixture parameter.
+      real(pr) :: dDdT2 !! Second temperature derivative of the attractive mixture parameter.
+      real(pr) :: D1
+      real(pr) :: D2
+      real(pr) :: dD1i(size(n)) !! Mole-number gradient of the cubic denominator parameter.
+      real(pr) :: dD1ij(size(n), size(n)) !! Mole-number Hessian of the cubic denominator parameter.
       real(pr) :: Tr(size(n))
-      real(pr) :: a(size(n)), dadt(size(n)), dadt2(size(n))
-      real(pr) :: totn
+      real(pr) :: a(size(n)) !! Alpha-function values.
+      real(pr) :: dadt(size(n)) !! First reduced-temperature derivative of alpha.
+      real(pr) :: dadt2(size(n)) !! Second reduced-temperature derivative of alpha.
+      real(pr) :: totn !! Total number of moles.
 
       call volume_michelsen(eos, n=n, P=P, T=T, V=V, root_type=root_type)
    end subroutine volume

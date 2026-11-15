@@ -1,47 +1,52 @@
 module yaeos__adiff_hyperdual_ar_api
-   !! Module that contains the automatic differentiation logic for an Ar model.
+   !! # Hyperdual residual Helmholtz models
+   !! Base type and derivative adapter for models defined with hyperdual numbers.
    !!
-   !! All that is needed to define an Ar model that uses automatic
-   !! differentiation with hyperdual numbers is to define a new derived type
-   !! that overloads the method to the Ar function that you want to use.
-   !! A minimal example follows:
+   !! # Description
+   !! Extend `ArModelAdiff`, implement its hyperdual `Ar` function and the
+   !! inherited volume initializer, and the adapter extracts the first and
+   !! second derivatives required by the standard `ArModel` interface.
+   !! This is the intended user entry point for operator-overloaded AD; the
+   !! adapter routines are its implementation details.
+   !!
+   !! # Examples
+   !! All that is needed is a derived type extending `ArModelAdiff`, a
+   !! hyperdual-valued `Ar` function, and the inherited volume initializer.
    !!
    !! ```fortran
    !! module newmodel
    !! use yaeos__adiff_hyperdual_ar_api, only: ArModelAdiff
+   !! use yaeos__constants, only: pr
+   !! use hyperdual_mod, only: hyperdual
+   !! implicit none
    !!
    !! type, extends(ArModelAdiff) :: YourNewModel
-   !!       type(Substances) :: composition
-   !!       real(8) :: parameters(:)
-   !!     contains
-   !!       procedure :: Ar => arfun
-   !!       procedure :: get_v0 => v0
+   !!    real(pr) :: a = 1.0_pr
+   !! contains
+   !!    procedure :: Ar => arfun
+   !!    procedure :: get_v0 => v0
    !! end type
    !! contains
-   !! subroutine arfun(self, n, v, t, Ar)
+   !! type(hyperdual) function arfun(self, n, v, t) result(arval)
+   !!    class(YourNewModel) :: self
+   !!    type(hyperdual), intent(in) :: n(:), v, t
+   !!
+   !!    arval = sum(n) * t + self%a * v
+   !! end function arfun
+   !!
+   !! function v0(self, n, p, t) result(vol)
    !!    class(YourNewModel), intent(in) :: self
-   !!    type(hyperdual), intent(in) :: n(:) ! Number of moles
-   !!    type(hyperdual), intent(in) :: v ! Volume [L]
-   !!    type(hyperdual), intent(in) :: t ! Temperature [K]
-   !!    type(hyperdual), intent(out) :: ar_value ! Residual Helmholtz Energy
+   !!    real(pr), intent(in) :: n(:), p, t
+   !!    real(pr) :: vol
    !!
-   !!    ! A very complicated residual helmholtz function of a mixture
-   !!    Ar = sum(n) * v * t
-   !! end subroutine
-   !!
-   !! function v0(self, n, p, t)
-   !!    class(YourNewModel), intent(in) :: self
-   !!    real(pr), intent(in) :: n(:) ! Number of moles
-   !!    real(pr), intent(in) :: p ! Pressure [bar]
-   !!    real(pr), intent(in) :: t ! Temperature [K]
-   !!    real(pr) :: v0
-   !!
-   !!    v0 = self%parameters(3)
-   !! end function
+   !!    vol = self%a * sum(n)
+   !! end function v0
+   !! end module newmodel
    !! ```
    !!
-   !! A complete implementation of the PR76 Equation of State can me found in
-   !! `example/adiff/adiff_pr76.f90`
+   !! # References
+   !! See `example/extra/adiff_pr76.f90` and the user guide's automatic-
+   !! differentiation page for a complete implementation.
    !!
    use yaeos__constants, only: pr
    use yaeos__models_ar, only: ArModel
@@ -50,6 +55,18 @@ module yaeos__adiff_hyperdual_ar_api
    implicit none
 
    type, abstract, extends(ArModel) :: ArModelAdiff
+      !! # ArModelAdiff
+      !! Base type for residual Helmholtz models defined with hyperdual arithmetic.
+      !!
+      !! # Description
+      !! A concrete extension implements `Ar` as a function returning the
+      !! residual Helmholtz energy in hyperdual form. The adapter seeds the
+      !! mole amounts, volume, and temperature to extract requested first and
+      !! second derivatives, then exposes them through the `ArModel` API.
+      !! A concrete type must also implement the inherited `get_v0` initializer.
+      !!
+      !! # Examples
+      !! See the module-level example and `example/extra/adiff_pr76.f90`.
    contains
       procedure(hyperdual_ar), deferred :: Ar
       procedure :: residual_helmholtz => residual_helmholtz
@@ -57,11 +74,12 @@ module yaeos__adiff_hyperdual_ar_api
 
    abstract interface
       type(hyperdual) function hyperdual_Ar(self, n, v, t)
+         !! Evaluate the model's residual Helmholtz energy \(A^r(n,V,T)\) [bar L] in hyperdual arithmetic.
          import hyperdual, ArModelAdiff
-         class(ArModelAdiff) :: self
-         type(hyperdual), intent(in) :: n(:)
-         type(hyperdual), intent(in) :: v
-         type(hyperdual), intent(in) :: t
+         class(ArModelAdiff) :: self !! Concrete EOS model; passed-object dummy.
+         type(hyperdual), intent(in) :: n(:) !! Component mole amounts as hyperdual values.
+         type(hyperdual), intent(in) :: v !! Total volume as a hyperdual value.
+         type(hyperdual), intent(in) :: t !! Temperature as a hyperdual value.
       end function hyperdual_Ar
    end interface
 contains
@@ -69,14 +87,35 @@ contains
    subroutine residual_helmholtz(&
       self, n, v, t, Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2 &
       )
-      class(ArModelAdiff), intent(in) :: self
-      real(pr), intent(in) :: n(:)
-      real(pr), intent(in) :: v, t
-      real(pr), optional, intent(out) :: Ar, ArV, ArT, ArT2, ArTV, ArV2
-      real(pr), optional, dimension(size(n)), intent(out) :: Arn, ArVn, ArTn
-      real(pr), optional, intent(out) :: Arn2(size(n), size(n))
+      !! # residual_helmholtz
+      !! Evaluate residual Helmholtz energy and requested derivatives by AD.
+      !!
+      !! # Description
+      !! Converts real inputs into hyperdual variables, seeds their derivative
+      !! slots, evaluates the concrete model's `Ar` function, and copies the
+      !! requested first- and second-order derivatives to optional outputs.
+      !!
+      !! # Examples
+      !! Usually called through inherited methods such as `pressure` or
+      !! `lnphi_pt` rather than invoked directly.
+      class(ArModelAdiff), intent(in) :: self !! Model instance.
+      real(pr), intent(in) :: n(:) !! Component mole amounts [mol].
+      real(pr), intent(in) :: v !! Total volume [L].
+      real(pr), intent(in) :: t !! Temperature [K].
+      real(pr), optional, intent(out) :: Ar !! Residual Helmholtz energy [bar L].
+      real(pr), optional, intent(out) :: ArV !! \(\partial A^r/\partial V\) [bar].
+      real(pr), optional, intent(out) :: ArT !! \(\partial A^r/\partial T\) [bar L/K].
+      real(pr), optional, intent(out) :: ArT2 !! \(\partial^2 A^r/\partial T^2\) [bar L/K^2].
+      real(pr), optional, intent(out) :: ArTV !! \(\partial^2 A^r/\partial T\partial V\) [bar/K].
+      real(pr), optional, intent(out) :: ArV2 !! \(\partial^2 A^r/\partial V^2\) [bar/L].
+      real(pr), optional, dimension(size(n)), intent(out) :: Arn !! \(\partial A^r/\partial n_i\) [bar L/mol].
+      real(pr), optional, dimension(size(n)), intent(out) :: ArVn !! \(\partial^2 A^r/\partial V\partial n_i\) [bar/mol].
+      real(pr), optional, dimension(size(n)), intent(out) :: ArTn !! \(\partial^2 A^r/\partial T\partial n_i\) [bar L/(K mol)].
+      real(pr), optional, intent(out) :: Arn2(size(n), size(n)) !! \(\partial^2 A^r/\partial n_i\partial n_j\) [bar L/mol^2].
 
-      type(hyperdual) :: d_v, d_t, d_n(size(n))
+      type(hyperdual) :: d_v !! Hyperdual total-volume input.
+      type(hyperdual) :: d_t !! Hyperdual temperature input.
+      type(hyperdual) :: d_n(size(n)) !! Hyperdual component mole amounts.
       type(hyperdual) :: d_Ar
 
       logical :: any_deriv
@@ -145,7 +184,9 @@ contains
    contains
 
       subroutine get_dardn()
-         integer :: i
+         !! # get_dardn
+         !! Extract the first composition derivatives from hyperdual lanes.
+         integer :: i !! Loop/index variable.
          do i=2, size(n), 2
             call reset_vars()
             d_n(i-1)%f1 = 1
@@ -168,7 +209,10 @@ contains
       end subroutine get_dardn
 
       subroutine get_dardn2()
-         integer :: i, j
+         !! # get_dardn2
+         !! Extract the symmetric mole-number Hessian and requested gradient.
+         integer :: i !! Loop index `i`.
+         integer :: j !! Loop index `j`.
          do i=1,size(n)
             do j=i,size(n)
                call reset_vars()
@@ -188,7 +232,9 @@ contains
       end subroutine get_dardn2
 
       subroutine get_dardvn()
-         integer :: i
+         !! # get_dardvn
+         !! Extract mixed volume-mole derivatives and any requested first derivatives.
+         integer :: i !! Loop/index variable.
          do i=1,size(n)
             call reset_vars()
             d_n(i)%f1 = 1
@@ -201,7 +247,9 @@ contains
       end subroutine get_dardvn
 
       subroutine get_dardtn()
-         integer :: i
+         !! # get_dardtn
+         !! Extract mixed temperature-mole derivatives and any requested first derivatives.
+         integer :: i !! Loop/index variable.
          do i=1,size(n)
             call reset_vars()
             d_n(i)%f1 = 1
@@ -214,6 +262,8 @@ contains
       end subroutine get_dardtn
 
       subroutine get_dardv()
+         !! # get_dardv
+         !! Extract the first derivative with respect to volume.
          call reset_vars()
          d_v%f1 = 1
          d_Ar = self%Ar(d_n, d_v, d_t)
@@ -221,6 +271,8 @@ contains
       end subroutine get_dardv
 
       subroutine get_dardt()
+         !! # get_dardt
+         !! Extract the first derivative with respect to temperature.
          call reset_vars()
          d_t%f1 = 1
          d_Ar = self%Ar(d_n, d_v, d_t)
@@ -228,6 +280,8 @@ contains
       end subroutine get_dardt
 
       subroutine get_dardt2()
+         !! # get_dardt2
+         !! Extract the second temperature derivative and optional first derivative.
          call reset_vars()
          d_t%f1 = 1
          d_t%f2 = 1
@@ -237,6 +291,8 @@ contains
       end subroutine get_dardt2
 
       subroutine get_dardv2()
+         !! # get_dardv2
+         !! Extract the second volume derivative and optional first derivative.
          call reset_vars()
          d_v%f1 = 1
          d_v%f2 = 1
@@ -246,6 +302,8 @@ contains
       end subroutine get_dardv2
 
       subroutine get_dardvt()
+         !! # get_dardvt
+         !! Extract the mixed volume-temperature derivative and first derivatives.
          call reset_vars()
          d_v%f1 = 1
          d_t%f2 = 1
@@ -256,6 +314,8 @@ contains
       end subroutine get_dardvt
 
       subroutine reset_vars()
+         !! # reset_vars
+         !! Restore hyperdual inputs to the unperturbed state before a new seed.
          d_n = n
          d_v = v
          d_t = t

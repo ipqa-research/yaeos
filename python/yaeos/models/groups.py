@@ -6,7 +6,7 @@ import numpy as np
 
 
 def groups_from_dicts(molecules: List[dict]):
-    """Convert list of dicts with groups and their to C-API format.
+    """Convert list of dicts with groups and their amounts to C-API format.
 
     Convert list of dicts with groups and their amounts to the format required
     by the C-API.
@@ -21,7 +21,7 @@ def groups_from_dicts(molecules: List[dict]):
         Number of groups for each molecule.
     groups_ids : np.ndarray
         Groups ids for each molecule.
-    groups_ammounts : np.ndarray
+    groups_amounts : np.ndarray
         Groups amounts for each molecule.
     """
     nc = len(molecules)

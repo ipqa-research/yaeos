@@ -21,8 +21,7 @@ module yaeos__models_ge_group_contribution_unifac_parameters
    !! ```
    !!
    !! # References
-   !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst
-   !! .com/published-parameters-unifac.html)
+   !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst.com/published-parameters-unifac.html)
    !! 2. Fredenslund, A., Jones, R. L., & Prausnitz, J. M. (1975).
    !! Group‐contribution estimation of activity coefficients in nonideal liquid
    !! mixtures. AIChE Journal, 21(6), 1086–1099.
@@ -107,8 +106,7 @@ contains
       !! ```
       !!
       !! # References
-      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst
-      !! .com/published-parameters-unifac.html)
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst.com/published-parameters-unifac.html)
       !! 2. Fredenslund, A., Jones, R. L., & Prausnitz, J. M. (1975).
       !! Group‐contribution estimation of activity coefficients in nonideal liquid
       !! mixtures. AIChE Journal, 21(6), 1086–1099.

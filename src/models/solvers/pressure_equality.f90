@@ -1,5 +1,16 @@
 module yaeos__solvers_pressure_equality
-   !! Solve the pressure equality of a
+   !! # Fixed-volume two-phase pressure equality
+   !! Solve phase pressure equality for a two-phase state at fixed temperature and total volume.
+   !!
+   !! # Description
+   !! The routine treats the heavy-phase volume as the Newton unknown and
+   !! obtains the light-phase volume from the overall volume balance. It returns
+   !! the average phase pressure once the two phase pressures agree.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! call pressure_equality_V_beta_xy(model, T, V, beta, x, y, Vx, Vy, P)
+   !! ```
    use yaeos__constants, only: pr, R
    use yaeos__models_ar, only: ArModel
 
@@ -8,13 +19,25 @@ module yaeos__solvers_pressure_equality
 contains
 
    subroutine pressure_equality_V_beta_xy(model, T, V, beta, x, y, vx, vy, P)
+      !! # pressure_equality_V_beta_xy
       !! Solve pressure equality between two phases at a given temperature,
       !! total volume, vapor molar fractions and compositions.
+      !!
+      !! # Description
+      !! Uses \(V=(1-\beta)V_x+\beta V_y\) to express `Vy` as a function of
+      !! `Vx`, then applies Newton iteration to \(P_x(V_x)-P_y(V_y)=0\). The
+      !! liquid volume is constrained to remain above the model's covolume.
+      !! A failure to converge within the internal iteration cap returns
+      !! `P=-1` after 100 iterations and writes a warning to the error unit.
+      !!
+      !! # Examples
+      !! See the module-level call pattern; `x` and `y` must be normalized
+      !! phase compositions and `beta` is the light-phase fraction.
       use iso_fortran_env, only: error_unit
 
-      class(ArModel), intent(in) :: model
+      class(ArModel), intent(in) :: model !! EOS used to evaluate both phase pressures.
       real(pr), intent(in) :: T !! Temperature [K]
-      real(pr), intent(in) :: V !! Total volume [L/mol]
+      real(pr), intent(in) :: V !! Overall molar volume of the two-phase system [L/mol]
       real(pr), intent(in) :: beta !! Molar fraction of light-phase
       real(pr), intent(in) :: x(:) !! Molar fractions of heavy-phase
       real(pr), intent(in) :: y(:) !! Molar fractions of light-phase
@@ -22,23 +45,25 @@ contains
       real(pr), intent(in out) :: Vy !! Light-Phase molar volume [L/mol]
       real(pr), intent(out) :: P !! Pressure [bar]
 
-      real(pr) :: Bx !! Liquid phase covolume
+      real(pr) :: Bx !! Heavy-phase covolume from `get_v0` [L/mol]
       real(pr) :: dVydVx !! Derivative of Vy wrt Vx
 
       ! Pressure equality newton functions
-      real(pr) :: h !! Pressure equality
-      real(pr) :: dh  !! dh/
+      real(pr) :: h !! Pressure-equality residual \(P_y - P_x\) [bar]
+      real(pr) :: dh !! \(dh/dV_x\)
       real(pr) :: stepv
 
-      real(pr) :: dPxdV, dPydV
-      real(pr) :: Px, Py
+      real(pr) :: dPxdV
+      real(pr) :: dPydV
+      real(pr) :: Px
+      real(pr) :: Py
 
-      integer :: its
+      integer :: its !! Iteration count.
 
       dVydVx = -(1 - beta)/beta
       Bx = model%get_v0(x, 0.1_pr, T)
 
-      ! First evaluation will be with Vx = 1.5*Bx
+      ! First evaluation will be with Vx = 1.625*Bx
       if (Vx < Bx) Vx = 1.625_pr*Bx
 
       call model%pressure(x, Vx, T, Px, dpdv=dPxdV)
