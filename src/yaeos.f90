@@ -39,5 +39,5 @@ module yaeos
    use yaeos__substance
    use yaeos__models
    use yaeos__equilibria
-   character(len=*), parameter :: version="4.5.4" !! This version.
+   character(len=*), parameter :: version="4.5.5" !! This version.
 end module yaeos
