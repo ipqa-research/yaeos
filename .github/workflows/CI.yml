@@ -51,9 +51,12 @@ jobs:
       run: |
         # TODO: update gcovr later
         python -m pip install --upgrade pip
-        pip install ford numpy matplotlib gcovr==8.6 numpy scipy coverage
+        pip install ford numpy matplotlib gcovr==8.6 numpy scipy coverage toml
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         sudo apt-get install libnlopt-dev libblas-dev liblapack-dev
+
+    - name: Check that fpm.toml lists every test program
+      run: python tools/dev/test_to_toml.py --check
 
     - name: Run tests without coverage
       if: startsWith(env.FC, 'gfortran')

@@ -111,14 +111,15 @@ Run from the repository root:
 ```bash
 fpm build
 fpm run --example basics
-fpm test --target test_mixing_base
+fpm test mixing_base
 fpm test
 ```
 
-`basics` is a registered example in `fpm.toml`. `test_mixing_base` is a
-standalone test program discovered from `test/test_mixing_base.f90`. Every
-native test is a standalone program like this one, and the full `fpm test`
-runs all of them.
+`basics` is a registered example in `fpm.toml`. `mixing_base` is the test
+program `test/models/residual_helmholtz/cubic/mixing_rules/test_mixing_base.f90`,
+registered in `fpm.toml` by `tools/dev/test_to_toml.py`. Every native test is
+a standalone program like this one, in a `test/` subdirectory that mirrors
+`src/`, and the full `fpm test` runs all of them.
 Discover your checkout's targets
 with `fpm test --list` and consult `fpm test --help` for your installed version.
 
