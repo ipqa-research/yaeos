@@ -17,16 +17,18 @@ needed for thermodynamic and cross-language work. Use
 
 ## Where tests live and how they run
 
-The native tests are under `test/`; fixtures and model-specific cases appear
-in its subdirectories. **Write new tests as standalone Fortran programs.**
-The project is migrating away from test-drive suite registration. Older suite
-modules and `test/test_runner.f90` remain in the tree during that migration,
-but they are not the pattern to copy for a new test.
+The native tests are standalone Fortran programs in `test/`, one file per
+program (`test/test_<feature>.f90`). The project no longer uses test-drive
+suites or a collector program. Every test is an independent executable, so a
+failure can be run and debugged on its own.
 
 `fpm` discovers test programs automatically because `auto-tests = true` in
-`fpm.toml`. Each program is a separate test target. Shared helpers and fixtures
-can remain modules, but a module alone is not an executable test. Use
-`fpm test --list` to confirm that your new program is discovered.
+`fpm.toml`. Each program is a separate test target. **Put test programs
+directly in `test/`, not in a subdirectory.** fpm only lets a test program use
+test modules from its own directory or below, and the helper module
+`testing_aux` lives in `test/yaeos_testing.f90`. Subdirectories such as
+`test/fixtures/` hold shared helper modules only. Use `fpm test --list` to
+confirm that your new program is discovered.
 
 Python tests are under `python/tests/`. Some compare directly with native
 Fortran calls by generating small programs in `app/`. Those tests need a
@@ -38,7 +40,8 @@ checkout, `fpm`, and a working native build as well as the Python package.
 
 Save this complete program as `test/test_my_feature.f90` in a working
 development branch. It follows the program-based pattern used by
-`test/test_huron_vidal.f90`, `test/test_cmr.f90`, and `test/test_sddlc.f90`:
+`test/test_huron_vidal.f90`, `test/test_sddlc.f90`, and
+`test/test_flash_optional_iters.f90`:
 
 ```fortran
 program test_my_feature
@@ -93,8 +96,8 @@ fpm test --target test_my_feature
 ```
 
 The target comes from the source filename, so use a descriptive `test_*.f90`
-name and a matching program name. No change to `test_runner.f90` or the
-manifest is needed for an automatically discovered test program. Run the
+name and a matching program name. No change to the manifest is needed for an
+automatically discovered test program. Run the
 focused target first, then `fpm test` before review. If a target is missing,
 check that its source contains a `program` unit rather than only a module.
 
@@ -288,6 +291,28 @@ rounding in published parameters, conditioning, compiler differences, and
 finite-difference error. Do not loosen a tolerance until a failure disappears
 without understanding why.
 
+CI runs on both an older and the newest Ubuntu image. The newest images use
+x86-64-v3 (AVX2/FMA) builds of gfortran and BLAS/LAPACK, and fused
+multiply-add changes the last bits of results. A limit of a few units in the
+last place, such as `1e-15` on a thermodynamic identity, can then fail on one
+machine and pass on another. Two measured examples set the scale:
+
+- second derivatives compared with central finite differences (step about
+  `1e-4`) agree to about `1e-6` relative in every build;
+- the Michelsen-Mollerup identities hold to about `1e-15`.
+
+The cubic EoS tests therefore use `1e-5` and `1e-13`. Those limits sit well
+above the rounding noise, and real derivative bugs give errors of order one.
+To check a test against FMA rounding locally:
+
+```bash
+fpm test --profile release --flag "-g -ffree-line-length-0 -march=x86-64-v3" --target test_my_feature
+```
+
+Adding `-ffp-contract=off` to the same command disables FMA contraction. If
+the failure then disappears, rounding is the cause and the tolerance is too
+tight.
+
 ## A minimal pre-review test plan
 
 Run the affected target first, then the native suite. Rebuild the Python
@@ -299,6 +324,23 @@ In the review summary, report which layers were tested, the revision and
 environment, and anything unavailable. Coverage is useful for finding unvisited
 branches, but it cannot establish that the equations, reference data, or
 assertions are correct.
+
+### Measure coverage
+
+CI measures line coverage from the release-profile test run and uploads it to
+Codecov. The project target is 95%, and generated code such as the Tapenade
+PC-SAFT derivatives counts toward it. To reproduce the measurement locally
+(it needs `gcovr`):
+
+```bash
+fpm test --profile release --flag "-g -coverage -ffree-line-length-0"
+bash ci/ci.sh coverage
+```
+
+`ci/ci.sh coverage` applies the same exclusions as CI: tests, examples,
+`app/`, `tools/`, the legacy API and the vendored hyperdual module. Use
+`gcovr --html-details` with those exclusions to see the uncovered lines. A new
+test should check a result, not just execute lines.
 
 Continue with [workflow](workflow.html), [numerical implementation](numerics.html),
 or [the end-to-end change walkthrough](walkthrough.html).

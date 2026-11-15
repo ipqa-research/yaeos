@@ -116,10 +116,9 @@ fpm test
 ```
 
 `basics` is a registered example in `fpm.toml`. `test_mixing_base` is a
-standalone test program discovered from `test/test_mixing_base.f90`. Write
-new tests in this program-based style; the project is migrating away from
-the older test-drive registry in `test_runner.f90`. The full `fpm test`
-runs the discovered test programs, including the remaining legacy runner.
+standalone test program discovered from `test/test_mixing_base.f90`. Every
+native test is a standalone program like this one, and the full `fpm test`
+runs all of them.
 Discover your checkout's targets
 with `fpm test --list` and consult `fpm test --help` for your installed version.
 
