@@ -59,6 +59,7 @@ contains
       real(pr), optional, intent(in) :: p_spec !! Specified Pressure [bar]
       real(pr), optional, intent(in) :: k0(:) !! Initial K factors (y/x)
       integer, optional, intent(out) :: iters !! Number of iterations (also stored in the result's `iters`)
+      integer :: its !! Iteration counter; copied to `iters` when it is present.
 
       ! Results from flash calculation
       real(pr), dimension(size(z)) :: x !! composition of liquid (molar fractions)
@@ -140,9 +141,9 @@ contains
       ! Solve with successive substitutions
       ! ------------------------------------------------------------------------
       dK = 1.0
-      iters = 0
+      its = 0
       do while (maxval(abs(dK)) > 1.e-6_pr)
-         iters = iters + 1
+         its = its + 1
 
          call betato01(z, K)
          call solve_rr(z, K, beta, bmin, bmax)
@@ -181,7 +182,7 @@ contains
 
          K = exp(lnK)
 
-         if (iters > 10 .and. abs(sum(dK + dKold)) < 0.05_pr) then
+         if (its > 10 .and. abs(sum(dK + dKold)) < 0.05_pr) then
             ! oscilation behavior detected (27/06/15)
             lnK = (lnK + lnKold)/2
          end if
@@ -205,7 +206,7 @@ contains
             end if
          end if
 
-         if (iters > 500) then
+         if (its > 500) then
             p = -1
             exit
          end if
@@ -221,14 +222,16 @@ contains
          P = -1.0
          flash%x = x/x
          flash%y = y/y
-         flash%iters = iters
+         if (present(iters)) iters = its
+         flash%iters = its
          flash%P = P
          flash%T = T
          return
       end if
 
       flash%kind = "split"
-      flash%iters = iters
+      if (present(iters)) iters = its
+      flash%iters = its
       flash%P = P
       flash%T = T
 
@@ -262,6 +265,7 @@ contains
       real(pr), optional, intent(in) :: p_spec !! Specified Pressure [bar]
       real(pr), optional, intent(in) :: k0(:) !! Initial K factors (y/x)
       integer, optional, intent(out) :: iters !! Number of iterations (also stored in the result's `iters`)
+      integer :: its !! Iteration counter; copied to `iters` when it is present.
 
       ! Results from flash calculation
       real(pr), dimension(size(z)) :: x !! composition of liquid (molar fractions)
@@ -336,9 +340,9 @@ contains
       ! Solve with successive substitutions
       ! ------------------------------------------------------------------------
       dK = 1.0
-      iters = 0
+      its = 0
       do while (maxval(abs(dK)) > 1.e-6_pr)
-         iters = iters + 1
+         its = its + 1
 
          call solve_rr(z, K, beta, bmin, bmax)
 
@@ -371,18 +375,18 @@ contains
          dKold = dK
          lnKold = lnK
 
-         print *, iters, lnK
+         print *, its, lnK
          lnK = lnfug_x - lnfug_y
          dK = lnK - lnKold
 
          K = exp(lnK)
 
-         if (iters > 10 .and. abs(sum(dK + dKold)) < 0.05_pr) then
+         if (its > 10 .and. abs(sum(dK + dKold)) < 0.05_pr) then
             ! oscilation behavior detected (27/06/15)
             lnK = (lnK + lnKold)/2
          end if
 
-         if (iters > 500) then
+         if (its > 500) then
             p = -1
             exit
          end if
@@ -398,14 +402,16 @@ contains
          P = -1.0
          flash%x = x/x
          flash%y = y/y
-         flash%iters = iters
+         if (present(iters)) iters = its
+         flash%iters = its
          flash%P = P
          flash%T = T
          return
       end if
 
       flash%kind = "split"
-      flash%iters = iters
+      if (present(iters)) iters = its
+      flash%iters = its
       flash%P = P
       flash%T = T
 
