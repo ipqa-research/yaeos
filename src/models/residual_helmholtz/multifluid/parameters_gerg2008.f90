@@ -19,7 +19,7 @@ module yaeos__models_ar_multifluid_parameters_gerg2008
    integer :: max_residual_terms = 24 !! Maximum number of pure-fluid residual terms.
    integer :: generalized_departure(8, 2) !! Index map for generalized binary departure terms.
    integer, parameter :: N = 21 !! Number of fluids in the GERG2008 component set.
-   real(8), dimension(21, 21, 4) :: red_params !! Pair reducing parameters \((\beta_v, \gamma_v, \beta_T, \gamma_T)\), set for \(i<j\).
+   real(8), dimension(21, 21, 4) :: red_params !! Pair reducing parameters \((\beta_v, \gamma_v, \beta_T, \gamma_T)\), set for \(i \lt j\).
    real(8), dimension(21, 21) :: Bv=0 !! Volume reducing parameters \(\beta_{v,ij}\) (\(\beta_{v,ji}=1/\beta_{v,ij}\)).
    real(8), dimension(21, 21) :: Gv=0 !! Volume reducing parameters \(\gamma_{v,ij}\) (symmetric).
    real(8), dimension(21, 21) :: Bt=0 !! Temperature reducing parameters \(\beta_{T,ij}\) (\(\beta_{T,ji}=1/\beta_{T,ij}\)).

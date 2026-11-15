@@ -43,7 +43,7 @@ contains
       !! - TV (with T and V_spec variables)
       !!
       !! This algorithm assumes that the specified T and P/V correspond to
-      !! vapor-liquid separation predicted by the provided model (0<beta<1) and
+      !! vapor-liquid separation predicted by the provided model (\(0 \lt \beta \lt 1\)) and
       !! solves the equilibria and mass-balance equations with a fixed-point
       !! method.
       !!
