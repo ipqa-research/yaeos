@@ -208,6 +208,9 @@ contains
          X, ns, S, dXdS, &
          F, dF, its, 1000 &
          )
+      ! No previous point yet: the first critical-jump check must not fire.
+      X_last_converged = 0
+      found_critical = .false.
       do i=1,number_of_points
          X0 = X
          call solve_point(&
