@@ -1,30 +1,24 @@
-module test_saturation
-   use testdrive, only: new_unittest, unittest_type, error_type, check
+program test_saturation
    use yaeos, only: pr
+   use testing_aux, only: assert, test_title
    implicit none
 
    real(pr) :: abs_tolerance = 1e-5_pr
 
+   write(*, *) test_title("Saturation points and phase envelopes")
+   call test_pure_psat()
+   call test_bubble_pressure()
+   call test_dew_pressure()
+   call test_bubble_temperature()
+   call test_dew_temperature()
+   call test_pt2_envelope()
+   call test_px2_envelope()
+   write(*, *) ""
+
 contains
-   subroutine collect_suite(testsuite)
-      !> Collection of tests
-      type(unittest_type), allocatable, intent(out) :: testsuite(:)
-
-      testsuite = [ &
-         new_unittest("Pure Psat", test_pure_psat), &
-         new_unittest("Bubble pressure", test_bubble_pressure), &
-         new_unittest("Dew pressure", test_dew_pressure), &
-         new_unittest("Bubble temperature", test_bubble_temperature), &
-         new_unittest("Dew temperature", test_dew_temperature), &
-         new_unittest("PT2 envelope", test_pt2_envelope), &
-         new_unittest("PX2 envelope", test_px2_envelope) &
-         ]
-   end subroutine collect_suite
-
-   subroutine test_bubble_pressure(error)
+   subroutine test_bubble_pressure()
       use yaeos, only: pr, EquilibriumState, saturation_pressure, ArModel
       use fixtures_models, only: binary_PR76
-      type(error_type), allocatable, intent(out) :: error
 
       integer, parameter :: nc = 2
 
@@ -42,16 +36,15 @@ contains
       model = binary_PR76()
 
       bubble = saturation_pressure(model, n, T, kind="bubble")
-      call check(error, maxval(abs(bubble%x - x)) < abs_tolerance)
-      call check(error, maxval(abs(bubble%y - y)) < abs_tolerance)
-      call check(error, abs(bubble%p - p) < abs_tolerance)
+      call assert(maxval(abs(bubble%x - x)) < abs_tolerance, "Bubble pressure: x vs reference")
+      call assert(maxval(abs(bubble%y - y)) < abs_tolerance, "Bubble pressure: y vs reference")
+      call assert(abs(bubble%p - p) < abs_tolerance, "Bubble pressure: p vs reference")
    end subroutine test_bubble_pressure
 
-   subroutine test_dew_pressure(error)
+   subroutine test_dew_pressure()
       use yaeos, only: pr, EquilibriumState, saturation_pressure, ArModel
       use yaeos, only: k_wilson
       use fixtures_models, only: binary_PR76
-      type(error_type), allocatable, intent(out) :: error
 
       integer, parameter :: nc = 2
 
@@ -72,17 +65,16 @@ contains
 
       k = k_wilson(model, T, P)
       dew = saturation_pressure(model, n, T, kind="dew", p0=17._pr)
-      call check(error, abs(dew%P-P) < abs_tolerance)
-      call check(error, abs(dew%T-T) < abs_tolerance)
-      call check(error, maxval(abs(dew%x-x)) < abs_tolerance)
-      call check(error, maxval(abs(dew%y-y)) < abs_tolerance)
+      call assert(abs(dew%P-P) < abs_tolerance, "Dew pressure: P vs reference")
+      call assert(abs(dew%T-T) < abs_tolerance, "Dew pressure: T vs reference")
+      call assert(maxval(abs(dew%x-x)) < abs_tolerance, "Dew pressure: x vs reference")
+      call assert(maxval(abs(dew%y-y)) < abs_tolerance, "Dew pressure: y vs reference")
    end subroutine test_dew_pressure
 
-   subroutine test_dew_temperature(error)
+   subroutine test_dew_temperature()
       use yaeos, only: pr, EquilibriumState, saturation_temperature, ArModel
       use yaeos, only: k_wilson
       use fixtures_models, only: binary_PR76
-      type(error_type), allocatable, intent(out) :: error
 
       integer, parameter :: nc = 2
 
@@ -101,16 +93,15 @@ contains
 
       dew = saturation_temperature(model, n, P, kind="dew", t0=250._pr)
 
-      call check(error, abs(dew%P-P) < abs_tolerance)
-      call check(error, abs(dew%T-T) < abs_tolerance)
-      call check(error, maxval(abs(dew%x-x)) < 1e-4)
-      call check(error, maxval(abs(dew%y-y)) < 1e-4)
+      call assert(abs(dew%P-P) < abs_tolerance, "Dew temperature: P vs reference")
+      call assert(abs(dew%T-T) < abs_tolerance, "Dew temperature: T vs reference")
+      call assert(maxval(abs(dew%x-x)) < 1e-4, "Dew temperature: x vs reference")
+      call assert(maxval(abs(dew%y-y)) < 1e-4, "Dew temperature: y vs reference")
    end subroutine test_dew_temperature
 
-   subroutine test_bubble_temperature(error)
+   subroutine test_bubble_temperature()
       use yaeos, only: pr, EquilibriumState, saturation_temperature, ArModel, saturation_pressure, PTEnvel2, pt_envelope_2ph
       use fixtures_models, only: binary_PR76
-      type(error_type), allocatable, intent(out) :: error
 
       integer, parameter :: nc = 2
 
@@ -127,18 +118,17 @@ contains
       T = 200
       model = binary_PR76()
       bubble = saturation_temperature(model, n, P, kind="bubble",t0=201._pr)
-      call check(error, maxval(abs(bubble%x - x)) < abs_tolerance)
-      call check(error, maxval(abs(bubble%y - y)) < abs_tolerance)
-      call check(error, abs(bubble%p - p) < abs_tolerance)
-      call check(error, abs(bubble%T - T) < abs_tolerance)
+      call assert(maxval(abs(bubble%x - x)) < abs_tolerance, "Bubble temperature: x vs reference")
+      call assert(maxval(abs(bubble%y - y)) < abs_tolerance, "Bubble temperature: y vs reference")
+      call assert(abs(bubble%p - p) < abs_tolerance, "Bubble temperature: p vs reference")
+      call assert(abs(bubble%T - T) < abs_tolerance, "Bubble temperature: T vs reference")
    end subroutine test_bubble_temperature
 
-   subroutine test_pt2_envelope(error)
+   subroutine test_pt2_envelope()
       use yaeos, only: pr, EquilibriumState, saturation_pressure, ArModel
       use yaeos, only: &
          pt_envelope_2ph, PTEnvel2
       use fixtures_models, only: binary_PR76
-      type(error_type), allocatable, intent(out) :: error
 
       type(EquilibriumState) :: bubble
       class(ArModel), allocatable :: model
@@ -153,16 +143,14 @@ contains
       envelope = pt_envelope_2ph(&
          model, z, bubble &
          )
-      print *, envelope%cps(1)
-      call check(error, size(envelope%cps) == 1)
+      call assert(size(envelope%cps) == 1, "PT2 envelope: exactly one critical point detected")
    end subroutine test_pt2_envelope
 
-   subroutine test_px2_envelope(error)
+   subroutine test_px2_envelope()
       use yaeos, only: pr, EquilibriumState, saturation_pressure, ArModel
       use yaeos, only: &
          px_envelope_2ph, PXEnvel2
       use fixtures_models, only: binary_PR76
-      type(error_type), allocatable, intent(out) :: error
 
       type(EquilibriumState) :: bubble
       class(ArModel), allocatable :: model
@@ -180,13 +168,12 @@ contains
          model, z0=z, first_point=bubble, alpha0=0.0_pr, z_injection=z_inj, delta_0=0.001_pr&
          )
 
-      call check(error, size(envelope%cps) == 1)
+      call assert(size(envelope%cps) == 1, "PX2 envelope: exactly one critical point detected")
    end subroutine test_px2_envelope
 
-   subroutine test_pure_psat(error)
+   subroutine test_pure_psat()
       use yaeos, only: pr, ArModel
       use fixtures_models, only: binary_PR76
-      type(error_type), allocatable, intent(out) :: error
       class(ArModel), allocatable :: model
 
       integer :: i, j
@@ -199,6 +186,6 @@ contains
       do i=1,2
          Psats(i) = model%Psat_pure(i, T, Vl=Vl, Vv=Vv)
       end do
-      ! call check(error, maxval(abs(Psats-Psats_val)) < abs_tolerance)
+      ! call assert(maxval(abs(Psats-Psats_val)) < abs_tolerance, "Pure Psat: Psat vs reference")
    end subroutine test_pure_psat
-end module test_saturation
+end program test_saturation

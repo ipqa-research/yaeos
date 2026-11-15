@@ -1,28 +1,22 @@
-module test_flash
-   use testdrive, only: new_unittest, unittest_type, error_type, check
+program test_flash
+   use testing_aux, only: assert, test_title
    implicit none
 
+   write(*, *) test_title("Flash")
+   call test_flash_pt()
+   call test_flash_tv()
+   call test_flash_pt_failed()
+   call test_flash_pt_bad_spec()
+   call test_tm()
+   write(*, *) ""
+
 contains
-   subroutine collect_suite(testsuite)
-      !> Collection of tests
-      type(unittest_type), allocatable, intent(out) :: testsuite(:)
-
-      testsuite = [ &
-         new_unittest("FlashPT", test_flash_pt), &
-         new_unittest("FlashTV", test_flash_tv), &
-         new_unittest("FlashPT Failed", test_flash_pt_failed), &
-         new_unittest("FlashPT Bad Specification", test_flash_pt_bad_spec), &
-         new_unittest("Stability tm minimization", test_tm) &
-         ]
-   end subroutine collect_suite
-
-   subroutine test_tm(error)
+   subroutine test_tm()
       use forsus, only: Substance, forsus_dir
       use yaeos
       use yaeos__equilibria_stability, only: tm, min_tpd
       use yaeos, only: flash
       implicit none
-      type(error_type), allocatable, intent(out) :: error
 
       integer, parameter :: nc=2
 
@@ -51,17 +45,16 @@ contains
       model = SoaveRedlichKwong(tc, pc, ac)
 
       call min_tpd(model, z, P, T, mintpd, w)
-      call check(error, abs(mintpd) < 1e-4_pr)
+      call assert(abs(mintpd) < 1e-4_pr, "Stability tm minimization: min_tpd ~ 0 at P=20 (stable)")
 
       P = 15
       call min_tpd(model, z, P, T, mintpd, w)
-      call check(error, abs(mintpd - (-0.172_pr)) < 1e-2)
-      call check(error, abs(tm(model, z, w, p, t) - mintpd) < 1e-10_pr)
+      call assert(abs(mintpd - (-0.172_pr)) < 1e-2, "Stability tm minimization: min_tpd value at P=15")
+      call assert(abs(tm(model, z, w, p, t) - mintpd) < 1e-10_pr, "Stability tm minimization: tm(w) equals min_tpd")
    end subroutine test_tm
 
-   subroutine test_flash_pt(error)
+   subroutine test_flash_pt()
       use yaeos, only: pr, EquilibriumState, flash, PengRobinson76, ArModel
-      type(error_type), allocatable, intent(out) :: error
 
       integer, parameter :: nc = 2
 
@@ -89,16 +82,15 @@ contains
 
       flash_result = flash(model, n, t=t, p_spec=p, k0=k0, iters=iters)
 
-      call check(error, maxval(abs(flash_result%x - x)) < 1e-5)
-      call check(error, maxval(abs(flash_result%y - y)) < 1e-5)
-      call check(error, (abs(flash_result%Vx - Vx)) < 1e-5)
-      call check(error, (abs(flash_result%Vy - Vy)) < 1e-5)
+      call assert(maxval(abs(flash_result%x - x)) < 1e-5, "FlashPT: x vs reference")
+      call assert(maxval(abs(flash_result%y - y)) < 1e-5, "FlashPT: y vs reference")
+      call assert((abs(flash_result%Vx - Vx)) < 1e-5, "FlashPT: Vx vs reference")
+      call assert((abs(flash_result%Vy - Vy)) < 1e-5, "FlashPT: Vy vs reference")
    end subroutine test_flash_pt
 
-   subroutine test_flash_tv(error)
+   subroutine test_flash_tv()
       use yaeos, only: pr, EquilibriumState, flash, PengRobinson76, ArModel
       use fixtures_models, only: binary_PR76
-      type(error_type), allocatable, intent(out) :: error
 
       integer, parameter :: nc = 2
 
@@ -127,17 +119,16 @@ contains
 
       flash_result = flash(model, n, t=t, v_spec=v, k0=k0, iters=iters)
 
-      call check(error, maxval(abs(flash_result%x - x)) < 1e-5)
-      call check(error, maxval(abs(flash_result%y - y)) < 1e-5)
-      call check(error, abs(flash_result%vx - vx)  < 1e-5)
-      call check(error, abs(flash_result%vy - vy)  < 1e-5)
-      call check(error, abs(flash_result%p - p)  < 1e-5)
-      call check(error, abs(flash_result%beta - beta)  < 1e-5)
+      call assert(maxval(abs(flash_result%x - x)) < 1e-5, "FlashTV: x vs reference")
+      call assert(maxval(abs(flash_result%y - y)) < 1e-5, "FlashTV: y vs reference")
+      call assert(abs(flash_result%vx - vx)  < 1e-5, "FlashTV: vx vs reference")
+      call assert(abs(flash_result%vy - vy)  < 1e-5, "FlashTV: vy vs reference")
+      call assert(abs(flash_result%p - p)  < 1e-5, "FlashTV: p vs reference")
+      call assert(abs(flash_result%beta - beta)  < 1e-5, "FlashTV: beta vs reference")
    end subroutine test_flash_tv
 
-   subroutine test_flash_pt_failed(error)
+   subroutine test_flash_pt_failed()
       use yaeos, only: pr, EquilibriumState, flash, PengRobinson76, ArModel
-      type(error_type), allocatable, intent(out) :: error
 
       integer, parameter :: nc = 2
 
@@ -164,12 +155,11 @@ contains
       k0 = (PC/P)*exp(5.373*(1 + w)*(1 - TC/T))
 
       flash_result = flash(model, n, t=t, p_spec=p, k0=k0, iters=iters)
-      call check(error, flash_result%p < 0)
+      call assert(flash_result%p < 0, "FlashPT Failed: flash at P=500 must report failure (p < 0)")
    end subroutine test_flash_pt_failed
 
-   subroutine test_flash_pt_bad_spec(error)
+   subroutine test_flash_pt_bad_spec()
       use yaeos, only: pr, EquilibriumState, flash, PengRobinson76, ArModel
-      type(error_type), allocatable, intent(out) :: error
 
       integer, parameter :: nc = 2
 
@@ -199,4 +189,4 @@ contains
          model, n, t=t, p_spec=p, v_spec=2._pr, k0=k0, iters=iters&
          )
    end subroutine test_flash_pt_bad_spec
-end module test_flash
+end program test_flash

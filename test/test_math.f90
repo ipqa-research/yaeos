@@ -1,28 +1,22 @@
-module test_math
+program test_math
    use yaeos__constants, only: pr
-   use testdrive, only: new_unittest, unittest_type, error_type, check
    use auxiliar_functions, only: allclose
+   use testing_aux, only: assert, test_title
    implicit none
+
+   write(*, *) test_title("Math")
+   call test_dxk_dn()
+   call test_dx_to_dn()
+   call test_sq_error()
+   call test_cardano_method()
+   call test_rosendo_method()
+   call test_newton_method()
+   write(*, *) ""
 
 contains
 
-   subroutine collect_suite(testsuite)
-      !> Collection of tests
-      type(unittest_type), allocatable, intent(out) :: testsuite(:)
-
-      testsuite = [ &
-         new_unittest("Test dxk_dn d2xk_dn2", test_dxk_dn), &
-         new_unittest("Test dx_to_dn", test_dx_to_dn), &
-         new_unittest("Test sq_error", test_sq_error), &
-         new_unittest("Test cardano", test_cardano_method), &
-         new_unittest("Test rosendo", test_rosendo_method), &
-         new_unittest("Test newton", test_newton_method) &
-         ]
-   end subroutine collect_suite
-
-   subroutine test_dxk_dn(error)
+   subroutine test_dxk_dn()
       use yaeos__math, only: derivative_dxk_dni, derivative_d2xk_dnidnj
-      type(error_type), allocatable, intent(out) :: error
 
       integer, parameter :: nc = 3
 
@@ -47,7 +41,8 @@ contains
                dxk_dni = -n(k) / n_tot**2
             end if
 
-            call check(error, abs(dxk_dn(k, i) - dxk_dni) < 1e-10_pr)
+            call assert(abs(dxk_dn(k, i) - dxk_dni) < 1e-10_pr, &
+               "Test dxk_dn d2xk_dn2: dxk_dni vs analytical")
          end do
       end do
 
@@ -65,15 +60,15 @@ contains
                   d2xk_dninj = 2 * n(k) / n_tot**3
                end if
 
-               call check(error, abs(d2xk_dn(k, i, j) - d2xk_dninj) < 1e-10_pr)
+               call assert(abs(d2xk_dn(k, i, j) - d2xk_dninj) < 1e-10_pr, &
+                  "Test dxk_dn d2xk_dn2: d2xk_dninj vs analytical")
             end do
          end do
       end do
    end subroutine test_dxk_dn
 
-   subroutine test_dx_to_dn(error)
+   subroutine test_dx_to_dn()
       use yaeos__math, only: dx_to_dn
-      type(error_type), allocatable, intent(out) :: error
 
       real(pr) :: dns(3)
 
@@ -82,13 +77,13 @@ contains
          [1053.0323_pr, -237.758335_pr, -3665.7490_pr]&
          )
 
-      call check(error, allclose(dns, [1375.4315_pr, 84.6409421_pr, -3343.3497_pr], 1e-4_pr))
+      call assert(allclose(dns, [1375.4315_pr, 84.6409421_pr, -3343.3497_pr], 1e-4_pr), &
+         "Test dx_to_dn: dns vs reference")
    end subroutine test_dx_to_dn
 
-   subroutine test_sq_error(error)
+   subroutine test_sq_error()
       use yaeos__math, only: sq_error
 
-      type(error_type), allocatable, intent(out) :: error
 
       real(pr) :: sim(5), exps(5), errors_sq(5)
 
@@ -97,13 +92,13 @@ contains
 
       errors_sq = sq_error(exps, sim)
 
-      call check(error, allclose(errors_sq, (sim - exps)**2, 1e10_pr))
+      call assert(allclose(errors_sq, (sim - exps)**2, 1e10_pr), &
+         "Test sq_error: sq_error vs (sim-exps)**2")
 
    end subroutine test_sq_error
 
-   subroutine test_cardano_method(error)
+   subroutine test_cardano_method()
       use yaeos__math_linalg, only: pr, cubic_roots
-      type(error_type), allocatable, intent(out) :: error
       real(pr) :: p(4)
       real(pr) :: rr(3)
       complex(pr) :: cr(3)
@@ -112,15 +107,17 @@ contains
 
       p = [1, -10, 35, -50]
       call cubic_roots(p, rr, cr, flag)
-      call check(error, flag == 1)
-      call check(error, abs(rr(1) - 5.0_pr) < 1e-10_pr)
+      call assert(flag == 1, &
+         "Test cardano: flag == 1")
+      call assert(abs(rr(1) - 5.0_pr) < 1e-10_pr, &
+         "Test cardano: roots vs expected")
 
       p = [0.1, -2.6, 1., 1.]
       call cubic_roots(p, rr, cr, flag)
-      call check(error, flag == -1)
-      call check(error, &
-         maxval(abs(rr - [-0.454216, 0.8601986, 25.594016])) < 1e-5_pr &
-         )
+      call assert(flag == -1, &
+         "Test cardano: flag == -1")
+      call assert(maxval(abs(rr - [-0.454216, 0.8601986, 25.594016])) < 1e-5_pr, &
+         "Test cardano: roots vs expected")
 
       ! =======================================================================
       ! 3 Real roots
@@ -130,8 +127,10 @@ contains
 
       call cubic_roots(p, rr, cr, flag)
 
-      call check(error, maxval(rr - [1.0_pr, 3.0_pr, 4.0_pr]) < 1e-7)
-      call check(error, flag == -1)
+      call assert(maxval(rr - [1.0_pr, 3.0_pr, 4.0_pr]) < 1e-7, &
+         "Test cardano: roots vs expected")
+      call assert(flag == -1, &
+         "Test cardano: flag == -1")
 
       ! =======================================================================
       ! 1 real root different, 2 equal real roots
@@ -141,8 +140,10 @@ contains
 
       call cubic_roots(p, rr, cr, flag)
 
-      call check(error, maxval(rr - [1.0_pr, 4.0_pr, 4.0_pr]) < 1e-7)
-      call check(error, flag == 0)
+      call assert(maxval(rr - [1.0_pr, 4.0_pr, 4.0_pr]) < 1e-7, &
+         "Test cardano: roots vs expected")
+      call assert(flag == 0, &
+         "Test cardano: flag == 0")
 
       ! =======================================================================
       ! 1 real root, 2 complex
@@ -152,14 +153,15 @@ contains
 
       call cubic_roots(p, rr, cr, flag)
 
-      call check(error, (rr(1) - 1.0_pr) < 1e-7)
-      call check(error, flag == 1)
+      call assert((rr(1) - 1.0_pr) < 1e-7, &
+         "Test cardano: roots vs expected")
+      call assert(flag == 1, &
+         "Test cardano: flag == 1")
    end subroutine test_cardano_method
 
-   subroutine test_rosendo_method(error)
+   subroutine test_rosendo_method()
       use yaeos__math_linalg, only: pr, cubic_roots_rosendo
 
-      type(error_type), allocatable, intent(out) :: error
 
       real(pr) :: p(4)
       real(pr) :: a, b
@@ -175,8 +177,10 @@ contains
 
       call cubic_roots_rosendo(p, roots, c_roots, flag)
 
-      call check(error, maxval(roots - [1.0_pr, 3.0_pr, 4.0_pr]) < 1e-7)
-      call check(error, flag == -1)
+      call assert(maxval(roots - [1.0_pr, 3.0_pr, 4.0_pr]) < 1e-7, &
+         "Test rosendo: roots vs expected")
+      call assert(flag == -1, &
+         "Test rosendo: flag == -1")
 
       ! =======================================================================
       ! 1 real root different, 2 equal real roots
@@ -186,8 +190,10 @@ contains
 
       call cubic_roots_rosendo(p, roots, c_roots, flag)
 
-      call check(error, maxval(roots - [1.0_pr, 4.0_pr, 4.0_pr]) < 1e-7)
-      call check(error, flag == -1)
+      call assert(maxval(roots - [1.0_pr, 4.0_pr, 4.0_pr]) < 1e-7, &
+         "Test rosendo: roots vs expected")
+      call assert(flag == -1, &
+         "Test rosendo: flag == -1")
 
       ! =======================================================================
       ! 1 real root, 2 complex
@@ -197,8 +203,10 @@ contains
 
       call cubic_roots_rosendo(p, roots, c_roots, flag)
 
-      call check(error, maxval(roots - [1.0_pr, 1.0_pr, 1.0_pr]) < 1e-7)
-      call check(error, flag == 1)
+      call assert(maxval(roots - [1.0_pr, 1.0_pr, 1.0_pr]) < 1e-7, &
+         "Test rosendo: roots vs expected")
+      call assert(flag == 1, &
+         "Test rosendo: flag == 1")
 
       ! =======================================================================
       ! 1 real root and two small complex roots
@@ -211,29 +219,33 @@ contains
 
       call cubic_roots_rosendo(p, roots, c_roots, flag)
 
-      call check(error, maxval(roots - [1.0_pr, 1.0_pr, 1.0_pr]) < 1e-7)
-      call check(error, flag == 1)
+      call assert(maxval(roots - [1.0_pr, 1.0_pr, 1.0_pr]) < 1e-7, &
+         "Test rosendo: roots vs expected")
+      call assert(flag == 1, &
+         "Test rosendo: flag == 1")
    end subroutine test_rosendo_method
 
-   subroutine test_newton_method(error)
+   subroutine test_newton_method()
       use yaeos__math, only: pr, newton
-      type(error_type), allocatable, intent(out) :: error
       real(pr) :: x
       real(pr) :: tol=1e-5
       integer :: max_iters = 100
       logical :: failed
 
       x = 0.5
-      call newton(foo, x, tol, max_iters, failed)
-      call check(error, .not. failed)
-      call check(error, abs(x - sqrt(2._pr)) < tol)
-   contains
-      subroutine foo(xx, f, df)
-         real(pr), intent(in) :: xx
-         real(pr), intent(out) :: f
-         real(pr), intent(out) :: df
-         f = xx**2 - 2
-         df = 2*xx
-      end subroutine foo
+      call newton(newton_foo, x, tol, max_iters, failed)
+      call assert(.not. failed, &
+         "Test newton: converged")
+      call assert(abs(x - sqrt(2._pr)) < tol, &
+         "Test newton: root equals sqrt(2)")
    end subroutine test_newton_method
-end module test_math
+
+   subroutine newton_foo(xx, f, df)
+      !! Objective function for `test_newton_method`: f(x) = x**2 - 2
+      real(pr), intent(in) :: xx
+      real(pr), intent(out) :: f
+      real(pr), intent(out) :: df
+      f = xx**2 - 2
+      df = 2*xx
+   end subroutine newton_foo
+end program test_math

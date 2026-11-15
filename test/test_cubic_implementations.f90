@@ -1,6 +1,5 @@
 program test_cubic_implementations
    use yaeos__constants, only: pr
-   use testdrive, only: new_unittest, unittest_type, error_type, check
    use auxiliar_functions, only: allclose
    use testing_aux, only: assert, test_title
    implicit none
@@ -49,16 +48,16 @@ contains
          ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
          )
 
-      call assert(allclose([Ar], [Ar_val], absolute_tolerance), "Ar")
-      call assert(allclose([ArV], [ArV_val], absolute_tolerance), "ArV")
-      call assert(allclose([ArT], [ArT_val], absolute_tolerance), "ArT")
-      call assert(allclose([ArTV], [ArTV_val], absolute_tolerance), "ArTV")
-      call assert(allclose([ArV2], [ArV2_val], absolute_tolerance), "ArV2")
-      call assert(allclose([ArT2], [ArT2_val], absolute_tolerance), "ArT2")
+      call assert(allclose([Ar], [Ar_val], absolute_tolerance), "SRK binary: Ar vs reference value")
+      call assert(allclose([ArV], [ArV_val], absolute_tolerance), "SRK binary: ArV vs reference value")
+      call assert(allclose([ArT], [ArT_val], absolute_tolerance), "SRK binary: ArT vs reference value")
+      call assert(allclose([ArTV], [ArTV_val], absolute_tolerance), "SRK binary: ArTV vs reference value")
+      call assert(allclose([ArV2], [ArV2_val], absolute_tolerance), "SRK binary: ArV2 vs reference value")
+      call assert(allclose([ArT2], [ArT2_val], absolute_tolerance), "SRK binary: ArT2 vs reference value")
 
-      call assert(allclose([ArVn], [ArVn_val], absolute_tolerance), "ArVn")
-      call assert(allclose([ArTn], [ArTn_val], absolute_tolerance), "ArTn")
-      call assert(allclose([Arn2], [Arn2_val], absolute_tolerance), "Arn2")
+      call assert(allclose([ArVn], [ArVn_val], absolute_tolerance), "SRK binary: ArVn vs reference value")
+      call assert(allclose([ArTn], [ArTn_val], absolute_tolerance), "SRK binary: ArTn vs reference value")
+      call assert(allclose([Arn2], [Arn2_val], absolute_tolerance), "SRK binary: Arn2 vs reference value")
    end subroutine test_srk
 
    subroutine test_pr76
@@ -95,16 +94,16 @@ contains
          z, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArT=ArT, ArTV=ArTV, &
          ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
          )
-      call assert(allclose([Ar], [Ar_val], absolute_tolerance), "Ar")
-      call assert(allclose([ArV], [ArV_val], absolute_tolerance), "ArV")
-      call assert(allclose([ArT], [ArT_val], absolute_tolerance), "ArT")
-      call assert(allclose([ArTV], [ArTV_val], absolute_tolerance), "ArTV")
-      call assert(allclose([ArV2], [ArV2_val], absolute_tolerance), "ArV2")
-      call assert(allclose([ArT2], [ArT2_val], absolute_tolerance), "ArT2")
+      call assert(allclose([Ar], [Ar_val], absolute_tolerance), "PR76 binary: Ar vs reference value")
+      call assert(allclose([ArV], [ArV_val], absolute_tolerance), "PR76 binary: ArV vs reference value")
+      call assert(allclose([ArT], [ArT_val], absolute_tolerance), "PR76 binary: ArT vs reference value")
+      call assert(allclose([ArTV], [ArTV_val], absolute_tolerance), "PR76 binary: ArTV vs reference value")
+      call assert(allclose([ArV2], [ArV2_val], absolute_tolerance), "PR76 binary: ArV2 vs reference value")
+      call assert(allclose([ArT2], [ArT2_val], absolute_tolerance), "PR76 binary: ArT2 vs reference value")
 
-      call assert(allclose([ArVn], [ArVn_val], absolute_tolerance), "ArVn")
-      call assert(allclose([ArTn], [ArTn_val], absolute_tolerance), "ArTn")
-      call assert(allclose([Arn2], [Arn2_val], absolute_tolerance), "Arn2")
+      call assert(allclose([ArVn], [ArVn_val], absolute_tolerance), "PR76 binary: ArVn vs reference value")
+      call assert(allclose([ArTn], [ArTn_val], absolute_tolerance), "PR76 binary: ArTn vs reference value")
+      call assert(allclose([Arn2], [Arn2_val], absolute_tolerance), "PR76 binary: Arn2 vs reference value")
    end subroutine test_pr76
 
    subroutine test_pr78
@@ -142,16 +141,16 @@ contains
          ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
          )
 
-      call assert(allclose([Ar], [Ar_val], absolute_tolerance), "Ar")
-      call assert(allclose([ArV], [ArV_val], absolute_tolerance), "ArV")
-      call assert(allclose([ArT], [ArT_val], absolute_tolerance), "ArT")
-      call assert(allclose([ArTV], [ArTV_val], absolute_tolerance), "ArTV")
-      call assert(allclose([ArV2], [ArV2_val], absolute_tolerance), "ArV2")
-      call assert(allclose([ArT2], [ArT2_val], absolute_tolerance), "ArT2")
+      call assert(allclose([Ar], [Ar_val], absolute_tolerance), "PR78 binary: Ar vs reference value")
+      call assert(allclose([ArV], [ArV_val], absolute_tolerance), "PR78 binary: ArV vs reference value")
+      call assert(allclose([ArT], [ArT_val], absolute_tolerance), "PR78 binary: ArT vs reference value")
+      call assert(allclose([ArTV], [ArTV_val], absolute_tolerance), "PR78 binary: ArTV vs reference value")
+      call assert(allclose([ArV2], [ArV2_val], absolute_tolerance), "PR78 binary: ArV2 vs reference value")
+      call assert(allclose([ArT2], [ArT2_val], absolute_tolerance), "PR78 binary: ArT2 vs reference value")
 
-      call assert(allclose([ArVn], [ArVn_val], absolute_tolerance), "ArVn")
-      call assert(allclose([ArTn], [ArTn_val], absolute_tolerance), "ArTn")
-      call assert(allclose([Arn2], [Arn2_val], absolute_tolerance), "Arn2")
+      call assert(allclose([ArVn], [ArVn_val], absolute_tolerance), "PR78 binary: ArVn vs reference value")
+      call assert(allclose([ArTn], [ArTn_val], absolute_tolerance), "PR78 binary: ArTn vs reference value")
+      call assert(allclose([Arn2], [Arn2_val], absolute_tolerance), "PR78 binary: Arn2 vs reference value")
    end subroutine test_pr78
 
    subroutine test_RKPR
@@ -189,15 +188,15 @@ contains
          z, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArT=ArT, ArTV=ArTV, &
          ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
          )
-      call assert(allclose([Ar], [Ar_val], absolute_tolerance), "Ar")
-      call assert(allclose([ArV], [ArV_val], absolute_tolerance), "ArV")
-      call assert(allclose([ArT], [ArT_val], absolute_tolerance), "ArT")
-      call assert(allclose([ArTV], [ArTV_val], absolute_tolerance), "ArTV")
-      call assert(allclose([ArV2], [ArV2_val], absolute_tolerance), "ArV2")
-      call assert(allclose([ArT2], [ArT2_val], absolute_tolerance), "ArT2")
+      call assert(allclose([Ar], [Ar_val], absolute_tolerance), "RKPR binary: Ar vs reference value")
+      call assert(allclose([ArV], [ArV_val], absolute_tolerance), "RKPR binary: ArV vs reference value")
+      call assert(allclose([ArT], [ArT_val], absolute_tolerance), "RKPR binary: ArT vs reference value")
+      call assert(allclose([ArTV], [ArTV_val], absolute_tolerance), "RKPR binary: ArTV vs reference value")
+      call assert(allclose([ArV2], [ArV2_val], absolute_tolerance), "RKPR binary: ArV2 vs reference value")
+      call assert(allclose([ArT2], [ArT2_val], absolute_tolerance), "RKPR binary: ArT2 vs reference value")
 
-      call assert(allclose([ArVn], [ArVn_val], absolute_tolerance), "ArVn")
-      call assert(allclose([ArTn], [ArTn_val], absolute_tolerance), "ArTn")
-      call assert(allclose([Arn2], [Arn2_val], absolute_tolerance), "Arn2")
+      call assert(allclose([ArVn], [ArVn_val], absolute_tolerance), "RKPR binary: ArVn vs reference value")
+      call assert(allclose([ArTn], [ArTn_val], absolute_tolerance), "RKPR binary: ArTn vs reference value")
+      call assert(allclose([Arn2], [Arn2_val], absolute_tolerance), "RKPR binary: Arn2 vs reference value")
    end subroutine test_RKPR
 end program test_cubic_implementations

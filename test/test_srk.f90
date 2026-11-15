@@ -1,26 +1,21 @@
-module test_srk
+program test_srk
    use yaeos, only: pr
-   use testdrive, only: new_unittest, unittest_type, error_type, check
+   use testing_aux, only: assert, test_title
    use auxiliar_functions, only: allclose, rel_error
    implicit none
 
+   write(*, *) test_title("SoaveRedlichKwong")
+
+   call test_srk_individual_calls()
+   call test_srk_cons_mixture()
+   call test_srk_cons_pure()
+
 contains
-   subroutine collect_suite(testsuite)
-      !> Collection of tests
-      type(unittest_type), allocatable, intent(out) :: testsuite(:)
-
-      testsuite = [ &
-         new_unittest("Test SRK Ar individual calls", test_srk_individual_calls), &
-         new_unittest("Test SRK Ar consistency mix", test_srk_cons_mixture), &
-         new_unittest("Test SRK Ar consistency pure", test_srk_cons_pure) &
-         ]
-   end subroutine collect_suite
 
 
-   subroutine test_srk_individual_calls(error)
+   subroutine test_srk_individual_calls()
       use yaeos, only: pr, SoaveRedlichKwong, ArModel
       use yaeos__consistency, only: individual_ar_calls
-      type(error_type), allocatable, intent(out) :: error
 
       class(ArModel), allocatable :: model, model_kij
       real(pr) :: tc(4), pc(4), w(4), kij(4, 4), lij(4, 4)
@@ -43,7 +38,7 @@ contains
       model = SoaveRedlichKwong(tc, pc, w)
 
       call individual_ar_calls(model, n, v, t, passed=passed)
-      call check(error, passed)
+      call assert(passed, "SRK Ar individual calls (no kij): individual Ar calls match full call")
 
       ! =======================================================================
       ! With kij
@@ -64,13 +59,12 @@ contains
       model_kij = SoaveRedlichKwong(tc, pc, w, kij, lij)
 
       call individual_ar_calls(model_kij, n, v, t, passed=passed)
-      call check(error, passed)
+      call assert(passed, "SRK Ar individual calls (kij/lij): individual Ar calls match full call")
    end subroutine test_srk_individual_calls
 
-   subroutine test_srk_cons_mixture(error)
+   subroutine test_srk_cons_mixture()
       use yaeos, only: pr, SoaveRedlichKwong, ArModel
       use yaeos__consistency, only: numeric_ar_derivatives, ar_consistency
-      type(error_type), allocatable, intent(out) :: error
 
       class(ArModel), allocatable :: model, model_kij
       real(pr) :: tc(4), pc(4), w(4)
@@ -116,23 +110,24 @@ contains
          )
 
       ! Numeric derivatives
-      call check(error, rel_error(Ar, Ar_num) < 1e-6)
-      call check(error, rel_error(ArV, ArV_num) < 1e-6)
-      call check(error, rel_error(ArT, ArT_num) < 1e-6)
-      call check(error, allclose(Arn, Arn_num, 1e-6_pr))
-      call check(error, rel_error(ArV2, ArV2_num) < 1e-6)
-      call check(error, rel_error(ArT2, ArT2_num) < 1e-6)
-      call check(error, rel_error(ArTV, ArTV_num) < 1e-6)
-      call check(error, allclose(ArVn, ArVn_num, 1e-6_pr))
-      call check(error, allclose(ArTn, ArTn_num, 1e-6_pr))
-      call check(error, maxval(rel_error(Arn2, Arn2_num)) < 1e-6)
+      call assert(rel_error(Ar, Ar_num) < 1e-6, "SRK Ar consistency mix (no kij): Ar vs numeric derivative")
+      call assert(rel_error(ArV, ArV_num) < 1e-6, "SRK Ar consistency mix (no kij): ArV vs numeric derivative")
+      call assert(rel_error(ArT, ArT_num) < 1e-6, "SRK Ar consistency mix (no kij): ArT vs numeric derivative")
+      call assert(allclose(Arn, Arn_num, 1e-6_pr), "SRK Ar consistency mix (no kij): Arn vs numeric derivative")
+      call assert(rel_error(ArV2, ArV2_num) < 1e-6, "SRK Ar consistency mix (no kij): ArV2 vs numeric derivative")
+      call assert(rel_error(ArT2, ArT2_num) < 1e-6, "SRK Ar consistency mix (no kij): ArT2 vs numeric derivative")
+      call assert(rel_error(ArTV, ArTV_num) < 1e-6, "SRK Ar consistency mix (no kij): ArTV vs numeric derivative")
+      call assert(allclose(ArVn, ArVn_num, 1e-6_pr), "SRK Ar consistency mix (no kij): ArVn vs numeric derivative")
+      call assert(allclose(ArTn, ArTn_num, 1e-6_pr), "SRK Ar consistency mix (no kij): ArTn vs numeric derivative")
+      call assert(maxval(rel_error(Arn2, Arn2_num)) < 1e-6, &
+         "SRK Ar consistency mix (no kij): Arn2 vs numeric derivative")
 
       ! Consistency tests
-      call check(error, abs(eq31) <= 1e-14)
-      call check(error, maxval(abs(eq33)) < 1e-15)
-      call check(error, maxval(abs(eq34)) < 1e-14)
-      call check(error, abs(eq36) <= 1e-15)
-      call check(error, abs(eq37) <= 1e-15)
+      call assert(abs(eq31) <= 1e-14, "SRK Ar consistency mix (no kij): eq31 (sum n_i lnphi_i = Gr/RT)")
+      call assert(maxval(abs(eq33)) < 1e-15, "SRK Ar consistency mix (no kij): eq33 (symmetric dlnphi/dn)")
+      call assert(maxval(abs(eq34)) < 1e-14, "SRK Ar consistency mix (no kij): eq34 (sum_i n_i dlnphi_i/dn_j = 0)")
+      call assert(abs(eq36) <= 1e-15, "SRK Ar consistency mix (no kij): eq36 (sum n_i dlnphi_i/dP = (Z-1)n/P)")
+      call assert(abs(eq37) <= 1e-15, "SRK Ar consistency mix (no kij): eq37 (sum n_i dlnphi_i/dT = -Hr/RT^2)")
 
       ! ========================================================================
       ! Model with kij and lij
@@ -169,29 +164,29 @@ contains
          )
 
       ! Numeric derivatives
-      call check(error, rel_error(Ar, Ar_num) < 1e-6)
-      call check(error, rel_error(ArV, ArV_num) < 1e-6)
-      call check(error, rel_error(ArT, ArT_num) < 1e-6)
-      call check(error, allclose(Arn, Arn_num, 1e-6_pr))
-      call check(error, rel_error(ArV2, ArV2_num) < 1e-6)
-      call check(error, rel_error(ArT2, ArT2_num) < 1e-6)
-      call check(error, rel_error(ArTV, ArTV_num) < 1e-6)
-      call check(error, allclose(ArVn, ArVn_num, 1e-6_pr))
-      call check(error, allclose(ArTn, ArTn_num, 1e-6_pr))
-      call check(error, maxval(rel_error(Arn2, Arn2_num)) < 1e-6)
+      call assert(rel_error(Ar, Ar_num) < 1e-6, "SRK Ar consistency mix (kij/lij): Ar vs numeric derivative")
+      call assert(rel_error(ArV, ArV_num) < 1e-6, "SRK Ar consistency mix (kij/lij): ArV vs numeric derivative")
+      call assert(rel_error(ArT, ArT_num) < 1e-6, "SRK Ar consistency mix (kij/lij): ArT vs numeric derivative")
+      call assert(allclose(Arn, Arn_num, 1e-6_pr), "SRK Ar consistency mix (kij/lij): Arn vs numeric derivative")
+      call assert(rel_error(ArV2, ArV2_num) < 1e-6, "SRK Ar consistency mix (kij/lij): ArV2 vs numeric derivative")
+      call assert(rel_error(ArT2, ArT2_num) < 1e-6, "SRK Ar consistency mix (kij/lij): ArT2 vs numeric derivative")
+      call assert(rel_error(ArTV, ArTV_num) < 1e-6, "SRK Ar consistency mix (kij/lij): ArTV vs numeric derivative")
+      call assert(allclose(ArVn, ArVn_num, 1e-6_pr), "SRK Ar consistency mix (kij/lij): ArVn vs numeric derivative")
+      call assert(allclose(ArTn, ArTn_num, 1e-6_pr), "SRK Ar consistency mix (kij/lij): ArTn vs numeric derivative")
+      call assert(maxval(rel_error(Arn2, Arn2_num)) < 1e-6, &
+         "SRK Ar consistency mix (kij/lij): Arn2 vs numeric derivative")
 
       ! Consistency tests
-      call check(error, abs(eq31) <= 1e-14)
-      call check(error, maxval(abs(eq33)) < 1e-15)
-      call check(error, maxval(abs(eq34)) < 1e-15)
-      call check(error, abs(eq36) <= 1e-15)
-      call check(error, abs(eq37) <= 1e-15)
+      call assert(abs(eq31) <= 1e-14, "SRK Ar consistency mix (kij/lij): eq31 (sum n_i lnphi_i = Gr/RT)")
+      call assert(maxval(abs(eq33)) < 1e-15, "SRK Ar consistency mix (kij/lij): eq33 (symmetric dlnphi/dn)")
+      call assert(maxval(abs(eq34)) < 1e-15, "SRK Ar consistency mix (kij/lij): eq34 (sum_i n_i dlnphi_i/dn_j = 0)")
+      call assert(abs(eq36) <= 1e-15, "SRK Ar consistency mix (kij/lij): eq36 (sum n_i dlnphi_i/dP = (Z-1)n/P)")
+      call assert(abs(eq37) <= 1e-15, "SRK Ar consistency mix (kij/lij): eq37 (sum n_i dlnphi_i/dT = -Hr/RT^2)")
    end subroutine test_srk_cons_mixture
 
-   subroutine test_srk_cons_pure(error)
+   subroutine test_srk_cons_pure()
       use yaeos, only: pr, SoaveRedlichKwong, ArModel
       use yaeos__consistency, only: numeric_ar_derivatives, ar_consistency
-      type(error_type), allocatable, intent(out) :: error
 
       class(ArModel), allocatable :: model
       real(pr) :: tc(1), pc(1), w(1)
@@ -233,23 +228,23 @@ contains
          )
 
       ! Numeric derivatives
-      call check(error, rel_error(Ar, Ar_num) < 1e-6)
-      call check(error, rel_error(ArV, ArV_num) < 1e-6)
-      call check(error, rel_error(ArT, ArT_num) < 1e-6)
-      call check(error, allclose(Arn, Arn_num, 1e-6_pr))
-      call check(error, rel_error(ArV2, ArV2_num) < 1e-6)
-      call check(error, rel_error(ArT2, ArT2_num) < 1e-5)
-      call check(error, rel_error(ArTV, ArTV_num) < 1e-6)
-      call check(error, allclose(ArVn, ArVn_num, 1e-6_pr))
-      call check(error, allclose(ArTn, ArTn_num, 1e-6_pr))
-      call check(error, maxval(rel_error(Arn2, Arn2_num)) < 1e-6)
+      call assert(rel_error(Ar, Ar_num) < 1e-6, "SRK Ar consistency pure: Ar vs numeric derivative")
+      call assert(rel_error(ArV, ArV_num) < 1e-6, "SRK Ar consistency pure: ArV vs numeric derivative")
+      call assert(rel_error(ArT, ArT_num) < 1e-6, "SRK Ar consistency pure: ArT vs numeric derivative")
+      call assert(allclose(Arn, Arn_num, 1e-6_pr), "SRK Ar consistency pure: Arn vs numeric derivative")
+      call assert(rel_error(ArV2, ArV2_num) < 1e-6, "SRK Ar consistency pure: ArV2 vs numeric derivative")
+      call assert(rel_error(ArT2, ArT2_num) < 1e-5, "SRK Ar consistency pure: ArT2 vs numeric derivative")
+      call assert(rel_error(ArTV, ArTV_num) < 1e-6, "SRK Ar consistency pure: ArTV vs numeric derivative")
+      call assert(allclose(ArVn, ArVn_num, 1e-6_pr), "SRK Ar consistency pure: ArVn vs numeric derivative")
+      call assert(allclose(ArTn, ArTn_num, 1e-6_pr), "SRK Ar consistency pure: ArTn vs numeric derivative")
+      call assert(maxval(rel_error(Arn2, Arn2_num)) < 1e-6, "SRK Ar consistency pure: Arn2 vs numeric derivative")
 
       ! Consistency tests
-      call check(error, abs(eq31) <= 1e-14)
-      call check(error, maxval(abs(eq33)) < 1e-15)
-      call check(error, maxval(abs(eq34)) < 1e-15)
-      call check(error, abs(eq36) <= 1e-15)
-      call check(error, abs(eq37) <= 1e-15)
+      call assert(abs(eq31) <= 1e-14, "SRK Ar consistency pure: eq31 (sum n_i lnphi_i = Gr/RT)")
+      call assert(maxval(abs(eq33)) < 1e-15, "SRK Ar consistency pure: eq33 (symmetric dlnphi/dn)")
+      call assert(maxval(abs(eq34)) < 1e-15, "SRK Ar consistency pure: eq34 (sum_i n_i dlnphi_i/dn_j = 0)")
+      call assert(abs(eq36) <= 1e-15, "SRK Ar consistency pure: eq36 (sum n_i dlnphi_i/dP = (Z-1)n/P)")
+      call assert(abs(eq37) <= 1e-15, "SRK Ar consistency pure: eq37 (sum n_i dlnphi_i/dT = -Hr/RT^2)")
    end subroutine test_srk_cons_pure
 
-end module test_srk
+end program test_srk

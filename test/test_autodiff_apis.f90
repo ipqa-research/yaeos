@@ -1,28 +1,22 @@
-module test_autodiff_api
+program test_autodiff_apis
    use yaeos__constants, only: pr
-   use testdrive, only: new_unittest, unittest_type, error_type, check
    use auxiliar_functions, only: allclose
+   use testing_aux, only: assert, test_title
    implicit none
 
    real(pr) :: absolute_tolerance = 1e-6_pr
 
+   write(*, *) test_title("Autodiff APIs")
+   call test_pr76_hd()
+   call test_pr76_tape()
+   write(*, *) ""
+
 contains
 
-   subroutine collect_suite(testsuite)
-      !> Collection of tests
-      type(unittest_type), allocatable, intent(out) :: testsuite(:)
-
-      testsuite = [ &
-         new_unittest("hdPR76", test_pr76_hd), &
-         new_unittest("tapePR76", test_pr76_tape) &
-         ]
-   end subroutine collect_suite
-
-   subroutine test_pr76_hd(error)
+   subroutine test_pr76_hd()
       use yaeos__constants, only: pr
       use fixtures_models, only: binary_PR76_hd
       use yaeos, only: ArModel
-      type(error_type), allocatable, intent(out) :: error
 
       class(ArModel), allocatable :: eos
       integer, parameter :: n = 2
@@ -61,51 +55,76 @@ contains
          )
 
 
-      call check(error, allclose([Ar], [Ar_val], absolute_tolerance))
-      call check(error, allclose([ArV], [ArV_val], absolute_tolerance))
-      call check(error, allclose([ArT], [ArT_val], absolute_tolerance))
-      call check(error, allclose([ArTV], [ArTV_val], absolute_tolerance))
-      call check(error, allclose([ArV2], [ArV2_val], absolute_tolerance))
-      call check(error, allclose([ArT2], [ArT2_val], absolute_tolerance))
-      call check(error, allclose([ArVn], [ArVn_val], absolute_tolerance))
-      call check(error, allclose([ArTn], [ArTn_val], absolute_tolerance))
+      call assert(allclose([Ar], [Ar_val], absolute_tolerance), &
+         "hdPR76: Ar vs reference value")
+      call assert(allclose([ArV], [ArV_val], absolute_tolerance), &
+         "hdPR76: ArV vs reference value")
+      call assert(allclose([ArT], [ArT_val], absolute_tolerance), &
+         "hdPR76: ArT vs reference value")
+      call assert(allclose([ArTV], [ArTV_val], absolute_tolerance), &
+         "hdPR76: ArTV vs reference value")
+      call assert(allclose([ArV2], [ArV2_val], absolute_tolerance), &
+         "hdPR76: ArV2 vs reference value")
+      call assert(allclose([ArT2], [ArT2_val], absolute_tolerance), &
+         "hdPR76: ArT2 vs reference value")
+      call assert(allclose([ArVn], [ArVn_val], absolute_tolerance), &
+         "hdPR76: ArVn vs reference value")
+      call assert(allclose([ArTn], [ArTn_val], absolute_tolerance), &
+         "hdPR76: ArTn vs reference value")
 
       call eos%residual_helmholtz( &
          z, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArT=ArT, ArTV=ArTV, &
          ArT2=ArT2, Arn=Arn, ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
          )
 
-      call check(error, allclose([Ar], [Ar_val], absolute_tolerance))
-      call check(error, allclose([ArV], [ArV_val], absolute_tolerance))
-      call check(error, allclose([ArT], [ArT_val], absolute_tolerance))
-      call check(error, allclose([Arn], [Arn_val], absolute_tolerance))
-      call check(error, allclose([ArTV], [ArTV_val], absolute_tolerance))
-      call check(error, allclose([ArV2], [ArV2_val], absolute_tolerance))
-      call check(error, allclose([ArT2], [ArT2_val], absolute_tolerance))
-      call check(error, allclose([ArVn], [ArVn_val], absolute_tolerance))
-      call check(error, allclose([ArTn], [ArTn_val], absolute_tolerance))
-      call check(error, allclose([Arn2], [Arn2_val], absolute_tolerance))
+      call assert(allclose([Ar], [Ar_val], absolute_tolerance), &
+         "hdPR76: Ar vs reference value")
+      call assert(allclose([ArV], [ArV_val], absolute_tolerance), &
+         "hdPR76: ArV vs reference value")
+      call assert(allclose([ArT], [ArT_val], absolute_tolerance), &
+         "hdPR76: ArT vs reference value")
+      call assert(allclose([Arn], [Arn_val], absolute_tolerance), &
+         "hdPR76: Arn vs reference value")
+      call assert(allclose([ArTV], [ArTV_val], absolute_tolerance), &
+         "hdPR76: ArTV vs reference value")
+      call assert(allclose([ArV2], [ArV2_val], absolute_tolerance), &
+         "hdPR76: ArV2 vs reference value")
+      call assert(allclose([ArT2], [ArT2_val], absolute_tolerance), &
+         "hdPR76: ArT2 vs reference value")
+      call assert(allclose([ArVn], [ArVn_val], absolute_tolerance), &
+         "hdPR76: ArVn vs reference value")
+      call assert(allclose([ArTn], [ArTn_val], absolute_tolerance), &
+         "hdPR76: ArTn vs reference value")
+      call assert(allclose([Arn2], [Arn2_val], absolute_tolerance), &
+         "hdPR76: Arn2 vs reference value")
 
       call eos%residual_helmholtz( &
          z, V, T, Ar=Ar, ArV=ArV, ArV2=ArV2, ArT=ArT, ArTV=ArTV, &
          ArT2=ArT2, ArVn=ArVn, ArTn=ArTn &
          )
-      call check(error, allclose([Ar], [Ar_val], absolute_tolerance))
-      call check(error, allclose([ArV], [ArV_val], absolute_tolerance))
-      call check(error, allclose([ArT], [ArT_val], absolute_tolerance))
-      call check(error, allclose([ArTV], [ArTV_val], absolute_tolerance))
-      call check(error, allclose([ArV2], [ArV2_val], absolute_tolerance))
-      call check(error, allclose([ArT2], [ArT2_val], absolute_tolerance))
-      call check(error, allclose([ArVn], [ArVn_val], absolute_tolerance))
-      call check(error, allclose([ArTn], [ArTn_val], absolute_tolerance))
+      call assert(allclose([Ar], [Ar_val], absolute_tolerance), &
+         "hdPR76: Ar vs reference value")
+      call assert(allclose([ArV], [ArV_val], absolute_tolerance), &
+         "hdPR76: ArV vs reference value")
+      call assert(allclose([ArT], [ArT_val], absolute_tolerance), &
+         "hdPR76: ArT vs reference value")
+      call assert(allclose([ArTV], [ArTV_val], absolute_tolerance), &
+         "hdPR76: ArTV vs reference value")
+      call assert(allclose([ArV2], [ArV2_val], absolute_tolerance), &
+         "hdPR76: ArV2 vs reference value")
+      call assert(allclose([ArT2], [ArT2_val], absolute_tolerance), &
+         "hdPR76: ArT2 vs reference value")
+      call assert(allclose([ArVn], [ArVn_val], absolute_tolerance), &
+         "hdPR76: ArVn vs reference value")
+      call assert(allclose([ArTn], [ArTn_val], absolute_tolerance), &
+         "hdPR76: ArTn vs reference value")
 
    end subroutine test_pr76_hd
 
-   subroutine test_pr76_tape(error)
+   subroutine test_pr76_tape()
       use yaeos__constants, only: pr
       use fixtures_models, only: binary_PR76_tape
       use yaeos, only: ArModel
-      type(error_type), allocatable, intent(out) :: error
 
       class(ArModel), allocatable :: eos
       integer, parameter :: nc = 2
@@ -133,49 +152,61 @@ contains
       v = 1
       T = 150
 
-      call test_numdiff
-   contains
-      subroutine test_numdiff
-         use yaeos, only: individual_ar_calls, numeric_ar_derivatives
-         real(pr) :: V, T, z(nc)
-         real(pr) :: Ar_num, ArV_num, ArT_num, ArV2_num, ArT2_num, ArTV_num
-         real(pr), dimension(nc) :: Arn_num, ArVn_num, ArTn_num
-         real(pr), dimension(nc, nc) :: Arn2_num
-         real(pr) :: Ar, ArV, ArT, ArV2, ArT2, ArTV
-         real(pr), dimension(nc) :: Arn, ArVn, ArTn
-         real(pr), dimension(nc, nc) :: Arn2
-
-         real(pr) :: dn = 1e-5, dv=1e-6, dt=1e-2
-         real(pr), parameter :: tol=1e-2
-         integer :: i, j
-
-         logical :: individual_calls
-
-
-         z = [0.3, 0.7]
-         v = 1
-         T = 150
-         
-         call numeric_ar_derivatives(eos, z, V, T, dn, dv, dt, &
-            Ar_num, ArV_num, ArT_num, Arn_num, ArV2_num, ArT2_num, ArTV_num, ArVn_num, ArTn_num, Arn2_num)
-
-         call eos%residual_helmholtz(z, V, T, &
-            Ar=Ar, ArV=ArV, ArT=ArT, Arn=Arn, ArV2=ArV2, ArT2=ArT2, ArTV=ArTV, &
-            ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
-            )
-
-         call check(error, allclose([Ar_num], [Ar], tol))
-         
-         call check(error, allclose([ArT_num] , [ArT], tol))
-         call check(error, allclose([ArT2_num], [ArT2], tol))
-
-         call check(error, allclose([ArV_num] , [ArV], tol))
-         call check(error, allclose([ArV2_num], [ArV2], tol))
-
-         call check(error, allclose([ArTV_num], [ArTV], tol))
-
-         call check(error, allclose([ArVn_num], [ArVn], tol))
-         call check(error, allclose([ArTn_num], [ArTn], tol))
-      end subroutine test_numdiff
+      call pr76_tape_numdiff(eos)
    end subroutine test_pr76_tape
-end module test_autodiff_api
+
+   subroutine pr76_tape_numdiff(eos)
+      !! Compare the tapenade PR76 derivatives against numerical ones
+      !! (formerly an internal procedure of `test_pr76_tape`).
+      use yaeos, only: ArModel, individual_ar_calls, numeric_ar_derivatives
+      class(ArModel), intent(in) :: eos
+      integer, parameter :: nc = 2
+      real(pr) :: V, T, z(nc)
+      real(pr) :: Ar_num, ArV_num, ArT_num, ArV2_num, ArT2_num, ArTV_num
+      real(pr), dimension(nc) :: Arn_num, ArVn_num, ArTn_num
+      real(pr), dimension(nc, nc) :: Arn2_num
+      real(pr) :: Ar, ArV, ArT, ArV2, ArT2, ArTV
+      real(pr), dimension(nc) :: Arn, ArVn, ArTn
+      real(pr), dimension(nc, nc) :: Arn2
+
+      real(pr) :: dn = 1e-5, dv=1e-6, dt=1e-2
+      real(pr), parameter :: tol=1e-2
+      integer :: i, j
+
+      logical :: individual_calls
+
+
+      z = [0.3, 0.7]
+      v = 1
+      T = 150
+      
+      call numeric_ar_derivatives(eos, z, V, T, dn, dv, dt, &
+         Ar_num, ArV_num, ArT_num, Arn_num, ArV2_num, ArT2_num, ArTV_num, ArVn_num, ArTn_num, Arn2_num)
+
+      call eos%residual_helmholtz(z, V, T, &
+         Ar=Ar, ArV=ArV, ArT=ArT, Arn=Arn, ArV2=ArV2, ArT2=ArT2, ArTV=ArTV, &
+         ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
+         )
+
+      call assert(allclose([Ar_num], [Ar], tol), &
+         "tapePR76: Ar vs numerical derivative")
+      
+      call assert(allclose([ArT_num] , [ArT], tol), &
+         "tapePR76: ArT vs numerical derivative")
+      call assert(allclose([ArT2_num], [ArT2], tol), &
+         "tapePR76: ArT2 vs numerical derivative")
+
+      call assert(allclose([ArV_num] , [ArV], tol), &
+         "tapePR76: ArV vs numerical derivative")
+      call assert(allclose([ArV2_num], [ArV2], tol), &
+         "tapePR76: ArV2 vs numerical derivative")
+
+      call assert(allclose([ArTV_num], [ArTV], tol), &
+         "tapePR76: ArTV vs numerical derivative")
+
+      call assert(allclose([ArVn_num], [ArVn], tol), &
+         "tapePR76: ArVn vs numerical derivative")
+      call assert(allclose([ArTn_num], [ArTn], tol), &
+         "tapePR76: ArTn vs numerical derivative")
+   end subroutine pr76_tape_numdiff
+end program test_autodiff_apis

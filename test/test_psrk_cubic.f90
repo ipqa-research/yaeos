@@ -1,29 +1,24 @@
-module test_psrk
+program test_psrk_cubic
    use yaeos, only: pr
-   use testdrive, only: new_unittest, unittest_type, error_type, check
+   use testing_aux, only: assert, test_title
    use auxiliar_functions, only: allclose, rel_error
    implicit none
 
+   write(*, *) test_title("PSRK (cubic)")
+
+   call test_psrk_individual_calls()
+   call test_psrk_cons_mixture()
+   call test_psrk_cons_pure()
+   call test_psrk_paper2005_1()
+   call test_psrk_paper2005_2()
+   call test_psrk_paper2005_3()
+   call test_psrk_paper2005_4()
+
 contains
-   subroutine collect_suite(testsuite)
-      !> Collection of tests
-      type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
-      testsuite = [ &
-         new_unittest("Test PSRK Ar individual calls", test_psrk_individual_calls), &
-         new_unittest("Test PSRK Ar consistency mix", test_psrk_cons_mixture), &
-         new_unittest("Test PSRK Ar consistency pure", test_psrk_cons_pure), &
-         new_unittest("Test PSRK paper 2005 1", test_psrk_paper2005_1), &
-         new_unittest("Test PSRK paper 2005 2", test_psrk_paper2005_2), &
-         new_unittest("Test PSRK paper 2005 3", test_psrk_paper2005_3), &
-         new_unittest("Test PSRK paper 2005 4", test_psrk_paper2005_4) &
-         ]
-   end subroutine collect_suite
-
-   subroutine test_psrk_individual_calls(error)
+   subroutine test_psrk_individual_calls()
       use yaeos, only: pr, PSRK, ArModel, Groups
       use yaeos__consistency, only: individual_ar_calls
-      type(error_type), allocatable, intent(out) :: error
 
       class(ArModel), allocatable :: model, model_kij
       type(Groups) :: molecules(4)
@@ -62,13 +57,12 @@ contains
       model = PSRK(tc, pc, w, molecules, c1, c2, c3)
 
       call individual_ar_calls(model, n, v, t, passed)
-      call check(error, passed)
+      call assert(passed, "PSRK Ar individual calls: individual Ar calls match full call")
    end subroutine test_psrk_individual_calls
 
-   subroutine test_psrk_cons_mixture(error)
+   subroutine test_psrk_cons_mixture()
       use yaeos, only: pr, PSRK, ArModel, Groups
       use yaeos__consistency, only: numeric_ar_derivatives, ar_consistency
-      type(error_type), allocatable, intent(out) :: error
 
       class(ArModel), allocatable :: model
       real(pr) :: tc(2), pc(2), w(2), C(2, 3)
@@ -120,29 +114,29 @@ contains
          )
 
       ! Numeric derivatives
-      call check(error, rel_error(Ar, Ar_num) < 1e-10)
-      call check(error, rel_error(ArV, ArV_num) < 1e-5)
-      call check(error, rel_error(ArT, ArT_num) < 1e-5)
-      call check(error, allclose(Arn, Arn_num, 1e-5_pr))
-      call check(error, rel_error(ArV2, ArV2_num) < 1e-5)
-      call check(error, rel_error(ArT2, ArT2_num) < 1e-6)
-      call check(error, rel_error(ArTV, ArTV_num) < 1e-6)
-      call check(error, allclose(ArVn, ArVn_num, 1e-6_pr))
-      call check(error, allclose(ArTn, ArTn_num, 1e-6_pr))
-      call check(error, maxval(rel_error(Arn2, Arn2_num)) < 1e-5)
+      call assert(rel_error(Ar, Ar_num) < 1e-10, "PSRK Ar consistency mix (no kij): Ar vs numeric derivative")
+      call assert(rel_error(ArV, ArV_num) < 1e-5, "PSRK Ar consistency mix (no kij): ArV vs numeric derivative")
+      call assert(rel_error(ArT, ArT_num) < 1e-5, "PSRK Ar consistency mix (no kij): ArT vs numeric derivative")
+      call assert(allclose(Arn, Arn_num, 1e-5_pr), "PSRK Ar consistency mix (no kij): Arn vs numeric derivative")
+      call assert(rel_error(ArV2, ArV2_num) < 1e-5, "PSRK Ar consistency mix (no kij): ArV2 vs numeric derivative")
+      call assert(rel_error(ArT2, ArT2_num) < 1e-6, "PSRK Ar consistency mix (no kij): ArT2 vs numeric derivative")
+      call assert(rel_error(ArTV, ArTV_num) < 1e-6, "PSRK Ar consistency mix (no kij): ArTV vs numeric derivative")
+      call assert(allclose(ArVn, ArVn_num, 1e-6_pr), "PSRK Ar consistency mix (no kij): ArVn vs numeric derivative")
+      call assert(allclose(ArTn, ArTn_num, 1e-6_pr), "PSRK Ar consistency mix (no kij): ArTn vs numeric derivative")
+      call assert(maxval(rel_error(Arn2, Arn2_num)) < 1e-5, &
+         "PSRK Ar consistency mix (no kij): Arn2 vs numeric derivative")
 
       ! Consistency tests
-      call check(error, abs(eq31) <= 1e-12)
-      call check(error, maxval(abs(eq33)) < 1e-13)
-      call check(error, maxval(abs(eq34)) < 1e-13)
-      call check(error, abs(eq36) <= 1e-13)
-      call check(error, abs(eq37) <= 1e-13)
+      call assert(abs(eq31) <= 1e-12, "PSRK Ar consistency mix (no kij): eq31 (sum n_i lnphi_i = Gr/RT)")
+      call assert(maxval(abs(eq33)) < 1e-13, "PSRK Ar consistency mix (no kij): eq33 (symmetric dlnphi/dn)")
+      call assert(maxval(abs(eq34)) < 1e-13, "PSRK Ar consistency mix (no kij): eq34 (sum_i n_i dlnphi_i/dn_j = 0)")
+      call assert(abs(eq36) <= 1e-13, "PSRK Ar consistency mix (no kij): eq36 (sum n_i dlnphi_i/dP = (Z-1)n/P)")
+      call assert(abs(eq37) <= 1e-13, "PSRK Ar consistency mix (no kij): eq37 (sum n_i dlnphi_i/dT = -Hr/RT^2)")
    end subroutine test_psrk_cons_mixture
 
-   subroutine test_psrk_cons_pure(error)
+   subroutine test_psrk_cons_pure()
       use yaeos, only: pr, PSRK, ArModel, Groups
       use yaeos__consistency, only: numeric_ar_derivatives, ar_consistency
-      type(error_type), allocatable, intent(out) :: error
 
       class(ArModel), allocatable :: model
       type(Groups) :: molecules(1)
@@ -189,29 +183,28 @@ contains
          )
 
       ! Numeric derivatives
-      call check(error, rel_error(Ar, Ar_num) < 1e-10)
-      call check(error, rel_error(ArV, ArV_num) < 1e-6)
-      call check(error, rel_error(ArT, ArT_num) < 1e-6)
-      call check(error, allclose(Arn, Arn_num, 1e-6_pr))
-      call check(error, rel_error(ArV2, ArV2_num) < 1e-4)
-      call check(error, rel_error(ArT2, ArT2_num) < 1e-4)
-      call check(error, rel_error(ArTV, ArTV_num) < 1e-6)
-      call check(error, allclose(ArVn, ArVn_num, 1e-5_pr))
-      call check(error, allclose(ArTn, ArTn_num, 1e-5_pr))
-      call check(error, maxval(rel_error(Arn2, Arn2_num)) < 1e-5)
+      call assert(rel_error(Ar, Ar_num) < 1e-10, "PSRK Ar consistency pure: Ar vs numeric derivative")
+      call assert(rel_error(ArV, ArV_num) < 1e-6, "PSRK Ar consistency pure: ArV vs numeric derivative")
+      call assert(rel_error(ArT, ArT_num) < 1e-6, "PSRK Ar consistency pure: ArT vs numeric derivative")
+      call assert(allclose(Arn, Arn_num, 1e-6_pr), "PSRK Ar consistency pure: Arn vs numeric derivative")
+      call assert(rel_error(ArV2, ArV2_num) < 1e-4, "PSRK Ar consistency pure: ArV2 vs numeric derivative")
+      call assert(rel_error(ArT2, ArT2_num) < 1e-4, "PSRK Ar consistency pure: ArT2 vs numeric derivative")
+      call assert(rel_error(ArTV, ArTV_num) < 1e-6, "PSRK Ar consistency pure: ArTV vs numeric derivative")
+      call assert(allclose(ArVn, ArVn_num, 1e-5_pr), "PSRK Ar consistency pure: ArVn vs numeric derivative")
+      call assert(allclose(ArTn, ArTn_num, 1e-5_pr), "PSRK Ar consistency pure: ArTn vs numeric derivative")
+      call assert(maxval(rel_error(Arn2, Arn2_num)) < 1e-5, "PSRK Ar consistency pure: Arn2 vs numeric derivative")
 
       ! Consistency tests
-      call check(error, abs(eq31) <= 1e-13)
-      call check(error, maxval(abs(eq33)) < 1e-13)
-      call check(error, maxval(abs(eq34)) < 1e-13)
-      call check(error, abs(eq36) <= 1e-13)
-      call check(error, abs(eq37) <= 1e-13)
+      call assert(abs(eq31) <= 1e-13, "PSRK Ar consistency pure: eq31 (sum n_i lnphi_i = Gr/RT)")
+      call assert(maxval(abs(eq33)) < 1e-13, "PSRK Ar consistency pure: eq33 (symmetric dlnphi/dn)")
+      call assert(maxval(abs(eq34)) < 1e-13, "PSRK Ar consistency pure: eq34 (sum_i n_i dlnphi_i/dn_j = 0)")
+      call assert(abs(eq36) <= 1e-13, "PSRK Ar consistency pure: eq36 (sum n_i dlnphi_i/dP = (Z-1)n/P)")
+      call assert(abs(eq37) <= 1e-13, "PSRK Ar consistency pure: eq37 (sum n_i dlnphi_i/dT = -Hr/RT^2)")
    end subroutine test_psrk_cons_pure
 
-   subroutine test_psrk_paper2005_1(error)
+   subroutine test_psrk_paper2005_1()
       use yaeos, only: pr, PSRK, ArModel, Groups, saturation_pressure
       use yaeos, only: EquilibriumState
-      type(error_type), allocatable, intent(out) :: error
       real(pr) :: x1_exp(14), y1_exp(16), pbub_exp(14), pdew_exp(16), t
       integer :: i, j
       type(EquilibriumState) :: bubble, dew
@@ -258,19 +251,18 @@ contains
 
       do i=1,14
          bubble = saturation_pressure(model, [x1_exp(i), 1-x1_exp(i)], t, kind="bubble", p0=pbub_exp(i))
-         call check(error, abs(bubble%p-pbub_exp(i)) < 4e-3)
+         call assert(abs(bubble%p-pbub_exp(i)) < 4e-3, "PSRK paper 2005 1: bubble pressure vs experimental (point i)")
       end do
 
       do j = 1,16
          dew = saturation_pressure(model, [y1_exp(j), 1-y1_exp(j)], t, kind="dew", p0=pdew_exp(j))
-         call check(error, abs(dew%p-pdew_exp(j)) < 2e-2)
+         call assert(abs(dew%p-pdew_exp(j)) < 2e-2, "PSRK paper 2005 1: dew pressure vs experimental (point j)")
       end do
    end subroutine test_psrk_paper2005_1
 
-   subroutine test_psrk_paper2005_2(error)
+   subroutine test_psrk_paper2005_2()
       use yaeos, only: pr, PSRK, ArModel, Groups, saturation_pressure
       use yaeos, only: EquilibriumState
-      type(error_type), allocatable, intent(out) :: error
       real(pr) :: x1_exp(12), y1_exp(16), pbub_exp(12), pdew_exp(16), t
       integer :: i, j
       type(EquilibriumState) :: bubble, dew
@@ -311,19 +303,19 @@ contains
 
       do i=1,12
          bubble = saturation_pressure(model, [x1_exp(i), 1-x1_exp(i)], t, kind="bubble", p0=pbub_exp(i))
-         call check(error, rel_error(bubble%p,pbub_exp(i)) < 1.1e-2)
+         call assert(rel_error(bubble%p,pbub_exp(i)) < 1.1e-2, &
+            "PSRK paper 2005 2: bubble pressure vs experimental (point i)")
       end do
 
       do j = 1,16
          dew = saturation_pressure(model, [y1_exp(j), 1-y1_exp(j)], t, kind="dew", p0=pdew_exp(j))
-         call check(error, rel_error(dew%p,pdew_exp(j)) < 7e-3)
+         call assert(rel_error(dew%p,pdew_exp(j)) < 7e-3, "PSRK paper 2005 2: dew pressure vs experimental (point j)")
       end do
    end subroutine test_psrk_paper2005_2
 
-   subroutine test_psrk_paper2005_3(error)
+   subroutine test_psrk_paper2005_3()
       use yaeos, only: pr, PSRK, ArModel, Groups, saturation_pressure
       use yaeos, only: EquilibriumState
-      type(error_type), allocatable, intent(out) :: error
       real(pr) :: x1_exp(13), y1_exp(13), pbub_exp(13), pdew_exp(13), t
       integer :: i, j
       type(EquilibriumState) :: bubble, dew
@@ -364,19 +356,19 @@ contains
 
       do i=1,13
          bubble = saturation_pressure(model, [x1_exp(i), 1-x1_exp(i)], t, kind="bubble", p0=pbub_exp(i))
-         call check(error, rel_error(bubble%p,pbub_exp(i)) < 1e-1)
+         call assert(rel_error(bubble%p,pbub_exp(i)) < 1e-1, &
+            "PSRK paper 2005 3: bubble pressure vs experimental (point i)")
       end do
 
       do j = 1,13
          dew = saturation_pressure(model, [y1_exp(j), 1-y1_exp(j)], t, kind="dew", p0=pdew_exp(j))
-         call check(error, rel_error(dew%p,pdew_exp(j)) < 0.2)
+         call assert(rel_error(dew%p,pdew_exp(j)) < 0.2, "PSRK paper 2005 3: dew pressure vs experimental (point j)")
       end do
    end subroutine test_psrk_paper2005_3
 
-   subroutine test_psrk_paper2005_4(error)
+   subroutine test_psrk_paper2005_4()
       use yaeos, only: pr, PSRK, ArModel, Groups, saturation_pressure
       use yaeos, only: EquilibriumState
-      type(error_type), allocatable, intent(out) :: error
       real(pr) :: x1_exp(10), y1_exp(12), pbub_exp(10), pdew_exp(12), t
       integer :: i, j
       type(EquilibriumState) :: bubble, dew
@@ -416,12 +408,13 @@ contains
 
       do i=1,10
          bubble = saturation_pressure(model, [x1_exp(i), 1-x1_exp(i)], t, kind="bubble", p0=pbub_exp(i))
-         call check(error, rel_error(bubble%p,pbub_exp(i)) < 2e-2)
+         call assert(rel_error(bubble%p,pbub_exp(i)) < 2e-2, &
+            "PSRK paper 2005 4: bubble pressure vs experimental (point i)")
       end do
 
       do j = 1,12
          dew = saturation_pressure(model, [y1_exp(j), 1-y1_exp(j)], t, kind="dew", p0=pdew_exp(j))
-         call check(error, rel_error(dew%p,pdew_exp(j)) < 1e-1)
+         call assert(rel_error(dew%p,pdew_exp(j)) < 1e-1, "PSRK paper 2005 4: dew pressure vs experimental (point j)")
       end do
    end subroutine test_psrk_paper2005_4
-end module test_psrk
+end program test_psrk_cubic

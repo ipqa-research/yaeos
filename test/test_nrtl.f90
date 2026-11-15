@@ -1,33 +1,26 @@
-module test_tape_nrtl
+program test_nrtl
    use yaeos__constants, only: pr
-   use testdrive, only: new_unittest, unittest_type, error_type, check
    use auxiliar_functions, only: allclose
+   use testing_aux, only: assert, test_title
    implicit none
 
    real(pr) :: absolute_tolerance = 1e-4_pr
 
+   write(*, *) test_title("NRTL")
+   call test_nrtl_individual_ge_calls()
+   call test_cons_nrtl_mix()
+   call test_cons_nrtl_pure()
+   call test_nrtl_values()
+
 contains
 
-   subroutine collect_suite(testsuite)
-      !> Collection of tests
-      type(unittest_type), allocatable, intent(out) :: testsuite(:)
-
-      testsuite = [ &
-         new_unittest("Test NRTL individual ge calls", test_nrtl_individual_ge_calls), &
-         new_unittest("Test NRTL consistency mixture", test_cons_nrtl_mix), &
-         new_unittest("Test NRTL consistency pure", test_cons_nrtl_pure), &
-         new_unittest("NRTL", test_nrtl) &
-         ]
-   end subroutine collect_suite
-
-   subroutine test_nrtl_individual_ge_calls(error)
+   subroutine test_nrtl_individual_ge_calls()
       use yaeos, only: pr, R
       use yaeos, only: NRTL
       use yaeos__consistency_gemodel, only: individual_ge_calls
 
       type(NRTL) :: model
 
-      type(error_type), allocatable, intent(out) :: error
 
       integer, parameter :: nc=2
       logical :: passed
@@ -53,16 +46,16 @@ contains
 
       call individual_ge_calls(model, n, T, passed)
 
-      call check(error, passed)
+      call assert(passed, &
+         "NRTL individual ge calls: passed")
    end subroutine test_nrtl_individual_ge_calls
 
 
-   subroutine test_cons_nrtl_mix(error)
+   subroutine test_cons_nrtl_mix()
       use yaeos, only: pr, NRTL
       use yaeos__consistency_gemodel, only: ge_consistency
       use yaeos__consistency_gemodel, only: numeric_ge_derivatives
 
-      type(error_type), allocatable, intent(out) :: error
 
       type(NRTL) :: model
 
@@ -113,13 +106,20 @@ contains
       call numeric_ge_derivatives(model, n, T, dn, dt, Ge=Ge_n, Gen2=Gen2_n)
 
       ! Derivatives checks
-      call check(error, abs(Ge - Ge_n) < 1e-10)
-      call check(error, abs(GeT - GeT_n) < 1e-6)
-      call check(error, allclose(Gen, Gen_n, 1e-6_pr))
-      call check(error, abs(GeT2 - GeT2_n) < 1e-6)
-      call check(error, allclose(GeTn, GeTn_n, 1e-6_pr))
-      call check(error, allclose(Gen2(1,:), Gen2_n(1,:), 1e-5_pr))
-      call check(error, allclose(Gen2(2,:), Gen2_n(2,:), 1e-5_pr))
+      call assert(abs(Ge - Ge_n) < 1e-10, &
+         "NRTL consistency mixture: abs(Ge - Ge_n) < 1e-10")
+      call assert(abs(GeT - GeT_n) < 1e-6, &
+         "NRTL consistency mixture: abs(GeT - GeT_n) < 1e-6")
+      call assert(allclose(Gen, Gen_n, 1e-6_pr), &
+         "NRTL consistency mixture: allclose(Gen, Gen_n, 1e-6_pr)")
+      call assert(abs(GeT2 - GeT2_n) < 1e-6, &
+         "NRTL consistency mixture: abs(GeT2 - GeT2_n) < 1e-6")
+      call assert(allclose(GeTn, GeTn_n, 1e-6_pr), &
+         "NRTL consistency mixture: allclose(GeTn, GeTn_n, 1e-6_pr)")
+      call assert(allclose(Gen2(1,:), Gen2_n(1,:), 1e-5_pr), &
+         "NRTL consistency mixture: allclose(Gen2(1,:), Gen2_n(1,:), 1e-5_pr)")
+      call assert(allclose(Gen2(2,:), Gen2_n(2,:), 1e-5_pr), &
+         "NRTL consistency mixture: allclose(Gen2(2,:), Gen2_n(2,:), 1e-5_pr)")
 
       ! ========================================================================
       ! Consistency tests
@@ -129,30 +129,33 @@ contains
          )
 
       ! Eq 58
-      call check(error, abs(eq58) < 1e-10_pr)
+      call assert(abs(eq58) < 1e-10_pr, &
+         "NRTL consistency mixture: abs(eq58) < 1e-10_pr")
 
       ! Eq 59
       do i=1,size(n)
-         call check(error, abs(eq59(i)) < 1e-10_pr)
+         call assert(abs(eq59(i)) < 1e-10_pr, &
+            "NRTL consistency mixture: abs(eq59(i)) < 1e-10_pr")
       end do
 
       ! Eq 60
       do i=1,size(n)
          do j=1,size(n)
-            call check(error, abs(eq60(i, j)) < 1e-10_pr)
+            call assert(abs(eq60(i, j)) < 1e-10_pr, &
+               "NRTL consistency mixture: abs(eq60(i, j)) < 1e-10_pr")
          end do
       end do
 
       ! Eq 61
       do i=1,size(n)
-         call check(error, abs(eq61(i)) < 1e-10_pr)
+         call assert(abs(eq61(i)) < 1e-10_pr, &
+            "NRTL consistency mixture: abs(eq61(i)) < 1e-10_pr")
       end do
    end subroutine test_cons_nrtl_mix
 
-   subroutine test_cons_nrtl_pure(error)
+   subroutine test_cons_nrtl_pure()
       use yaeos, only: pr, NRTL
 
-      type(error_type), allocatable, intent(out) :: error
 
       type(NRTL) :: model
 
@@ -180,28 +183,34 @@ contains
       call model%ln_activity_coefficient(n, T, ln_gammas)
 
       ! All must be zero for a pure compounds
-      call check(error, abs(Ge) < 1e-10_pr)
-      call check(error, abs(GeT) < 1e-10_pr)
-      call check(error, abs(GeT2) < 1e-10_pr)
+      call assert(abs(Ge) < 1e-10_pr, &
+         "NRTL consistency pure: abs(Ge) < 1e-10_pr")
+      call assert(abs(GeT) < 1e-10_pr, &
+         "NRTL consistency pure: abs(GeT) < 1e-10_pr")
+      call assert(abs(GeT2) < 1e-10_pr, &
+         "NRTL consistency pure: abs(GeT2) < 1e-10_pr")
 
       do i=1,size(n)
-         call check(error, abs(Gen(i)) < 1e-10_pr)
-         call check(error, abs(GeTn(i)) < 1e-10_pr)
-         call check(error, abs(ln_gammas(i)) < 1e-10_pr)
+         call assert(abs(Gen(i)) < 1e-10_pr, &
+            "NRTL consistency pure: abs(Gen(i)) < 1e-10_pr")
+         call assert(abs(GeTn(i)) < 1e-10_pr, &
+            "NRTL consistency pure: abs(GeTn(i)) < 1e-10_pr")
+         call assert(abs(ln_gammas(i)) < 1e-10_pr, &
+            "NRTL consistency pure: abs(ln_gammas(i)) < 1e-10_pr")
       end do
 
       do i=1,size(n)
          do j=1,size(n)
-            call check(error, abs(Gen2(i, j)) < 1e-10_pr)
+            call assert(abs(Gen2(i, j)) < 1e-10_pr, &
+               "NRTL consistency pure: abs(Gen2(i, j)) < 1e-10_pr")
          end do
       end do
    end subroutine test_cons_nrtl_pure
 
-   subroutine test_nrtl(error)
+   subroutine test_nrtl_values()
       use yaeos__constants, only: pr
       use yaeos, only: GeModel, NRTL
 
-      type(error_type), allocatable, intent(out) :: error
 
       type(NRTL) :: model
 
@@ -248,12 +257,18 @@ contains
          GeT2=GeT2, Gen=Gen, GeTn=GeTn, Gen2=Gen2 &
          )
 
-      call check(error, allclose([Ge / n_t], [Ge_val], absolute_tolerance))
-      call check(error, allclose([GeT / n_t], [GeT_val], absolute_tolerance))
-      call check(error, allclose([GeT2 / n_t], [GeT2_val], absolute_tolerance))
-      call check(error, allclose([GeTn], [GeTn_val], absolute_tolerance))
-      call check(error, allclose(Gen, Gen_val, absolute_tolerance))
-      call check(error, allclose([Gen2], [Gen2_val / n_t], absolute_tolerance))
-   end subroutine test_nrtl
-end module test_tape_nrtl
+      call assert(allclose([Ge / n_t], [Ge_val], absolute_tolerance), &
+         "NRTL: allclose(ref, ref, absolute_tolerance)")
+      call assert(allclose([GeT / n_t], [GeT_val], absolute_tolerance), &
+         "NRTL: allclose(ref, ref, absolute_tolerance)")
+      call assert(allclose([GeT2 / n_t], [GeT2_val], absolute_tolerance), &
+         "NRTL: allclose(ref, ref, absolute_tolerance)")
+      call assert(allclose([GeTn], [GeTn_val], absolute_tolerance), &
+         "NRTL: allclose(ref, ref, absolute_tolerance)")
+      call assert(allclose(Gen, Gen_val, absolute_tolerance), &
+         "NRTL: allclose(Gen, Gen_val, absolute_tolerance)")
+      call assert(allclose([Gen2], [Gen2_val / n_t], absolute_tolerance), &
+         "NRTL: allclose(ref, ref, absolute_tolerance)")
+   end subroutine test_nrtl_values
+end program test_nrtl
 

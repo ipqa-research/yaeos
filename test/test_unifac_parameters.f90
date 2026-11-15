@@ -1,25 +1,19 @@
-module test_unifac_parameters
+program test_unifac_parameters
    use yaeos, only: pr
-   use testdrive, only: new_unittest, unittest_type, error_type, check
    use auxiliar_functions, only: allclose, rel_error
+   use testing_aux, only: assert, test_title
    implicit none
 
+   write(*, *) test_title("UNIFAC_PARAMETERS")
+   call test_unifac_subgroups()
+   call test_main_groups()
+
 contains
-   subroutine collect_suite(testsuite)
-      !> Collection of tests
-      type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
-      testsuite = [ &
-         new_unittest("Test UNIFAC Subgroups", test_unifac_subgroups), &
-         new_unittest("Test Main groups interaction", test_main_groups) &
-         ]
-   end subroutine collect_suite
-
-   subroutine test_unifac_subgroups(error)
+   subroutine test_unifac_subgroups()
       use yaeos__models_ge_group_contribution_model_parameters, only: GeGCModelParameters
       use yaeos__models_ge_group_contribution_unifac_parameters, only: UNIFACParameters
 
-      type(error_type), allocatable, intent(out) :: error
 
       type(GeGCModelParameters) :: parameters
       integer :: sg_ids(113), mg_ids(113)
@@ -62,7 +56,8 @@ contains
          ]
 
       do i=1,size(sg_ids)
-         call check(error, parameters%get_subgroup_maingroup(sg_ids(i)) == mg_ids(i))
+         call assert(parameters%get_subgroup_maingroup(sg_ids(i)) == mg_ids(i), &
+            "UNIFAC Subgroups: parameters%get_subgroup_maingroup(sg_ids(i)) == mg_ids(i)")
       end do
 
       ! ========================================================================
@@ -95,7 +90,8 @@ contains
          ]
 
       do i=1,size(sg_ids)
-         call check(error, abs(parameters%get_subgroup_R(sg_ids(i)) - rs(i)) < 1e-10)
+         call assert(abs(parameters%get_subgroup_R(sg_ids(i)) - rs(i)) < 1e-10, &
+            "UNIFAC Subgroups: abs(parameters%get_subgroup_R(sg_ids(i)) - rs(i)) < 1e-10")
       end do
 
       ! ========================================================================
@@ -128,15 +124,15 @@ contains
          ]
 
       do i=1,size(sg_ids)
-         call check(error, abs(parameters%get_subgroup_Q(sg_ids(i)) - qs(i)) < 1e-10)
+         call assert(abs(parameters%get_subgroup_Q(sg_ids(i)) - qs(i)) < 1e-10, &
+            "UNIFAC Subgroups: abs(parameters%get_subgroup_Q(sg_ids(i)) - qs(i)) < 1e-10")
       end do
    end subroutine test_unifac_subgroups
 
-   subroutine test_main_groups(error)
+   subroutine test_main_groups()
       use yaeos__models_ge_group_contribution_model_parameters, only: GeGCModelParameters
       use yaeos__models_ge_group_contribution_unifac_parameters, only: UNIFACParameters
 
-      type(error_type), allocatable, intent(out) :: error
 
       type(GeGCModelParameters) :: parameters
 
@@ -1435,14 +1431,20 @@ contains
          Cij = parameters%get_maingroups_cij(i, j)
          Cji = parameters%get_maingroups_cij(j, i)
 
-         call check(error, abs(Aij - ddbst_aij(k, 1)) < 1e-10_pr)
-         call check(error, abs(Aji - ddbst_aij(k, 2)) < 1e-10_pr)
+         call assert(abs(Aij - ddbst_aij(k, 1)) < 1e-10_pr, &
+            "UNIFAC Main groups interaction: abs(Aij - ddbst_aij(k, 1)) < 1e-10_pr")
+         call assert(abs(Aji - ddbst_aij(k, 2)) < 1e-10_pr, &
+            "UNIFAC Main groups interaction: abs(Aji - ddbst_aij(k, 2)) < 1e-10_pr")
 
-         call check(error, abs(Bij) < 1e-10_pr)
-         call check(error, abs(Bji) < 1e-10_pr)
+         call assert(abs(Bij) < 1e-10_pr, &
+            "UNIFAC Main groups interaction: abs(Bij) < 1e-10_pr")
+         call assert(abs(Bji) < 1e-10_pr, &
+            "UNIFAC Main groups interaction: abs(Bji) < 1e-10_pr")
 
-         call check(error, abs(Cij) < 1e-10_pr)
-         call check(error, abs(Cji) < 1e-10_pr)
+         call assert(abs(Cij) < 1e-10_pr, &
+            "UNIFAC Main groups interaction: abs(Cij) < 1e-10_pr")
+         call assert(abs(Cji) < 1e-10_pr, &
+            "UNIFAC Main groups interaction: abs(Cji) < 1e-10_pr")
 
          ! Check the first occurrence of a subgroup with main groups i, j
          do l=1,size(parameters%subgroups_ids)
@@ -1468,14 +1470,20 @@ contains
          Cij = parameters%get_subgroups_cij(isg, jsg)
          Cji = parameters%get_subgroups_cij(jsg, isg)
 
-         call check(error, abs(Aij - ddbst_aij(k, 1)) < 1e-10_pr)
-         call check(error, abs(Aji - ddbst_aij(k, 2)) < 1e-10_pr)
+         call assert(abs(Aij - ddbst_aij(k, 1)) < 1e-10_pr, &
+            "UNIFAC Main groups interaction: abs(Aij - ddbst_aij(k, 1)) < 1e-10_pr")
+         call assert(abs(Aji - ddbst_aij(k, 2)) < 1e-10_pr, &
+            "UNIFAC Main groups interaction: abs(Aji - ddbst_aij(k, 2)) < 1e-10_pr")
 
-         call check(error, abs(Bij) < 1e-10_pr)
-         call check(error, abs(Bji) < 1e-10_pr)
+         call assert(abs(Bij) < 1e-10_pr, &
+            "UNIFAC Main groups interaction: abs(Bij) < 1e-10_pr")
+         call assert(abs(Bji) < 1e-10_pr, &
+            "UNIFAC Main groups interaction: abs(Bji) < 1e-10_pr")
 
-         call check(error, abs(Cij) < 1e-10_pr)
-         call check(error, abs(Cji) < 1e-10_pr)
+         call assert(abs(Cij) < 1e-10_pr, &
+            "UNIFAC Main groups interaction: abs(Cij) < 1e-10_pr")
+         call assert(abs(Cji) < 1e-10_pr, &
+            "UNIFAC Main groups interaction: abs(Cji) < 1e-10_pr")
       end do
    end subroutine test_main_groups
-end module test_unifac_parameters
+end program test_unifac_parameters
