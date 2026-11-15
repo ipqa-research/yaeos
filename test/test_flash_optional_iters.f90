@@ -29,4 +29,6 @@ program test_flash_optional_iters
    with_iters = flash_no_beta_limits(model, z, t=300.0_pr, beta0=0.5_pr, p_spec=40.0_pr, iters=iters)
    without_iters = flash_no_beta_limits(model, z, t=300.0_pr, beta0=0.5_pr, p_spec=40.0_pr)
    call assert(without_iters%iters == iters, "flash_no_beta_limits: iteration count stored in the result")
+   call assert(abs(without_iters%beta - with_iters%beta) < 1e-12_pr, &
+      "flash_no_beta_limits: same beta with or without iters")
 end program test_flash_optional_iters

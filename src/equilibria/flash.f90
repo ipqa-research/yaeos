@@ -260,7 +260,7 @@ contains
       class(BaseModel), intent(in) :: model !! Thermodynamic model
       real(pr), intent(in) :: z(:) !! Global composition (molar fractions)
       real(pr), intent(in) :: t !! Temperature [K]
-      real(pr), intent(in) :: beta0 !! Initial guess for vapor fraction (currently unused)
+      real(pr), intent(in) :: beta0 !! Initial guess for the vapor fraction
       real(pr), optional, intent(in) :: v_spec !! Specified Volume [L/mol]
       real(pr), optional, intent(in) :: p_spec !! Specified Pressure [bar]
       real(pr), optional, intent(in) :: k0(:) !! Initial K factors (y/x)
@@ -341,6 +341,7 @@ contains
       ! ------------------------------------------------------------------------
       dK = 1.0
       its = 0
+      beta = beta0
       do while (maxval(abs(dK)) > 1.e-6_pr)
          its = its + 1
 
