@@ -134,11 +134,21 @@ contains
       ! Without a limit: a type I line ends at the n-butane critical point
       cl = critical_line(model, a0=0.01_pr, z0=z0, zi=zi, ns0=spec_CP%a, S0=0.01_pr, dS0=0.01_pr)
       n = size(cl%P)
-      ! Where the tracing stops close to the pure end depends on rounding
-      ! (alpha = 0.974 to 0.997 across builds), so check the approach only.
-      call assert(cl%a(n) > 0.95_pr, "full critical line approaches pure n-butane")
-      call assert(abs(cl%T(n) - 425.12_pr) < 5.0_pr, "full critical line approaches the n-butane Tc")
-      call assert(abs(cl%P(n) - 37.96_pr) < 5.0_pr, "full critical line approaches the n-butane Pc")
+      ! The tracing stops when the next step would overshoot alpha = 1, so the
+      ! last alpha depends on the step sizes taken (0.949 to 0.997 across
+      ! builds). Check that the line reaches the n-butane-rich side, that its
+      ! last point is a true critical point, and that the line continued from
+      ! there ends at the pure n-butane critical point.
+      call assert(cl%a(n) > 0.9_pr, "full critical line reaches the n-butane-rich side")
+      call assert(all(cl%a(2:n) > cl%a(1:n-1)), "full critical line: alpha increases monotonically")
+      crit = critical_point(model, z0, zi, spec_CP%a, S=cl%a(n), max_iters=1000, &
+         a0=cl%a(n), T0=cl%T(n), V0=cl%V(n), P0=cl%P(n))
+      call assert(abs(crit%T - cl%T(n)) < 1e-4_pr*cl%T(n) .and. abs(crit%P - cl%P(n)) < 1e-4_pr*cl%P(n), &
+         "full critical line: last point is a critical point")
+      crit = critical_point(model, z0, zi, spec_CP%a, S=0.9999_pr, max_iters=1000, &
+         a0=0.9999_pr, T0=cl%T(n), V0=cl%V(n), P0=cl%P(n))
+      call assert(abs(crit%T - 425.12_pr) < 0.1_pr, "critical line continued to pure n-butane: Tc")
+      call assert(abs(crit%P - 37.96_pr) < 0.1_pr, "critical line continued to pure n-butane: Pc")
       call assert(abs(cl%a(1) - 0.01_pr) < 1e-10_pr, "full critical line starts at the specified alpha")
       call assert(cl%T(1) > 190.564_pr .and. cl%T(1) < 200.0_pr, &
          "1% n-butane raises the critical temperature slightly above the methane Tc")

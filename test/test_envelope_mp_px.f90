@@ -22,7 +22,7 @@ program main
    integer :: ns
    real(pr) :: S
 
-   integer :: i, lb, ub
+   integer :: i, j, lb, ub
 
    integer :: iters
 
@@ -40,25 +40,31 @@ program main
 
    model = get_model()
 
-   ! Build composition for three main phases and incipient one
+   ! Seed near the known four-phase point: the main phase x1 = z, a
+   ! methane-rich liquid x2 (beta = 0, incipient), a heavy liquid x3 rich in
+   ! the last pseudo-component, and the incipient vapor w. The values are the
+   ! converged solution rounded to four significant digits. A cruder guess
+   ! (x3 = 1e-10 for every light component, P = 70 bar) made Newton stall
+   ! away from the solution on some toolchains (Ubuntu 26.04 amd64v3 builds).
    x_l(1, :) = z
-   x_l(2, :) = [2.26748304e-02, 8.77274788e-03, 8.56790518e-01, 7.53110308e-02, 2.25791412e-02, &
-      1.83124730e-03, 6.75557205e-03, 1.46973097e-03, 2.15197976e-03, 1.51272521e-03, &
-      1.15635706e-04, 8.60487017e-11, 8.01982281e-12, 3.48403955e-05, 3.09839163e-21]
-   x_l(3, :) = 1e-10
-   x_l(3, nc) = 1 - 1e-10*(nc-1)
-   w = [1.00840444e-02, 9.76751155e-03, 6.35587304e-01, 1.11530262e-01, 5.50813917e-02, &
-      6.27551663e-03, 2.67981694e-02, 8.36513089e-03, 1.37645767e-02, 1.51732534e-02, &
-      3.84679648e-02, 1.63919981e-04, 5.56318734e-05, 6.88853217e-02, 8.30156039e-10]
+   x_l(2, :) = [2.556e-02, 8.141e-03, 8.748e-01, 6.529e-02, 1.731e-02, &
+      1.289e-03, 4.599e-03, 9.125e-04, 1.297e-03, 8.108e-04, &
+      2.873e-05, 1.174e-11, 4.841e-13, 4.636e-06, 1.915e-23]
+   x_l(3, :) = [1.081e-03, 6.104e-03, 1.492e-01, 4.668e-02, 2.442e-02, &
+      2.121e-03, 1.216e-02, 3.096e-03, 5.719e-03, 4.608e-03, &
+      2.610e-02, 2.374e-03, 1.101e-07, 1.374e-15, 7.163e-01]
+   w = [1.007e-02, 9.510e-03, 6.284e-01, 1.082e-01, 5.291e-02, &
+      6.007e-03, 2.550e-02, 7.919e-03, 1.297e-02, 1.421e-02, &
+      3.512e-02, 2.299e-04, 7.104e-05, 8.890e-02, 1.979e-10]
 
    z0 = z
    zi = 0
    zi(2) = 1
 
    ! Initial guess for betas, P and T
-   betas = [0.98, 0.00, 0.00]
-   P = 70
-   T = 260
+   betas = [0.9989, 0.0, 1.054e-3]
+   P = 108
+   T = 261.8
 
    ns = psize
 
@@ -69,7 +75,9 @@ program main
    X(3*nc + np + 1) = log(P)
    X(3*nc + np + 2) = log(T)
 
+   ! Specify beta of the second main phase: it is incipient (beta = 0)
    ns = 3*nc+2
+   S = 0
 
    ! Find an initial point by solving a known 4ph point
    call pt%solve_point(&
@@ -93,11 +101,47 @@ program main
    call assert(maxval(abs(px%points(1)%betas - [0.99, 0.0, 1.05e-3])) < 1e-2, "First point betas")
    call assert(abs(px%points(1)%P - 108.015 )< 1e-2, "First point P")
    call assert(abs(px%points(1)%T - 261.828 )< 1e-2, "First point T")
+   ! Every point of the line is a true equilibrium state
+   do j = 1, size(px%points)
+      associate(pt => px%points(j))
+         call check_equilibrium(pt%x_l, pt%w, pt%betas, pt%P, pt%T, pt%kinds_x, pt%kind_w, &
+            px%alpha(j)*zi + (1 - px%alpha(j))*z0, "Envelope point")
+      end associate
+   end do
 
    i = size(px%points)
    call assert(abs(px%points(i)%P) > 9, "End at low pressure")
 
 contains
+
+   subroutine check_equilibrium(x_l, w, betas, P, T, kinds_x, kind_w, zref, name)
+      !! Independent check of a converged point: isofugacity of every main
+      !! phase with the incipient phase, and the material balance.
+      real(pr), intent(in) :: x_l(np, nc) !! Main phases compositions
+      real(pr), intent(in) :: w(nc) !! Incipient phase composition
+      real(pr), intent(in) :: betas(np) !! Main phases fractions
+      real(pr), intent(in) :: P !! Pressure [bar]
+      real(pr), intent(in) :: T !! Temperature [K]
+      character(len=14), intent(in) :: kinds_x(np) !! Main phases kinds
+      character(len=14), intent(in) :: kind_w !! Incipient phase kind
+      real(pr), intent(in) :: zref(nc) !! Global composition of the point
+      character(len=*), intent(in) :: name
+      real(pr) :: lnphi_x(nc)
+      real(pr) :: lnphi_w(nc)
+      real(pr) :: zcalc(nc)
+      integer :: l
+
+      call model%lnphi_pt(w, P, T, root_type=kind_w, lnPhi=lnphi_w)
+      zcalc = 0
+      do l=1,np
+         call model%lnphi_pt(x_l(l, :), P, T, root_type=kinds_x(l), lnPhi=lnphi_x)
+         call assert(maxval(abs(log(x_l(l, :)) + lnphi_x - log(w) - lnphi_w)) < 1e-6_pr, &
+            name // ": isofugacity of every main phase with the incipient phase")
+         zcalc = zcalc + betas(l)*x_l(l, :)
+      end do
+      call assert(maxval(abs(zcalc - zref)) < 1e-8_pr, name // ": material balance")
+   end subroutine check_equilibrium
+
    subroutine numdiff
       use yaeos__equilibria_boundaries_phase_envelopes_mp_px, only: px_F_NP
       real(pr) :: dfnum(psize, psize), F1(psize), F2(psize)
