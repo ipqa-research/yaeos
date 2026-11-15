@@ -47,7 +47,6 @@ run_test() {
 run_coverage() {
     gcovr \
         --exclude "build" \
-        --exclude "test/test_runner.f90" \
         --exclude "test/fixtures/taperobinson.f90" \
         --exclude "test" \
         --exclude "src/adiff/hyperdual.f90" \
@@ -60,7 +59,6 @@ run_coverage() {
     
     gcovr \
         --exclude "build" \
-        --exclude "test/test_runner.f90" \
         --exclude "test/fixtures/taperobinson.f90" \
         --exclude "test" \
         --exclude "src/adiff/hyperdual.f90" \
