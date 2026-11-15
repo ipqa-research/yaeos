@@ -33,12 +33,6 @@ How to read the tables:
   The module also stores the ideal-gas coefficients (`n0i`, `th0i`) of the
   original formulation, but no `yaeos` routine uses them, so they are not
   listed here.
-- **Precision marks (†).** Two coefficients are written in the source without
-  a double-precision exponent, so the compiler stores them as single-precision
-  reals. The tables show the literal from the source. The values `yaeos`
-  actually uses are 0.11450634151697159 (ethane, \(k=7\)) and
-  -0.7326539158821106 (generalized departure function, \(k=4\)), a relative
-  difference of about \(10^{-8}\).
 
 # Pure-fluid constants
 
@@ -78,9 +72,7 @@ The other columns are not used by the GERG2008 Helmholtz energy:
 - \(P_{c}\) and \(\omega\) only build the Soave-Redlich-Kwong model that
   provides initial volumes for the volume solver, and they are what
   `model%components%pc` and `%w` return. The source gives \(P_{c}\) in Pa
-  and `yaeos` converts it to bar. Most of these values are written as
-  single-precision literals; the table shows them rounded back to the
-  digits written in the source.
+  and `yaeos` converts it to bar.
 
 # Pure-fluid residual coefficients
 
@@ -209,7 +201,7 @@ has its complete table below.
 | 4 | -0.33714276845694 | 2 | 1.125 | – |
 | 5 | 0.022405964699561 | 4 | 0.625 | – |
 | 6 | 0.015715424886913 | 4 | 1.5 | – |
-| 7 | 0.11450634253745 † | 1 | 0.625 | 1 |
+| 7 | 0.11450634253745 | 1 | 0.625 | 1 |
 | 8 | 1.0612049379745 | 1 | 2.625 | 1 |
 | 9 | -1.2855224439423 | 1 | 2.75 | 1 |
 | 10 | 0.39414630777652 | 2 | 2.125 | 1 |
@@ -943,7 +935,7 @@ Shared by the pairs 1-6, 1-7, 4-5, 4-6, 4-7, 5-6, 5-7, 6-7; each pair scales it 
 | 1 | 2.5574776844118 | 1 | 1 | – | – | – | – |
 | 2 | -7.9846357136353 | 1 | 1.55 | – | – | – | – |
 | 3 | 4.7859131465806 | 1 | 1.7 | – | – | – | – |
-| 4 | -0.73265392369587 † | 2 | 0.25 | – | – | – | – |
+| 4 | -0.73265392369587 | 2 | 0.25 | – | – | – | – |
 | 5 | 1.3805471345312 | 2 | 1.35 | – | – | – | – |
 | 6 | 0.28349603476365 | 3 | 0 | – | – | – | – |
 | 7 | -0.49087385940425 | 3 | 1.25 | – | – | – | – |
