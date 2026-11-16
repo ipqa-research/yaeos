@@ -15,6 +15,8 @@
 <img src="media/logo.png" width="50%" alt="yaeos logo"/>
 </p>
 
+</div>
+
 **yaeos** (Yet Another Equation Of State library) computes thermodynamic
 properties and phase equilibria with equations of state, in modern Fortran and
 Python. It focuses on robust algorithms for phase diagrams and on an easy
