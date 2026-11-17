@@ -148,6 +148,10 @@ jobs:
           compiler: gcc
           version: '14'
 
+      # The setup-fpm macOS binary is linked against GCC 12's libgfortran.
+      - name: Install fpm runtime
+        run: brew install gcc@12
+
       - name: Setup Fortran Package Manager
         uses: fortran-lang/setup-fpm@v10
         with:
