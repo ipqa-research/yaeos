@@ -125,6 +125,58 @@ jobs:
             --flag "-g -ffree-line-length-0" \
             --c-flag "-I./src/adiff/autodiff_api/tapenade/c/"
 
+  tests_macos:
+    name: Fortran tests on ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # Both 64-bit Mac architectures: Intel (x86_64) and Apple Silicon (arm64).
+        os: [macos-15-intel, macos-15]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Setup Fortran Compiler
+        uses: fortran-lang/setup-fortran@v1
+        with:
+          compiler: gcc
+          version: '14'
+
+      - name: Setup Fortran Package Manager
+        uses: fortran-lang/setup-fpm@v10
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install BLAS and LAPACK
+        run: brew install lapack
+
+      - name: Show toolchain
+        run: |
+          sw_vers
+          uname -m
+          "$FC" --version
+          "$CC" --version
+          fpm --version
+
+      - name: Run tests
+        run: |
+          # Homebrew LAPACK also supplies BLAS, but is keg-only. Use its
+          # architecture-specific prefix for both linking and runtime lookup.
+          lapack_lib="$(brew --prefix lapack)/lib"
+          fpm test \
+            --profile release \
+            --flag "-g -ffree-line-length-0" \
+            --c-flag "-I./src/adiff/autodiff_api/tapenade/c/" \
+            --link-flag "-L${lapack_lib} -Wl,-rpath,${lapack_lib}" \
+            --compiler "$FC" \
+            --c-compiler "$CC"
+
   Python-API:
     runs-on: ${{ matrix.os }}
     strategy:
