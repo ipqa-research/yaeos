@@ -335,9 +335,17 @@ jobs:
           # Build only for the native architecture of each macOS runner.
           # The wheel's minimum supported OS is macOS 15.
           CIBW_ARCHS_MACOS: native
+          # Avoid Homebrew's source build of GCC/LAPACK on Intel; use the
+          # system Accelerate framework there. Keep Homebrew LAPACK on arm64.
+          CIBW_BEFORE_ALL_MACOS: >
+            if [ "$(uname -m)" = "x86_64" ]; then
+              echo "Using Accelerate for BLAS/LAPACK";
+            else
+              brew update && brew install lapack;
+            fi
           CIBW_ENVIRONMENT_MACOS: >
             FC="$FC" CC="$CC" MACOSX_DEPLOYMENT_TARGET=15.0
-            LDFLAGS="-L$(brew --prefix lapack)/lib -Wl,-rpath,$(brew --prefix lapack)/lib"
+            LDFLAGS="-L$(brew --prefix)/opt/lapack/lib -Wl,-rpath,$(brew --prefix)/opt/lapack/lib"
 
           # Sanity-check the toolchain inside the build environment itself (the
           # isolated build env is what actually runs fpm/meson).

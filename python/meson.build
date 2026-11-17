@@ -20,6 +20,7 @@ meson_path = meson.current_build_dir()
 
 # Check if we are on Windows
 is_windows = host_machine.system() == 'windows'
+is_macos_intel = host_machine.system() == 'darwin' and host_machine.cpu_family() == 'x86_64'
 
 # On Windows OpenMP is linked explicitly through '-lgomp' below, so OpenMP
 # detection is only required where the dependency is actually used.
@@ -244,8 +245,20 @@ if is_windows
     '-Wl,-Bdynamic'
   ]
   ext_dependencies = [py_dep]
+elif is_macos_intel
+  # Homebrew no longer provides bottles for Intel macOS. Use the system
+  # Accelerate framework for BLAS/LAPACK instead of building those libraries.
+  extra_link_args += [
+    '-framework',
+    'Accelerate',
+    '-lgfortran',
+    '-lquadmath',
+    '-fopenmp',
+    '-static-libgcc'
+  ]
+  ext_dependencies = [py_dep, omp, quadmath_dep]
 else
-  # For Linux/macOS: Standard dynamic linking
+  # For Linux and macOS Apple Silicon: Standard dynamic linking
   extra_link_args += ['-llapack', '-lblas', '-lgfortran', '-lquadmath', '-fopenmp', '-static-libgcc']
   ext_dependencies = [py_dep, omp, quadmath_dep]
 endif
