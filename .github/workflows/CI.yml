@@ -223,15 +223,12 @@ jobs:
 
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
-    needs: 
-      - tests_and_coverage
-      - tests_windows
-      - Python-API
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest] #, macos-13, macos-14]
+        # Native runners produce separate Intel and Apple Silicon wheels.
+        os: [ubuntu-latest, windows-latest, macos-15-intel, macos-15]
     
     steps:
       - uses: actions/checkout@v4
@@ -244,6 +241,18 @@ jobs:
         run: |
           sudo apt install gfortran-14
           sudo update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-14 14
+
+      - name: Setup Fortran Compiler (macOS)
+        if: runner.os == 'macOS'
+        uses: fortran-lang/setup-fortran@v1
+        with:
+          compiler: gcc
+          version: '14'
+
+      # The setup-fpm macOS binary requires GCC 12's libgfortran at runtime.
+      - name: Install fpm runtime (macOS)
+        if: runner.os == 'macOS'
+        run: brew install gcc@12
 
       - name: Setup MSYS2 (Windows)
         if: runner.os == 'Windows'
@@ -286,6 +295,15 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Show macOS wheel toolchain
+        if: runner.os == 'macOS'
+        run: |
+          uname -m
+          which fpm "$FC" "$CC"
+          fpm --version
+          "$FC" --version | head -n 1
+          brew --prefix lapack
+
       - name: Generate meson native file (Windows)
         if: runner.os == 'Windows'
         shell: msys2 {0}
@@ -314,6 +332,13 @@ jobs:
           CIBW_BUILD_VERBOSITY: 3
           CIBW_BUILD_FRONTEND: build
 
+          # Build only for the native architecture of each macOS runner.
+          # The wheel's minimum supported OS is macOS 15.
+          CIBW_ARCHS_MACOS: native
+          CIBW_ENVIRONMENT_MACOS: >
+            FC="$FC" CC="$CC" MACOSX_DEPLOYMENT_TARGET=15.0
+            LDFLAGS="-L$(brew --prefix lapack)/lib -Wl,-rpath,$(brew --prefix lapack)/lib"
+
           # Sanity-check the toolchain inside the build environment itself (the
           # isolated build env is what actually runs fpm/meson).
           CIBW_BEFORE_BUILD_WINDOWS: >
@@ -331,7 +356,7 @@ jobs:
           # DLLs on PATH. The MSYS2 UCRT64 fpm is already on PATH.
           CIBW_BEFORE_TEST: pip install pytest
           CIBW_BEFORE_TEST_LINUX: pip install pytest fpm
-          CIBW_TEST_COMMAND: pytest {project}/python/tests --import-mode=importlib
+          CIBW_TEST_COMMAND: pytest {project}/tests --import-mode=importlib
 
       - uses: actions/upload-artifact@v4
         with:
