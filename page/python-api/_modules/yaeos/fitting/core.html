@@ -5,15 +5,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.fitting.core &mdash; yaeos 4.5.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+  <title>yaeos.fitting.core &mdash; yaeos 4.5.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=a284863f"></script>
+      <script src="../../../_static/documentation_options.js?v=06fc0226"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -88,16 +88,16 @@
   <h1>Source code for yaeos.fitting.core</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Yaeos fitting core module.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
-<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">minimize</span>
 
-<span class="kn">from</span> <span class="nn">yaeos.core</span> <span class="kn">import</span> <span class="n">ArModel</span>
-<span class="kn">from</span> <span class="nn">yaeos.fitting.solvers</span> <span class="kn">import</span> <span class="n">solve_pt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos.fitting.solvers</span><span class="w"> </span><span class="kn">import</span> <span class="n">solve_pt</span>
 
 <span class="n">KINDS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;zT0&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;bubbleP&quot;</span><span class="p">,</span> <span class="s2">&quot;bubble&quot;</span><span class="p">],</span>
@@ -112,15 +112,15 @@
 <span class="c1"># =============================================================================</span>
 <span class="c1"># Default error functions</span>
 <span class="c1"># -----------------------------------------------------------------------------</span>
-<span class="k">def</span> <span class="nf">_pressure_error</span><span class="p">(</span><span class="n">Pexp</span><span class="p">,</span> <span class="n">Pmodel</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_pressure_error</span><span class="p">(</span><span class="n">Pexp</span><span class="p">,</span> <span class="n">Pmodel</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">Pexp</span> <span class="o">-</span> <span class="n">Pmodel</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">Pexp</span>
 
 
-<span class="k">def</span> <span class="nf">_temperature_error</span><span class="p">(</span><span class="n">Texp</span><span class="p">,</span> <span class="n">Tmodel</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_temperature_error</span><span class="p">(</span><span class="n">Texp</span><span class="p">,</span> <span class="n">Tmodel</span><span class="p">):</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">Texp</span> <span class="o">-</span> <span class="n">Tmodel</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">Texp</span>
 
 
-<span class="k">def</span> <span class="nf">_composition_error</span><span class="p">(</span><span class="n">zexp</span><span class="p">,</span> <span class="n">zmodel</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_composition_error</span><span class="p">(</span><span class="n">zexp</span><span class="p">,</span> <span class="n">zmodel</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">zmodel</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">zexp</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span>
         <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">zmodel</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">zexp</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
     <span class="p">)</span>
@@ -128,7 +128,7 @@
 
 <div class="viewcode-block" id="BinaryFitter">
 <a class="viewcode-back" href="../../../fitting/core.html#yaeos.fitting.core.BinaryFitter">[docs]</a>
-<span class="k">class</span> <span class="nc">BinaryFitter</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BinaryFitter</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;BinaryFitter class.</span>
 
 <span class="sd">    This class is used to fit binary interaction parameters to experimental</span>
@@ -138,25 +138,29 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    model_setter : Callable</span>
-<span class="sd">        A function that returns a model object. The function should take the</span>
-<span class="sd">        optimization parameters as the first argument and any other arguments</span>
-<span class="sd">        as the following arguments.</span>
+<span class="sd">        A function that returns a model object. It is called as</span>
+<span class="sd">        ``model_setter(x, *model_setter_args)``, so it should take the</span>
+<span class="sd">        optimization parameters as the first argument and the elements of</span>
+<span class="sd">        `model_setter_args` as the following arguments.</span>
 <span class="sd">    model_setter_args : tuple</span>
 <span class="sd">        A tuple with the arguments to pass to the model_setter function.</span>
 <span class="sd">    data : pandas.DataFrame</span>
 <span class="sd">        A DataFrame with the experimental data.</span>
 <span class="sd">        The DataFrame should have the following columns:</span>
-<span class="sd">        - kind: str, the kind of data point (bubble, dew, liquid-liquid, PT,</span>
-<span class="sd">        critical)</span>
+
+<span class="sd">        - kind: str, the kind of data point. Accepted values are &quot;bubble&quot;</span>
+<span class="sd">          (or &quot;bubbleP&quot;), &quot;bubbleT&quot;, &quot;dew&quot; (or &quot;dewP&quot;), &quot;dewT&quot;, &quot;PT&quot;,</span>
+<span class="sd">          &quot;liquid-liquid&quot; and &quot;critical&quot;.</span>
 <span class="sd">        - x1: float, the mole fraction of component 1 (lightest component) in</span>
-<span class="sd">        heavy phase.</span>
+<span class="sd">          heavy phase.</span>
 <span class="sd">        - y1: float, the mole fraction of component 1 (lightest component) in</span>
-<span class="sd">        light phase.</span>
+<span class="sd">          light phase.</span>
 <span class="sd">        - T: float, the temperature in K</span>
 <span class="sd">        - P: float, the pressure in bar</span>
 <span class="sd">        - weight: float, optional, the weight of the data point (default is 1)</span>
 <span class="sd">    verbose : bool, optional</span>
 <span class="sd">        If True, print the objective function value and the optimization</span>
+<span class="sd">        parameters at each evaluation.</span>
 <span class="sd">    pressure_error : Callable, optional</span>
 <span class="sd">        A function `f(Pexp, Pmodel)` that calculates the pressure error between</span>
 <span class="sd">        the experimental and model values.</span>
@@ -186,11 +190,14 @@
 <span class="sd">        The experimental data.</span>
 <span class="sd">    evaluations : dict</span>
 <span class="sd">        A dictionary with the evaluations of the objective function. The keys</span>
-<span class="sd">        are &#39;fobj&#39;, and &#39;x&#39;. &#39;fobj&#39; is the objective function value,</span>
-<span class="sd">        &#39;x&#39; is the optimization parameters.</span>
+<span class="sd">        are &#39;fobj&#39; and &#39;x&#39;. &#39;fobj&#39; is the objective function value,</span>
+<span class="sd">        &#39;x&#39; is the optimization parameters. After each evaluation the keys</span>
+<span class="sd">        &#39;residuals&#39; and &#39;contributions&#39; hold the residuals and the weighted</span>
+<span class="sd">        objective function contributions of each data point of the last</span>
+<span class="sd">        evaluation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">model_setter</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
         <span class="n">model_setter_args</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span>
@@ -223,7 +230,7 @@
 
 <div class="viewcode-block" id="BinaryFitter.objective_function">
 <a class="viewcode-back" href="../../../fitting/core.html#yaeos.fitting.core.BinaryFitter.objective_function">[docs]</a>
-    <span class="k">def</span> <span class="nf">objective_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_values</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">objective_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x_values</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Objective function to minimize when fitting interaction parameters.</span>
 
@@ -411,7 +418,7 @@
 
 <div class="viewcode-block" id="BinaryFitter.fit">
 <a class="viewcode-back" href="../../../fitting/core.html#yaeos.fitting.core.BinaryFitter.fit">[docs]</a>
-    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;Nelder-Mead&quot;</span><span class="p">,</span> <span class="n">optimizer_options</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fit the model to the data.</span>
@@ -419,16 +426,20 @@
 <span class="sd">        Fit the model to the data using the objective function defined in</span>
 <span class="sd">        the objective_function method. The optimization is performed using</span>
 <span class="sd">        the scipy.optimize.minimize function.</span>
-<span class="sd">        The optimization result is stored in the `.solution` property. Which</span>
+<span class="sd">        The optimization result is stored in the `.solution` property, and</span>
+<span class="sd">        the fitted model can be obtained with the `.model` property.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        x0 : array-like</span>
 <span class="sd">            Initial guess for the fitting parameters.</span>
-<span class="sd">        bounds : array-like</span>
-<span class="sd">            Bounds for the fitting parameters.</span>
+<span class="sd">        bounds : array-like, optional</span>
+<span class="sd">            Bounds for the fitting parameters, by default None.</span>
 <span class="sd">        method : str, optional</span>
 <span class="sd">            The optimization method to use. Default is &#39;Nelder-Mead&#39;.</span>
+<span class="sd">        optimizer_options : dict, optional</span>
+<span class="sd">            Options passed to ``scipy.optimize.minimize`` as `options`, by</span>
+<span class="sd">            default None.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -445,12 +456,12 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">solution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">solution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the optimization solution.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_solution</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model with the fitted parameters.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_solution&quot;</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>

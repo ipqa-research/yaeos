@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>MHV &ndash; yaeos </title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title="<p> 2.2% of total for derived types.</p>Including implementation: 123 statements,  1.3% of total for derived types.">14 statements</a>
+                 title="<p> 2.5% of total for derived types.</p>Including implementation: 144 statements,  1.3% of total for derived types.">16 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -138,12 +139,12 @@
             <a class="list-group-item" href="../type/mhv.html#variable-dn2~2">dn2</a>
             <a class="list-group-item" href="../type/mhv.html#variable-ge~2">ge</a>
             <a class="list-group-item" href="../type/mhv.html#variable-is_d_ddlc">is_D_ddlc</a>
-            <a class="list-group-item" href="../type/mhv.html#variable-l~12">l</a>
-            <a class="list-group-item" href="../type/mhv.html#variable-q~2">q</a>
-            <a class="list-group-item" href="../type/mhv.html#variable-b~5">B</a>
-            <a class="list-group-item" href="../type/mhv.html#variable-bi~3">bi</a>
-            <a class="list-group-item" href="../type/mhv.html#variable-dbi~2">dBi</a>
-            <a class="list-group-item" href="../type/mhv.html#variable-dbij~2">dBij</a>
+            <a class="list-group-item" href="../type/mhv.html#variable-l~10">l</a>
+            <a class="list-group-item" href="../type/mhv.html#variable-q">q</a>
+            <a class="list-group-item" href="../type/mhv.html#variable-b">B</a>
+            <a class="list-group-item" href="../type/mhv.html#variable-bi~2">bi</a>
+            <a class="list-group-item" href="../type/mhv.html#variable-dbi">dBi</a>
+            <a class="list-group-item" href="../type/mhv.html#variable-dbij">dBij</a>
         </div>
       </div>
     </div>
@@ -181,9 +182,9 @@
       </a>
       <div id="boundprocs-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../type/mhv.html#boundprocedure-bmix~3">Bmix</a>
+            <a class="list-group-item" href="../type/mhv.html#boundprocedure-bmix~2">Bmix</a>
             <a class="list-group-item" href="../type/mhv.html#boundprocedure-d1mix~2">D1Mix</a>
-            <a class="list-group-item" href="../type/mhv.html#boundprocedure-dmix~3">Dmix</a>
+            <a class="list-group-item" href="../type/mhv.html#boundprocedure-dmix~2">Dmix</a>
         </div>
       </div>
     </div>
@@ -199,20 +200,23 @@
     <div class="col-md-9" id='text'>
       <h2 id="type-def-statement">
         type, public, extends(<a href='cubicmixrule.html'>CubicMixRule</a>) :: MHV</h2>
-    <h1 id="michelsens-modified-huron-vidal-mixing-rule">Michelsen&rsquo;s modified Huron-Vidal mixing rule</h1>
-<p>Mixing rule at zero-pressure which allows for the inclusion of an
-excess-gibbs model.</p>
+    <h1 id="mhv">MHV</h1>
+<p>Michelsen&rsquo;s modified Huron-Vidal cubic mixing rule.</p>
 <h1 id="description">Description</h1>
-<p>This mixing rule is based on the aproximate zero-pressure limit
- of a cubic equation of state. At the aproximate zero-pressure limit the
+<p>A zero-pressure-limit mixing rule coupling a cubic EOS with an
+excess-Gibbs model. The parameter <code>q</code> selects the MHV variant, and
+<code>l</code> can hold repulsive binary interactions.
+This mixing rule is based on the approximate zero-pressure limit
+of a cubic equation of state. At the approximate zero-pressure limit the
 attractive parameter can be expressed as:</p>
 <p>
 <script type="math/tex; mode=display">
-\frac{D}{RTB}(n, T) = \sum_i n_i \frac{a_i(T)}{b_i} + \frac{1}{q}
- \left(\frac{G^E(n, T)}{RT} + \sum_i n_i \ln \frac{B}{nb_i} \right)
+\frac{D}{RTB}(n, T) = \sum_i n_i \frac{a_i(T)}{RT b_i} + \frac{1}{q}
+ \left(\frac{G^E(n, T)}{RT} + \sum_i n_i \ln \frac{B}{n_T b_i} \right)
 </script>
-Where <script type="math/tex">q</script> is a weak function of temperature. In the case of <code>MHV</code>
-and simplicity it is considered that depends on the model used.</p>
+Where <script type="math/tex">q</script> is a weak function of temperature. In this implementation
+it is a constant chosen for the cubic EOS (e.g. <script type="math/tex">-0.593</script> for SRK, as
+in MHV1, and <script type="math/tex">-0.64663</script> in PSRK).</p>
 <h1 id="examples">Examples</h1>
 <p>To use the modified Huron-Vidal mixing rule it is necessary to define
 a <code>CubicEoS</code> and replace its original mixing rule with the one generated
@@ -232,10 +236,11 @@ by the user.</p>
 <span class="n">model</span><span class="p">%</span><span class="n">mixrule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mixrule</span>
 
 <span class="c">! Ready to do calculations</span>
-<span class="k">call </span><span class="n">pressure</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">)</span>
+<span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">)</span>
 </code></pre></div>
 
 <h1 id="references">References</h1>
+<p>Michelsen, M. L., <em>Fluid Phase Equilibria</em> 60 (1990) 213-219.</p>
 <br>      <div class="card">
         <div class="card-header">
           <h3 class="card-title">Inherits</h3>
@@ -244,81 +249,81 @@ by the user.</p>
           <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: type~~mhv~~InheritsGraph Pages: 1 -->
-<svg id="typemhvInheritsGraph" width="472pt" height="74pt"
- viewBox="0.00 0.00 472.00 74.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="type~~mhv~~InheritsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 70)">
+<svg id="typemhvInheritsGraph" width="467pt" height="74pt"
+ viewBox="0.00 0.00 467.00 74.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="type~~mhv~~InheritsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 70.27)">
 <title>type~~mhv~~InheritsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-70 468,-70 468,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-70.27 463.31,-70.27 463.31,4 -4,4"/>
 <!-- type~mhv -->
 <g id="type~~mhv~~InheritsGraph_node1" class="node">
 <title>type~mhv</title>
-<polygon fill="none" stroke="black" points="464,-45 410,-45 410,-21 464,-21 464,-45"/>
-<text text-anchor="middle" x="437" y="-30.6" font-family="Helvetica,sans-Serif" font-size="10.50">MHV</text>
+<polygon fill="none" stroke="black" points="459.31,-45.27 405.31,-45.27 405.31,-21 459.31,-21 459.31,-45.27"/>
+<text xml:space="preserve" text-anchor="middle" x="432.31" y="-29.53" font-family="Helvetica,sans-Serif" font-size="10.50">MHV</text>
 </g>
 <!-- type~cubicmixrule -->
 <g id="type~~mhv~~InheritsGraph_node2" class="node">
 <title>type~cubicmixrule</title>
 <g id="a_type~~mhv~~InheritsGraph_node2"><a xlink:href="../type/cubicmixrule.html" xlink:title="CubicMixRule">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="361,-66 277,-66 277,-42 361,-42 361,-66"/>
-<text text-anchor="middle" x="319" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CubicMixRule</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="357.31,-66.27 274.54,-66.27 274.54,-42 357.31,-42 357.31,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="315.92" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CubicMixRule</text>
 </a>
 </g>
 </g>
 <!-- type~mhv&#45;&gt;type~cubicmixrule -->
 <g id="type~~mhv~~InheritsGraph_edge2" class="edge">
 <title>type~mhv&#45;&gt;type~cubicmixrule</title>
-<path fill="none" stroke="#000000" d="M409.97,-37.71C398.58,-39.78 384.79,-42.27 371.47,-44.68"/>
-<polygon fill="#000000" stroke="#000000" points="370.64,-41.27 361.43,-46.5 371.89,-48.16 370.64,-41.27"/>
+<path fill="none" stroke="#000000" d="M405.07,-37.95C394.15,-39.96 381.08,-42.36 368.39,-44.69"/>
+<polygon fill="#000000" stroke="#000000" points="368.09,-41.18 358.89,-46.43 369.36,-48.07 368.09,-41.18"/>
 </g>
 <!-- type~gemodel -->
 <g id="type~~mhv~~InheritsGraph_node3" class="node">
 <title>type~gemodel</title>
 <g id="a_type~~mhv~~InheritsGraph_node3"><a xlink:href="../type/gemodel.html" xlink:title="GeModel">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="349,-24 289,-24 289,0 349,0 349,-24"/>
-<text text-anchor="middle" x="319" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">GeModel</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="345.31,-24.27 286.54,-24.27 286.54,0 345.31,0 345.31,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="315.92" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">GeModel</text>
 </a>
 </g>
 </g>
 <!-- type~mhv&#45;&gt;type~gemodel -->
 <g id="type~~mhv~~InheritsGraph_edge1" class="edge">
 <title>type~mhv&#45;&gt;type~gemodel</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M409.97,-28.29C395.03,-25.58 375.98,-22.13 359.26,-19.11"/>
-<polygon fill="#000000" stroke="#000000" points="359.67,-15.63 349.21,-17.29 358.43,-22.51 359.67,-15.63"/>
-<text text-anchor="middle" x="385.5" y="-26.4" font-family="Helvetica,sans-Serif" font-size="9.50">ge</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M405.07,-28.32C390.74,-25.69 372.7,-22.37 356.68,-19.43"/>
+<polygon fill="#000000" stroke="#000000" points="357.41,-16.01 346.94,-17.65 356.14,-22.89 357.41,-16.01"/>
+<text xml:space="preserve" text-anchor="middle" x="381.31" y="-26.74" font-family="Helvetica,sans-Serif" font-size="9.50">ge</text>
 </g>
 <!-- type~basemodel -->
 <g id="type~~mhv~~InheritsGraph_node4" class="node">
 <title>type~basemodel</title>
 <g id="a_type~~mhv~~InheritsGraph_node4"><a xlink:href="../type/basemodel.html" xlink:title="BaseModel">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="240,-24 169,-24 169,0 240,0 240,-24"/>
-<text text-anchor="middle" x="204.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">BaseModel</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="237.54,-24.27 167.52,-24.27 167.52,0 237.54,0 237.54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="202.53" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">BaseModel</text>
 </a>
 </g>
 </g>
 <!-- type~gemodel&#45;&gt;type~basemodel -->
 <g id="type~~mhv~~InheritsGraph_edge3" class="edge">
 <title>type~gemodel&#45;&gt;type~basemodel</title>
-<path fill="none" stroke="#000000" d="M288.74,-12C277.02,-12 263.26,-12 250.34,-12"/>
-<polygon fill="#000000" stroke="#000000" points="250.22,-8.5 240.22,-12 250.22,-15.5 250.22,-8.5"/>
+<path fill="none" stroke="#000000" d="M286.24,-12.13C274.89,-12.13 261.56,-12.13 248.96,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="249.18,-8.64 239.18,-12.14 249.18,-15.64 249.18,-8.64"/>
 </g>
 <!-- type~substances -->
 <g id="type~~mhv~~InheritsGraph_node5" class="node">
 <title>type~substances</title>
 <g id="a_type~~mhv~~InheritsGraph_node5"><a xlink:href="../type/substances.html" xlink:title="Substances">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="73,-24 0,-24 0,0 73,0 73,-24"/>
-<text text-anchor="middle" x="36.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Substances</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="72.27,-24.27 0,-24.27 0,0 72.27,0 72.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="36.13" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Substances</text>
 </a>
 </g>
 </g>
 <!-- type~basemodel&#45;&gt;type~substances -->
 <g id="type~~mhv~~InheritsGraph_edge4" class="edge">
 <title>type~basemodel&#45;&gt;type~substances</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M168.7,-12C143.94,-12 110.42,-12 83.47,-12"/>
-<polygon fill="#000000" stroke="#000000" points="83.11,-8.5 73.11,-12 83.11,-15.5 83.11,-8.5"/>
-<text text-anchor="middle" x="121" y="-14.4" font-family="Helvetica,sans-Serif" font-size="9.50">components</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M167.07,-12.13C142.95,-12.13 110.46,-12.13 83.99,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="84.2,-8.64 74.2,-12.14 84.2,-15.64 84.2,-8.64"/>
+<text xml:space="preserve" text-anchor="middle" x="119.89" y="-14.36" font-family="Helvetica,sans-Serif" font-size="9.50">components</text>
 </g>
 </g>
 </svg>
@@ -337,25 +342,25 @@ by the user.</p>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="186pt" height="32pt"
- viewBox="0.00 0.00 185.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="184pt" height="32pt"
+ viewBox="0.00 0.00 184.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 181.5,-28 181.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 179.88,-28.27 179.88,4 -4,4"/>
 <!-- Type -->
 <g id="node1" class="node">
 <title>Type</title>
-<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node2" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="177.5,-24 72.5,-24 72.5,0 177.5,0 177.5,-24"/>
-<text text-anchor="middle" x="125" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="175.88,-24.27 72.12,-24.27 72.12,0 175.88,0 175.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="124" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -399,7 +404,7 @@ said component(s).
 <td> =</td>
                 <td>.false.</td>
             <td>
-                <p>Calculate second order derivatives</p>
+                <p>Calculate second-order mole-number derivatives</p>
             </td>
         </tr>
         <tr>
@@ -416,7 +421,7 @@ said component(s).
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Excess-Gibbs model in the MHV relation.</p>
             </td>
         </tr>
         <tr>
@@ -433,12 +438,12 @@ said component(s).
 <td> =</td>
                 <td>.false.</td>
             <td>
-                <p>Mixing rule D parameter dependant on density</p>
+                <p>Mixing rule D parameter depends on volume (density)</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-l~12"></span>
+              <span class="anchor" id="variable-l~10"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -450,12 +455,12 @@ said component(s).
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Repulsive binary interaction matrix.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-q~2"></span>
+              <span class="anchor" id="variable-q"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -467,12 +472,12 @@ said component(s).
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>MHV <script type="math/tex">q</script> parameter defining the zero-pressure relation.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~5"></span>
+              <span class="anchor" id="variable-b"></span>
               real(kind=pr),
             </td>
               <td>private,</td>
@@ -484,12 +489,12 @@ said component(s).
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Mixture covolume.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-bi~3"></span>
+              <span class="anchor" id="variable-bi~2"></span>
               real(kind=pr),
             </td>
               <td>private,</td>
@@ -501,12 +506,12 @@ said component(s).
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Cached pure-component covolumes.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dbi~2"></span>
+              <span class="anchor" id="variable-dbi"></span>
               real(kind=pr),
             </td>
               <td>private,</td>
@@ -518,12 +523,12 @@ said component(s).
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Mole-number gradient of the mixture covolume.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dbij~2"></span>
+              <span class="anchor" id="variable-dbij"></span>
               real(kind=pr),
             </td>
               <td>private,</td>
@@ -535,7 +540,7 @@ said component(s).
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Mole-number Hessian of the mixture covolume.</p>
             </td>
         </tr>
     </tbody>
@@ -559,7 +564,11 @@ said component(s).
 
     </h3>
     
-  
+  <h1 id="mhv">MHV</h1>
+<p>Construct a Michelsen modified Huron-Vidal mixing rule.</p>
+<h1 id="examples">Examples</h1>
+<div class="codehilite"><pre><span></span><code><span class="n">mixrule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MHV</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="n">ge_model</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="o">=</span><span class="n">model</span><span class="p">%</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="o">=-</span><span class="mf">0.593_pr</span><span class="p">)</span>
+</code></pre></div>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -584,12 +593,12 @@ said component(s).
             <td>::</td>
             <td><strong>Ge</strong></td>
             <td>
-
+<p>Excess Gibbs energy model</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~8"></span>
+              <span class="anchor" id="variable-b~7"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -599,12 +608,12 @@ said component(s).
             <td>::</td>
             <td><strong>b</strong>(:)</td>
             <td>
-
+<p>Pure-component covolumes [L/mol]</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-q~3"></span>
+              <span class="anchor" id="variable-q~2"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -614,12 +623,12 @@ said component(s).
             <td>::</td>
             <td><strong>q</strong></td>
             <td>
-
+<p>MHV <script type="math/tex">q</script> parameter</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lij~3"></span>
+              <span class="anchor" id="variable-lij"></span>
               real(kind=pr),
             </td>
 <td>intent(in),</td>
@@ -629,7 +638,7 @@ said component(s).
             <td>::</td>
             <td><strong>lij</strong>(:,:)</td>
             <td>
-
+<p>Binary repulsive interaction parameters (default zero)</p>
             </td>
         </tr>
     </tbody>
@@ -654,10 +663,10 @@ said component(s).
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-bmix~3"></span>
+      <span class="anchor" id="boundprocedure-bmix~2"></span>
       <h3>
           procedure, public ::
-  <strong>Bmix</strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/bmixmhv.html'>BmixMHV</a>
+  <strong>Bmix</strong> => <a href='../proc/bmixmhv.html'>BmixMHV</a>
         
       </h3>
     </div>
@@ -668,7 +677,7 @@ said component(s).
 </h3>
     
 
-  <p>Quadratinc mixing rule for the repulsive parameter, using
+  <p>Quadratic mixing rule for the repulsive parameter, using
 <script type="math/tex"> b_{ij} = \frac{b_i + b_j}{2} (1 - l_{ij}) </script> as a combining rule.</p><a href="../proc/bmixmhv.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
@@ -694,7 +703,7 @@ said component(s).
             <td>::</td>
             <td><strong>self</strong></td>
             <td>
-
+<p>Mixing rule object.</p>
             </td>
         </tr>
         <tr>
@@ -709,7 +718,7 @@ said component(s).
             <td>::</td>
             <td><strong>n</strong>(:)</td>
             <td>
-
+<p>Component mole amounts [mol]</p>
             </td>
         </tr>
         <tr>
@@ -724,7 +733,7 @@ said component(s).
             <td>::</td>
             <td><strong>bi</strong>(:)</td>
             <td>
-
+<p>Pure-component covolumes [L/mol]</p>
             </td>
         </tr>
         <tr>
@@ -739,7 +748,7 @@ said component(s).
             <td>::</td>
             <td><strong>B</strong></td>
             <td>
-
+<p>Mixture covolume <script type="math/tex">B</script> [L]</p>
             </td>
         </tr>
         <tr>
@@ -754,7 +763,9 @@ said component(s).
             <td>::</td>
             <td><strong>dBi</strong>(:)</td>
             <td>
-
+<p>
+<script type="math/tex">\partial B/\partial n_i</script>
+</p>
             </td>
         </tr>
         <tr>
@@ -769,7 +780,9 @@ said component(s).
             <td>::</td>
             <td><strong>dBij</strong>(:,:)</td>
             <td>
-
+<p>
+<script type="math/tex">\partial^2 B/\partial n_i \partial n_j</script>
+</p>
             </td>
         </tr>
     </tbody>
@@ -787,7 +800,7 @@ said component(s).
       <span class="anchor" id="boundprocedure-d1mix~2"></span>
       <h3>
           procedure, public ::
-  <strong>D1Mix</strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/d1mixmhv.html'>D1MixMHV</a>
+  <strong>D1Mix</strong> => <a href='../proc/d1mixmhv.html'>D1MixMHV</a>
         
       </h3>
     </div>
@@ -798,7 +811,7 @@ said component(s).
 </h3>
     
 
-  
+  <p>Calculate the MHV mixture <script type="math/tex">\delta_1</script> parameter and mole derivatives.</p><a href="../proc/d1mixmhv.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -823,7 +836,7 @@ said component(s).
             <td>::</td>
             <td><strong>self</strong></td>
             <td>
-
+<p>Mixing rule object.</p>
             </td>
         </tr>
         <tr>
@@ -838,7 +851,7 @@ said component(s).
             <td>::</td>
             <td><strong>n</strong>(:)</td>
             <td>
-
+<p>Component mole amounts [mol]</p>
             </td>
         </tr>
         <tr>
@@ -853,7 +866,7 @@ said component(s).
             <td>::</td>
             <td><strong>d1i</strong>(:)</td>
             <td>
-
+<p>Pure-component <script type="math/tex">\delta_{1i}</script> values</p>
             </td>
         </tr>
         <tr>
@@ -868,7 +881,8 @@ said component(s).
             <td>::</td>
             <td><strong>D1</strong></td>
             <td>
-
+<p>Mixture <script type="math/tex">\delta_1</script>
+</p>
             </td>
         </tr>
         <tr>
@@ -883,7 +897,9 @@ said component(s).
             <td>::</td>
             <td><strong>dD1i</strong>(:)</td>
             <td>
-
+<p>
+<script type="math/tex">\partial \delta_1/\partial n_i</script>
+</p>
             </td>
         </tr>
         <tr>
@@ -898,7 +914,9 @@ said component(s).
             <td>::</td>
             <td><strong>dD1ij</strong>(:,:)</td>
             <td>
-
+<p>
+<script type="math/tex">\partial^2 \delta_1/\partial n_i \partial n_j</script>
+</p>
             </td>
         </tr>
     </tbody>
@@ -913,10 +931,10 @@ said component(s).
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-dmix~3"></span>
+      <span class="anchor" id="boundprocedure-dmix~2"></span>
       <h3>
           procedure, public ::
-  <strong>Dmix</strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/dmixmhv.html'>DmixMHV</a>
+  <strong>Dmix</strong> => <a href='../proc/dmixmhv.html'>DmixMHV</a>
         
       </h3>
     </div>
@@ -927,8 +945,8 @@ said component(s).
 </h3>
     
 
-  <p>Mixing rule at infinite pressure as defined in the book of Michelsen and
-Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+  <p>Mixing rule at the approximate zero-pressure limit as defined in the
+book of Michelsen and Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -953,7 +971,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
             <td>::</td>
             <td><strong>self</strong></td>
             <td>
-
+<p>Mixing rule object.</p>
             </td>
         </tr>
         <tr>
@@ -1080,8 +1098,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
             <td><strong>dDdV</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dD}{dT}</script>
-</p>
+<script type="math/tex">\frac{dD}{dV}</script> (not assigned)</p>
             </td>
         </tr>
         <tr>
@@ -1097,7 +1114,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
             <td><strong>dDdT</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dD}{dV}</script>
+<script type="math/tex">\frac{dD}{dT}</script>
 </p>
             </td>
         </tr>
@@ -1165,7 +1182,7 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
             <td><strong>dDdTV</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{d^2D}{dTV</script>
+<script type="math/tex">\frac{d^2D}{dTV}</script>
 </p>
             </td>
         </tr>
@@ -1243,14 +1260,14 @@ Møllerup.</p><a href="../proc/dmixmhv.html" class="pull-right"><emph>Read more&
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

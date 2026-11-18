@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>DandTnder &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.2% of total for procedures.">39 statements</a>
+                 title=" 0.2% of total for procedures.">43 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -135,13 +136,13 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/dandtnder.html#variable-aij~9">aij</a>
-            <a class="list-group-item" href="../proc/dandtnder.html#variable-aux~6">aux</a>
+            <a class="list-group-item" href="../proc/dandtnder.html#variable-aij~7">aij</a>
+            <a class="list-group-item" href="../proc/dandtnder.html#variable-aux~3">aux</a>
             <a class="list-group-item" href="../proc/dandtnder.html#variable-aux2">aux2</a>
             <a class="list-group-item" href="../proc/dandtnder.html#variable-daijdt~3">daijdT</a>
             <a class="list-group-item" href="../proc/dandtnder.html#variable-daijdt2~3">daijdT2</a>
-            <a class="list-group-item" href="../proc/dandtnder.html#variable-i~108">i</a>
-            <a class="list-group-item" href="../proc/dandtnder.html#variable-j~64">j</a>
+            <a class="list-group-item" href="../proc/dandtnder.html#variable-i~104">i</a>
+            <a class="list-group-item" href="../proc/dandtnder.html#variable-j~60">j</a>
         </div>
       </div>
     </div>
@@ -175,6 +176,11 @@
 </h2>
     
 
+    <h1 id="dandtnder">DandTnder</h1>
+<p>Evaluate the legacy mixture attractive parameter and derivatives.</p>
+<h1 id="description">Description</h1>
+<p>Combines the <code>aij</code> matrix with component mole amounts and, when
+<code>NTD</code> enables temperature dependence, evaluates temperature gradients.</p>
 
 
     <h3>Arguments</h3>
@@ -200,12 +206,12 @@
             <td>::</td>
             <td><strong>ntd</strong></td>
             <td>
-                
+                <p>Flag selecting temperature-dependent derivative calculations.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~92"></span>
+              <span class="anchor" id="variable-nc~82"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -215,12 +221,12 @@
             <td>::</td>
             <td><strong>nc</strong></td>
             <td>
-                
+                <p>Number of active components.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~99"></span>
+              <span class="anchor" id="variable-t~103"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -230,7 +236,7 @@
             <td>::</td>
             <td><strong>T</strong></td>
             <td>
-                
+                <p>Temperature [K].</p>
             </td>
         </tr>
         <tr>
@@ -245,12 +251,12 @@
             <td>::</td>
             <td><strong>rn</strong>(nc)</td>
             <td>
-                
+                <p>Component mole amounts used in mixture rules.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-d~11"></span>
+              <span class="anchor" id="variable-d~14"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -260,12 +266,12 @@
             <td>::</td>
             <td><strong>D</strong></td>
             <td>
-                
+                <p>Mixture attractive parameter.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ddi~10"></span>
+              <span class="anchor" id="variable-ddi~13"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -275,7 +281,8 @@
             <td>::</td>
             <td><strong>dDi</strong>(nc)</td>
             <td>
-                
+                <p>
+<script type="math/tex">\partial D/\partial n_i</script>.</p>
             </td>
         </tr>
         <tr>
@@ -290,12 +297,13 @@
             <td>::</td>
             <td><strong>dDiT</strong>(nc)</td>
             <td>
-                
+                <p>
+<script type="math/tex">\partial^2 D/\partial n_i \partial T</script>.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ddij~10"></span>
+              <span class="anchor" id="variable-ddij~13"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -305,12 +313,13 @@
             <td>::</td>
             <td><strong>dDij</strong>(nc,nc)</td>
             <td>
-                
+                <p>
+<script type="math/tex">\partial^2 D/\partial n_i \partial n_j</script>.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dddt~10"></span>
+              <span class="anchor" id="variable-dddt~13"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -320,12 +329,13 @@
             <td>::</td>
             <td><strong>dDdT</strong></td>
             <td>
-                
+                <p>
+<script type="math/tex">\partial D/\partial T</script>.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dddt2~10"></span>
+              <span class="anchor" id="variable-dddt2~13"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -335,7 +345,8 @@
             <td>::</td>
             <td><strong>dDdT2</strong></td>
             <td>
-                
+                <p>
+<script type="math/tex">\partial^2 D/\partial T^2</script>.</p>
             </td>
         </tr>
     </tbody>
@@ -350,49 +361,49 @@
   <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: proc~~dandtnder~~CallsGraph Pages: 1 -->
-<svg id="procdandtnderCallsGraph" width="261pt" height="32pt"
- viewBox="0.00 0.00 261.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~dandtnder~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg id="procdandtnderCallsGraph" width="260pt" height="32pt"
+ viewBox="0.00 0.00 260.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~dandtnder~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>proc~~dandtnder~~CallsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 257,-28 257,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 255.52,-28.27 255.52,4 -4,4"/>
 <!-- proc~dandtnder -->
 <g id="proc~~dandtnder~~CallsGraph_node1" class="node">
 <title>proc~dandtnder</title>
-<polygon fill="none" stroke="black" points="73,-24 0,-24 0,0 73,0 73,-24"/>
-<text text-anchor="middle" x="36.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">DandTnder</text>
+<polygon fill="none" stroke="black" points="71.52,-24.27 0,-24.27 0,0 71.52,0 71.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="35.76" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">DandTnder</text>
 </g>
 <!-- proc~aijtder -->
 <g id="proc~~dandtnder~~CallsGraph_node2" class="node">
 <title>proc~aijtder</title>
 <g id="a_proc~~dandtnder~~CallsGraph_node2"><a xlink:href="../proc/aijtder.html" xlink:title="aijTder">
-<polygon fill="#d9534f" stroke="#d9534f" points="163,-24 109,-24 109,0 163,0 163,-24"/>
-<text text-anchor="middle" x="136" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">aijTder</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="161.52,-24.27 107.52,-24.27 107.52,0 161.52,0 161.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="134.52" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">aijTder</text>
 </a>
 </g>
 </g>
 <!-- proc~dandtnder&#45;&gt;proc~aijtder -->
 <g id="proc~~dandtnder~~CallsGraph_edge1" class="edge">
 <title>proc~dandtnder&#45;&gt;proc~aijtder</title>
-<path fill="none" stroke="#000000" d="M73.25,-12C81.51,-12 90.3,-12 98.58,-12"/>
-<polygon fill="#000000" stroke="#000000" points="98.72,-15.5 108.72,-12 98.72,-8.5 98.72,-15.5"/>
+<path fill="none" stroke="#000000" d="M71.97,-12.13C79.72,-12.13 87.96,-12.13 95.8,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="95.78,-15.64 105.78,-12.14 95.78,-8.64 95.78,-15.64"/>
 </g>
 <!-- proc~atder -->
 <g id="proc~~dandtnder~~CallsGraph_node3" class="node">
 <title>proc~atder</title>
 <g id="a_proc~~dandtnder~~CallsGraph_node3"><a xlink:href="../proc/atder.html" xlink:title="aTder">
-<polygon fill="#d9534f" stroke="#d9534f" points="253,-24 199,-24 199,0 253,0 253,-24"/>
-<text text-anchor="middle" x="226" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">aTder</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="251.52,-24.27 197.52,-24.27 197.52,0 251.52,0 251.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="224.52" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">aTder</text>
 </a>
 </g>
 </g>
 <!-- proc~aijtder&#45;&gt;proc~atder -->
 <g id="proc~~dandtnder~~CallsGraph_edge2" class="edge">
 <title>proc~aijtder&#45;&gt;proc~atder</title>
-<path fill="none" stroke="#000000" d="M163.4,-12C171.39,-12 180.31,-12 188.82,-12"/>
-<polygon fill="#000000" stroke="#000000" points="188.92,-15.5 198.92,-12 188.92,-8.5 188.92,-15.5"/>
+<path fill="none" stroke="#000000" d="M161.92,-12.13C169.41,-12.13 177.7,-12.13 185.72,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="185.62,-15.64 195.62,-12.14 185.62,-8.64 185.62,-15.64"/>
 </g>
 </g>
 </svg>
@@ -411,55 +422,55 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
 <svg width="641pt" height="28pt"
- viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
 <!-- Subroutine -->
 <g id="node1" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node2" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Interface -->
 <g id="node3" class="node">
 <title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
 </g>
 <!-- Type Bound Procedure -->
 <g id="node4" class="node">
 <title>Type Bound Procedure</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
-<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
 </g>
 <!-- Unknown Procedure Type -->
 <g id="node5" class="node">
 <title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
-<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
 </g>
 <!-- Program -->
 <g id="node6" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node7" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
-<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -483,79 +494,79 @@ implementation in a submodule of an interface in a parent module.
   <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: proc~~dandtnder~~CalledByGraph Pages: 1 -->
-<svg id="procdandtnderCalledByGraph" width="285pt" height="74pt"
- viewBox="0.00 0.00 285.00 74.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~dandtnder~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 70)">
+<svg id="procdandtnderCalledByGraph" width="281pt" height="74pt"
+ viewBox="0.00 0.00 281.00 74.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~dandtnder~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 70.27)">
 <title>proc~~dandtnder~~CalledByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-70 281,-70 281,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-70.27 277.06,-70.27 277.06,4 -4,4"/>
 <!-- proc~dandtnder -->
 <g id="proc~~dandtnder~~CalledByGraph_node1" class="node">
 <title>proc~dandtnder</title>
-<polygon fill="none" stroke="black" points="277,-45 204,-45 204,-21 277,-21 277,-45"/>
-<text text-anchor="middle" x="240.5" y="-30.6" font-family="Helvetica,sans-Serif" font-size="10.50">DandTnder</text>
+<polygon fill="none" stroke="black" points="273.06,-45.27 201.54,-45.27 201.54,-21 273.06,-21 273.06,-45.27"/>
+<text xml:space="preserve" text-anchor="middle" x="237.3" y="-29.53" font-family="Helvetica,sans-Serif" font-size="10.50">DandTnder</text>
 </g>
 <!-- proc~helmrkpr -->
 <g id="proc~~dandtnder~~CalledByGraph_node2" class="node">
 <title>proc~helmrkpr</title>
 <g id="a_proc~~dandtnder~~CalledByGraph_node2"><a xlink:href="../proc/helmrkpr.html" xlink:title="HelmRKPR">
-<polygon fill="#d9534f" stroke="#d9534f" points="164.5,-66 95.5,-66 95.5,-42 164.5,-42 164.5,-66"/>
-<text text-anchor="middle" x="130" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">HelmRKPR</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="162.16,-66.27 94.4,-66.27 94.4,-42 162.16,-42 162.16,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="128.28" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">HelmRKPR</text>
 </a>
 </g>
 </g>
 <!-- proc~helmrkpr&#45;&gt;proc~dandtnder -->
 <g id="proc~~dandtnder~~CalledByGraph_edge1" class="edge">
 <title>proc~helmrkpr&#45;&gt;proc~dandtnder</title>
-<path fill="none" stroke="#000000" d="M164.74,-47.47C173.97,-45.68 184.13,-43.72 193.91,-41.82"/>
-<polygon fill="#000000" stroke="#000000" points="194.75,-45.23 203.91,-39.89 193.42,-38.35 194.75,-45.23"/>
+<path fill="none" stroke="#000000" d="M162.56,-47.61C171.28,-45.89 180.85,-44.02 190.11,-42.2"/>
+<polygon fill="#000000" stroke="#000000" points="190.57,-45.68 199.71,-40.32 189.22,-38.81 190.57,-45.68"/>
 </g>
 <!-- proc~helmsrkpr -->
 <g id="proc~~dandtnder~~CalledByGraph_node3" class="node">
 <title>proc~helmsrkpr</title>
 <g id="a_proc~~dandtnder~~CalledByGraph_node3"><a xlink:href="../proc/helmsrkpr.html" xlink:title="HelmSRKPR">
-<polygon fill="#d9534f" stroke="#d9534f" points="168,-24 92,-24 92,0 168,0 168,-24"/>
-<text text-anchor="middle" x="130" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">HelmSRKPR</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="165.54,-24.27 91.02,-24.27 91.02,0 165.54,0 165.54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="128.28" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">HelmSRKPR</text>
 </a>
 </g>
 </g>
 <!-- proc~helmsrkpr&#45;&gt;proc~dandtnder -->
 <g id="proc~~dandtnder~~CalledByGraph_edge2" class="edge">
 <title>proc~helmsrkpr&#45;&gt;proc~dandtnder</title>
-<path fill="none" stroke="#000000" d="M168.04,-19.17C176.33,-20.77 185.23,-22.5 193.83,-24.16"/>
-<polygon fill="#000000" stroke="#000000" points="193.25,-27.61 203.73,-26.08 194.58,-20.74 193.25,-27.61"/>
+<path fill="none" stroke="#000000" d="M165.81,-19.3C173.63,-20.84 181.99,-22.48 190.12,-24.07"/>
+<polygon fill="#000000" stroke="#000000" points="189.41,-27.5 199.89,-25.99 190.76,-20.63 189.41,-27.5"/>
 </g>
 <!-- proc~ar_rkpr -->
 <g id="proc~~dandtnder~~CalledByGraph_node4" class="node">
 <title>proc~ar_rkpr</title>
 <g id="a_proc~~dandtnder~~CalledByGraph_node4"><a xlink:href="../proc/ar_rkpr.html" xlink:title="ar_rkpr">
-<polygon fill="#d9534f" stroke="#d9534f" points="55,-66 1,-66 1,-42 55,-42 55,-66"/>
-<text text-anchor="middle" x="28" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ar_rkpr</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="54.51,-66.27 0.51,-66.27 0.51,-42 54.51,-42 54.51,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27.51" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ar_rkpr</text>
 </a>
 </g>
 </g>
 <!-- proc~ar_rkpr&#45;&gt;proc~helmrkpr -->
 <g id="proc~~dandtnder~~CalledByGraph_edge3" class="edge">
 <title>proc~ar_rkpr&#45;&gt;proc~helmrkpr</title>
-<path fill="none" stroke="#000000" d="M55.01,-54C64.21,-54 74.84,-54 85.11,-54"/>
-<polygon fill="#000000" stroke="#000000" points="85.2,-57.5 95.2,-54 85.2,-50.5 85.2,-57.5"/>
+<path fill="none" stroke="#000000" d="M54.98,-54.13C63.51,-54.13 73.21,-54.13 82.68,-54.13"/>
+<polygon fill="#000000" stroke="#000000" points="82.5,-57.64 92.5,-54.14 82.5,-50.64 82.5,-57.64"/>
 </g>
 <!-- proc~ar_srkpr -->
 <g id="proc~~dandtnder~~CalledByGraph_node5" class="node">
 <title>proc~ar_srkpr</title>
 <g id="a_proc~~dandtnder~~CalledByGraph_node5"><a xlink:href="../proc/ar_srkpr.html" xlink:title="ar_srkpr">
-<polygon fill="#d9534f" stroke="#d9534f" points="56,-24 0,-24 0,0 56,0 56,-24"/>
-<text text-anchor="middle" x="28" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ar_srkpr</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="55.02,-24.27 0,-24.27 0,0 55.02,0 55.02,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27.51" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ar_srkpr</text>
 </a>
 </g>
 </g>
 <!-- proc~ar_srkpr&#45;&gt;proc~helmsrkpr -->
 <g id="proc~~dandtnder~~CalledByGraph_edge4" class="edge">
 <title>proc~ar_srkpr&#45;&gt;proc~helmsrkpr</title>
-<path fill="none" stroke="#000000" d="M56.06,-12C63.96,-12 72.83,-12 81.6,-12"/>
-<polygon fill="#000000" stroke="#000000" points="81.78,-15.5 91.78,-12 81.78,-8.5 81.78,-15.5"/>
+<path fill="none" stroke="#000000" d="M55.5,-12.13C62.88,-12.13 71.1,-12.13 79.27,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="79.18,-15.64 89.18,-12.14 79.18,-8.64 79.18,-15.64"/>
 </g>
 </g>
 </svg>
@@ -574,55 +585,55 @@ implementation in a submodule of an interface in a parent module.
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
 <svg width="641pt" height="28pt"
- viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
 <!-- Subroutine -->
 <g id="node1" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node2" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Interface -->
 <g id="node3" class="node">
 <title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
 </g>
 <!-- Type Bound Procedure -->
 <g id="node4" class="node">
 <title>Type Bound Procedure</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
-<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
 </g>
 <!-- Unknown Procedure Type -->
 <g id="node5" class="node">
 <title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
-<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
 </g>
 <!-- Program -->
 <g id="node6" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node7" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
-<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -655,7 +666,7 @@ implementation in a submodule of an interface in a parent module.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-aij~9"></span>
+              <span class="anchor" id="variable-aij~7"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -667,12 +678,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Pair attractive-parameter matrix.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-aux~6"></span>
+              <span class="anchor" id="variable-aux~3"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -684,7 +695,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Intermediate accumulator.</p>
             </td>
         </tr>
         <tr>
@@ -701,7 +712,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Second intermediate accumulator.</p>
             </td>
         </tr>
         <tr>
@@ -718,7 +729,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Temperature derivative of the pair attractive parameters.</p>
             </td>
         </tr>
         <tr>
@@ -735,12 +746,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Second temperature derivative of the pair attractive parameters.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-i~108"></span>
+              <span class="anchor" id="variable-i~104"></span>
               integer,
             </td>
               <td>public</td>
@@ -752,12 +763,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Loop index <code>i</code>.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-j~64"></span>
+              <span class="anchor" id="variable-j~60"></span>
               integer,
             </td>
               <td>public</td>
@@ -769,7 +780,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Loop index <code>j</code>.</p>
             </td>
         </tr>
     </tbody>
@@ -798,14 +809,14 @@ implementation in a submodule of an interface in a parent module.
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

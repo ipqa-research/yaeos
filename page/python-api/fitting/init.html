@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EoS Fitting Module &mdash; yaeos 4.5.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+  <title>EoS Fitting Module &mdash; yaeos 4.5.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=a284863f"></script>
+      <script src="../_static/documentation_options.js?v=06fc0226"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -61,9 +61,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../gpec.html">GPEC module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../envelopes.html">Envelopes Module</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">EoS Fitting Module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="core.html">Core Fitting module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model_setters.html">Model Setters Fitting module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html">Solvers Fitting module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#practical-guidance">Practical guidance</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.html">Core Fitting module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="model_setters.html">Model Setters Fitting module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="solvers.html">Solvers Fitting module</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../tools/init.html">Tools</a></li>
@@ -93,9 +96,38 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-yaeos.fitting">
-<span id="eos-fitting-module"></span><h1>EoS Fitting Module<a class="headerlink" href="#module-yaeos.fitting" title="Link to this heading"></a></h1>
-<p>yaeos fitting module.</p>
+  <section id="eos-fitting-module">
+<h1>EoS Fitting Module<a class="headerlink" href="#eos-fitting-module" title="Link to this heading"></a></h1>
+<p>This package estimates binary equation-of-state interaction parameters from
+experimental phase-equilibrium data. It is deliberately split into three
+parts so that each piece can be understood on its own:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="core.html"><span class="doc">Core Fitting module</span></a> builds the model for a trial parameter vector and scores the
+model against the data.</p></li>
+<li><p><a class="reference internal" href="model_setters.html"><span class="doc">Model Setters Fitting module</span></a> turn an optimizer’s parameter vector into interaction
+parameters on the model.</p></li>
+<li><p><a class="reference internal" href="solvers.html"><span class="doc">Solvers Fitting module</span></a> compute the phase-equilibrium states that the objective
+function compares against the data.</p></li>
+</ul>
+<section id="practical-guidance">
+<h2>Practical guidance<a class="headerlink" href="#practical-guidance" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Start with a model that already reproduces pure-component properties
+reasonably. Fitting interactions cannot repair a wrong pure-component
+description.</p></li>
+<li><p>Prepare the data as a pandas <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code> with the documented columns
+(<code class="docutils literal notranslate"><span class="pre">kind</span></code>, <code class="docutils literal notranslate"><span class="pre">x1</span></code>, <code class="docutils literal notranslate"><span class="pre">y1</span></code>, <code class="docutils literal notranslate"><span class="pre">T</span></code>, <code class="docutils literal notranslate"><span class="pre">P</span></code>, optional <code class="docutils literal notranslate"><span class="pre">weight</span></code>). Use
+kelvin, bar, and mole fractions, and keep the light component first.</p></li>
+<li><p>Not every data point needs every column. Leave unused values as <code class="docutils literal notranslate"><span class="pre">NaN</span></code>;
+the fitter selects which columns matter from the <code class="docutils literal notranslate"><span class="pre">kind</span></code> label.</p></li>
+<li><p>The fitted parameters are specific to the model, the mixing rule, the
+chosen error definitions, and the data range. A good objective value does
+not guarantee a unique parameter set or valid extrapolation.</p></li>
+</ul>
+<p>Work through the <a class="reference internal" href="../tutorial/equations_of_state/fitting/fitting.html"><span class="doc">fitting tutorial</span></a>
+for a complete example, then consult <a class="reference internal" href="core.html"><span class="doc">Core Fitting module</span></a> for the exact fitter
+signature.</p>
+<p id="module-yaeos.fitting">yaeos fitting module.</p>
 <p>This module provides classes and functions for fitting binary interaction
 parameters to experimental data.</p>
 <div class="toctree-wrapper compound">
@@ -105,6 +137,7 @@ parameters to experimental data.</p>
 <li class="toctree-l1"><a class="reference internal" href="solvers.html">Solvers Fitting module</a></li>
 </ul>
 </div>
+</section>
 </section>
 
 

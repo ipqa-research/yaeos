@@ -1,0 +1,709 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
+    <link rel="icon" href="../../favicon.png">
+
+    <title>Python interface layer &ndash; yaeos</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../../css/brands.min.css" rel="stylesheet">
+    <link href="../../css/regular.min.css" rel="stylesheet">
+    <link href="../../css/solid.min.css" rel="stylesheet">
+    <link href="../../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../../css/local.css" rel="stylesheet">
+    <link href="../../css/pygments.css" rel="stylesheet">
+      <link href="../../css/user.css" rel="stylesheet">
+    <script src="../../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../../index.html">yaeos </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="../index.html">User documentation</a></li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>Python interface layer</h1>
+    <div class="container p-2 mb-4 bg-light border rounded-3">
+      <div class="row align-items-center justify-content-between">
+        <div class="col">
+          <ul class="list-inline" style="margin-bottom:0px; display:inline">
+          </ul>
+        </div>
+        <div class="col">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../index.html'>User documentation</a></li>
+                <li class="breadcrumb-item"><a href='index.html'>Becoming a yaeos developer</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Python interface layer</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+      <div class="col-3">
+        <div class="card card-body bg-light" id="sidebar-toc">
+          <ul class="nav flex-column align-items">
+            <li class="nav-item">
+              <a class="nav-link" href="../index.html">User documentation</a>
+            </li>
+          </ul>
+          <hr>
+          <nav class="nav nav-pills flex-column">
+              <a class="nav-link" href="../usage/index.html">Getting started</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/fundamentals.html">Thermodynamics essentials</a>
+              <a class="nav-link" href="../usage/eos/index.html">Equations of State</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/eos/cubics/index.html">Cubics</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/eos/cubics/alpha.html">Alpha functions</a>
+              <a class="nav-link" href="../usage/eos/cubics/mixing.html">Mixing Rules</a>
+
+                </nav>
+              <a class="nav-link" href="../usage/eos/gerg2008.html">GERG2008</a>
+              <a class="nav-link" href="../usage/eos/gerg2008_parameters.html">GERG2008 parameters</a>
+              <a class="nav-link" href="../usage/eos/pc_saft.html">PC-SAFT</a>
+
+                </nav>
+              <a class="nav-link" href="../usage/excessmodels/index.html">Gibbs Excess Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/excessmodels/nrtl.html">NRTL</a>
+              <a class="nav-link" href="../usage/excessmodels/nrtl-hv.html">NRTL-HV</a>
+              <a class="nav-link" href="../usage/excessmodels/uniquac.html">UNIQUAC</a>
+              <a class="nav-link" href="../usage/excessmodels/unifac_models/index.html">UNIFAC Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
+              <a class="nav-link" href="../usage/excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
+              <a class="nav-link" href="../usage/excessmodels/unifac_models/psrk.html">UNIFAC-PSRK</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../usage/phase_equilibrium/index.html">Phase Equilibrium</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/phase_equilibrium/flash.html">Flash calculations</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/saturation_points.html">Saturation Points</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/stability.html">Stability analysis</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/critical.html">Critical points</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/multiphase.html">Multiphase flash</a>
+
+                </nav>
+              <a class="nav-link" href="../usage/newmodels/index.html">Adding your own models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/newmodels/analtical.html">Analytical derivatives</a>
+              <a class="nav-link" href="../usage/newmodels/autodiff.html">Automatic differentiation</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../python-api/index.html">Python-API</a>
+              <a class="nav-link" href="index.html">Becoming a yaeos developer</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="architecture.html">Architecture and repository map</a>
+              <a class="nav-link" href="workflow.html">Developer workflow</a>
+              <a class="nav-link" href="fortran.html">Working in the Fortran core</a>
+              <a class="nav-link" href="numerics.html">Working on numerical algorithms</a>
+              <a class="nav-link" href="c_interface.html">C interface layer</a>
+              <a class="nav-link active disabled" href="python_interface.html">Python interface layer</a>
+              <a class="nav-link" href="testing.html">Tests and numerical validation</a>
+              <a class="nav-link" href="walkthrough.html">An end-to-end change</a>
+
+                </nav>
+              <a class="nav-link" href="../contributing/index.html">Contributing</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../contributing/styleguide.html">Style guide</a>
+
+                </nav>
+          </nav>
+        </div>
+      </div>
+
+    <div class="col-9" id='text'>
+      <div class="toc">
+<ul>
+<li><a href="#the-yaeos-python-package">The yaeos Python package</a><ul>
+<li><a href="#package-map">Package map</a></li>
+<li><a href="#the-build-pipeline-fpm-then-f2py-then-meson">The build pipeline: fpm, then f2py, then Meson</a><ul>
+<li><a href="#compiler-requirements">Compiler requirements</a></li>
+<li><a href="#what-needs-a-rebuild">What needs a rebuild</a></li>
+</ul>
+</li>
+<li><a href="#the-yaeoslib-boundary">The yaeos.lib boundary</a></li>
+<li><a href="#trace-pengrobinson76-to-a-pressure">Trace: PengRobinson76 to a pressure</a></li>
+<li><a href="#shapes-memory-order-and-dtypes">Shapes, memory order and dtypes</a></li>
+<li><a href="#return-conventions">Return conventions</a></li>
+<li><a href="#the-package-mirrors-the-fortran-api">The package mirrors the Fortran API</a></li>
+<li><a href="#adding-a-feature-wrapper-python-tests">Adding a feature: wrapper, Python, tests</a></li>
+<li><a href="#testing">Testing</a></li>
+<li><a href="#debugging-boundaries">Debugging boundaries</a></li>
+<li><a href="#known-sharp-edges">Known sharp edges</a></li>
+<li><a href="#related-pages">Related pages</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h1 id="the-yaeos-python-package">The <code>yaeos</code> Python package</h1>
+<p>The Python package is a thin, typed layer over the Fortran library. It
+gives a Python user an object-oriented API — models with methods, results
+as dictionaries, derivatives as named entries — instead of a flat list of
+functions that take and return bare arrays.</p>
+<p>This page is for developers changing that layer. For <em>using</em> the package,
+read the <a href="../python-api/index.html">Python API guide</a>. For the layer that
+sits underneath, read <a href="c_interface.html">the C interface page</a>. For
+adding a thermodynamic model, read
+<a href="../usage/newmodels/index.html">adding your own models</a> first. Native Fortran
+extension does not automatically publish a Python class: a new model exposed
+to Python normally needs wrapper construction, a handle-owning class, and
+package/build exports, even though shared property methods can be inherited.</p>
+<h2 id="package-map">Package map</h2>
+<p>Everything lives under <code>python/</code>.</p>
+<ul>
+<li><code>python/pyproject.toml</code> — package metadata and the <code>meson-python</code> backend.</li>
+<li><code>python/meson.build</code> — the real build: fpm, f2py, and the extension module.</li>
+<li><code>python/yaeos/__init__.py</code> — public exports; <code>__version__</code> from the metadata.</li>
+<li><code>python/yaeos/core.py</code> — the <code>ArModel</code> and <code>GeModel</code> abstract classes and
+  every property method.</li>
+<li><code>python/yaeos/constants.py</code> — <code>R</code> and the <code>root_kinds</code> mapping.</li>
+<li><code>python/yaeos/envelopes.py</code> — <code>PTEnvelope</code>, <code>PXEnvelope</code>, <code>TXEnvelope</code>.</li>
+<li><code>python/yaeos/gpec.py</code> — the generalised phase-envelope calculator.</li>
+<li><code>python/yaeos/models/</code> — concrete models: <code>excess_gibbs/</code>,
+  <code>residual_helmholtz/</code>, <code>groups.py</code>.</li>
+<li><code>python/yaeos/fitting/</code> — parameter-fitting helpers and their solvers.</li>
+<li><code>python/yaeos/tools/writers.py</code> — writers that render model parameters as
+  Fortran source.</li>
+<li><code>python/yaeos/lib/__init__.py</code> — the boundary to the compiled extension.</li>
+<li><code>python/tests/</code> — the Python test suite; <code>python/docs/source/</code> — Sphinx.</li>
+</ul>
+<p><code>python/yaeos/core.py</code> is large because it holds every thermodynamic
+property method for both abstract classes; the concrete model classes
+mostly hold parameters and call <code>yaeos_c</code>.</p>
+<h2 id="the-build-pipeline-fpm-then-f2py-then-meson">The build pipeline: fpm, then f2py, then Meson</h2>
+<p>The full build instructions, the toolchain list and the working-directory
+pitfalls are in the <a href="workflow.html">developer workflow</a>. What matters for
+the Python layer is the order of the three stages, because it decides what
+has to be rebuilt after a change.</p>
+<p><strong>Stage 1 — the Fortran core.</strong> <code>python/meson.build</code> shells out to
+<code>fpm install --profile release --prefix &lt;build&gt;/fpm_build</code>, which produces
+the static library <code>libyaeos.a</code> and the module files. The <code>include</code>
+subdirectory matters: Meson adds <code>fpm_build/include</code> to the include path
+so that <code>use yaeos</code> resolves when the extension is compiled.</p>
+<p><strong>Stage 2 — the f2py wrapper.</strong> A <code>custom_target</code> runs f2py over the flat
+interface module:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">python</span><span class="w"> </span><span class="o">-</span><span class="n">m</span><span class="w"> </span><span class="n">numpy</span><span class="p">.</span><span class="n">f2py</span><span class="w"> </span><span class="nv">@INPUT</span><span class="err">@</span><span class="w"> </span><span class="o">-</span><span class="n">m</span><span class="w"> </span><span class="n">yaeos_python</span><span class="w"> </span><span class="c1">--lower</span>
+</code></pre></div>
+
+<p><code>@INPUT@</code> is <code>c_interface/yaeos_c.f90</code>, resolved as
+<code>meson.global_source_root() / '..' / 'c_interface' / 'yaeos_c.f90'</code>. Two
+files come out: <code>yaeos_pythonmodule.c</code> and
+<code>yaeos_python-f2pywrappers2.f90</code>. The <code>--lower</code> flag lowercases the
+Fortran names, which is why the Python side calls <code>yaeos_c.cv_residual_vt</code>
+and <code>yaeos_c.set_alpha_rkpr</code> for Fortran routines named <code>Cv_residual_vt</code>
+and <code>set_alpha_RKPR</code>.</p>
+<p>f2py prints a long list of messages like</p>
+<div class="codehilite"><pre><span></span><code><span class="n">analyzevars</span><span class="o">:</span><span class="w"> </span><span class="n">could</span><span class="w"> </span><span class="n">not</span><span class="w"> </span><span class="n">parse</span><span class="w"> </span><span class="n">dimension</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">variable</span><span class="w"> </span><span class="s1">&#39;size(n)&#39;</span>
+</code></pre></div>
+
+<p>These messages indicate that f2py could not determine the dimension while
+parsing the source. They do not, by themselves, establish whether the
+generated wrapper handles that argument correctly. Inspect the generated
+signature and test the actual accepted and returned shapes when changing
+dependent-dimension arguments.</p>
+<p><strong>Stage 3 — the extension module.</strong> Meson compiles <code>yaeos_c.f90</code>
+together with the generated files into a single extension module named
+<code>yaeos_python</code> and installs it under the <code>yaeos/lib</code> subdirectory of the
+package. The pure-Python modules are installed separately with
+<code>py.install_sources</code>.</p>
+<h3 id="compiler-requirements">Compiler requirements</h3>
+<p><code>python/meson.build</code> enforces them, and the gate is worth knowing before
+you install the package:</p>
+<ul>
+<li>Meson <code>&gt;= 0.64.0</code>, and a Fortran compiler added with
+  <code>add_languages('fortran', native: false)</code> so that a cross build is
+  possible.</li>
+<li>On every platform except Windows, the Fortran compiler <strong>must be version
+  14.1 or newer</strong>; otherwise the build stops with
+  <code>Fortran compiler version 14.1 or newer is required!</code>. The comparison is
+  <code>&gt;=14.1</code>, so a GCC 14.0 toolchain fails. The flags added for that path
+  — <code>-ftrampoline-impl=heap</code>, <code>-ffree-line-length-none</code>,
+  <code>-fno-strict-aliasing</code>, <code>-fno-common</code>,
+  <code>-fno-inline-small-functions</code> — are GNU-style, not portable.</li>
+<li>Windows skips the version check and links statically instead.</li>
+<li><code>quadmath</code> is required everywhere except Windows, where it is linked
+  explicitly, and OpenMP is linked with <code>-lgomp</code>.</li>
+<li>The build requires <code>fpm</code> and <code>ninja</code> on non-Windows platforms, declared
+  as build requirements in <code>python/pyproject.toml</code>.</li>
+</ul>
+<p>The Fortran core has no such requirement: <code>fpm</code> builds the library and its
+tests with whatever compiler you give it. The 14.1 gate lives only in the
+Python package build.</p>
+<p>One inconsistency to know about: <code>python/meson.build</code> declares
+<code>version : '3.1.0'</code>, while <code>python/pyproject.toml</code> and <code>fpm.toml</code> both
+say <code>4.5.4</code>. The version the user sees comes from the installed
+distribution metadata, so the Meson project version is stale.</p>
+<h3 id="what-needs-a-rebuild">What needs a rebuild</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Change</th>
+<th style="text-align: left;">Rebuild needed?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">A pure-Python file under <code>python/yaeos/</code></td>
+<td style="text-align: left;">No</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>c_interface/yaeos_c.f90</code></td>
+<td style="text-align: left;">Yes — the extension is compiled from it</td>
+</tr>
+<tr>
+<td style="text-align: left;">A file under <code>src/</code></td>
+<td style="text-align: left;">Yes — <code>fpm install</code> re-runs</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>python/meson.build</code> or <code>python/pyproject.toml</code></td>
+<td style="text-align: left;">Yes — Meson reconfigures</td>
+</tr>
+</tbody>
+</table>
+<h2 id="the-yaeoslib-boundary">The <code>yaeos.lib</code> boundary</h2>
+<p><code>python/yaeos/lib/__init__.py</code> is three lines long and defines the whole
+boundary:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">yaeos.lib.yaeos_python</span><span class="w"> </span><span class="kn">import</span> <span class="n">yaeos_c</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;yaeos_c&quot;</span><span class="p">]</span>
+</code></pre></div>
+
+<p>The compiled extension is <code>yaeos_python</code>; the Fortran module <code>yaeos_c</code>
+inside it appears as the submodule <code>yaeos_c</code>. Every routine of the flat
+interface is therefore reachable as
+<code>yaeos_c.&lt;fortran_name_lower_cased&gt;</code>.</p>
+<p>Application code should use the public classes exported by
+<code>python/yaeos/__init__.py</code> — <code>PengRobinson76</code>, <code>NRTL</code>, <code>QMR</code> and so on.
+The <code>yaeos_c</code> namespace is an implementation detail with no stability
+guarantee. And nothing above <code>python/yaeos/lib/</code> may hand NumPy arrays to
+<code>yaeos_c</code> with the wrong memory order or the wrong shape: that is where a
+silent wrong answer enters the system.</p>
+<h2 id="trace-pengrobinson76-to-a-pressure">Trace: <code>PengRobinson76</code> to a pressure</h2>
+<p>The whole path of one number, from a Python constructor to a Fortran
+residual Helmholtz evaluation and back.</p>
+<p><strong>Step 1 — the constructor</strong> in
+<code>python/yaeos/models/residual_helmholtz/cubic_eos/cubic_eos.py</code> stores the
+parameters and asks the flat layer for a handle:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">PengRobinson76</span><span class="p">(</span><span class="n">CubicEoS</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">critical_temperatures</span><span class="p">,</span> <span class="n">critical_pressures</span><span class="p">,</span>
+                 <span class="n">acentric_factors</span><span class="p">,</span> <span class="n">mixrule</span><span class="p">:</span> <span class="n">CubicMixRule</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PengRobinson76</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">critical_temperatures</span><span class="p">,</span> <span class="n">critical_pressures</span><span class="p">,</span> <span class="n">acentric_factors</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">pr76</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mixrule</span> <span class="o">=</span> <span class="n">mixrule</span>
+        <span class="k">if</span> <span class="n">mixrule</span><span class="p">:</span>
+            <span class="n">mixrule</span><span class="o">.</span><span class="n">set_mixrule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+</code></pre></div>
+
+<p><code>self.id</code> is the handle used by this Python object&rsquo;s calls into the Fortran
+registry. The model itself remains in module-level Fortran registry state.</p>
+<p><strong>Step 2 — the handle registry.</strong> <code>yaeos_c.pr76</code> calls the Fortran
+<code>pr76</code>, which builds the concrete model, stores it in the first free slot
+of the <code>ArModel</code> registry, and returns the one-based index of that slot.
+The registry is described in <a href="c_interface.html">the C interface page</a>; the
+point to remember here is that the handle is an opaque integer owned by
+the Fortran module.</p>
+<p><strong>Step 3 — the property wrapper</strong> in <code>python/yaeos/core.py</code> allocates the
+output buffers and calls the flat layer:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">pressure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">moles</span><span class="p">,</span> <span class="n">volume</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">dv</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dn</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">nc</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">moles</span><span class="p">)</span>
+
+    <span class="n">dv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="k">if</span> <span class="n">dv</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span> <span class="k">if</span> <span class="n">dt</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">dn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">dn</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="n">res</span> <span class="o">=</span> <span class="n">yaeos_c</span><span class="o">.</span><span class="n">pressure</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">moles</span><span class="p">,</span> <span class="n">volume</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">dpdv</span><span class="o">=</span><span class="n">dv</span><span class="p">,</span> <span class="n">dpdt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">dpdn</span><span class="o">=</span><span class="n">dn</span>
+    <span class="p">)</span>
+</code></pre></div>
+
+<p>Note the pattern: a boolean flag becomes an output buffer, and <code>None</code>
+means &ldquo;do not ask for this derivative&rdquo;. The buffers are allocated with
+<code>order="F"</code> because the derivative matrices are Fortran-ordered on the
+other side.</p>
+<p><strong>Step 4 — the f2py marshalling.</strong> <code>yaeos_c.pressure</code> reaches the
+generated C wrapper, which converts the Python objects to Fortran
+arguments, calls the Fortran routine, and converts the results back. The
+rules that matter, each verified against a small <code>f2py</code> probe built from
+this repository&rsquo;s interface file:</p>
+<ul>
+<li>An <code>intent(out)</code> scalar becomes the value of the call. The pressure <code>P</code>
+  is <code>intent(out)</code>, so the call returns a float. Several <code>intent(out)</code>
+  arguments come back as a tuple in declaration order: <code>flash</code> has seven
+  of them, and the Python wrapper unpacks them as
+  <code>x, y, pressure, temperature, volume_x, volume_y, beta</code>.</li>
+<li>An <code>optional, intent(inout)</code> argument becomes an optional keyword.
+  Omitting it, or passing <code>None</code>, means the argument is not passed at all
+  and the Fortran side sees <code>.not. present(...)</code>. A rank-0 argument wants
+  a zero-dimensional NumPy array; <code>core.py</code> uses
+  <code>np.array(0, dtype=np.float64)</code> and reads the result back with
+  <code>float(...)</code>.</li>
+<li>A one-dimensional array may be in any order. A two-dimensional array
+  that Fortran <em>writes into</em> must be Fortran-contiguous: passing a
+  C-ordered one raises <code>ValueError: failed to initialize intent(inout)
+  array -- input not fortran contiguous</code>. A two-dimensional array that
+  Fortran only <em>reads</em> is converted by <code>f2py</code>, so its logical values are
+  always right.</li>
+<li>A <code>character(len=15)</code> argument such as <code>root_type</code> receives a Python
+  string blank-padded to fifteen characters.</li>
+</ul>
+<p><strong>Step 5 — the Fortran model.</strong> The wrapper calls
+<code>ar_models(id)%model%pressure(...)</code>, which dispatches dynamically to the
+concrete model, which evaluates the residual Helmholtz energy and adds the
+ideal-gas term. This is where the physics happens; everything above it is
+plumbing.</p>
+<p><strong>Step 6 — the result.</strong> Back in Python the wrapper reshapes the outcome
+into a consistent shape: a bare value when no derivative was requested,
+and a <code>(value, derivatives)</code> pair otherwise, with lowercase derivative
+keys.</p>
+<p><strong>Step 7 — the lifetime.</strong> <code>ArModel.__del__</code> releases the Fortran slot
+with <code>yaeos_c.make_available_ar_models_list(self.id)</code>; <code>GeModel.__del__</code>
+does the same with <code>make_available_ge_models_list</code>. Releasing a slot
+returns it to the registry; the model object itself is only released when
+the slot is reused. <code>__del__</code> is best-effort, so a session that creates and
+drops many models in a loop should not assume the memory comes back
+immediately.</p>
+<h2 id="shapes-memory-order-and-dtypes">Shapes, memory order and dtypes</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Fortran dummy argument</th>
+<th style="text-align: left;">Python buffer</th>
+<th style="text-align: left;">Rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>n(:)</code> amounts</td>
+<td style="text-align: left;">1-D <code>float64</code></td>
+<td style="text-align: left;">Order irrelevant</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>dPdn(size(n))</code></td>
+<td style="text-align: left;">1-D <code>float64</code></td>
+<td style="text-align: left;">Order irrelevant; <code>order="F"</code> is used for consistency</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Arn2(size(n), size(n))</code></td>
+<td style="text-align: left;">2-D <code>float64</code></td>
+<td style="text-align: left;"><strong>Must</strong> be Fortran-contiguous</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>aij(:,:)</code> and friends</td>
+<td style="text-align: left;">2-D <code>float64</code></td>
+<td style="text-align: left;">Read-only; <code>f2py</code> converts</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>kij(:,:)</code> in <code>set_qmr</code></td>
+<td style="text-align: left;">2-D <code>float64</code></td>
+<td style="text-align: left;">The Fortran dummy has no <code>intent</code>, so <code>f2py</code> may not convert it</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>root_type</code></td>
+<td style="text-align: left;"><code>str</code></td>
+<td style="text-align: left;">One of <code>"stable"</code>, <code>"liquid"</code>, <code>"vapor"</code></td>
+</tr>
+</tbody>
+</table>
+<p>The last two rows are the sharpest edges in this layer. In
+<code>c_interface/yaeos_c.f90</code>, <code>set_qmr</code> declares <code>kij</code> and <code>lij</code> and
+<code>set_cmr</code> declares <code>kijk</code> and <code>lijk</code> <strong>without an <code>intent</code> attribute</strong>.
+A dummy argument without <code>intent</code> carries no intent restriction (which is
+not the same as declaring <code>intent(inout)</code>), and <code>f2py</code> does not enforce the
+memory order for it: in a probe built from
+this interface file, a value written by Fortran into <code>kij(1, 2)</code> of a
+C-ordered array was not visible at <code>kij[0, 1]</code> in NumPy. The Python
+classes avoid the problem by always passing an <code>order="F"</code> copy:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">QMR</span><span class="p">(</span><span class="n">CubicMixRule</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kij</span><span class="p">,</span> <span class="n">lij</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">kij</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lij</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lij</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_mixrule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ar_model_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">yaeos_c</span><span class="o">.</span><span class="n">set_qmr</span><span class="p">(</span><span class="n">ar_model_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">kij</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lij</span><span class="p">)</span>
+</code></pre></div>
+
+<p>Follow that convention in any new model class: a C-ordered matrix handed
+to one of those routines may be misinterpreted without an error being
+raised. Note also that <code>NRTL.__init__</code> stores the Fortran-ordered copies
+in <code>self.a</code>, <code>self.b</code> and <code>self.c</code> but passes the original arguments to
+<code>yaeos_c.nrtl</code> — harmless there because the <code>nrtl</code> dummies are
+<code>intent(in)</code>, so <code>f2py</code> converts them, but not the pattern to copy.</p>
+<h2 id="return-conventions">Return conventions</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Kind of result</th>
+<th style="text-align: left;">Shape</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Scalar property</td>
+<td style="text-align: left;"><code>float</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Property with derivatives</td>
+<td style="text-align: left;"><code>(value, {"dt": ..., "dv": ..., "dn": ...})</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Flash</td>
+<td style="text-align: left;"><code>dict</code> with <code>x</code>, <code>y</code>, <code>Vx</code>, <code>Vy</code>, <code>P</code>, <code>T</code>, <code>beta</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">Phase envelope</td>
+<td style="text-align: left;"><code>PTEnvelope</code>, <code>PXEnvelope</code> or <code>TXEnvelope</code> object</td>
+</tr>
+<tr>
+<td style="text-align: left;">Stability analysis</td>
+<td style="text-align: left;"><code>({"w": ..., "tm": ...}, {"tm": [...], "w": [...]})</code></td>
+</tr>
+</tbody>
+</table>
+<p>Two failure conventions cross the boundary and must be checked. <code>beta == -1</code>
+means the flash did not converge: the compositions are then the feed
+composition and the volumes are placeholders. <code>NaN</code> means a value does not
+exist — a saturation pressure that failed, or an envelope point that was
+never computed. NumPy propagates <code>NaN</code> silently, so filter on it
+explicitly. The envelope classes in <code>python/yaeos/envelopes.py</code> already
+drop the <code>NaN</code> rows; a raw call to <code>yaeos_c</code> does not.</p>
+<h2 id="the-package-mirrors-the-fortran-api">The package mirrors the Fortran API</h2>
+<p><code>python/yaeos/core.py</code> defines <code>GeModel</code> and <code>ArModel</code> as abstract
+classes that mirror the Fortran <code>class(GeModel)</code> and <code>class(ArModel)</code>.
+Each concrete model inherits one of them and implements <code>size()</code>, plus
+<code>_model_params_as_str()</code> and <code>_model_params_declaration_as_str()</code>, which
+render Fortran source that constructs the model. Those last two are not
+decoration: the equivalence tests use them to generate a Fortran program,
+run it with <code>fpm</code>, and compare its output with the Python result, so a new
+model class that omits them cannot take part in that check.</p>
+<h2 id="adding-a-feature-wrapper-python-tests">Adding a feature: wrapper, Python, tests</h2>
+<p>Work through these in order; each step depends on the previous one.</p>
+<ol>
+<li><strong>Add the flat routine</strong> in <code>c_interface/yaeos_c.f90</code>, and add its name
+   to the module&rsquo;s <code>public ::</code> list so that <code>f2py</code> generates a wrapper.</li>
+<li><strong>Add the Python wrapper</strong> in <code>python/yaeos/core.py</code>, on the abstract
+   class that owns the property. Allocate the output buffers, pass the
+   handle, and reshape the result into the house style: a bare value, or a
+   <code>(value, derivatives)</code> pair with lowercase derivative keys.</li>
+<li><strong>Expose it publicly</strong> if it belongs to a concrete model: add the
+   method to the class in <code>python/yaeos/models/</code>, and export the class
+   from <code>python/yaeos/__init__.py</code> if it is new.</li>
+<li><strong>Add a test</strong> under <code>python/tests/</code>. For a property, extend
+   <code>python/tests/models/residual_helmholtz/test_ar_same_as_fortran.py</code> so
+   that the Fortran and the Python values are compared. For a model,
+   follow the neighbouring tests in the same directory. The
+   <a href="testing.html">testing guide</a> covers what a good regression looks like.</li>
+<li><strong>Update the Sphinx sources</strong> under <code>python/docs/source/</code> if the new
+   method is part of the public API.</li>
+<li><strong>Keep the styles</strong>: <code>black</code> with a line length of 79, <code>flake8</code> with
+   <code>N803</code>, <code>W503</code> and <code>E203</code> ignored, and <code>pydocstyle</code> with the NumPy
+   convention.</li>
+</ol>
+<h2 id="testing">Testing</h2>
+<p>The Python suite lives in <code>python/tests/</code> and mirrors the source tree:
+<code>models/residual_helmholtz/</code> for the equations of state,
+<code>models/gibbs_excess/</code> for the activity models, <code>models/algorithm/</code> for
+the stability analysis, <code>models/equilibria/</code> for flash calculations, and
+<code>fitting/</code> for the parameter fitting.</p>
+<p><code>python/tox.ini</code> defines the environments. The default one runs, in order,
+<code>fpm run ge_python_test_values</code>, <code>pip install .</code>, and
+<code>pytest tests/ --import-mode=importlib</code>. The first command runs the
+Fortran helper in <code>app/ge_python_test_values.f90</code>, which writes
+<code>ge_test_vals.txt</code> in the working directory; that file is gitignored. No
+test in the current tree reads it, so treat it as a generated fixture
+rather than a required step.</p>
+<p>The strongest test in the suite is the Fortran–Python equivalence check.
+It builds a Fortran program from the model&rsquo;s own parameter source, writes
+it into the repository&rsquo;s <code>app/</code> directory, runs it with <code>fpm run</code>, and
+compares the printed values with the Python results:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">fortran_code</span> <span class="o">+=</span> <span class="s2">&quot;program main</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="n">fortran_code</span> <span class="o">+=</span> <span class="s2">&quot;use yaeos</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+<span class="n">fortran_code</span> <span class="o">+=</span> <span class="s2">&quot;implicit none</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+<span class="n">fortran_code</span> <span class="o">+=</span> <span class="n">ar_model</span><span class="o">.</span><span class="n">_model_params_declaration_as_str</span><span class="p">()</span>
+<span class="n">fortran_code</span> <span class="o">+=</span> <span class="n">ar_model</span><span class="o">.</span><span class="n">_model_params_as_str</span><span class="p">()</span>
+<span class="n">fortran_code</span> <span class="o">+=</span> <span class="n">thermoprops_code</span>
+<span class="n">fortran_code</span> <span class="o">+=</span> <span class="s2">&quot;end program main&quot;</span>
+</code></pre></div>
+
+<p>Note that this test writes <code>app/test_ar_program.f90</code> into the working
+tree. Do not commit it. Other environments: <code>tox -e style</code> runs
+<code>flake8</code>, <code>tox -e docstyle</code> runs <code>pydocstyle</code>, <code>tox -e docs</code> builds the
+Sphinx pages, and <code>tox -e coverage</code> runs the suite with <code>coverage</code> and
+fails below 50 %.</p>
+<h2 id="debugging-boundaries">Debugging boundaries</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Symptom</th>
+<th style="text-align: left;">Look first at</th>
+<th style="text-align: left;">Then at</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>ImportError</code> on <code>yaeos.lib.yaeos_python</code></td>
+<td style="text-align: left;">The extension build in <code>python/meson.build</code></td>
+<td style="text-align: left;">The <code>fpm install</code> step and the Fortran compiler version</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>AttributeError</code> on a <code>yaeos_c</code> function</td>
+<td style="text-align: left;">The <code>public ::</code> list in <code>c_interface/yaeos_c.f90</code></td>
+<td style="text-align: left;">Whether the extension was rebuilt</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ValueError: ... not fortran contiguous</code></td>
+<td style="text-align: left;">The <code>order="F"</code> on the allocated buffer</td>
+<td style="text-align: left;">The Fortran dummy&rsquo;s <code>intent</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">A matrix argument gives wrong numbers</td>
+<td style="text-align: left;">Whether the routine <em>writes</em> into the matrix</td>
+<td style="text-align: left;">Whether the dummy declares an <code>intent</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">A derivative is wrong but the value is right</td>
+<td style="text-align: left;">The buffer allocated for that derivative</td>
+<td style="text-align: left;">Whether the model supports that derivative at all</td>
+</tr>
+<tr>
+<td style="text-align: left;">A returned array has <code>NaN</code> in it</td>
+<td style="text-align: left;">The failure convention of that routine</td>
+<td style="text-align: left;">The equilibrium solver</td>
+</tr>
+<tr>
+<td style="text-align: left;">The Python and Fortran results disagree</td>
+<td style="text-align: left;">The <code>_model_params_as_str</code> output</td>
+<td style="text-align: left;">The component ordering of the model</td>
+</tr>
+<tr>
+<td style="text-align: left;">The build stops at the Fortran version check</td>
+<td style="text-align: left;">The compiler version in <code>python/meson.build</code></td>
+<td style="text-align: left;">The flags, which are GNU-specific</td>
+</tr>
+</tbody>
+</table>
+<h2 id="known-sharp-edges">Known sharp edges</h2>
+<ul>
+<li>The <code>yaeos_c</code> namespace is generated from the Fortran module and has no
+  stability guarantee. Use the public classes.</li>
+<li>The extension module is built from <code>c_interface/yaeos_c.f90</code>, so a
+  change there needs a rebuild, not just a reinstall.</li>
+<li>The Meson project version (<code>3.1.0</code>) disagrees with the package version
+  (<code>4.5.4</code>).</li>
+<li><code>set_qmr</code> and <code>set_cmr</code> declare their matrix arguments without an
+  <code>intent</code>, which makes them sensitive to the caller&rsquo;s memory order.</li>
+<li><code>NRTL.__init__</code> passes the original arrays rather than the
+  Fortran-ordered copies it stores.</li>
+<li><code>__del__</code> releases the Fortran slot, not the model memory.</li>
+<li>The equivalence tests write generated Fortran programs into <code>app/</code>.</li>
+</ul>
+<h2 id="related-pages">Related pages</h2>
+<ul>
+<li><a href="index.html">Developer handbook</a> — the rest of the developer guide.</li>
+<li><a href="architecture.html">Architecture</a> — how the Fortran layers fit together.</li>
+<li><a href="workflow.html">Developer workflow</a> — the build, the toolchain, and the review loop.</li>
+<li><a href="fortran.html">Fortran internals</a> — the core library this layer wraps.</li>
+<li><a href="numerics.html">Numerics</a> — the solvers behind the equilibrium routines.</li>
+<li><a href="testing.html">Testing</a> — what a good regression test looks like.</li>
+<li><a href="walkthrough.html">End-to-end change</a> — planning a feature across all the layers.</li>
+<li><a href="c_interface.html">C interface layer</a> — the flat layer underneath this one.</li>
+<li><a href="../python-api/index.html">Python API guide</a> — the user-facing guide.</li>
+<li><a href="../usage/newmodels/index.html">Adding your own models</a> — the user-facing guide for extending the library.</li>
+</ul>
+    </div>
+  </div>
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              yaeos
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2026-11-18 15:31 +0000             </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

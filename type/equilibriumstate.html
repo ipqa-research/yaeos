@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>EquilibriumState &ndash; yaeos </title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title="<p> 2.3% of total for derived types.</p>Including implementation: 25 statements,  0.3% of total for derived types.">15 statements</a>
+                 title="<p> 2.3% of total for derived types.</p>Including implementation: 25 statements,  0.2% of total for derived types.">15 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -135,15 +136,15 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../type/equilibriumstate.html#variable-p~91">P</a>
-            <a class="list-group-item" href="../type/equilibriumstate.html#variable-t~141">T</a>
-            <a class="list-group-item" href="../type/equilibriumstate.html#variable-vx~11">Vx</a>
-            <a class="list-group-item" href="../type/equilibriumstate.html#variable-vy~20">Vy</a>
-            <a class="list-group-item" href="../type/equilibriumstate.html#variable-beta~15">beta</a>
-            <a class="list-group-item" href="../type/equilibriumstate.html#variable-iters~22">iters</a>
-            <a class="list-group-item" href="../type/equilibriumstate.html#variable-kind~8">kind</a>
-            <a class="list-group-item" href="../type/equilibriumstate.html#variable-x~39">x</a>
-            <a class="list-group-item" href="../type/equilibriumstate.html#variable-y~34">y</a>
+            <a class="list-group-item" href="../type/equilibriumstate.html#variable-p~21">P</a>
+            <a class="list-group-item" href="../type/equilibriumstate.html#variable-t~29">T</a>
+            <a class="list-group-item" href="../type/equilibriumstate.html#variable-vx~3">Vx</a>
+            <a class="list-group-item" href="../type/equilibriumstate.html#variable-vy~4">Vy</a>
+            <a class="list-group-item" href="../type/equilibriumstate.html#variable-beta~5">beta</a>
+            <a class="list-group-item" href="../type/equilibriumstate.html#variable-iters~11">iters</a>
+            <a class="list-group-item" href="../type/equilibriumstate.html#variable-kind~2">kind</a>
+            <a class="list-group-item" href="../type/equilibriumstate.html#variable-x~15">x</a>
+            <a class="list-group-item" href="../type/equilibriumstate.html#variable-y~11">y</a>
         </div>
       </div>
     </div>
@@ -170,8 +171,8 @@
       </a>
       <div id="boundprocs-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../type/equilibriumstate.html#boundprocedure-write%20%28formatted%29~2">write (FORMATTED)</a>
-            <a class="list-group-item" href="../type/equilibriumstate.html#boundprocedure-write~5">write</a>
+            <a class="list-group-item" href="../type/equilibriumstate.html#boundprocedure-write%20%28formatted%29">write (FORMATTED)</a>
+            <a class="list-group-item" href="../type/equilibriumstate.html#boundprocedure-write~3">write</a>
         </div>
       </div>
     </div>
@@ -187,9 +188,15 @@
     <div class="col-md-9" id='text'>
       <h2 id="type-def-statement">
         type, public :: EquilibriumState</h2>
-    <p>Description of a two-phase equilibria state.</p>
-<p>Contains the relevant information of an equilibrium point obtained
-from some kind of equilibria calculation.</p>
+    <h1 id="equilibriumstate">EquilibriumState</h1>
+<p>Result of a two-phase flash or saturation-point calculation.</p>
+<h1 id="description">Description</h1>
+<p>Stores the state kind, phase compositions, volumes, conditions, phase
+fraction, and iteration count. <code>x</code> denotes the heavy phase and <code>y</code> the
+light phase; <code>beta</code> is the light-phase mole fraction.</p>
+<h1 id="examples">Examples</h1>
+<div class="codehilite"><pre><span></span><code><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="k">result</span><span class="p">%</span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="k">result</span><span class="p">%</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="k">result</span><span class="p">%</span><span class="n">beta</span>
+</code></pre></div>
 <br>      <div class="card">
         <div class="card-header">
           <h3 class="card-title">Inherited by</h3>
@@ -198,83 +205,83 @@ from some kind of equilibria calculation.</p>
           <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: type~~equilibriumstate~~InheritedByGraph Pages: 1 -->
-<svg id="typeequilibriumstateInheritedByGraph" width="249pt" height="158pt"
- viewBox="0.00 0.00 249.00 158.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="type~~equilibriumstate~~InheritedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 154)">
+<svg id="typeequilibriumstateInheritedByGraph" width="246pt" height="158pt"
+ viewBox="0.00 0.00 246.00 158.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="type~~equilibriumstate~~InheritedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 154.27)">
 <title>type~~equilibriumstate~~InheritedByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-154 245,-154 245,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-154.27 241.54,-154.27 241.54,4 -4,4"/>
 <!-- type~equilibriumstate -->
 <g id="type~~equilibriumstate~~InheritedByGraph_node1" class="node">
 <title>type~equilibriumstate</title>
-<polygon fill="none" stroke="black" points="101,-87 0,-87 0,-63 101,-63 101,-87"/>
-<text text-anchor="middle" x="50.5" y="-72.6" font-family="Helvetica,sans-Serif" font-size="10.50">EquilibriumState</text>
+<polygon fill="none" stroke="black" points="100.02,-87.27 0,-87.27 0,-63 100.02,-63 100.02,-87.27"/>
+<text xml:space="preserve" text-anchor="middle" x="50.01" y="-71.54" font-family="Helvetica,sans-Serif" font-size="10.50">EquilibriumState</text>
 </g>
 <!-- type~criticalline -->
 <g id="type~~equilibriumstate~~InheritedByGraph_node2" class="node">
 <title>type~criticalline</title>
 <g id="a_type~~equilibriumstate~~InheritedByGraph_node2"><a xlink:href="../type/criticalline.html" xlink:title="CriticalLine">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="241,-150 168,-150 168,-126 241,-126 241,-150"/>
-<text text-anchor="middle" x="204.5" y="-135.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CriticalLine</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="237.54,-150.27 166.02,-150.27 166.02,-126 237.54,-126 237.54,-150.27"/>
+<text xml:space="preserve" text-anchor="middle" x="201.78" y="-134.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CriticalLine</text>
 </a>
 </g>
 </g>
 <!-- type~criticalline&#45;&gt;type~equilibriumstate -->
-<g id="type~~equilibriumstate~~InheritedByGraph_edge3" class="edge">
+<g id="type~~equilibriumstate~~InheritedByGraph_edge2" class="edge">
 <title>type~criticalline&#45;&gt;type~equilibriumstate</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M174.19,-125.85C150.14,-115.89 115.91,-101.7 89.71,-90.84"/>
-<polygon fill="#000000" stroke="#000000" points="91.04,-87.6 80.46,-87 88.36,-94.06 91.04,-87.6"/>
-<text text-anchor="middle" x="134.5" y="-117.4" font-family="Helvetica,sans-Serif" font-size="9.50">CEP</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M170.83,-125.54C147.98,-115.92 116.26,-102.58 91.19,-92.04"/>
+<polygon fill="#000000" stroke="#000000" points="92.88,-88.95 82.3,-88.3 90.16,-95.4 92.88,-88.95"/>
+<text xml:space="preserve" text-anchor="middle" x="133.02" y="-116.36" font-family="Helvetica,sans-Serif" font-size="9.50">CEP</text>
 </g>
 <!-- type~ptenvel2 -->
 <g id="type~~equilibriumstate~~InheritedByGraph_node3" class="node">
 <title>type~ptenvel2</title>
 <g id="a_type~~equilibriumstate~~InheritedByGraph_node3"><a xlink:href="../type/ptenvel2.html" xlink:title="PTEnvel2">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="235,-108 174,-108 174,-84 235,-84 235,-108"/>
-<text text-anchor="middle" x="204.5" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PTEnvel2</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="231.91,-108.27 171.64,-108.27 171.64,-84 231.91,-84 231.91,-108.27"/>
+<text xml:space="preserve" text-anchor="middle" x="201.78" y="-92.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PTEnvel2</text>
 </a>
 </g>
 </g>
 <!-- type~ptenvel2&#45;&gt;type~equilibriumstate -->
-<g id="type~~equilibriumstate~~InheritedByGraph_edge1" class="edge">
+<g id="type~~equilibriumstate~~InheritedByGraph_edge4" class="edge">
 <title>type~ptenvel2&#45;&gt;type~equilibriumstate</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M173.83,-91.9C156.01,-89.44 132.68,-86.22 111.19,-83.25"/>
-<polygon fill="#000000" stroke="#000000" points="111.52,-79.76 101.14,-81.86 110.57,-86.69 111.52,-79.76"/>
-<text text-anchor="middle" x="134.5" y="-90.4" font-family="Helvetica,sans-Serif" font-size="9.50">points</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M171.19,-91.99C154.14,-89.6 132.08,-86.5 111.52,-83.62"/>
+<polygon fill="#000000" stroke="#000000" points="112.18,-80.18 101.79,-82.26 111.21,-87.11 112.18,-80.18"/>
+<text xml:space="preserve" text-anchor="middle" x="133.02" y="-90.36" font-family="Helvetica,sans-Serif" font-size="9.50">points</text>
 </g>
 <!-- type~pxenvel2 -->
 <g id="type~~equilibriumstate~~InheritedByGraph_node4" class="node">
 <title>type~pxenvel2</title>
 <g id="a_type~~equilibriumstate~~InheritedByGraph_node4"><a xlink:href="../type/pxenvel2.html" xlink:title="PXEnvel2">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="235.5,-66 173.5,-66 173.5,-42 235.5,-42 235.5,-66"/>
-<text text-anchor="middle" x="204.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PXEnvel2</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="232.29,-66.27 171.27,-66.27 171.27,-42 232.29,-42 232.29,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="201.78" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PXEnvel2</text>
 </a>
 </g>
 </g>
 <!-- type~pxenvel2&#45;&gt;type~equilibriumstate -->
-<g id="type~~equilibriumstate~~InheritedByGraph_edge4" class="edge">
+<g id="type~~equilibriumstate~~InheritedByGraph_edge1" class="edge">
 <title>type~pxenvel2&#45;&gt;type~equilibriumstate</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M173.47,-58.15C155.69,-60.6 132.54,-63.8 111.19,-66.75"/>
-<polygon fill="#000000" stroke="#000000" points="110.64,-63.3 101.21,-68.13 111.6,-70.23 110.64,-63.3"/>
-<text text-anchor="middle" x="134.5" y="-67.4" font-family="Helvetica,sans-Serif" font-size="9.50">points</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M170.83,-56.75C155.08,-58.27 135.47,-60.37 118.02,-62.88 115.87,-63.19 113.68,-63.52 111.47,-63.87"/>
+<polygon fill="#000000" stroke="#000000" points="111.14,-60.37 101.84,-65.44 112.27,-67.28 111.14,-60.37"/>
+<text xml:space="preserve" text-anchor="middle" x="133.02" y="-65.11" font-family="Helvetica,sans-Serif" font-size="9.50">points</text>
 </g>
 <!-- type~txenvel2 -->
 <g id="type~~equilibriumstate~~InheritedByGraph_node5" class="node">
 <title>type~txenvel2</title>
 <g id="a_type~~equilibriumstate~~InheritedByGraph_node5"><a xlink:href="../type/txenvel2.html" xlink:title="TXEnvel2">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="236,-24 173,-24 173,0 236,0 236,-24"/>
-<text text-anchor="middle" x="204.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">TXEnvel2</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="232.66,-24.27 170.89,-24.27 170.89,0 232.66,0 232.66,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="201.78" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">TXEnvel2</text>
 </a>
 </g>
 </g>
 <!-- type~txenvel2&#45;&gt;type~equilibriumstate -->
-<g id="type~~equilibriumstate~~InheritedByGraph_edge2" class="edge">
+<g id="type~~equilibriumstate~~InheritedByGraph_edge3" class="edge">
 <title>type~txenvel2&#45;&gt;type~equilibriumstate</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M174.17,-24.14C157.91,-30.88 137.34,-39.4 119,-47 109.69,-50.86 99.66,-55.02 90.26,-58.92"/>
-<polygon fill="#000000" stroke="#000000" points="88.63,-55.8 80.74,-62.87 91.31,-62.27 88.63,-55.8"/>
-<text text-anchor="middle" x="134.5" y="-49.4" font-family="Helvetica,sans-Serif" font-size="9.50">points</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M170.7,-23.1C154.91,-29 135.3,-36.55 118.02,-43.88 107.95,-48.16 97.17,-53.05 87.25,-57.67"/>
+<polygon fill="#000000" stroke="#000000" points="85.84,-54.47 78.28,-61.89 88.82,-60.8 85.84,-54.47"/>
+<text xml:space="preserve" text-anchor="middle" x="133.02" y="-46.11" font-family="Helvetica,sans-Serif" font-size="9.50">points</text>
 </g>
 </g>
 </svg>
@@ -293,25 +300,25 @@ from some kind of equilibria calculation.</p>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="186pt" height="32pt"
- viewBox="0.00 0.00 185.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="184pt" height="32pt"
+ viewBox="0.00 0.00 184.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 181.5,-28 181.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 179.88,-28.27 179.88,4 -4,4"/>
 <!-- Type -->
 <g id="node1" class="node">
 <title>Type</title>
-<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node2" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="177.5,-24 72.5,-24 72.5,0 177.5,0 177.5,-24"/>
-<text text-anchor="middle" x="125" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="175.88,-24.27 72.12,-24.27 72.12,0 175.88,0 175.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="124" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -343,7 +350,7 @@ said component(s).
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~91"></span>
+              <span class="anchor" id="variable-p~21"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -360,7 +367,7 @@ said component(s).
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~141"></span>
+              <span class="anchor" id="variable-t~29"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -377,7 +384,7 @@ said component(s).
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vx~11"></span>
+              <span class="anchor" id="variable-vx~3"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -394,7 +401,7 @@ said component(s).
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vy~20"></span>
+              <span class="anchor" id="variable-vy~4"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -411,7 +418,7 @@ said component(s).
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-beta~15"></span>
+              <span class="anchor" id="variable-beta~5"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -428,7 +435,7 @@ said component(s).
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iters~22"></span>
+              <span class="anchor" id="variable-iters~11"></span>
               integer,
             </td>
               <td>public</td>
@@ -445,7 +452,7 @@ said component(s).
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kind~8"></span>
+              <span class="anchor" id="variable-kind~2"></span>
               character(len=14),
             </td>
               <td>public</td>
@@ -462,7 +469,7 @@ said component(s).
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~39"></span>
+              <span class="anchor" id="variable-x~15"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -479,7 +486,7 @@ said component(s).
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-y~34"></span>
+              <span class="anchor" id="variable-y~11"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -507,10 +514,10 @@ said component(s).
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-write%20%28formatted%29~2"></span>
+      <span class="anchor" id="boundprocedure-write%20%28formatted%29"></span>
       <h3>
           generic, public ::
-  <strong>write (FORMATTED)</strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/type/equilibriumstate.html#boundprocedure-write~5'>write</a>
+  <strong>write (FORMATTED)</strong> => <a href='equilibriumstate.html#boundprocedure-write~3'>write</a>
         
       </h3>
     </div>
@@ -521,7 +528,7 @@ said component(s).
 </h3>
     
 
-  
+  <p>Format a two-phase equilibrium state for formatted derived-type I/O.</p><a href="../proc/write_equilibriumstate.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -546,7 +553,7 @@ said component(s).
             <td>::</td>
             <td><strong>eq</strong></td>
             <td>
-
+<p>State to serialize.</p>
             </td>
         </tr>
         <tr>
@@ -561,7 +568,7 @@ said component(s).
             <td>::</td>
             <td><strong>unit</strong></td>
             <td>
-
+<p>Output unit number.</p>
             </td>
         </tr>
         <tr>
@@ -576,7 +583,7 @@ said component(s).
             <td>::</td>
             <td><strong>iotype</strong></td>
             <td>
-
+<p>Fortran formatted-I/O mode string.</p>
             </td>
         </tr>
         <tr>
@@ -591,7 +598,7 @@ said component(s).
             <td>::</td>
             <td><strong>v_list</strong>(:)</td>
             <td>
-
+<p>Format control list supplied by the runtime.</p>
             </td>
         </tr>
         <tr>
@@ -606,7 +613,7 @@ said component(s).
             <td>::</td>
             <td><strong>iostat</strong></td>
             <td>
-
+<p>I/O status returned to the runtime.</p>
             </td>
         </tr>
         <tr>
@@ -621,7 +628,7 @@ said component(s).
             <td>::</td>
             <td><strong>iomsg</strong></td>
             <td>
-
+<p>I/O error message buffer.</p>
             </td>
         </tr>
     </tbody>
@@ -636,10 +643,10 @@ said component(s).
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-write~5"></span>
+      <span class="anchor" id="boundprocedure-write~3"></span>
       <h3>
           procedure, private, pass ::
-  <strong>write</strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/write_equilibriumstate.html'>write_EquilibriumState</a>
+  <strong>write</strong> => <a href='../proc/write_equilibriumstate.html'>write_EquilibriumState</a>
         
       </h3>
     </div>
@@ -650,7 +657,7 @@ said component(s).
 </h3>
     
 
-  
+  <p>Format a two-phase equilibrium state for formatted derived-type I/O.</p><a href="../proc/write_equilibriumstate.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -675,7 +682,7 @@ said component(s).
             <td>::</td>
             <td><strong>eq</strong></td>
             <td>
-
+<p>State to serialize.</p>
             </td>
         </tr>
         <tr>
@@ -690,7 +697,7 @@ said component(s).
             <td>::</td>
             <td><strong>unit</strong></td>
             <td>
-
+<p>Output unit number.</p>
             </td>
         </tr>
         <tr>
@@ -705,7 +712,7 @@ said component(s).
             <td>::</td>
             <td><strong>iotype</strong></td>
             <td>
-
+<p>Fortran formatted-I/O mode string.</p>
             </td>
         </tr>
         <tr>
@@ -720,7 +727,7 @@ said component(s).
             <td>::</td>
             <td><strong>v_list</strong>(:)</td>
             <td>
-
+<p>Format control list supplied by the runtime.</p>
             </td>
         </tr>
         <tr>
@@ -735,7 +742,7 @@ said component(s).
             <td>::</td>
             <td><strong>iostat</strong></td>
             <td>
-
+<p>I/O status returned to the runtime.</p>
             </td>
         </tr>
         <tr>
@@ -750,7 +757,7 @@ said component(s).
             <td>::</td>
             <td><strong>iomsg</strong></td>
             <td>
-
+<p>I/O error message buffer.</p>
             </td>
         </tr>
     </tbody>
@@ -776,14 +783,14 @@ said component(s).
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../../../../favicon.png">
 
     <title>Mixing Rules &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../../../../css/local.css" rel="stylesheet">
     <link href="../../../../css/pygments.css" rel="stylesheet">
+      <link href="../../../../css/user.css" rel="stylesheet">
     <script src="../../../../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -92,7 +93,7 @@
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb justify-content-end mb-0">
                 <li class="breadcrumb-item"><a href='../../../index.html'>User documentation</a></li>
-                <li class="breadcrumb-item"><a href='../../index.html'>Using yaeos</a></li>
+                <li class="breadcrumb-item"><a href='../../index.html'>Getting started</a></li>
                 <li class="breadcrumb-item"><a href='../index.html'>Equations of State</a></li>
                 <li class="breadcrumb-item"><a href='index.html'>Cubics</a></li>
               <li class="breadcrumb-item active" aria-current="page">Mixing Rules</li>
@@ -113,9 +114,10 @@
           </ul>
           <hr>
           <nav class="nav nav-pills flex-column">
-              <a class="nav-link" href="../../index.html">Using yaeos</a>
+              <a class="nav-link" href="../../index.html">Getting started</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../index.html">Equations of State</a>
+                                <a class="nav-link" href="../../fundamentals.html">Thermodynamics essentials</a>
+              <a class="nav-link" href="../index.html">Equations of State</a>
                 <nav class="nav nav-pills flex-column">
                                 <a class="nav-link" href="index.html">Cubics</a>
                 <nav class="nav nav-pills flex-column">
@@ -123,27 +125,33 @@
               <a class="nav-link active disabled" href="mixing.html">Mixing Rules</a>
 
                 </nav>
+              <a class="nav-link" href="../gerg2008.html">GERG2008</a>
+              <a class="nav-link" href="../gerg2008_parameters.html">GERG2008 parameters</a>
+              <a class="nav-link" href="../pc_saft.html">PC-SAFT</a>
 
                 </nav>
               <a class="nav-link" href="../../excessmodels/index.html">Gibbs Excess Models</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../../excessmodels/nrtl-hv.html">NRTL-HV</a>
-              <a class="nav-link" href="../../excessmodels/nrtl.html">NRTL</a>
+                                <a class="nav-link" href="../../excessmodels/nrtl.html">NRTL</a>
+              <a class="nav-link" href="../../excessmodels/nrtl-hv.html">NRTL-HV</a>
+              <a class="nav-link" href="../../excessmodels/uniquac.html">UNIQUAC</a>
               <a class="nav-link" href="../../excessmodels/unifac_models/index.html">UNIFAC Models</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../../excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
+                                <a class="nav-link" href="../../excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
+              <a class="nav-link" href="../../excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
               <a class="nav-link" href="../../excessmodels/unifac_models/psrk.html">UNIFAC-PSRK</a>
-              <a class="nav-link" href="../../excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
 
                 </nav>
-              <a class="nav-link" href="../../excessmodels/uniquac.html">UNIQUAC</a>
 
                 </nav>
               <a class="nav-link" href="../../phase_equilibrium/index.html">Phase Equilibrium</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../../phase_equilibrium/envelopes.html">Phase envelopes</a>
-              <a class="nav-link" href="../../phase_equilibrium/flash.html">Flash calculations</a>
+                                <a class="nav-link" href="../../phase_equilibrium/flash.html">Flash calculations</a>
               <a class="nav-link" href="../../phase_equilibrium/saturation_points.html">Saturation Points</a>
+              <a class="nav-link" href="../../phase_equilibrium/envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="../../phase_equilibrium/stability.html">Stability analysis</a>
+              <a class="nav-link" href="../../phase_equilibrium/critical.html">Critical points</a>
+              <a class="nav-link" href="../../phase_equilibrium/multiphase.html">Multiphase flash</a>
 
                 </nav>
               <a class="nav-link" href="../../newmodels/index.html">Adding your own models</a>
@@ -154,87 +162,544 @@
                 </nav>
 
                 </nav>
+              <a class="nav-link" href="../../../python-api/index.html">Python-API</a>
+              <a class="nav-link" href="../../../developer/index.html">Becoming a yaeos developer</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../../developer/architecture.html">Architecture and repository map</a>
+              <a class="nav-link" href="../../../developer/workflow.html">Developer workflow</a>
+              <a class="nav-link" href="../../../developer/fortran.html">Working in the Fortran core</a>
+              <a class="nav-link" href="../../../developer/numerics.html">Working on numerical algorithms</a>
+              <a class="nav-link" href="../../../developer/c_interface.html">C interface layer</a>
+              <a class="nav-link" href="../../../developer/python_interface.html">Python interface layer</a>
+              <a class="nav-link" href="../../../developer/testing.html">Tests and numerical validation</a>
+              <a class="nav-link" href="../../../developer/walkthrough.html">An end-to-end change</a>
+
+                </nav>
               <a class="nav-link" href="../../../contributing/index.html">Contributing</a>
                 <nav class="nav nav-pills flex-column">
                                 <a class="nav-link" href="../../../contributing/styleguide.html">Style guide</a>
 
                 </nav>
-              <a class="nav-link" href="../../../python-api/index.html">Python-API</a>
           </nav>
         </div>
       </div>
 
     <div class="col-9" id='text'>
-      <h1 id="cubic-mixing-rules">Cubic Mixing Rules</h1>
-<p>All <a href="../../../../type/cubiceos.html">CubicEoS</a> in <code>yaeos</code> include a <a href="../../../../type/cubicmixrule.html">CubicMixRule</a> derived type, which 
-handles how the <script type="math/tex">D</script> and <script type="math/tex">B</script> parameters in the CubicEoS are calculated.</p>
-<h2 id="quadratic-mixing-rules-qmr">Quadratic Mixing Rules (QMR)</h2>
-<p>Quadratic mixing rules are the ussually most used mixing rules for cubic 
-equations of state.</p>
-<p>
-<script type="math/tex; mode=display"> nB = \sum_i \sum_j n_i n_j \frac{b_i + b_j}{2} (1 - l_{ij}) </script>
-</p>
-<p>
-<script type="math/tex; mode=display"> D = \sum_i \sum_j n_i n_j a_{ij} </script>
-</p>
-<p>QMR are handled by the <a href="../../../../type/qmr.html">QMR</a> derived type. Which can be used like:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">QMR</span>
-
-<span class="k">type</span><span class="p">(</span><span class="n">QMR</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">mixrule</span>
-<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">kij</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">lij</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
-
-<span class="n">kij</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="p">:)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.1</span><span class="p">]</span>
-<span class="n">kij</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="p">:)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">]</span>
-
-<span class="n">lij</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="p">:)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.01</span><span class="p">]</span>
-<span class="n">lij</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="p">:)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.01</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">]</span>
-
-<span class="n">mixrule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">QMR</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">kij</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="o">=</span><span class="n">lij</span><span class="p">)</span>
-</code></pre></div>
-
-<p>By default the <script type="math/tex">a_{ij}</script> matrix will be calculated with a constant <script type="math/tex">k_{ij}</script>
-value (as shown below). But this functionality can be modified by replacing
-the <code>get_aij</code> procedure</p>
-<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">QMR</span>
-
-<span class="k">type</span><span class="p">(</span><span class="n">QMR</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">mixrule</span>
-<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">kij</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">lij</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
-
-<span class="n">kij</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="p">:)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.1</span><span class="p">]</span>
-<span class="n">kij</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="p">:)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">]</span>
-
-<span class="n">lij</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="p">:)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.01</span><span class="p">]</span>
-<span class="n">lij</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="p">:)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.01</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">]</span>
-
-<span class="n">mixrule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">QMR</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">kij</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="o">=</span><span class="n">lij</span><span class="p">)</span>
-<span class="n">mixrule</span><span class="p">%</span><span class="n">get_aij</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">my_aij_implementation</span>
-
-<span class="k">subroutine </span><span class="n">my_aij_implementation</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">ai</span><span class="p">,</span><span class="w"> </span><span class="n">daidt</span><span class="p">,</span><span class="w"> </span><span class="n">daidt2</span><span class="p">,</span><span class="w"> </span><span class="n">aij</span><span class="p">,</span><span class="w"> </span><span class="n">daijdt</span><span class="p">,</span><span class="w"> </span><span class="n">daijdt2</span><span class="p">)</span>
-<span class="w">    </span><span class="k">class</span><span class="p">(</span><span class="n">QMR</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">self</span>
-<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ai</span><span class="p">(:),</span><span class="w"> </span><span class="n">daidt</span><span class="p">(:),</span><span class="w"> </span><span class="n">daidt2</span><span class="p">(:)</span>
-<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">aij</span><span class="p">(:,</span><span class="w"> </span><span class="p">:),</span><span class="w"> </span><span class="n">daijdt</span><span class="p">(:,</span><span class="w"> </span><span class="p">.),</span><span class="w"> </span><span class="n">daijdt2</span><span class="p">(:,</span><span class="w"> </span><span class="p">:)</span>
-<span class="w">    </span><span class="c">! Implementation here</span>
-<span class="k">end subroutine</span>
-</code></pre></div>
-
-<h2 id="ge-models-mixing-rules">
-<script type="math/tex">G^E</script> Models Mixing Rules</h2>
-<p>It is possible to mix the attractive parameter of Cubic Equations with an 
-excess Gibbs-based model.
-This can be useful for cases of polar molecules and/or systems that have been 
-fitted to <script type="math/tex">G^E</script> models.</p>
-<h3 id="michelsens-modified-huron-vidal-mixing-rules">Michelsen&rsquo;s Modified Huron-Vidal Mixing Rules</h3>
-<p>This mixing rule is based on the aproximate zero-pressure limit 
-of a cubic equation of state. At the aproximate zero-pressure limit the
-attractive parameter can be expressed as:</p>
+      <div class="toc">
+<ul>
+<li><a href="#turning-pure-fluid-parameters-into-a-mixture">Turning pure-fluid parameters into a mixture</a><ul>
+<li><a href="#which-rules-are-available">Which rules are available?</a></li>
+<li><a href="#quadratic-mixing-qmr">Quadratic mixing (QMR)</a><ul>
+<li><a href="#complete-example-comparing-a-binary-correction">Complete example: comparing a binary correction</a></li>
+</ul>
+</li>
+<li><a href="#temperature-dependent-quadratic-mixing-qmrtd">Temperature-dependent quadratic mixing (QMRTD)</a></li>
+<li><a href="#cubic-composition-mixing-cmr-and-cmrtd">Cubic composition mixing (CMR and CMRTD)</a><ul>
+<li><a href="#complete-example-constant-and-temperature-dependent-tensors">Complete example: constant and temperature-dependent tensors</a></li>
+</ul>
+</li>
+<li><a href="#mixing-with-an-excess-gibbs-model">Mixing with an excess-Gibbs model</a><ul>
+<li><a href="#huron-vidal">Huron-Vidal</a></li>
+<li><a href="#modified-huron-vidal-mhv">Modified Huron-Vidal (MHV)</a></li>
+<li><a href="#specialized-nrtl-hv-coupling">Specialized NRTL-HV coupling</a></li>
+<li><a href="#complete-example-installing-each-excess-gibbs-rule">Complete example: installing each excess-Gibbs rule</a></li>
+</ul>
+</li>
+<li><a href="#density-dependent-local-compositions-s-ddlc">Density-dependent local compositions (s-DDLC)</a><ul>
+<li><a href="#complete-example-install-a-density-dependent-rule">Complete example: install a density-dependent rule</a></li>
+</ul>
+</li>
+<li><a href="#extending-and-checking-a-rule">Extending and checking a rule</a></li>
+<li><a href="#next-reading">Next reading</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h1 id="turning-pure-fluid-parameters-into-a-mixture">Turning pure-fluid parameters into a mixture</h1>
+<p>A cubic EOS first calculates each pure component&rsquo;s attraction and covolume.
+A mixing rule answers the next question: how do unlike molecules interact?
+It combines those parameters into a single-fluid representation of the mixture.
+Changing it can change phase behavior even if every pure-fluid curve stays
+unchanged. It is not the same as an <a href="alpha.html">alpha function</a>, which sets the
+temperature dependence of each pure component&rsquo;s attraction.</p>
+<p>Every <a href="../../../../type/cubiceos.html">CubicEoS</a> contains a <a href="../../../../type/cubicmixrule.html">CubicMixRule</a>. Start with quadratic mixing
+for a simple baseline. Consider excess-Gibbs mixing when liquid non-ideality
+and an appropriate activity-coefficient parameterization matter. Neither choice
+replaces checking against experimental mixture data.</p>
+<h2 id="which-rules-are-available">Which rules are available?</h2>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Unlike-interaction data</th>
+<th>What changes relative to QMR?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../../../type/qmr.html">QMR</a></td>
+<td>Two dimensionless <code>(nc,nc)</code> matrices <code>k</code>, <code>l</code></td>
+<td>The usual pairwise baseline</td>
+</tr>
+<tr>
+<td><a href="../../../../type/qmrtd.html">QMRTD</a></td>
+<td><code>k</code>, <code>l</code>, <code>k0</code>, <code>Tref</code>, all <code>(nc,nc)</code></td>
+<td>Attraction corrections vary with temperature</td>
+</tr>
+<tr>
+<td><a href="../../../../type/cmr.html">CMR</a></td>
+<td>Two dimensionless <code>(nc,nc,nc)</code> tensors <code>k</code>, <code>l</code></td>
+<td>Composition enters through component triplets</td>
+</tr>
+<tr>
+<td><a href="../../../../type/cmrtd.html">CMRTD</a></td>
+<td><code>k</code>, <code>l</code>, <code>k0</code>, <code>Tref</code>, all <code>(nc,nc,nc)</code></td>
+<td>Temperature-dependent triplet corrections</td>
+</tr>
+<tr>
+<td><a href="../../../../type/hv.html">HV</a></td>
+<td>A <code>GeModel</code> plus the cubic&rsquo;s <code>b</code> and <code>del1</code></td>
+<td>Matches an infinite-pressure excess-energy relation</td>
+</tr>
+<tr>
+<td><a href="../../../../type/mhv.html">MHV</a></td>
+<td>A <code>GeModel</code>, the cubic&rsquo;s <code>b</code>, a nonzero <code>q</code>, and optional <code>lij</code></td>
+<td>Uses an approximate zero-pressure relation</td>
+</tr>
+<tr>
+<td><a href="../../../../type/hv_nrtl.html">HV_NRTL</a></td>
+<td>Specialized NRTL-HV parameters plus a pair-selection mask and <code>kij</code></td>
+<td>Allows selected pairs to use QMR-style corrections</td>
+</tr>
+<tr>
+<td><a href="../../../../type/sddlc.html">sDDLC</a></td>
+<td>QMR-temperature-law matrices plus positive segment sizes <code>q(:)</code></td>
+<td>The attractive mixture parameter also depends on density</td>
+</tr>
+</tbody>
+</table>
+<p>Here <code>nc</code> is the number of components. Temperature scales <code>Tref</code> are in K;
+NRTL-HV energy parameters have their own units, explained below. These are
+alternative formulations, not an accuracy ranking. A fitted parameter belongs
+to its EOS, alpha function, mixing rule, and temperature convention together.
+In particular, a QMR pair matrix is not a CMR triplet tensor.</p>
+<h2 id="quadratic-mixing-qmr">Quadratic mixing (QMR)</h2>
+<p>Let <script type="math/tex">n_i</script> be the amount of component <script type="math/tex">i</script> in mol, <script type="math/tex">n=\sum_i n_i</script> the total
+amount, and <script type="math/tex">x_i=n_i/n</script> its mole fraction. The pure attraction parameter
+<script type="math/tex">a_i(T)</script> has units bar L²/mol² and covolume <script type="math/tex">b_i</script> has units L/mol.
+The dimensionless binary corrections <script type="math/tex">k_{ij}</script> and <script type="math/tex">l_{ij}</script> modify attraction
+and covolume, respectively. Define the unlike-pair parameters <script type="math/tex">a_{ij}</script> and
+<script type="math/tex">b_{ij}</script>, and the mixture molar parameters <script type="math/tex">a_m</script> and <script type="math/tex">b_m</script>, by</p>
 <p>
 <script type="math/tex; mode=display">
-\frac{D}{RTB}(n, T) = \sum_i n_i \frac{a_i(T)}{b_i} + \frac{1}{q}
-\left(\frac{G^E(n, T)}{RT} + \sum_i n_i \ln \frac{B}{nb_i} \right)
+a_{ij}=\sqrt{a_i(T)a_j(T)}(1-k_{ij}),\qquad
+b_{ij}=\frac{b_i+b_j}{2}(1-l_{ij}),
+</script>
+<script type="math/tex; mode=display">
+a_m=\sum_i\sum_j x_i x_j a_{ij},\qquad
+b_m=\sum_i\sum_j x_i x_j b_{ij}.
 </script>
 </p>
-<p>Where <script type="math/tex">q</script> is a weak function of temperature. In the case of <code>MHV</code>
-and simplicity it is considered that depends on the model used.</p>
+<p>Internally the library uses total-volume parameters <script type="math/tex">D=n^2a_m</script> and <script type="math/tex">B=nb_m</script>:</p>
+<p>
+<script type="math/tex; mode=display">
+D=\sum_i\sum_j n_i n_j a_{ij},\qquad
+nB=\sum_i\sum_j n_i n_j b_{ij}.
+</script>
+</p>
+<p>Thus <code>B</code> is in L, not L/mol. With zero <code>lij</code>, this reduces to
+<script type="math/tex">B=\sum_i n_i b_i</script>. Positive <code>kij</code> weakens unlike attraction at fixed pure
+parameters; it does not mean an equilibrium pressure must change in the same
+direction in every calculation.</p>
+<h3 id="complete-example-comparing-a-binary-correction">Complete example: comparing a binary correction</h3>
+<p>This methane/n-butane example compares pressure before and after replacing
+the default mixing rule. The correction <code>0.05_pr</code> is <strong>illustrative</strong>, not a
+recommended fitted value. All vectors and both matrix axes use methane first,
+n-butane second. Matrices are dimensionless, symmetric and zero on the diagonal.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">program </span><span class="n">mixing_comparison</span>
+<span class="w">   </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">CubicEoS</span><span class="p">,</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">,</span><span class="w"> </span><span class="n">QMR</span>
+<span class="w">   </span><span class="k">implicit none</span>
+<span class="k">   type</span><span class="p">(</span><span class="n">CubicEoS</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">QMR</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">rule</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">tc</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">pc</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">w</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">kij</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">lij</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">V</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Pbase</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Pmodified</span>
+
+<span class="w">   </span><span class="n">tc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">19</span><span class="mf">0.564_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="mf">5.12_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">pc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">4</span><span class="mf">5.99_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="mf">7.96_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.0115478_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.200164_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span><span class="w"> </span><span class="n">pc</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">)</span>
+<span class="w">   </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.3_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7_pr</span><span class="p">]</span><span class="w"> </span><span class="c">! mol</span>
+<span class="w">   </span><span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span><span class="w"> </span><span class="c">! K</span>
+<span class="w">   </span><span class="n">V</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="mf">0.0_pr</span><span class="w"> </span><span class="c">! total L</span>
+<span class="w">   </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">Pbase</span><span class="p">)</span>
+
+<span class="w">   </span><span class="n">kij</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<span class="w">   </span><span class="n">lij</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<span class="w">   </span><span class="n">kij</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.05_pr</span>
+<span class="w">   </span><span class="n">kij</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kij</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="n">rule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">QMR</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">kij</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="o">=</span><span class="n">lij</span><span class="p">)</span>
+<span class="w">   </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">set_mixrule</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
+<span class="w">   </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">Pmodified</span><span class="p">)</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Default pressure [bar]: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Pbase</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Modified pressure [bar]: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Pmodified</span>
+<span class="k">end program </span><span class="n">mixing_comparison</span>
+</code></pre></div>
+
+<p>Passing <code>kij=kij, lij=lij</code> directly to PR/SRK/RKPR constructors is the simpler
+route when no later replacement is needed. For a separately constructed <code>QMR</code>,
+initialize both matrices; do not leave allocatable fields unset.</p>
+<p>As checks, setting the correction to zero should recover the baseline, and
+using only one component should recover its pure-fluid prediction. Agreement
+at one state does not validate bubble pressures or phase compositions elsewhere.</p>
+<h2 id="temperature-dependent-quadratic-mixing-qmrtd">Temperature-dependent quadratic mixing (QMRTD)</h2>
+<p><a href="../../../../type/qmrtd.html">QMRTD</a> uses the same covolume rule, but its binary attraction correction
+depends on absolute temperature <script type="math/tex">T</script> (K). Here <script type="math/tex">k_{ij}^{\infty}</script> is the
+high-temperature limiting value, <script type="math/tex">k_{ij}^{0}</script> is an exponential amplitude
+(both dimensionless), and <script type="math/tex">T_{ij}^{*}</script> is a positive reference temperature in K:</p>
+<p>
+<script type="math/tex; mode=display">
+k_{ij}(T)=k_{ij}^{\infty}+k_{ij}^{0}\exp(-T/T_{ij}^{*}).
+</script>
+</p>
+<p>In particular, the field <code>k0</code> is an <strong>amplitude</strong>, not the value at zero
+temperature. <code>k</code> stores the high-temperature limit. Use the convention in
+this equation when transferring fitted parameters from another package.</p>
+<p>The following is a <strong>replacement snippet</strong> for the example above: add these
+declarations to its specification section, add <code>QMRTD</code> to its <code>use</code> list,
+then replace the construction and assignment of <code>rule</code> with these statements.
+The numbers are illustrative, not fitted methane/n-butane parameters.</p>
+<div class="codehilite"><pre><span></span><code><span class="c">! Additional declarations (before executable statements):</span>
+<span class="k">type</span><span class="p">(</span><span class="n">QMRTD</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">td_rule</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">k0</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Tref</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c">! Executable replacement:</span>
+<span class="n">k0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<span class="n">k0</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.02_pr</span>
+<span class="n">k0</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">k0</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="n">Tref</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">19</span><span class="mf">0.0_pr</span>
+<span class="n">td_rule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">QMRTD</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">kij</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="o">=</span><span class="n">lij</span><span class="p">,</span><span class="w"> </span><span class="n">k0</span><span class="o">=</span><span class="n">k0</span><span class="p">,</span><span class="w"> </span><span class="n">Tref</span><span class="o">=</span><span class="n">Tref</span><span class="p">)</span>
+<span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">set_mixrule</span><span class="p">(</span><span class="n">td_rule</span><span class="p">)</span>
+</code></pre></div>
+
+<p>Keep <strong>all</strong> <code>Tref</code> entries positive, including diagonals: the implementation
+evaluates an entire matrix expression before selecting pair entries. Symmetry
+and component ordering must hold for <code>k</code>, <code>k0</code>, <code>l</code> and <code>Tref</code> alike. Avoid
+extrapolating temperature fits beyond their data range.</p>
+<h2 id="cubic-composition-mixing-cmr-and-cmrtd">Cubic composition mixing (CMR and CMRTD)</h2>
+<p>“Cubic” here describes the <strong>composition mixing polynomial</strong>, not a new
+pressure equation. CMR still plugs into <code>CubicEoS</code>. Unlike QMR&rsquo;s double sum,
+it combines three component indices, including repeated indices:</p>
+<p>
+<script type="math/tex; mode=display">
+a_{ijk}=(a_i a_j a_k)^{1/3}(1-k_{ijk}),\qquad
+b_{ijk}=\frac{b_i+b_j+b_k}{3}(1-l_{ijk}).
+</script>
+<script type="math/tex; mode=display">
+a_m=\sum_{ijk}x_i x_j x_k a_{ijk},\qquad
+b_m=\sum_{ijk}x_i x_j x_k b_{ijk}.
+</script>
+</p>
+<p>The extensive parameters remain <code>D = n**2 * a_m</code> and <code>B = n * b_m</code>:</p>
+<p>
+<script type="math/tex; mode=display">
+D=\frac{\sum_{ijk}n_i n_j n_k a_{ijk}}{n},\qquad
+B=\frac{\sum_{ijk}n_i n_j n_k b_{ijk}}{n^2}.
+</script>
+</p>
+<p>The denominators are essential when amounts do not sum to one. Triplet tensors
+are useful even for a <strong>binary</strong> mixture: entries such as <code>(1,1,2)</code> and
+<code>(1,2,2)</code> weight its two unlike composition terms differently. With three
+components there are also all-distinct triplets.</p>
+<p>Initialize every entry and use the same value for every permutation of a
+triplet: for example, <code>(1,1,2)</code>, <code>(1,2,1)</code>, and <code>(2,1,1)</code> must agree. Set the
+pure-component entries <code>(i,i,i)</code> to zero to preserve the pure-fluid parameters.
+With <code>l=0</code>, the covolume reduces to linear mixing. With <strong>both</strong> tensors zero,
+the CMR attraction is generally <strong>not</strong> QMR: it gives
+<script type="math/tex">(\sum_i x_i a_i^{1/3})^3</script>, rather than
+<script type="math/tex">(\sum_i x_i\sqrt{a_i})^2</script>.</p>
+<p>CMRTD uses the same exponential convention as QMRTD, but for each triplet:</p>
+<p>
+<script type="math/tex; mode=display">
+k_{ijk}(T)=k_{ijk}^{\infty}+k_{ijk}^{0}\exp(-T/T_{ijk}^{*}).
+</script>
+</p>
+<p><code>k0</code> is again an amplitude, not the correction at zero temperature. Keep
+<code>Tref</code> positive and respect permutation symmetry in every tensor.</p>
+<h3 id="complete-example-constant-and-temperature-dependent-tensors">Complete example: constant and temperature-dependent tensors</h3>
+<p>The following program constructs both rules. The off-pure entries are
+deliberately simple <strong>illustrative parameters</strong>, not a fit to this mixture.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">program </span><span class="n">triplet_mixing</span>
+<span class="w">   </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">CubicEoS</span><span class="p">,</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">,</span><span class="w"> </span><span class="n">CMR</span><span class="p">,</span><span class="w"> </span><span class="n">CMRTD</span>
+<span class="w">   </span><span class="k">implicit none</span>
+<span class="k">   type</span><span class="p">(</span><span class="n">CubicEoS</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">CMR</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">constant_rule</span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">CMRTD</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">temperature_rule</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">k3</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">l3</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">amplitude</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">reference_temperature</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">pressure</span>
+<span class="w">   </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">i</span>
+<span class="w">   </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">j</span>
+<span class="w">   </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">k</span>
+
+<span class="w">   </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">([</span><span class="mi">19</span><span class="mf">0.564_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="mf">5.12_pr</span><span class="p">],</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="p">[</span><span class="mi">4</span><span class="mf">5.99_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="mf">7.96_pr</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="mf">0.0115478_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.200164_pr</span><span class="p">])</span>
+<span class="w">   </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.3_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">k3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<span class="w">   </span><span class="n">l3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<span class="w">   </span><span class="n">amplitude</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<span class="w">   </span><span class="n">reference_temperature</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">20</span><span class="mf">0.0_pr</span>
+<span class="w">   </span><span class="k">do </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">      </span><span class="k">do </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">         </span><span class="k">do </span><span class="n">k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">               </span><span class="n">k3</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.02_pr</span>
+<span class="w">               </span><span class="n">amplitude</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.01_pr</span>
+<span class="w">            </span><span class="k">end if</span>
+<span class="k">         end do</span>
+<span class="k">      end do</span>
+<span class="k">   end do</span>
+
+<span class="k">   </span><span class="n">constant_rule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CMR</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">k3</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="o">=</span><span class="n">l3</span><span class="p">)</span>
+<span class="w">   </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">set_mixrule</span><span class="p">(</span><span class="n">constant_rule</span><span class="p">)</span>
+<span class="w">   </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="n">pressure</span><span class="p">)</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;CMR pressure [bar]: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">pressure</span>
+
+<span class="w">   </span><span class="n">temperature_rule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CMRTD</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">k3</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="o">=</span><span class="n">l3</span><span class="p">,</span><span class="w"> </span><span class="n">k0</span><span class="o">=</span><span class="n">amplitude</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="n">Tref</span><span class="o">=</span><span class="n">reference_temperature</span><span class="p">)</span>
+<span class="w">   </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">set_mixrule</span><span class="p">(</span><span class="n">temperature_rule</span><span class="p">)</span>
+<span class="w">   </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="n">pressure</span><span class="p">)</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;CMRTD pressure [bar]: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">pressure</span>
+<span class="k">end program </span><span class="n">triplet_mixing</span>
+</code></pre></div>
+
+<p>Setting <code>amplitude=0</code> must make CMRTD reproduce the <strong>CMR</strong> result with the
+same tensors. It is not a test against QMR. Also check pure limits and joint
+amount/volume scaling before using fitted tensors in equilibrium calculations.</p>
+<h2 id="mixing-with-an-excess-gibbs-model">Mixing with an excess-Gibbs model</h2>
+<p>An excess-Gibbs model describes how liquid mixing differs from ideal mixing.
+Coupling it to a cubic EOS can introduce liquid-mixture information while the
+EOS still supplies volumetric properties. A successful coupling needs a
+compatible model, parameter convention and component order; arbitrary NRTL
+parameters are not automatically transferable between mixing-rule variants.</p>
+<p>For the equations below, <script type="math/tex">G^E</script> is <strong>total</strong> excess Gibbs energy in bar L,
+<script type="math/tex">R</script> is in bar L/(mol K), and <script type="math/tex">T</script> is in K. The previously defined <script type="math/tex">D</script>,
+<script type="math/tex">B</script>, <script type="math/tex">n_i</script>, <script type="math/tex">n</script>, <script type="math/tex">a_i</script> and <script type="math/tex">b_i</script> retain their meanings.</p>
+<h3 id="huron-vidal">Huron-Vidal</h3>
+<p><a href="../../../../type/hv.html">HV</a> uses an infinite-pressure limiting relation. For a common cubic shape,
+let <script type="math/tex">\delta_1</script> and <script type="math/tex">\delta_2</script> be its dimensionless denominator parameters,
+and define the positive shape factor <script type="math/tex">\Lambda</script>. The sign convention used by
+the implementation is</p>
+<p>
+<script type="math/tex; mode=display">
+\Lambda=\frac{\ln[(1+\delta_1)/(1+\delta_2)]}{\delta_1-\delta_2},\qquad
+\frac{D}{B}=\sum_i n_i\frac{a_i(T)}{b_i}-\frac{G^E}{\Lambda}.
+</script>
+</p>
+<p>Do not insert a factor <code>RT</code> on only one side: every term here has units bar L.
+For PR and SRK, all components share the same cubic shape, so this factor is
+composition independent. A formulation with composition-dependent shape, such
+as RKPR, must also account for its derivatives; the displayed relation alone
+is not a complete derivative implementation.</p>
+<h3 id="modified-huron-vidal-mhv">Modified Huron-Vidal (MHV)</h3>
+<p><a href="../../../../type/mhv.html">MHV</a> uses an approximate zero-pressure relation. Its dimensionless constant
+<script type="math/tex">q</script> belongs to the chosen cubic/mixing formulation, not to a freely fitted
+binary interaction. With the library&rsquo;s convention,</p>
+<p>
+<script type="math/tex; mode=display">
+\frac{D}{RTB}=\sum_i n_i\frac{a_i(T)}{RTb_i}
++\frac{1}{q}\left[\frac{G^E}{RT}
++\sum_i n_i\ln\left(\frac{B}{nb_i}\right)\right].
+</script>
+</p>
+<p>The constructor is <code>MHV(ge=ge_model, b=model%b, q=q)</code> with optional <code>lij</code>.
+Build <code>ge_model</code> with parameters appropriate to the intended formulation, then
+use <code>call model%set_mixrule(mixrule)</code>. See the complete repository example
+<code>example/basics/7_huron_vidal.f90</code> for setup. <a href="../../../../proc/psrk.html">PSRK</a> configures MHV with
+<code>q=-0.64663_pr</code> and PSRK-UNIFAC itself.</p>
+<p><code>MHV</code> supports a repulsive <code>lij</code> matrix in the implementation, but the
+standard MHV derivation uses linear covolume mixing. Keep <code>lij=0</code> unless you
+have a justified, consistently parameterized extension. <code>q</code> must be nonzero;
+its appropriate value depends on the cubic and the chosen matching convention.</p>
+<h3 id="specialized-nrtl-hv-coupling">Specialized NRTL-HV coupling</h3>
+<p><a href="../../../../type/hv_nrtl.html">HV_NRTL</a> is a mixing rule; <a href="../../../../type/nrtlhv.html">NRTLHV</a> is the excess-Gibbs model it contains.
+They are not interchangeable objects. Its constructor requires all of
+<code>b</code>, <code>del1</code>, <code>alpha</code>, <code>gji0</code>, <code>gjiT</code>, <code>use_kij</code>, and <code>kij</code>.</p>
+<p>For a pair with <code>use_kij(j,i)=.false.</code>, the rule uses the supplied NRTL-HV
+energy differences and non-randomness parameter. For a selected pair it
+constructs the QMR-style interaction internally from the cubic attraction,
+covolumes, and <code>kij</code>, and sets the corresponding non-randomness parameter to
+zero. Supply both matrix directions consistently for each selected pair.
+Initialize <code>kij</code> even if no pair selects it.</p>
+<p>The NRTL-HV law uses referenced differences
+<script type="math/tex">\Delta g_{ji}=g^0_{ji}+g^T_{ji}T</script>, with <code>gji0</code> in bar L/mol and <code>gjiT</code>
+in bar L/(mol K). These are <strong>not</strong> the ordinary NRTL constructor&rsquo;s
+dimensionless <code>a</code> and kelvin-valued <code>b</code> matrices. The
+<a href="../../excessmodels/nrtl-hv.html">NRTL-HV guide</a> explains the conventions.</p>
+<h3 id="complete-example-installing-each-excess-gibbs-rule">Complete example: installing each excess-Gibbs rule</h3>
+<p>This example uses SRK and illustrative liquid-interaction parameters to show
+the three setup paths. It does not imply that HV, MHV, and NRTL-HV with these
+different parameter choices should predict the same pressure or phase diagram.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">program </span><span class="n">excess_gibbs_mixing</span>
+<span class="w">   </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">CubicEoS</span><span class="p">,</span><span class="w"> </span><span class="n">SoaveRedlichKwong</span><span class="p">,</span><span class="w"> </span><span class="n">NRTL</span><span class="p">,</span><span class="w"> </span><span class="n">HV</span><span class="p">,</span><span class="w"> </span><span class="n">MHV</span><span class="p">,</span><span class="w"> </span><span class="n">HV_NRTL</span>
+<span class="w">   </span><span class="k">implicit none</span>
+<span class="k">   type</span><span class="p">(</span><span class="n">CubicEoS</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">NRTL</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ge</span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">HV</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">hv_rule</span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">MHV</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">mhv_rule</span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">HV_NRTL</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">specialized_rule</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">b_temperature</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">alpha</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">g0</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">gT</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">kij</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">lij</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">logical</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">use_kij</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">pressure</span>
+
+<span class="w">   </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SoaveRedlichKwong</span><span class="p">([</span><span class="mi">19</span><span class="mf">0.564_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="mf">5.12_pr</span><span class="p">],</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="p">[</span><span class="mi">4</span><span class="mf">5.99_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="mf">7.96_pr</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="mf">0.0115478_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.200164_pr</span><span class="p">])</span>
+<span class="w">   </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.3_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<span class="w">   </span><span class="n">a</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.2_pr</span>
+<span class="w">   </span><span class="n">a</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.4_pr</span>
+<span class="w">   </span><span class="n">b_temperature</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<span class="w">   </span><span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.3_pr</span>
+<span class="w">   </span><span class="n">alpha</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<span class="w">   </span><span class="n">alpha</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<span class="w">   </span><span class="n">ge</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NRTL</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b_temperature</span><span class="p">,</span><span class="w"> </span><span class="n">alpha</span><span class="p">)</span>
+
+<span class="w">   </span><span class="c">! HV uses the public components of its derived-type constructor.</span>
+<span class="w">   </span><span class="n">hv_rule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HV</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="n">ge</span><span class="p">,</span><span class="w"> </span><span class="n">bi</span><span class="o">=</span><span class="n">model</span><span class="p">%</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">del1</span><span class="o">=</span><span class="n">model</span><span class="p">%</span><span class="n">del1</span><span class="p">)</span>
+<span class="w">   </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">set_mixrule</span><span class="p">(</span><span class="n">hv_rule</span><span class="p">)</span>
+<span class="w">   </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="n">pressure</span><span class="p">)</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;HV pressure [bar]: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">pressure</span>
+
+<span class="w">   </span><span class="n">lij</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<span class="w">   </span><span class="n">mhv_rule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MHV</span><span class="p">(</span><span class="n">ge</span><span class="o">=</span><span class="n">ge</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="o">=</span><span class="n">model</span><span class="p">%</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="o">=-</span><span class="mf">0.593_pr</span><span class="p">,</span><span class="w"> </span><span class="n">lij</span><span class="o">=</span><span class="n">lij</span><span class="p">)</span>
+<span class="w">   </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">set_mixrule</span><span class="p">(</span><span class="n">mhv_rule</span><span class="p">)</span>
+<span class="w">   </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="n">pressure</span><span class="p">)</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;MHV pressure [bar]: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">pressure</span>
+
+<span class="w">   </span><span class="n">g0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<span class="w">   </span><span class="n">g0</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="mf">0.0_pr</span>
+<span class="w">   </span><span class="n">g0</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="mf">0.0_pr</span>
+<span class="w">   </span><span class="n">gT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<span class="w">   </span><span class="n">use_kij</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">.</span><span class="n">false</span><span class="p">.</span>
+<span class="w">   </span><span class="n">kij</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<span class="w">   </span><span class="n">specialized_rule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HV_NRTL</span><span class="p">(</span><span class="n">b</span><span class="o">=</span><span class="n">model</span><span class="p">%</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">del1</span><span class="o">=</span><span class="n">model</span><span class="p">%</span><span class="n">del1</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span><span class="w"> </span><span class="n">gji0</span><span class="o">=</span><span class="n">g0</span><span class="p">,</span><span class="w"> </span><span class="n">gjiT</span><span class="o">=</span><span class="n">gT</span><span class="p">,</span><span class="w"> </span><span class="n">use_kij</span><span class="o">=</span><span class="n">use_kij</span><span class="p">,</span><span class="w"> </span><span class="n">kij</span><span class="o">=</span><span class="n">kij</span><span class="p">)</span>
+<span class="w">   </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">set_mixrule</span><span class="p">(</span><span class="n">specialized_rule</span><span class="p">)</span>
+<span class="w">   </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="n">pressure</span><span class="p">)</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;NRTL-HV pressure [bar]: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">pressure</span>
+<span class="k">end program </span><span class="n">excess_gibbs_mixing</span>
+</code></pre></div>
+
+<p>The cubic supplies <code>model%b</code> in L/mol and <code>model%del1</code> in its component order.
+The separate name <code>b_temperature</code> avoids confusing ordinary NRTL&rsquo;s temperature
+matrix with those cubic covolumes. The installed rule owns a copy of the data;
+modifying a local rule or activity model afterwards does not update the EOS
+until you install the changed rule again.</p>
+<h2 id="density-dependent-local-compositions-s-ddlc">Density-dependent local compositions (s-DDLC)</h2>
+<p><a href="../../../../type/sddlc.html">sDDLC</a> lets the attractive mixture parameter depend on volume as well as
+temperature and composition. Its picture is that molecular neighbors need not
+have the same proportions as the bulk mixture, and that this local weighting
+changes with density. It inherits QMRTD&rsquo;s pairwise temperature law and covolume
+rule, then adds a positive dimensionless segment-size vector <code>q(:)</code>.</p>
+<p>The following equations describe the implemented attractive weighting. Define
+the total segment amount <script type="math/tex">Q=\sum_i n_i q_i</script> and segment fractions
+<script type="math/tex">s_i=n_iq_i/Q</script>. With the same pair attraction <script type="math/tex">a_{ij}(T)</script> as QMRTD,</p>
+<p>
+<script type="math/tex; mode=display">
+E_{ij}=\exp\left(\frac{a_{ij}Q}{q_iq_jRTV}\right),\qquad
+L=\sum_{ij}s_i s_j E_{ij},\qquad
+D=\frac{\sum_{ij}n_i n_j E_{ij}a_{ij}}{L}.
+</script>
+</p>
+<p><code>V</code> is total volume in L. The segment sizes are model parameters, not the
+instantaneous number of moles; changing their common scale also changes the
+exponential weighting. Use the convention associated with a fitted data set.
+At large volume, <code>E</code> tends to one and the attraction approaches the corresponding
+QMRTD result. In a pure-component limit the weighting cancels from <code>D</code>.</p>
+<p>Because <code>D</code> now depends on volume, its volume and mixed derivatives matter for
+pressure and other properties. Use the <strong><code>sDDLC</code> constructor</strong>, which sets the
+<code>is_D_ddlc</code> flag used by <code>CubicEoS</code>; do not merely copy matrices into a different
+rule type. Keep <code>q</code> and <code>Tref</code> positive, and avoid overflows in the exponential
+at very high density or outside the fitted range.</p>
+<h3 id="complete-example-install-a-density-dependent-rule">Complete example: install a density-dependent rule</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">program </span><span class="n">density_dependent_mixing</span>
+<span class="w">   </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">CubicEoS</span><span class="p">,</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">,</span><span class="w"> </span><span class="n">sDDLC</span>
+<span class="w">   </span><span class="k">implicit none</span>
+<span class="k">   type</span><span class="p">(</span><span class="n">CubicEoS</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">sDDLC</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">rule</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">kij</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">amplitude</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">reference_temperature</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">lij</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">q</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">pressure</span>
+
+<span class="w">   </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">([</span><span class="mi">19</span><span class="mf">0.564_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="mf">5.12_pr</span><span class="p">],</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="p">[</span><span class="mi">4</span><span class="mf">5.99_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="mf">7.96_pr</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="mf">0.0115478_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.200164_pr</span><span class="p">])</span>
+<span class="w">   </span><span class="n">kij</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<span class="w">   </span><span class="n">amplitude</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<span class="w">   </span><span class="n">reference_temperature</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">20</span><span class="mf">0.0_pr</span>
+<span class="w">   </span><span class="n">lij</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<span class="w">   </span><span class="n">q</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">1.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">3.0_pr</span><span class="p">]</span><span class="w"> </span><span class="c">! Illustrative segment sizes, not fitted data.</span>
+<span class="w">   </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.3_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">rule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sDDLC</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">kij</span><span class="p">,</span><span class="w"> </span><span class="n">k0</span><span class="o">=</span><span class="n">amplitude</span><span class="p">,</span><span class="w"> </span><span class="n">Tref</span><span class="o">=</span><span class="n">reference_temperature</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="o">=</span><span class="n">lij</span><span class="p">,</span><span class="w"> </span><span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">)</span>
+<span class="w">   </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">set_mixrule</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
+<span class="w">   </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="n">pressure</span><span class="p">)</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;s-DDLC pressure [bar]: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">pressure</span>
+<span class="k">end program </span><span class="n">density_dependent_mixing</span>
+</code></pre></div>
+
+<p>This is a homogeneous-state property example, not evidence of a stable phase
+split. Compare with the base rule at large volume, then check volume and
+composition derivatives before moving to a saturation or envelope calculation.</p>
+<h2 id="extending-and-checking-a-rule">Extending and checking a rule</h2>
+<p>To change the attractive combining rule, extend <code>QMR</code> and override its
+type-bound <code>aij</code> procedure. <code>get_aij</code> is an interface name, <strong>not</strong> an assignable
+procedure-pointer component. The override must supply pair parameters and their
+first and second absolute-temperature derivatives; see <a href="../../../../type/qmr.html">QMR</a> and the source
+interface. Incorrect derivatives can leave pressure plausible while breaking
+heat capacities or equilibrium Jacobians.</p>
+<p>For QMR-family corrections, use symmetric matrices with zero self-interactions
+even where the implementation only reads one triangle; CMR-family tensors
+need permutation symmetry. This does <strong>not</strong> require the directed interaction
+matrices of an activity model to be symmetric. Verify the corresponding
+pure-fluid and zero-correction limits,
+and check pressure and derivative consistency before attempting a difficult
+flash. A solver&rsquo;s convergence says nothing about whether fitted interactions
+remain physically adequate outside their calibration range.</p>
+<p>For a CMR extension, override <code>aijk</code> and return rank-three parameter and
+temperature-derivative tensors; do not use QMR&rsquo;s rank-two interface. For an
+entirely different mixing expression, extend <code>CubicMixRule</code> and implement
+<code>Dmix</code>, <code>Bmix</code>, and <code>D1mix</code>. Density dependence also requires the density-aware
+energy path. The <a href="../../../developer/fortran.html">Fortran developer guide</a>
+describes these contracts.</p>
+<h2 id="next-reading">Next reading</h2>
+<p>Read <a href="alpha.html">alpha functions</a> for the pure-component part,
+<a href="../../excessmodels/index.html">excess-Gibbs models</a> for liquid non-ideality,
+<a href="../../phase_equilibrium/index.html">phase equilibrium</a> for using the model
+in saturation and flash calculations, and
+<a href="../../fundamentals.html">thermodynamic fundamentals</a> for the shared
+conventions. The cubic theory reference is Michelsen and Mollerup (2007),
+listed on the <a href="index.html">cubic overview</a>.</p>
     </div>
   </div>
       <hr>
@@ -245,14 +710,14 @@ and simplicity it is considered that depends on the model used.</p>
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

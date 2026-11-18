@@ -3,11 +3,16 @@ module yaeos__consistency_armodel
    !! Consistency checks of Helmholtz free energy models ([[ArModel]]).
    !!
    !! # Description
-   !! This module contains tools to validate the analityc derivatives of
-   !! implmented Helmholtz free energy models ([[ArModel]]). Also, allows to
+   !! This module contains tools to validate the analytic derivatives of
+   !! implemented Helmholtz free energy models ([[ArModel]]). Also, allows to
    !! evaluate the consistency tests described in Thermodynamic Models:
    !! Fundamentals & Computational Aspects 2 ed. by Michelsen and Mollerup
    !! Chapter 2 section 3.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! call ar_consistency(model, n, V, T, eq31=eq31, eq36=eq36)
+   !! ```
    !!
    !! Available tools:
    !!
@@ -127,9 +132,17 @@ contains
       ! ========================================================================
       ! Previous calculations
       ! ------------------------------------------------------------------------
-      real(pr) :: Grp, Grv, Hrv, P, dPdn(size(n)), ntot, z
-      real(pr) :: lnphi(size(n)), dlnPhidP(size(n))
-      real(pr) :: dlnPhidT(size(n)), dlnPhidn(size(n), size(n))
+      real(pr) :: Grp
+      real(pr) :: Grv
+      real(pr) :: Hrv
+      real(pr) :: P
+      real(pr) :: dPdn(size(n))
+      real(pr) :: ntot !! Total number of moles.
+      real(pr) :: z !! Compressibility factor \(Z = PV/(nRT)\).
+      real(pr) :: lnphi(size(n)) !! Log fugacity coefficients.
+      real(pr) :: dlnPhidP(size(n))
+      real(pr) :: dlnPhidT(size(n))
+      real(pr) :: dlnPhidn(size(n), size(n))
 
       call eos%pressure(n, V, T, P, dPdn=dPdn)
 
@@ -253,9 +266,14 @@ contains
       real(pr), optional, intent(out) :: Arn2(size(n), size(n)) !! \(\frac{d^2Ar}{dn_{ij}}\)
 
       ! Auxiliary
-      real(pr) :: Ar_aux1, Ar_aux2, Ar_aux3, Ar_aux4
-      real(pr) :: dn_aux1(size(n)), dn_aux2(size(n))
-      integer :: i, j
+      real(pr) :: Ar_aux1
+      real(pr) :: Ar_aux2
+      real(pr) :: Ar_aux3
+      real(pr) :: Ar_aux4
+      real(pr) :: dn_aux1(size(n))
+      real(pr) :: dn_aux2(size(n))
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
 
       ! ========================================================================
       ! Ar valuations
@@ -434,15 +452,32 @@ contains
       logical, intent(out) :: passed
       !! Flag indicating if all individual calls are correct
 
-      integer :: i, j
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
 
       ! All calls together
-      real(pr) :: Ar, ArV, ArT, Arn(size(n)), ArV2, ArT2, ArTV, ArVn(size(n))
-      real (pr) :: ArTn(size(n)), Arn2(size(n), size(n))
+      real(pr) :: Ar !! Residual Helmholtz energy.
+      real(pr) :: ArV !! Volume derivative of residual Helmholtz energy.
+      real(pr) :: ArT !! Temperature derivative of residual Helmholtz energy.
+      real(pr) :: Arn(size(n)) !! Mole-number gradient of residual Helmholtz energy.
+      real(pr) :: ArV2 !! Second volume derivative of residual Helmholtz energy.
+      real(pr) :: ArT2 !! Second temperature derivative of residual Helmholtz energy.
+      real(pr) :: ArTV !! Mixed temperature/volume derivative of residual Helmholtz energy.
+      real(pr) :: ArVn(size(n)) !! Mixed volume/mole-number derivative of residual Helmholtz energy.
+      real (pr) :: ArTn(size(n))
+      real (pr) :: Arn2(size(n), size(n))
 
       ! Individual calls
-      real(pr) :: i_Ar, i_ArV, i_ArT, i_Arn(size(n)), i_ArV2, i_ArT2, i_ArTV
-      real (pr) :: i_ArVn(size(n)), i_ArTn(size(n)), i_Arn2(size(n), size(n))
+      real(pr) :: i_Ar
+      real(pr) :: i_ArV
+      real(pr) :: i_ArT
+      real(pr) :: i_Arn(size(n))
+      real(pr) :: i_ArV2
+      real(pr) :: i_ArT2
+      real(pr) :: i_ArTV
+      real (pr) :: i_ArVn(size(n))
+      real (pr) :: i_ArTn(size(n))
+      real (pr) :: i_Arn2(size(n), size(n))
 
       ! =======================================================================
       ! All calls together

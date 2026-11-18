@@ -6,8 +6,8 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fitting interaction parameters of binary systems &mdash; yaeos 4.5.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+  <title>Fitting interaction parameters of binary systems &mdash; yaeos 4.5.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
@@ -15,7 +15,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=a284863f"></script>
+      <script src="../../../_static/documentation_options.js?v=06fc0226"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -52,21 +52,21 @@
               <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../tutorial_tree.html">Tutorial</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../../getting_started.html">Getting Started</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../equations_of_state.html">Equations of State (EoS)</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../bulk_properties.html">Bulk Properties</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../cubic_eos/cubic_eos.html">Cubic Equations of State</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../multifluid_eos/multifluid_eos.html">Multifluid Equations of State</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../saft_eos/saft_eos.html">SAFT Equations of State</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../phase_equilibrium/phase_equilibrium.html">Phase Equilibrium Calculations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../gpec/gpec.html">GPEC (Global Phase Equilibrium Calculations)</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="fitting.html">Fitting Equations of State</a><ul class="current">
-<li class="toctree-l4 current"><a class="current reference internal" href="#">Fitting interaction parameters of binary systems</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../tutorial_tree.html#suggested-route">Suggested route</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../equations_of_state.html">Equations of State (EoS)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../bulk_properties.html">Bulk Properties</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cubic_eos/cubic_eos.html">Cubic Equations of State</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../multifluid_eos/multifluid_eos.html">Multifluid Equations of State</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../saft_eos/saft_eos.html">SAFT Equations of State</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../phase_equilibrium/phase_equilibrium.html">Phase Equilibrium Calculations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../gpec/gpec.html">GPEC (Global Phase Equilibrium Calculations)</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="fitting.html">Fitting Equations of State</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../../gibbs_excess/gibbs_excess.html">Excess Gibbs models</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../gibbs_excess/gibbs_excess.html">Excess Gibbs models</a></li>
 </ul>
 </li>
 </ul>
@@ -210,9 +210,9 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 
 <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;./data/CO2_C6.csv&#39;</span><span class="p">)</span>
@@ -404,7 +404,7 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">yaeos</span>
 
 
 <span class="n">Tc</span> <span class="o">=</span> <span class="p">[</span><span class="mf">304.1</span><span class="p">,</span> <span class="mf">504.0</span><span class="p">]</span>     <span class="c1"># Critical temperature in K</span>
@@ -442,7 +442,7 @@ array([303.15, 315.15])
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 
 <span class="n">gpec</span> <span class="o">=</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">GPEC</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
@@ -485,8 +485,8 @@ array([303.15, 315.15])
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
-<span class="kn">from</span> <span class="nn">yaeos.fitting</span> <span class="kn">import</span> <span class="n">BinaryFitter</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">yaeos</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos.fitting</span><span class="w"> </span><span class="kn">import</span> <span class="n">BinaryFitter</span>
 
 
 <span class="n">help</span><span class="p">(</span><span class="n">BinaryFitter</span><span class="p">)</span>
@@ -646,7 +646,7 @@ class BinaryFitter(builtins.object)
 <p>Looking at the object’s documentation we can see that we need to define a function <code class="docutils literal notranslate"><span class="pre">model_setter</span></code>.</p>
 <p>This is a user-defined function that sets and returns the Equation of State in function of the fitting parameters and extra required arguments.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">model_setter</span></code> signature is as follows:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">model_setter</span><span class="p">(</span><span class="n">parameters_to_fit</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">ArModel</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">model_setter</span><span class="p">(</span><span class="n">parameters_to_fit</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">ArModel</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function to set the Equation of State model.</span>
 
@@ -671,7 +671,7 @@ class BinaryFitter(builtins.object)
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">fit_kij</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">Tcs</span><span class="p">,</span> <span class="n">Pcs</span><span class="p">,</span> <span class="n">ws</span><span class="p">):</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">fit_kij</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">Tcs</span><span class="p">,</span> <span class="n">Pcs</span><span class="p">,</span> <span class="n">ws</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Fit kij function of QMR.</span>
 
 <span class="sd">    Parameters</span>
@@ -879,7 +879,7 @@ fit(x0, bounds=None, method=&#39;Nelder-Mead&#39;, optimizer_options=None) metho
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 
 <span class="n">gpec</span> <span class="o">=</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">GPEC</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
@@ -920,7 +920,7 @@ fit(x0, bounds=None, method=&#39;Nelder-Mead&#39;, optimizer_options=None) metho
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 
 <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;data/C1_benzene.csv&quot;</span><span class="p">)</span>
@@ -1215,7 +1215,7 @@ fit(x0, bounds=None, method=&#39;Nelder-Mead&#39;, optimizer_options=None) metho
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 
 <span class="n">gpec</span> <span class="o">=</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">GPEC</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
@@ -1252,7 +1252,7 @@ fit(x0, bounds=None, method=&#39;Nelder-Mead&#39;, optimizer_options=None) metho
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">fit_kij</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">Tcs</span><span class="p">,</span> <span class="n">Pcs</span><span class="p">,</span> <span class="n">ws</span><span class="p">,</span> <span class="n">Zc</span><span class="p">):</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">fit_kij</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">Tcs</span><span class="p">,</span> <span class="n">Pcs</span><span class="p">,</span> <span class="n">ws</span><span class="p">,</span> <span class="n">Zc</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Fit kij function of QMR.</span>
 
 <span class="sd">    Parameters</span>
@@ -1448,7 +1448,7 @@ fit(x0, bounds=None, method=&#39;Nelder-Mead&#39;, optimizer_options=None) metho
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 
 <span class="n">gpec</span> <span class="o">=</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">GPEC</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
@@ -1480,7 +1480,7 @@ fit(x0, bounds=None, method=&#39;Nelder-Mead&#39;, optimizer_options=None) metho
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">fit_nrtl_hv</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">ws</span><span class="p">,</span> <span class="n">Zc</span><span class="p">):</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">fit_nrtl_hv</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">Tc</span><span class="p">,</span> <span class="n">Pc</span><span class="p">,</span> <span class="n">ws</span><span class="p">,</span> <span class="n">Zc</span><span class="p">):</span>
     <span class="n">g12</span><span class="p">,</span> <span class="n">g21</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
     <span class="n">alpha</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
     <span class="n">gji</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="n">g12</span><span class="p">],</span> <span class="p">[</span><span class="n">g21</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
@@ -2078,7 +2078,7 @@ fit(x0, bounds=None, method=&#39;Nelder-Mead&#39;, optimizer_options=None) metho
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[24]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 
 <span class="n">gpec</span> <span class="o">=</span> <span class="n">yaeos</span><span class="o">.</span><span class="n">GPEC</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>

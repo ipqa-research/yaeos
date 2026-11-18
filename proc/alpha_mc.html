@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>alpha_mc &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.1% of total for procedures.">22 statements</a>
+                 title=" 0.1% of total for procedures.">26 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -138,7 +139,7 @@
             <a class="list-group-item" href="../proc/alpha_mc.html#variable-dudt~2">dudt</a>
             <a class="list-group-item" href="../proc/alpha_mc.html#variable-dudt2~2">dudt2</a>
             <a class="list-group-item" href="../proc/alpha_mc.html#variable-sqrt_tr">sqrt_Tr</a>
-            <a class="list-group-item" href="../proc/alpha_mc.html#variable-u~12">u</a>
+            <a class="list-group-item" href="../proc/alpha_mc.html#variable-u~3">u</a>
         </div>
       </div>
     </div>
@@ -172,7 +173,14 @@
 </h2>
     
 
-    <p>MathiasCopeman alpha function definition</p>
+    <h1 id="alpha_mc">alpha_mc</h1>
+<p>Evaluate the Mathias-Copeman alpha function and its reduced-temperature derivatives.</p>
+<h1 id="description">Description</h1>
+<p>Applies the low-temperature polynomial branch for <script type="math/tex">T_r\leq1</script> and
+the high-temperature continuation for <script type="math/tex">T_r>1</script>.</p>
+<h1 id="examples">Examples</h1>
+<p>Configure <code>c1</code>, <code>c2</code>, and <code>c3</code> by component and call the type-bound
+<code>alpha</code> procedure.</p>
 
     <h3>Type Bound</h3>
     <p><a href='../type/alphamathiascopeman.html'>AlphaMathiasCopeman</a></p>
@@ -190,7 +198,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~50"></span>
+              <span class="anchor" id="variable-self~32"></span>
               class(<a href='../type/alphamathiascopeman.html'>AlphaMathiasCopeman</a>),
             </td>
 <td>intent(in)</td>
@@ -200,12 +208,12 @@
             <td>::</td>
             <td><strong>self</strong></td>
             <td>
-                
+                <p>Component-specific coefficients.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tr~5"></span>
+              <span class="anchor" id="variable-tr~3"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -215,12 +223,12 @@
             <td>::</td>
             <td><strong>Tr</strong>(:)</td>
             <td>
-                
+                <p>Reduced temperatures.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~32"></span>
+              <span class="anchor" id="variable-a~7"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -230,12 +238,12 @@
             <td>::</td>
             <td><strong>a</strong>(:)</td>
             <td>
-                
+                <p>Alpha-function values.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dadt~9"></span>
+              <span class="anchor" id="variable-dadt~3"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -245,12 +253,12 @@
             <td>::</td>
             <td><strong>dadt</strong>(:)</td>
             <td>
-                
+                <p>First reduced-temperature derivative of alpha.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dadt2~9"></span>
+              <span class="anchor" id="variable-dadt2~3"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -260,7 +268,7 @@
             <td>::</td>
             <td><strong>dadt2</strong>(:)</td>
             <td>
-                
+                <p>Second reduced-temperature derivative of alpha.</p>
             </td>
         </tr>
     </tbody>
@@ -334,7 +342,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-u~12"></span>
+              <span class="anchor" id="variable-u~3"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -375,14 +383,14 @@
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

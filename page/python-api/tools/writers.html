@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Writers module &mdash; yaeos 4.5.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+  <title>Writers module &mdash; yaeos 4.5.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=a284863f"></script>
+      <script src="../_static/documentation_options.js?v=06fc0226"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -91,9 +91,29 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-yaeos.tools.writers">
-<span id="writers-module"></span><h1>Writers module<a class="headerlink" href="#module-yaeos.tools.writers" title="Link to this heading"></a></h1>
-<p>Module tool: write data to either files or strings in various formats.</p>
+  <section id="writers-module">
+<h1>Writers module<a class="headerlink" href="#writers-module" title="Link to this heading"></a></h1>
+<p>The writer functions return Fortran assignment text for one-, two-, or
+three-dimensional parameter arrays. The one- and two-dimensional writers
+append the <code class="docutils literal notranslate"><span class="pre">_pr</span></code> precision suffix that the Fortran side expects; the
+three-dimensional writer writes plain values.</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">f1darray_as_str(array,</span> <span class="pre">array_name)</span></code></dt><dd><p>A Fortran vector assignment.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">fmatrix_as_str(array,</span> <span class="pre">array_name)</span></code></dt><dd><p>A Fortran matrix assignment.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">f3dmatrix_as_str(array,</span> <span class="pre">array_name)</span></code></dt><dd><p>A Fortran three-dimensional array assignment.</p>
+</dd>
+</dl>
+<p><code class="docutils literal notranslate"><span class="pre">array_name</span></code> is the target Fortran variable name, not a file name, and
+<code class="docutils literal notranslate"><span class="pre">array</span></code> is the data to write. The output is source text, not a complete
+program: declare the variable and import the correct precision in the
+receiving code.</p>
+<p>These helpers format values; they do not convert them. Pressures stay in bar,
+energies in bar L, and interaction parameters keep whatever convention and
+units they already had. Preserve component order on both sides so the
+Fortran model means the same mixture as the Python one.</p>
+<p id="module-yaeos.tools.writers">Module tool: write data to either files or strings in various formats.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="yaeos.tools.writers.fmatrix_as_str">
 <span class="sig-name descname"><span class="pre">fmatrix_as_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/yaeos/tools/writers.html#fmatrix_as_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.tools.writers.fmatrix_as_str" title="Link to this definition"></a></dt>
@@ -105,6 +125,12 @@
 precision variable <cite>pr</cite></p></li>
 <li><p><strong>array_name</strong> (<em>str</em>) – Name that the variable should have in the Fortran side</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Fortran assignment lines, one per matrix row.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
@@ -121,6 +147,13 @@ precision variable <cite>pr</cite></p></li>
 <li><p><strong>array_name</strong> (<em>str</em>) – Name that the variable should have in the Fortran side</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Fortran assignment lines, one per element. Unlike the 1D and 2D
+writers, values are written without the <code class="docutils literal notranslate"><span class="pre">_pr</span></code> suffix.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -135,6 +168,12 @@ precision variable <cite>pr</cite></p></li>
 precision variable <cite>pr</cite></p></li>
 <li><p><strong>array_name</strong> (<em>str</em>) – Name that the variable should have in the Fortran side</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Fortran assignment line.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>

@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>yaeos__equilibria_boundaries_phase_envelopes_mp_tx &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 2.1% of total for modules and submodules.">395 statements</a>
+                 title=" 2.0% of total for modules and submodules.">418 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -170,7 +171,7 @@
         <div class="list-group list-group-flush">
             <a class="list-group-item" href="../module/yaeos__equilibria_boundaries_phase_envelopes_mp_tx.html#proc-tx_f_np">tx_F_NP</a>
             <a class="list-group-item" href="../module/yaeos__equilibria_boundaries_phase_envelopes_mp_tx.html#proc-get_values_from_x~2">get_values_from_X</a>
-            <a class="list-group-item" href="../module/yaeos__equilibria_boundaries_phase_envelopes_mp_tx.html#proc-solve_point~3">solve_point</a>
+            <a class="list-group-item" href="../module/yaeos__equilibria_boundaries_phase_envelopes_mp_tx.html#proc-solve_point~2">solve_point</a>
             <a class="list-group-item" href="../module/yaeos__equilibria_boundaries_phase_envelopes_mp_tx.html#proc-update_specification~2">update_specification</a>
             <a class="list-group-item" href="../module/yaeos__equilibria_boundaries_phase_envelopes_mp_tx.html#proc-write_envelope_tx_mp">write_envelope_TX_MP</a>
         </div>
@@ -191,19 +192,25 @@
     </div>
 
     <div class="col-md-9" id='text'>
-      <p>Multiphase Px envelope calculation module.</p>
-<p>This module contains the functions to calculate the PT envelope of a
-mixture with multiple phases.</p>
+      <h1 id="multiphase-temperature-composition-envelopes">Multiphase temperature-composition envelopes</h1>
+<p>Continue multiphase phase boundaries in temperature and feed composition at fixed pressure.</p>
+<h1 id="description">Description</h1>
+<p>The module solves multiphase equilibrium residuals along a composition
+interpolation path and records the resulting equilibrium states.</p>
+<h1 id="examples">Examples</h1>
+<div class="codehilite"><pre><span></span><code><span class="n">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tx_envelope</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z0</span><span class="p">,</span><span class="w"> </span><span class="n">zi</span><span class="p">,</span><span class="w"> </span><span class="n">np</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">kinds_x</span><span class="p">,</span><span class="w"> </span><span class="n">kind_w</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">                  </span><span class="n">x_l0</span><span class="p">,</span><span class="w"> </span><span class="n">w0</span><span class="p">,</span><span class="w"> </span><span class="n">betas0</span><span class="p">,</span><span class="w"> </span><span class="n">T0</span><span class="p">,</span><span class="w"> </span><span class="n">alpha0</span><span class="p">,</span><span class="w"> </span><span class="n">ns0</span><span class="p">,</span><span class="w"> </span><span class="n">dS0</span><span class="p">,</span><span class="w"> </span><span class="n">beta_w</span><span class="p">)</span>
+</code></pre></div>
 <br>          <div class="card mb-4">
       <h3 class="card-header card-title bg-light">Uses</h3>
       <div class="card-body">
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
+                  <li class="list-inline-item"><a href='yaeos__constants.html'>yaeos__constants</a></li>
                   <li class="list-inline-item"><a href='yaeos__math.html'>yaeos__math</a></li>
                   <li class="list-inline-item"><a href='yaeos__equilibria_equilibrium_state.html'>yaeos__equilibria_equilibrium_state</a></li>
                   <li class="list-inline-item"><a href='yaeos__equilibria_boundaries_auxiliar.html'>yaeos__equilibria_boundaries_auxiliar</a></li>
-                  <li class="list-inline-item"><a href='yaeos__constants.html'>yaeos__constants</a></li>
                   <li class="list-inline-item"><a href='yaeos__models_ar.html'>yaeos__models_ar</a></li>
               </ul>
             </li>
@@ -211,223 +218,223 @@ mixture with multiple phases.</p>
               <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph Pages: 1 -->
 <svg id="moduleyaeos__equilibria_boundaries_phase_envelopes_mp_txUsesGraph" width="641pt" height="92pt"
- viewBox="0.00 0.00 641.00 91.61" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph" class="graph" transform="scale(0.48 0.48) rotate(0) translate(4 185.36)">
+ viewBox="0.00 0.00 641.00 92.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph" class="graph" transform="scale(0.486384 0.486384) rotate(0) translate(4 185.51)">
 <title>module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-185.36 1321,-185.36 1321,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-185.51 1313.89,-185.51 1313.89,4 -4,4"/>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_mp_tx -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_node1" class="node">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_mp_tx</title>
-<polygon fill="none" stroke="black" points="1317,-104 1012,-104 1012,-80 1317,-80 1317,-104"/>
-<text text-anchor="middle" x="1164.5" y="-89.6" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__equilibria_boundaries_phase_envelopes_mp_tx</text>
+<polygon fill="none" stroke="black" points="1309.89,-104.27 1005.87,-104.27 1005.87,-80 1309.89,-80 1309.89,-104.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1157.88" y="-88.54" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__equilibria_boundaries_phase_envelopes_mp_tx</text>
 </g>
 <!-- module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_node2" class="node">
 <title>module~yaeos__constants</title>
 <g id="a_module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_node2"><a xlink:href="../module/yaeos__constants.html" xlink:title="yaeos__constants">
-<polygon fill="#337ab7" stroke="#337ab7" points="236,-84 130,-84 130,-60 236,-60 236,-84"/>
-<text text-anchor="middle" x="183" y="-69.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__constants</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="233.79,-84.27 129.27,-84.27 129.27,-60 233.79,-60 233.79,-84.27"/>
+<text xml:space="preserve" text-anchor="middle" x="181.53" y="-68.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__constants</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_mp_tx&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_edge1" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_mp_tx&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1134.23,-104.08C1097.84,-118.5 1033.5,-142.04 976,-153 842.58,-178.43 806.65,-165.18 671,-172"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1126.41,-104.73C1089.9,-119.18 1026.56,-142.3 969.87,-153.13 837.11,-178.52 801.33,-165.32 666.34,-172.13"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_auxiliar -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_node3" class="node">
 <title>module~yaeos__equilibria_boundaries_auxiliar</title>
 <g id="a_module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_node3"><a xlink:href="../module/yaeos__equilibria_boundaries_auxiliar.html" xlink:title="yaeos__equilibria_boundaries_auxiliar">
-<polygon fill="#337ab7" stroke="#337ab7" points="976,-144 761,-144 761,-120 976,-120 976,-144"/>
-<text text-anchor="middle" x="868.5" y="-129.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_boundaries_auxiliar</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="969.87,-144.27 755.85,-144.27 755.85,-120 969.87,-120 969.87,-144.27"/>
+<text xml:space="preserve" text-anchor="middle" x="862.86" y="-128.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_boundaries_auxiliar</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_mp_tx&#45;&gt;module~yaeos__equilibria_boundaries_auxiliar -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_edge2" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_mp_tx&#45;&gt;module~yaeos__equilibria_boundaries_auxiliar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1075.29,-104C1041.5,-108.6 1002.75,-113.87 968.05,-118.59"/>
-<polygon fill="#000000" stroke="#000000" points="967.34,-115.16 957.9,-119.97 968.28,-122.09 967.34,-115.16"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1064.57,-104.74C1033.66,-108.96 999,-113.69 967.29,-118.02"/>
+<polygon fill="#000000" stroke="#000000" points="967.14,-114.5 957.71,-119.32 968.09,-121.44 967.14,-114.5"/>
 </g>
 <!-- module~yaeos__equilibria_equilibrium_state -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_node4" class="node">
 <title>module~yaeos__equilibria_equilibrium_state</title>
 <g id="a_module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_node4"><a xlink:href="../module/yaeos__equilibria_equilibrium_state.html" xlink:title="yaeos__equilibria_equilibrium_state">
-<polygon fill="#337ab7" stroke="#337ab7" points="969.5,-64 767.5,-64 767.5,-40 969.5,-40 969.5,-64"/>
-<text text-anchor="middle" x="868.5" y="-49.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_equilibrium_state</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="963.5,-64.27 762.23,-64.27 762.23,-40 963.5,-40 963.5,-64.27"/>
+<text xml:space="preserve" text-anchor="middle" x="862.86" y="-48.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_equilibrium_state</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_mp_tx&#45;&gt;module~yaeos__equilibria_equilibrium_state -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_edge3" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_mp_tx&#45;&gt;module~yaeos__equilibria_equilibrium_state</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1075.29,-80C1041.5,-75.4 1002.75,-70.13 968.05,-65.41"/>
-<polygon fill="#000000" stroke="#000000" points="968.28,-61.91 957.9,-64.03 967.34,-68.84 968.28,-61.91"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1064.57,-79.53C1033.66,-75.31 999,-70.58 967.29,-66.25"/>
+<polygon fill="#000000" stroke="#000000" points="968.09,-62.83 957.71,-64.95 967.14,-69.77 968.09,-62.83"/>
 </g>
 <!-- module~yaeos__math -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_node5" class="node">
 <title>module~yaeos__math</title>
 <g id="a_module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_node5"><a xlink:href="../module/yaeos__math.html" xlink:title="yaeos__math">
-<polygon fill="#337ab7" stroke="#337ab7" points="711,-144 629,-144 629,-120 711,-120 711,-144"/>
-<text text-anchor="middle" x="670" y="-129.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="705.98,-144.27 624.71,-144.27 624.71,-120 705.98,-120 705.98,-144.27"/>
+<text xml:space="preserve" text-anchor="middle" x="665.34" y="-128.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_mp_tx&#45;&gt;module~yaeos__math -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_edge4" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_mp_tx&#45;&gt;module~yaeos__math</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1011.9,-92.65C936.22,-94.62 843.45,-99.53 761,-111 747.96,-112.81 734.03,-115.62 721.12,-118.6"/>
-<polygon fill="#000000" stroke="#000000" points="719.94,-115.29 711.03,-121.01 721.57,-122.09 719.94,-115.29"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1005.83,-92.77C930.43,-94.74 838,-99.65 755.85,-111.14 743.26,-112.89 729.85,-115.59 717.33,-118.47"/>
+<polygon fill="#000000" stroke="#000000" points="716.53,-115.07 707.62,-120.8 718.16,-121.87 716.53,-115.07"/>
 </g>
 <!-- module~yaeos__models_ar -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_node6" class="node">
 <title>module~yaeos__models_ar</title>
 <g id="a_module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_node6"><a xlink:href="../module/yaeos__models_ar.html" xlink:title="yaeos__models_ar">
-<polygon fill="#337ab7" stroke="#337ab7" points="725,-24 615,-24 615,0 725,0 725,-24"/>
-<text text-anchor="middle" x="670" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="719.85,-24.27 610.83,-24.27 610.83,0 719.85,0 719.85,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="665.34" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_mp_tx&#45;&gt;module~yaeos__models_ar -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_edge5" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_mp_tx&#45;&gt;module~yaeos__models_ar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1134.23,-79.92C1097.84,-65.5 1033.5,-41.96 976,-31 893.93,-15.35 797.41,-11.77 735.28,-11.32"/>
-<polygon fill="#000000" stroke="#000000" points="735.25,-7.82 725.23,-11.28 735.21,-14.82 735.25,-7.82"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1126.41,-79.54C1089.9,-65.09 1026.56,-41.97 969.87,-31.13 888.7,-15.62 793.33,-11.97 731.46,-11.48"/>
+<polygon fill="#000000" stroke="#000000" points="731.84,-7.98 721.82,-11.43 731.81,-14.98 731.84,-7.98"/>
 </g>
 <!-- iso_fortran_env -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_node7" class="node">
 <title>iso_fortran_env</title>
 <g id="a_module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_node7"><a xlink:href="http://fortranwiki.org/fortran/show/iso_fortran_env" xlink:title="iso_fortran_env">
-<polygon fill="#337ab7" stroke="#337ab7" points="94,-84 0,-84 0,-60 94,-60 94,-84"/>
-<text text-anchor="middle" x="47" y="-69.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="93.27,-84.27 0,-84.27 0,-60 93.27,-60 93.27,-84.27"/>
+<text xml:space="preserve" text-anchor="middle" x="46.63" y="-68.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__constants&#45;&gt;iso_fortran_env -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_edge6" class="edge">
 <title>module~yaeos__constants&#45;&gt;iso_fortran_env</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.81,-72C121.45,-72 112.77,-72 104.32,-72"/>
-<polygon fill="#000000" stroke="#000000" points="104.16,-68.5 94.16,-72 104.16,-75.5 104.16,-68.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.15,-72.14C121.3,-72.14 113.15,-72.14 105.18,-72.14"/>
+<polygon fill="#000000" stroke="#000000" points="105.19,-68.64 95.19,-72.14 105.19,-75.64 105.19,-68.64"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_auxiliar&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_edge7" class="edge">
 <title>module~yaeos__equilibria_boundaries_auxiliar&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M817.06,-144.07C768.62,-155.33 698.82,-170.6 671,-172"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M669,-172C595.32,-175.7 576.65,-167.63 503,-172"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M809.4,-144.73C761.32,-155.94 693.59,-170.76 666.34,-172.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M664.34,-172.13C591.04,-175.84 572.46,-167.77 499.2,-172.13"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_auxiliar&#45;&gt;module~yaeos__math -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_edge8" class="edge">
 <title>module~yaeos__equilibria_boundaries_auxiliar&#45;&gt;module~yaeos__math</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M760.91,-132C747.23,-132 733.77,-132 721.6,-132"/>
-<polygon fill="#000000" stroke="#000000" points="721.26,-128.5 711.26,-132 721.26,-135.5 721.26,-128.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M755.52,-132.13C742.35,-132.13 729.39,-132.13 717.61,-132.13"/>
+<polygon fill="#000000" stroke="#000000" points="717.77,-128.64 707.77,-132.14 717.77,-135.64 717.77,-128.64"/>
 </g>
 <!-- module~yaeos__equilibria_equilibrium_state&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_edge9" class="edge">
 <title>module~yaeos__equilibria_equilibrium_state&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M767.12,-47.25C693.79,-44.93 592.04,-44.11 503,-52"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M761.97,-47.3C689.01,-44.95 587.77,-44.12 499.2,-52.13"/>
 </g>
 <!-- module~yaeos__math&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_edge10" class="edge">
 <title>module~yaeos__math&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M634.57,-144.08C601.37,-154.82 549.46,-169.24 503,-172"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M501,-172C425.8,-176.46 404.68,-189.9 331.5,-172"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M628.5,-144.73C595.42,-155.41 544.69,-169.42 499.2,-172.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M497.2,-172.13C422.43,-176.59 401.4,-190.06 328.68,-172.13"/>
 </g>
 <!-- module~yaeos__math_continuation -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_node8" class="node">
 <title>module~yaeos__math_continuation</title>
 <g id="a_module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_node8"><a xlink:href="../module/yaeos__math_continuation.html" xlink:title="yaeos__math_continuation">
-<polygon fill="#337ab7" stroke="#337ab7" points="579,-144 425,-144 425,-120 579,-120 579,-144"/>
-<text text-anchor="middle" x="502" y="-129.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math_continuation</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="574.83,-144.27 421.56,-144.27 421.56,-120 574.83,-120 574.83,-144.27"/>
+<text xml:space="preserve" text-anchor="middle" x="498.2" y="-128.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math_continuation</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__math&#45;&gt;module~yaeos__math_continuation -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_edge11" class="edge">
 <title>module~yaeos__math&#45;&gt;module~yaeos__math_continuation</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M628.82,-132C616.77,-132 603.07,-132 589.25,-132"/>
-<polygon fill="#000000" stroke="#000000" points="589.18,-128.5 579.18,-132 589.18,-135.5 589.18,-128.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M624.36,-132.13C612.8,-132.13 599.71,-132.13 586.46,-132.13"/>
+<polygon fill="#000000" stroke="#000000" points="586.83,-128.64 576.83,-132.14 586.83,-135.64 586.83,-128.64"/>
 </g>
 <!-- module~yaeos__math_linalg -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_node9" class="node">
 <title>module~yaeos__math_linalg</title>
 <g id="a_module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_node9"><a xlink:href="../module/yaeos__math_linalg.html" xlink:title="yaeos__math_linalg">
-<polygon fill="#337ab7" stroke="#337ab7" points="389,-104 272,-104 272,-80 389,-80 389,-104"/>
-<text text-anchor="middle" x="330.5" y="-89.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math_linalg</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="385.56,-104.27 269.79,-104.27 269.79,-80 385.56,-80 385.56,-104.27"/>
+<text xml:space="preserve" text-anchor="middle" x="327.68" y="-88.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math_linalg</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__math&#45;&gt;module~yaeos__math_linalg -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_edge12" class="edge">
 <title>module~yaeos__math&#45;&gt;module~yaeos__math_linalg</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M628.93,-121.27C613.44,-117.48 595.49,-113.54 579,-111 518.63,-101.7 449.24,-96.87 399.33,-94.42"/>
-<polygon fill="#000000" stroke="#000000" points="399.45,-90.92 389.3,-93.94 399.12,-97.91 399.45,-90.92"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M624.49,-121.41C609.08,-117.62 591.23,-113.68 574.83,-111.14 515.1,-101.88 446.48,-97.06 396.89,-94.59"/>
+<polygon fill="#000000" stroke="#000000" points="397.33,-91.11 387.18,-94.13 397,-98.1 397.33,-91.11"/>
 </g>
 <!-- module~yaeos__models_ar&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_edge13" class="edge">
 <title>module~yaeos__models_ar&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M634.57,-24.08C601.37,-34.82 549.46,-49.24 503,-52"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M501,-52C412.62,-57.24 310.4,-63.78 246.47,-67.92"/>
-<polygon fill="#000000" stroke="#000000" points="245.91,-64.45 236.16,-68.59 246.37,-71.43 245.91,-64.45"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M628.5,-24.73C595.42,-35.41 544.69,-49.42 499.2,-52.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M497.2,-52.13C409.87,-57.34 308.96,-63.84 245.44,-67.99"/>
+<polygon fill="#000000" stroke="#000000" points="245.29,-64.49 235.54,-68.64 245.75,-71.48 245.29,-64.49"/>
 </g>
 <!-- module~yaeos__models_base -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_node10" class="node">
 <title>module~yaeos__models_base</title>
 <g id="a_module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_node10"><a xlink:href="../module/yaeos__models_base.html" xlink:title="yaeos__models_base">
-<polygon fill="#337ab7" stroke="#337ab7" points="564,-24 440,-24 440,0 564,0 564,-24"/>
-<text text-anchor="middle" x="502" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_base</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="559.83,-24.27 436.56,-24.27 436.56,0 559.83,0 559.83,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="498.2" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_base</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__models_ar&#45;&gt;module~yaeos__models_base -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_edge14" class="edge">
 <title>module~yaeos__models_ar&#45;&gt;module~yaeos__models_base</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M614.65,-12C601.76,-12 587.83,-12 574.31,-12"/>
-<polygon fill="#000000" stroke="#000000" points="574.09,-8.5 564.09,-12 574.09,-15.5 574.09,-8.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M610.72,-12.13C598.27,-12.13 584.8,-12.13 571.68,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="571.79,-8.64 561.79,-12.14 571.79,-15.64 571.79,-8.64"/>
 </g>
 <!-- module~yaeos__math_continuation&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_edge15" class="edge">
 <title>module~yaeos__math_continuation&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M466.39,-144.09C424.59,-158 356.76,-178.18 331.5,-172"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M329.5,-172C277.15,-159.2 228.08,-116.82 202.48,-91.52"/>
-<polygon fill="#000000" stroke="#000000" points="204.83,-88.92 195.31,-84.27 199.85,-93.84 204.83,-88.92"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M461.32,-144.72C419.66,-158.61 353.49,-178.25 328.68,-172.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M326.68,-172.13C275.4,-159.5 227.45,-118.1 201.85,-92.7"/>
+<polygon fill="#000000" stroke="#000000" points="204.62,-90.53 195.11,-85.85 199.63,-95.43 204.62,-90.53"/>
 </g>
 <!-- module~yaeos__math_continuation&#45;&gt;module~yaeos__math_linalg -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_edge16" class="edge">
 <title>module~yaeos__math_continuation&#45;&gt;module~yaeos__math_linalg</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M450.14,-120C432.04,-115.73 411.47,-110.87 392.6,-106.42"/>
-<polygon fill="#000000" stroke="#000000" points="393.15,-102.95 382.61,-104.06 391.54,-109.77 393.15,-102.95"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M444.34,-119.59C427.95,-115.7 409.71,-111.37 392.64,-107.32"/>
+<polygon fill="#000000" stroke="#000000" points="393.65,-103.96 383.11,-105.06 392.03,-110.77 393.65,-103.96"/>
 </g>
 <!-- module~yaeos__math_linalg&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_edge17" class="edge">
 <title>module~yaeos__math_linalg&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M271.99,-84.1C263.64,-82.95 255,-81.76 246.55,-80.6"/>
-<polygon fill="#000000" stroke="#000000" points="246.75,-77.09 236.36,-79.2 245.79,-84.03 246.75,-77.09"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M269.29,-84.17C261.39,-83.08 253.25,-81.95 245.26,-80.84"/>
+<polygon fill="#000000" stroke="#000000" points="246,-77.41 235.61,-79.5 245.04,-84.34 246,-77.41"/>
 </g>
 <!-- module~yaeos__substance -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_node11" class="node">
 <title>module~yaeos__substance</title>
 <g id="a_module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_node11"><a xlink:href="../module/yaeos__substance.html" xlink:title="yaeos__substance">
-<polygon fill="#337ab7" stroke="#337ab7" points="385,-24 276,-24 276,0 385,0 385,-24"/>
-<text text-anchor="middle" x="330.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__substance</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="381.44,-24.27 273.92,-24.27 273.92,0 381.44,0 381.44,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="327.68" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__substance</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__models_base&#45;&gt;module~yaeos__substance -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_edge18" class="edge">
 <title>module~yaeos__models_base&#45;&gt;module~yaeos__substance</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M439.81,-12C425.38,-12 409.97,-12 395.44,-12"/>
-<polygon fill="#000000" stroke="#000000" points="395.03,-8.5 385.03,-12 395.03,-15.5 395.03,-8.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M436.36,-12.13C422.3,-12.13 407.29,-12.13 393.08,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="393.41,-8.64 383.41,-12.14 393.41,-15.64 393.41,-8.64"/>
 </g>
 <!-- module~yaeos__substance&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsesGraph_edge19" class="edge">
 <title>module~yaeos__substance&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M300.06,-24.14C277.77,-33.33 246.96,-46.04 222.69,-56.05"/>
-<polygon fill="#000000" stroke="#000000" points="221.31,-52.83 213.4,-59.88 223.98,-59.3 221.31,-52.83"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M296.46,-24.71C275.22,-33.55 246.56,-45.48 223.3,-55.16"/>
+<polygon fill="#000000" stroke="#000000" points="221.99,-51.92 214.11,-58.99 224.68,-58.38 221.99,-51.92"/>
 </g>
 </g>
 </svg>
@@ -450,49 +457,49 @@ mixture with multiple phases.</p>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="518pt" height="32pt"
- viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="511pt" height="32pt"
+ viewBox="0.00 0.00 511.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 506.88,-28.27 506.88,4 -4,4"/>
 <!-- Module -->
 <g id="node1" class="node">
 <title>Module</title>
-<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
 </g>
 <!-- Submodule -->
 <g id="node2" class="node">
 <title>Submodule</title>
-<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
-<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="144.13,-24.27 71.87,-24.27 71.87,0 144.13,0 144.13,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="108" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
 </g>
 <!-- Subroutine -->
 <g id="node3" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
-<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="231.63,-24.27 162.37,-24.27 162.37,0 231.63,0 231.63,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="197" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node4" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
-<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="306.26,-24.27 249.74,-24.27 249.74,0 306.26,0 306.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="278" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Program -->
 <g id="node5" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
-<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="381.26,-24.27 324.74,-24.27 324.74,0 381.26,0 381.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="353" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node6" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
-<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="502.88,-24.27 399.12,-24.27 399.12,0 502.88,0 502.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="451" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -518,49 +525,49 @@ modules which it uses.
               <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsedByGraph Pages: 1 -->
-<svg id="moduleyaeos__equilibria_boundaries_phase_envelopes_mp_txUsedByGraph" width="544pt" height="32pt"
- viewBox="0.00 0.00 544.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg id="moduleyaeos__equilibria_boundaries_phase_envelopes_mp_txUsedByGraph" width="542pt" height="32pt"
+ viewBox="0.00 0.00 542.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsedByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 540,-28 540,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 537.79,-28.27 537.79,4 -4,4"/>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_mp_tx -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsedByGraph_node1" class="node">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_mp_tx</title>
-<polygon fill="none" stroke="black" points="305,-24 0,-24 0,0 305,0 305,-24"/>
-<text text-anchor="middle" x="152.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__equilibria_boundaries_phase_envelopes_mp_tx</text>
+<polygon fill="none" stroke="black" points="304.02,-24.27 0,-24.27 0,0 304.02,0 304.02,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="152.01" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__equilibria_boundaries_phase_envelopes_mp_tx</text>
 </g>
 <!-- module~yaeos__equilibria -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsedByGraph_node2" class="node">
 <title>module~yaeos__equilibria</title>
 <g id="a_module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsedByGraph_node2"><a xlink:href="../module/yaeos__equilibria.html" xlink:title="yaeos__equilibria">
-<polygon fill="#337ab7" stroke="#337ab7" points="446,-24 341,-24 341,0 446,0 446,-24"/>
-<text text-anchor="middle" x="393.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="443.79,-24.27 340.02,-24.27 340.02,0 443.79,0 443.79,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="391.9" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_boundaries_phase_envelopes_mp_tx -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsedByGraph_edge1" class="edge">
 <title>module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_boundaries_phase_envelopes_mp_tx</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M340.93,-12C332.96,-12 324.38,-12 315.43,-12"/>
-<polygon fill="#000000" stroke="#000000" points="315.19,-8.5 305.19,-12 315.19,-15.5 315.19,-8.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M339.58,-12.13C332.16,-12.13 324.22,-12.13 315.94,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="315.98,-8.64 305.98,-12.14 315.98,-15.64 315.98,-8.64"/>
 </g>
 <!-- module~yaeos -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsedByGraph_node3" class="node">
 <title>module~yaeos</title>
 <g id="a_module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsedByGraph_node3"><a xlink:href="../module/yaeos.html" xlink:title="yaeos">
-<polygon fill="#337ab7" stroke="#337ab7" points="536,-24 482,-24 482,0 536,0 536,-24"/>
-<text text-anchor="middle" x="509" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="533.79,-24.27 479.79,-24.27 479.79,0 533.79,0 533.79,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="506.79" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos&#45;&gt;module~yaeos__equilibria -->
 <g id="module~~yaeos__equilibria_boundaries_phase_envelopes_mp_tx~~UsedByGraph_edge2" class="edge">
 <title>module~yaeos&#45;&gt;module~yaeos__equilibria</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M481.96,-12C474.26,-12 465.47,-12 456.51,-12"/>
-<polygon fill="#000000" stroke="#000000" points="456.37,-8.5 446.37,-12 456.37,-15.5 456.37,-8.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M479.32,-12.13C472.07,-12.13 463.88,-12.13 455.5,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="455.56,-8.64 445.56,-12.14 455.56,-15.64 455.56,-8.64"/>
 </g>
 </g>
 </svg>
@@ -579,49 +586,49 @@ modules which it uses.
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="518pt" height="32pt"
- viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="511pt" height="32pt"
+ viewBox="0.00 0.00 511.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 506.88,-28.27 506.88,4 -4,4"/>
 <!-- Module -->
 <g id="node1" class="node">
 <title>Module</title>
-<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
 </g>
 <!-- Submodule -->
 <g id="node2" class="node">
 <title>Submodule</title>
-<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
-<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="144.13,-24.27 71.87,-24.27 71.87,0 144.13,0 144.13,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="108" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
 </g>
 <!-- Subroutine -->
 <g id="node3" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
-<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="231.63,-24.27 162.37,-24.27 162.37,0 231.63,0 231.63,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="197" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node4" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
-<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="306.26,-24.27 249.74,-24.27 249.74,0 306.26,0 306.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="278" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Program -->
 <g id="node5" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
-<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="381.26,-24.27 324.74,-24.27 324.74,0 381.26,0 381.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="353" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node6" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
-<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="502.88,-24.27 399.12,-24.27 399.12,0 502.88,0 502.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="451" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -658,7 +665,7 @@ modules which it uses.
       </h3>
     </div>
     <div class="card-body">
-      <p>Multiphase T<script type="math/tex">alpha</script> envelope.</p>
+      <p>Multiphase temperature-composition envelope at fixed pressure.</p><a href="../type/txenvelmp.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
         <h4>Components</h4>
           <table class="table table-striped varlist">
@@ -673,7 +680,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-tc~10"></span>
+              <span class="anchor" id="variable-tc"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -690,7 +697,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ac"></span>
+              <span class="anchor" id="variable-ac~3"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -707,7 +714,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-alpha~20"></span>
+              <span class="anchor" id="variable-alpha~7"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -719,12 +726,12 @@ modules which it uses.
                 <td></td>
                 <td></td>
             <td>
-<p>Array of <script type="math/tex">alpha</script> values for each point in the envelope.</p>
+<p>Array of <script type="math/tex">\alpha</script> values for each point in the envelope.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kind_w~9"></span>
+              <span class="anchor" id="variable-kind_w~3"></span>
               character(len=14),
             </td>
               <td>public,</td>
@@ -741,7 +748,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kinds_x~8"></span>
+              <span class="anchor" id="variable-kinds_x~3"></span>
               character(len=14),
             </td>
               <td>public,</td>
@@ -758,7 +765,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-points~10"></span>
+              <span class="anchor" id="variable-points~3"></span>
               type(<a href='../type/mppoint~3.html'>MPPoint</a>),
             </td>
               <td>public,</td>
@@ -775,7 +782,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z0~16"></span>
+              <span class="anchor" id="variable-z0~6"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -792,7 +799,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-zi~12"></span>
+              <span class="anchor" id="variable-zi~6"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -828,7 +835,7 @@ modules which it uses.
               </tr>
               <tr>
                 <td>  procedure, public ::
-  <strong><a href='../type/txenvelmp.html#boundprocedure-write~3'>write</a></strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/write_envelope_tx_mp.html'>write_envelope_TX_MP</a></td>
+  <strong><a href='../type/txenvelmp.html#boundprocedure-write~2'>write</a></strong> => <a href='../proc/write_envelope_tx_mp.html'>write_envelope_TX_MP</a></td>
                   <td></td>
               </tr>
           </tbody>
@@ -846,7 +853,7 @@ modules which it uses.
       </h3>
     </div>
     <div class="card-body">
-      <p>Multiphase equilibria point.</p>
+      <p>One converged multiphase state on an envelope.</p><a href="../type/mppoint~3.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
         <h4>Components</h4>
           <table class="table table-striped varlist">
@@ -861,7 +868,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~38"></span>
+              <span class="anchor" id="variable-p~9"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -878,7 +885,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~59"></span>
+              <span class="anchor" id="variable-t~12"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -895,7 +902,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-beta_w~7"></span>
+              <span class="anchor" id="variable-beta_w~6"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -912,7 +919,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-betas~9"></span>
+              <span class="anchor" id="variable-betas~6"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -929,7 +936,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iters~11"></span>
+              <span class="anchor" id="variable-iters~8"></span>
               integer,
             </td>
               <td>public</td>
@@ -946,7 +953,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kind_w~10"></span>
+              <span class="anchor" id="variable-kind_w~4"></span>
               character(len=14),
             </td>
               <td>public</td>
@@ -963,7 +970,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kinds_x~9"></span>
+              <span class="anchor" id="variable-kinds_x~4"></span>
               character(len=14),
             </td>
               <td>public,</td>
@@ -980,7 +987,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~75"></span>
+              <span class="anchor" id="variable-nc~9"></span>
               integer,
             </td>
               <td>public</td>
@@ -997,7 +1004,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-np~11"></span>
+              <span class="anchor" id="variable-np~8"></span>
               integer,
             </td>
               <td>public</td>
@@ -1014,7 +1021,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns~32"></span>
+              <span class="anchor" id="variable-ns~13"></span>
               integer,
             </td>
               <td>public</td>
@@ -1031,7 +1038,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-w~20"></span>
+              <span class="anchor" id="variable-w~7"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -1048,7 +1055,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x_l~9"></span>
+              <span class="anchor" id="variable-x_l~6"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -1097,7 +1104,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~51"></span>
+              <span class="anchor" id="variable-model~11"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -1112,7 +1119,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z0~17"></span>
+              <span class="anchor" id="variable-z0~7"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1127,7 +1134,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-zi~13"></span>
+              <span class="anchor" id="variable-zi~7"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1142,7 +1149,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-np~12"></span>
+              <span class="anchor" id="variable-np~9"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -1157,7 +1164,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~39"></span>
+              <span class="anchor" id="variable-p~10"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1172,7 +1179,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kinds_x~10"></span>
+              <span class="anchor" id="variable-kinds_x~5"></span>
               character(len=14),
             </td>
 <td>intent(in)</td>
@@ -1187,7 +1194,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kind_w~11"></span>
+              <span class="anchor" id="variable-kind_w~5"></span>
               character(len=14),
             </td>
 <td>intent(in)</td>
@@ -1202,7 +1209,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x_l0~3"></span>
+              <span class="anchor" id="variable-x_l0~2"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1219,7 +1226,7 @@ component.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-w0~3"></span>
+              <span class="anchor" id="variable-w0~2"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1249,7 +1256,7 @@ component.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t0~4"></span>
+              <span class="anchor" id="variable-t0"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1264,7 +1271,7 @@ component.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-alpha0~3"></span>
+              <span class="anchor" id="variable-alpha0~2"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1274,7 +1281,7 @@ component.</p>
             <td>::</td>
             <td><strong>alpha0</strong></td>
             <td>
-<p>Initial value of the <script type="math/tex">alpha</script> variable.</p>
+<p>Initial value of the <script type="math/tex">\alpha</script> variable.</p>
             </td>
         </tr>
         <tr>
@@ -1290,18 +1297,17 @@ component.</p>
             <td><strong>ns0</strong></td>
             <td>
 <p>Number of the specified variable. This is the variable that will be
-used to specify the next point. the first <script type="math/tex">nc \cdot  np</script> variables
-corresponds to the <script type="math/tex">\ln K_i^l</script> of each phase, sorted by phases
-([\ln K_1^1, \ln K_2^1, \dots, \ln K_{nc}^1,
-\dots, \ln K_{nc}^{np}]).
+used to specify the next point. The first <script type="math/tex">nc \cdot np</script> variables
+correspond to the <script type="math/tex">\ln K_i^l</script> of each phase, sorted by phases
+(<script type="math/tex">[\ln K_1^1, \ln K_2^1, \dots, \ln K_{nc}^1,
+\dots, \ln K_{nc}^{np}]</script>).
 The next <script type="math/tex">np</script> variables are the mole fractions of each main phase.
-The last two variables are the temperature and the
-<script type="math/tex">alpha</script> variable. Respectively</p>
+The last two variables are <script type="math/tex">\ln T</script> and <script type="math/tex">\alpha</script>, respectively.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ds0~6"></span>
+              <span class="anchor" id="variable-ds0~3"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1316,7 +1322,7 @@ The last two variables are the temperature and the
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-beta_w~8"></span>
+              <span class="anchor" id="variable-beta_w~7"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1331,7 +1337,7 @@ The last two variables are the temperature and the
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-points~11"></span>
+              <span class="anchor" id="variable-points~4"></span>
               integer,
             </td>
 <td>intent(in),</td>
@@ -1367,7 +1373,7 @@ the default value is 1000.</p>
 </h3></div>
     <div class="card-body">
           
-  <p>Function to solve at each point of a multi-phase envelope.</p>
+  <p>Function to solve at each point of a multi-phase envelope.</p><a href="../proc/tx_f_np.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -1382,7 +1388,7 @@ the default value is 1000.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~52"></span>
+              <span class="anchor" id="variable-model~12"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -1392,12 +1398,12 @@ the default value is 1000.</p>
             <td>::</td>
             <td><strong>model</strong></td>
             <td>
-
+<p>EOS used to evaluate phase properties.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z0~18"></span>
+              <span class="anchor" id="variable-z0~8"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1407,12 +1413,12 @@ the default value is 1000.</p>
             <td>::</td>
             <td><strong>z0</strong>(:)</td>
             <td>
-
+<p>First limiting feed composition.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-zi~14"></span>
+              <span class="anchor" id="variable-zi~8"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1422,12 +1428,12 @@ the default value is 1000.</p>
             <td>::</td>
             <td><strong>zi</strong>(:)</td>
             <td>
-
+<p>Second limiting feed composition.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-np~13"></span>
+              <span class="anchor" id="variable-np~10"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -1442,7 +1448,7 @@ the default value is 1000.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~40"></span>
+              <span class="anchor" id="variable-p~11"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1457,7 +1463,7 @@ the default value is 1000.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-beta_w~9"></span>
+              <span class="anchor" id="variable-beta_w~8"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1472,7 +1478,7 @@ the default value is 1000.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kinds_x~11"></span>
+              <span class="anchor" id="variable-kinds_x~6"></span>
               character(len=14),
             </td>
 <td>intent(in)</td>
@@ -1487,7 +1493,7 @@ the default value is 1000.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kind_w~12"></span>
+              <span class="anchor" id="variable-kind_w~6"></span>
               character(len=14),
             </td>
 <td>intent(in)</td>
@@ -1502,7 +1508,7 @@ the default value is 1000.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~49"></span>
+              <span class="anchor" id="variable-x~14"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1517,7 +1523,7 @@ the default value is 1000.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns~34"></span>
+              <span class="anchor" id="variable-ns~15"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -1532,7 +1538,7 @@ the default value is 1000.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-s~29"></span>
+              <span class="anchor" id="variable-s~12"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1547,7 +1553,7 @@ the default value is 1000.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-f~30"></span>
+              <span class="anchor" id="variable-f~8"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1562,7 +1568,7 @@ the default value is 1000.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-df~11"></span>
+              <span class="anchor" id="variable-df~5"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1602,7 +1608,7 @@ the default value is 1000.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~52"></span>
+              <span class="anchor" id="variable-x~17"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1617,7 +1623,7 @@ the default value is 1000.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-np~16"></span>
+              <span class="anchor" id="variable-np~13"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -1632,7 +1638,7 @@ the default value is 1000.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z0~20"></span>
+              <span class="anchor" id="variable-z0~10"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1647,7 +1653,7 @@ the default value is 1000.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-zi~16"></span>
+              <span class="anchor" id="variable-zi~10"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1658,197 +1664,6 @@ the default value is 1000.</p>
             <td><strong>zi</strong>(:)</td>
             <td>
 <p>Second mixture composition.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-beta_w~11"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>beta_w</strong></td>
-            <td>
-<p>Reference phase beta.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-x_l~12"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>x_l</strong>(np,size(z0))</td>
-            <td>
-<p>Mole fractions of the main phases.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-w~23"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>w</strong>(size(z0))</td>
-            <td>
-<p>Mole fractions of the incipient phase.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-betas~12"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>betas</strong>(np)</td>
-            <td>
-<p>Fractions of the main phases.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-t~62"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>T</strong></td>
-            <td>
-<p>Pressure [bar].</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-alpha~23"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>alpha</strong></td>
-            <td>
-<p>
-<script type="math/tex">alpha</script>.</p>
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-    </div>
-  </div>
-
-              <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-solve_point~3"></span> <h3>private  subroutine <a href='../proc/solve_point~3.html'>solve_point</a>(model, z0, zi, np, P, beta_w, kinds_x, kind_w, X, ns, S, dXdS, F, df, iters, max_iterations)  
-</h3></div>
-    <div class="card-body">
-          
-  <p>Solve a point in the multiphase envelope.</p><a href="../proc/solve_point~3.html" class="pull-right"><emph>Read more&hellip;</emph></a>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-model~53"></span>
-              class(<a href='../type/armodel.html'>ArModel</a>),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>model</strong></td>
-            <td>
-<p>Model to use for the calculations.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-z0~19"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>z0</strong>(:)</td>
-            <td>
-<p>Initial mixture composition.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-zi~15"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>zi</strong>(:)</td>
-            <td>
-<p>Second mixture composition.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-np~14"></span>
-              integer,
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>np</strong></td>
-            <td>
-<p>Number of main phases.</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-p~41"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>P</strong></td>
-            <td>
-<p>Presure [bar].</p>
             </td>
         </tr>
         <tr>
@@ -1863,12 +1678,203 @@ the default value is 1000.</p>
             <td>::</td>
             <td><strong>beta_w</strong></td>
             <td>
+<p>Reference phase beta.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x_l~9"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>x_l</strong>(np,size(z0))</td>
+            <td>
+<p>Mole fractions of the main phases.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-w~10"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>w</strong>(size(z0))</td>
+            <td>
+<p>Mole fractions of the incipient phase.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-betas~9"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>betas</strong>(np)</td>
+            <td>
+<p>Fractions of the main phases.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~15"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+<p>Temperature [K].</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-alpha~10"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>alpha</strong></td>
+            <td>
+<p>
+<script type="math/tex">\alpha</script>.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-solve_point~2"></span> <h3>private  subroutine <a href='../proc/solve_point~2.html'>solve_point</a>(model, z0, zi, np, P, beta_w, kinds_x, kind_w, X, ns, S, dXdS, F, df, iters, max_iterations)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Solve a point in the multiphase envelope.</p><a href="../proc/solve_point~2.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-model~13"></span>
+              class(<a href='../type/armodel.html'>ArModel</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>model</strong></td>
+            <td>
+<p>Model to use for the calculations.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-z0~9"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>z0</strong>(:)</td>
+            <td>
+<p>Initial mixture composition.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-zi~9"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>zi</strong>(:)</td>
+            <td>
+<p>Second mixture composition.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-np~11"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>np</strong></td>
+            <td>
+<p>Number of main phases.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-p~12"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>P</strong></td>
+            <td>
+<p>Presure [bar].</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-beta_w~9"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>beta_w</strong></td>
+            <td>
 <p>Fraction of the reference (incipient) phase</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kinds_x~12"></span>
+              <span class="anchor" id="variable-kinds_x~7"></span>
               character(len=14),
             </td>
 <td>intent(in)</td>
@@ -1883,7 +1889,7 @@ the default value is 1000.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kind_w~13"></span>
+              <span class="anchor" id="variable-kind_w~7"></span>
               character(len=14),
             </td>
 <td>intent(in)</td>
@@ -1898,7 +1904,7 @@ the default value is 1000.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~50"></span>
+              <span class="anchor" id="variable-x~15"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -1913,7 +1919,7 @@ the default value is 1000.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns~35"></span>
+              <span class="anchor" id="variable-ns~16"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -1928,7 +1934,7 @@ the default value is 1000.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-s~30"></span>
+              <span class="anchor" id="variable-s~13"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1943,7 +1949,7 @@ the default value is 1000.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dxds~12"></span>
+              <span class="anchor" id="variable-dxds~10"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1953,12 +1959,12 @@ the default value is 1000.</p>
             <td>::</td>
             <td><strong>dXdS</strong>(size(X))</td>
             <td>
-
+<p>Tangent direction from the preceding continuation point.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-f~31"></span>
+              <span class="anchor" id="variable-f~9"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1973,7 +1979,7 @@ the default value is 1000.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-df~12"></span>
+              <span class="anchor" id="variable-df~6"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1988,7 +1994,7 @@ the default value is 1000.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iters~12"></span>
+              <span class="anchor" id="variable-iters~9"></span>
               integer,
             </td>
 <td>intent(out)</td>
@@ -2003,7 +2009,7 @@ the default value is 1000.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-max_iterations~10"></span>
+              <span class="anchor" id="variable-max_iterations~5"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -2043,7 +2049,7 @@ the default value is 1000.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-its~17"></span>
+              <span class="anchor" id="variable-its~6"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -2058,7 +2064,7 @@ the default value is 1000.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~79"></span>
+              <span class="anchor" id="variable-nc~13"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -2073,7 +2079,7 @@ the default value is 1000.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-np~15"></span>
+              <span class="anchor" id="variable-np~12"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -2088,7 +2094,7 @@ the default value is 1000.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~51"></span>
+              <span class="anchor" id="variable-x~16"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -2103,7 +2109,7 @@ the default value is 1000.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-df~16"></span>
+              <span class="anchor" id="variable-df~6"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -2118,7 +2124,7 @@ the default value is 1000.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dxds~13"></span>
+              <span class="anchor" id="variable-dxds~11"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -2133,7 +2139,7 @@ the default value is 1000.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns~36"></span>
+              <span class="anchor" id="variable-ns~17"></span>
               integer,
             </td>
 <td>intent(inout)</td>
@@ -2148,7 +2154,7 @@ the default value is 1000.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ds~13"></span>
+              <span class="anchor" id="variable-ds~10"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -2203,7 +2209,7 @@ the default value is 1000.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-unit~3"></span>
+              <span class="anchor" id="variable-unit~2"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -2239,14 +2245,14 @@ the default value is 1000.</p>
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

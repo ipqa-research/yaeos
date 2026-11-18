@@ -1,0 +1,438 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
+    <link rel="icon" href="../../../favicon.png">
+
+    <title>Stability analysis &ndash; yaeos</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../../../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../../../css/brands.min.css" rel="stylesheet">
+    <link href="../../../css/regular.min.css" rel="stylesheet">
+    <link href="../../../css/solid.min.css" rel="stylesheet">
+    <link href="../../../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../../../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../../../css/local.css" rel="stylesheet">
+    <link href="../../../css/pygments.css" rel="stylesheet">
+      <link href="../../../css/user.css" rel="stylesheet">
+    <script src="../../../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../../../index.html">yaeos </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="../../index.html">User documentation</a></li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../../../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>Stability analysis</h1>
+    <div class="container p-2 mb-4 bg-light border rounded-3">
+      <div class="row align-items-center justify-content-between">
+        <div class="col">
+          <ul class="list-inline" style="margin-bottom:0px; display:inline">
+          </ul>
+        </div>
+        <div class="col">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../../index.html'>User documentation</a></li>
+                <li class="breadcrumb-item"><a href='../index.html'>Getting started</a></li>
+                <li class="breadcrumb-item"><a href='index.html'>Phase Equilibrium</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Stability analysis</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+      <div class="col-3">
+        <div class="card card-body bg-light" id="sidebar-toc">
+          <ul class="nav flex-column align-items">
+            <li class="nav-item">
+              <a class="nav-link" href="../../index.html">User documentation</a>
+            </li>
+          </ul>
+          <hr>
+          <nav class="nav nav-pills flex-column">
+              <a class="nav-link" href="../index.html">Getting started</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../fundamentals.html">Thermodynamics essentials</a>
+              <a class="nav-link" href="../eos/index.html">Equations of State</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../eos/cubics/index.html">Cubics</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../eos/cubics/alpha.html">Alpha functions</a>
+              <a class="nav-link" href="../eos/cubics/mixing.html">Mixing Rules</a>
+
+                </nav>
+              <a class="nav-link" href="../eos/gerg2008.html">GERG2008</a>
+              <a class="nav-link" href="../eos/gerg2008_parameters.html">GERG2008 parameters</a>
+              <a class="nav-link" href="../eos/pc_saft.html">PC-SAFT</a>
+
+                </nav>
+              <a class="nav-link" href="../excessmodels/index.html">Gibbs Excess Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../excessmodels/nrtl.html">NRTL</a>
+              <a class="nav-link" href="../excessmodels/nrtl-hv.html">NRTL-HV</a>
+              <a class="nav-link" href="../excessmodels/uniquac.html">UNIQUAC</a>
+              <a class="nav-link" href="../excessmodels/unifac_models/index.html">UNIFAC Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
+              <a class="nav-link" href="../excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
+              <a class="nav-link" href="../excessmodels/unifac_models/psrk.html">UNIFAC-PSRK</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="index.html">Phase Equilibrium</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="flash.html">Flash calculations</a>
+              <a class="nav-link" href="saturation_points.html">Saturation Points</a>
+              <a class="nav-link" href="envelopes.html">Phase envelopes</a>
+              <a class="nav-link active disabled" href="stability.html">Stability analysis</a>
+              <a class="nav-link" href="critical.html">Critical points</a>
+              <a class="nav-link" href="multiphase.html">Multiphase flash</a>
+
+                </nav>
+              <a class="nav-link" href="../newmodels/index.html">Adding your own models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../newmodels/analtical.html">Analytical derivatives</a>
+              <a class="nav-link" href="../newmodels/autodiff.html">Automatic differentiation</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../../python-api/index.html">Python-API</a>
+              <a class="nav-link" href="../../developer/index.html">Becoming a yaeos developer</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../developer/architecture.html">Architecture and repository map</a>
+              <a class="nav-link" href="../../developer/workflow.html">Developer workflow</a>
+              <a class="nav-link" href="../../developer/fortran.html">Working in the Fortran core</a>
+              <a class="nav-link" href="../../developer/numerics.html">Working on numerical algorithms</a>
+              <a class="nav-link" href="../../developer/c_interface.html">C interface layer</a>
+              <a class="nav-link" href="../../developer/python_interface.html">Python interface layer</a>
+              <a class="nav-link" href="../../developer/testing.html">Tests and numerical validation</a>
+              <a class="nav-link" href="../../developer/walkthrough.html">An end-to-end change</a>
+
+                </nav>
+              <a class="nav-link" href="../../contributing/index.html">Contributing</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../contributing/styleguide.html">Style guide</a>
+
+                </nav>
+          </nav>
+        </div>
+      </div>
+
+    <div class="col-9" id='text'>
+      <div class="toc">
+<ul>
+<li><a href="#stability-analysis">Stability analysis</a></li>
+<li><a href="#tangent-plane-distance">Tangent-plane distance</a></li>
+<li><a href="#finding-the-minimum">Finding the minimum</a></li>
+<li><a href="#using-stability-analysis-to-initialize-a-flash">Using stability analysis to initialize a flash</a></li>
+<li><a href="#multiphase-calculations">Multiphase calculations</a></li>
+<li><a href="#practical-notes">Practical notes</a></li>
+<li><a href="#next-steps-and-reference">Next steps and reference</a></li>
+</ul>
+</div>
+<h1 id="stability-analysis">Stability analysis</h1>
+<p>A homogeneous mixture can satisfy the equation of state and still lower its
+Gibbs energy by separating into phases of different compositions. Stability
+analysis asks whether creating a small amount of a trial phase would help.
+It is the appropriate first question when you do not know whether to run a
+flash, and can supply a useful initial composition for that flash.</p>
+<p>This is not the same as selecting a <code>"stable"</code> volume root at a fixed
+composition. Nor does a negative result tell you the final amount of each
+phase: a <a href="flash.html">flash</a> solves that material balance.</p>
+<p><code>yaeos</code> provides two routines:</p>
+<ul>
+<li><a href="../../../proc/tm.html">tm</a>: the reduced tangent-plane distance of a trial phase with a given
+  composition.</li>
+<li><a href="../../../proc/min_tpd.html">min_tpd</a>: search from several starting compositions and return the lowest
+  trial-phase distance found.</li>
+</ul>
+<h1 id="tangent-plane-distance">Tangent-plane distance</h1>
+<p>The tangent plane describes the chemical potentials of the homogeneous feed.
+A trial phase below that plane can reduce the total Gibbs energy. Let <script type="math/tex">z_i</script>
+be normalized feed mole fractions, <script type="math/tex">P</script> pressure in bar, <script type="math/tex">T</script> temperature in
+K, and <script type="math/tex">W_i</script> positive trial-phase mole amounts. <code>tm</code> evaluates the modified,
+dimensionless distance:</p>
+<p>
+<script type="math/tex; mode=display">
+    tm(W) = 1 + \sum_i W_i \left(\ln W_i + \ln \hat{\phi}_i(W) - d_i - 1\right)
+</script>
+</p>
+<p>where</p>
+<p>
+<script type="math/tex; mode=display">
+    d_i = \ln z_i + \ln \hat{\phi}_i(z)
+</script>
+</p>
+<p>Here <script type="math/tex">\hat\phi_i</script> is a fugacity coefficient and <script type="math/tex">d_i</script> is the feed&rsquo;s
+reduced chemical-potential term. When <script type="math/tex">\sum_i W_i=1</script>, this reduces to
+the ordinary normalized tangent-plane distance
+<script type="math/tex">\sum_i W_i[\ln W_i+\ln\hat\phi_i(W)-d_i]</script>.</p>
+<p>A significantly negative value establishes instability of the homogeneous
+reference within the model. A nonnegative numerical search result means
+<strong>no destabilizing phase was found</strong>, not proof of a global minimum. The
+trivial trial <code>w=z</code> has zero distance even far from a phase boundary.</p>
+<p>Fragment for an initialized model (place declarations before executable code):</p>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">tm</span>
+
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">z</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">w</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">P</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">tpd</span>
+
+<span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.4_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.6_pr</span><span class="p">]</span>
+<span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.8_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.2_pr</span><span class="p">]</span>
+<span class="n">P</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="mf">0.0_pr</span>
+<span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span>
+
+<span class="n">tpd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tm</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">)</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">tpd</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0.0_pr</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">   print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;The feed is unstable&quot;</span>
+<span class="k">end if</span>
+</code></pre></div>
+
+<p><code>tm</code> accepts <code>GeModel</code> objects as well as <code>ArModel</code> objects. For a <code>GeModel</code> the
+activity coefficients replace the fugacity coefficients, and pressure has no
+effect on the model.</p>
+<p>The optional <code>d</code> argument allows the caller to provide precomputed values of
+<script type="math/tex">d_i</script>. This avoids recalculating the feed fugacity coefficients:</p>
+<p>Fragment for an <code>ArModel</code>; also declare <code>Vz</code>, <code>lnphi_z(size(z))</code>, and <code>d(size(z))</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">lnphi_pt</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="o">=</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="o">=</span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">=</span><span class="n">Vz</span><span class="p">,</span><span class="w"> </span><span class="n">root_type</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">lnPhi</span><span class="o">=</span><span class="n">lnphi_z</span><span class="p">)</span>
+<span class="n">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">log</span><span class="p">(</span><span class="n">z</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">lnphi_z</span>
+
+<span class="n">tpd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tm</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">d</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
+</code></pre></div>
+
+<h1 id="finding-the-minimum">Finding the minimum</h1>
+<p><a href="../../../proc/min_tpd.html">min_tpd</a> minimizes <script type="math/tex">tm</script> with respect to the trial-phase mole numbers:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">subroutine </span><span class="n">min_tpd</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">mintpd</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="n">all_minima</span><span class="p">)</span>
+<span class="w">   </span><span class="k">class</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">),</span><span class="w"> </span><span class="k">target</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">z</span><span class="p">(:)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">P</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">w</span><span class="p">(:)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">mintpd</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">all_minima</span><span class="p">(:,</span><span class="w"> </span><span class="p">:)</span>
+<span class="k">end subroutine </span><span class="n">min_tpd</span>
+</code></pre></div>
+
+<p>The routine returns:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Output</th>
+<th style="text-align: left;">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>mintpd</code></td>
+<td style="text-align: left;">Minimum tangent-plane distance</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>w</code></td>
+<td style="text-align: left;">Trial-phase composition at the minimum</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>all_minima</code></td>
+<td style="text-align: left;">Array of shape <code>(nc,nc+1)</code>: each row holds <code>nc</code> composition entries followed by its distance</td>
+</tr>
+</tbody>
+</table>
+<p><code>min_tpd</code> starts once per component with that component enriched in trial
+mole amounts, then uses successive substitution. It normalizes each resulting
+trial and reports the lowest normalized distance. <code>all_minima</code> exposes those
+trials, including possible duplicates; they are not guaranteed distinct or
+fully converged minima. There is no returned convergence flag. An <code>(nc,nc)</code>
+array is too small: the implementation writes the distance in column <code>nc+1</code>.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">program </span><span class="n">stability_example</span>
+<span class="w">   </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">CubicEoS</span><span class="p">,</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">,</span><span class="w"> </span><span class="n">min_tpd</span>
+<span class="w">   </span><span class="k">use</span><span class="p">,</span><span class="w"> </span><span class="k">intrinsic</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ieee_arithmetic</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">ieee_is_finite</span>
+<span class="w">   </span><span class="k">implicit none</span>
+
+<span class="k">   type</span><span class="p">(</span><span class="n">CubicEoS</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">tc</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">pc</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">w</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">z</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">P</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">mintpd</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">wtrial</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">minima</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span>
+
+<span class="w">   </span><span class="n">tc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">19</span><span class="mf">0.564_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="mf">5.12_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">pc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">4</span><span class="mf">5.99_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="mf">7.96_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.0115478_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.200164_pr</span><span class="p">]</span>
+
+<span class="w">   </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span><span class="w"> </span><span class="n">pc</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">)</span>
+
+<span class="w">   </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.4_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.6_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">P</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="mf">0.0_pr</span>
+<span class="w">   </span><span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span>
+
+<span class="w">   </span><span class="k">call </span><span class="n">min_tpd</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="o">=</span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="o">=</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">mintpd</span><span class="o">=</span><span class="n">mintpd</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="o">=</span><span class="n">wtrial</span><span class="p">,</span><span class="w"> </span><span class="n">all_minima</span><span class="o">=</span><span class="n">minima</span><span class="p">)</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(.</span><span class="nb">not</span><span class="p">.</span><span class="w"> </span><span class="n">ieee_is_finite</span><span class="p">(</span><span class="n">mintpd</span><span class="p">))</span><span class="w"> </span><span class="k">error stop</span><span class="w"> </span><span class="s2">&quot;Nonfinite stability result&quot;</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(.</span><span class="nb">not</span><span class="p">.</span><span class="w"> </span><span class="k">all</span><span class="p">(</span><span class="n">ieee_is_finite</span><span class="p">(</span><span class="n">wtrial</span><span class="p">)))</span><span class="w"> </span><span class="k">error stop</span><span class="w"> </span><span class="s2">&quot;Nonfinite trial phase&quot;</span>
+
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Minimum TPD: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">mintpd</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Most unstable trial phase: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">wtrial</span>
+
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">mintpd</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="o">-</span><span class="mf">1.0e-6_pr</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">      print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;The feed is unstable: a flash should be performed&quot;</span>
+<span class="w">   </span><span class="k">else</span>
+<span class="k">      print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;No significant negative distance found in this search&quot;</span>
+<span class="w">   </span><span class="k">end if</span>
+<span class="k">end program </span><span class="n">stability_example</span>
+</code></pre></div>
+
+<h1 id="using-stability-analysis-to-initialize-a-flash">Using stability analysis to initialize a flash</h1>
+<p>The normalized <code>w</code> is a trial phase, not necessarily a final equilibrium
+composition. The following fragment uses it as the initial <code>y</code> estimate relative
+to feed <code>z</code> as <code>x</code>. It requires strictly positive <code>z</code>; reverse the phase roles
+(<code>k0=z/w</code>) when necessary for the desired heavy/light assignment. Add imports
+for <code>flash</code> and <code>EquilibriumState</code>, declare <code>result</code> and integer <code>iters</code> first:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">call </span><span class="n">min_tpd</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="o">=</span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="o">=</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">mintpd</span><span class="o">=</span><span class="n">mintpd</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">)</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">mintpd</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="o">-</span><span class="mf">1.0e-6_pr</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">   result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flash</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">p_spec</span><span class="o">=</span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">k0</span><span class="o">=</span><span class="n">w</span><span class="o">/</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">iters</span><span class="o">=</span><span class="n">iters</span><span class="p">)</span>
+<span class="k">end if</span>
+</code></pre></div>
+
+<p>This is especially useful for:</p>
+<ul>
+<li>Liquid-liquid equilibria, where the Wilson correlation may be a poor initial
+  guess.</li>
+<li>Systems near a critical point, where the two phases have similar
+  compositions.</li>
+<li>Activity-coefficient models, where the initial K-factors are mandatory.</li>
+</ul>
+<h1 id="multiphase-calculations">Multiphase calculations</h1>
+<p><a href="../../../proc/pt_mp_flash.html">pt_mp_flash</a> uses stability analysis internally: it tests the feed, solves
+a two-phase flash, and then tests the resulting phase compositions, adding one
+more phase if the reference phase is still unstable. It does not iterate until
+global stability is proved, and its no-split path is not usable. The process,
+and its limitations, are described on the
+<a href="multiphase.html">multiphase flash</a> page.</p>
+<h1 id="practical-notes">Practical notes</h1>
+<ul>
+<li>A truly globally stable feed is not metastable. A feed <strong>reported</strong> as stable
+  by a finite search may be metastable if a lower-energy split was missed.
+  Inspect the trials and compare independent initializations/model data when
+  phase behavior is complicated.</li>
+<li>For an <code>ArModel</code>, the trial phase is evaluated with the stable volume root.
+  For liquid-liquid calculations, a separate check with the liquid root may be
+  necessary.</li>
+<li>The distance is dimensionless. The example&rsquo;s <code>1e-6</code> threshold is an
+  illustrative numerical screen, not an adjustable solver tolerance or a
+  universal physical threshold. The routine&rsquo;s own stopping tests can limit
+  resolution near zero.</li>
+<li>Near-zero values may mean a boundary, criticality, convergence to the
+  trivial feed trial, or numerical noise. Check trial/feed differences and
+  neighboring states before interpreting them.</li>
+<li>Feed and trial logarithms require positive fractions. Remove absent
+  components consistently from the model rather than passing exact zeros to
+  this implementation.</li>
+<li><code>min_tpd</code> is also available for <code>GeModel</code> objects. In that case the pressure
+  is only used for the calling convention and does not enter the activity
+  coefficient model.</li>
+</ul>
+<h1 id="next-steps-and-reference">Next steps and reference</h1>
+<p>Use an unstable trial to initialize a <a href="flash.html">flash</a>, then verify the split&rsquo;s
+fugacity and balance residuals. A negative stability test on either returned
+phase can signal a missing phase; see the limitations on the
+<a href="multiphase.html">multiphase page</a>.</p>
+<p>Michelsen and Mollerup, <em>Thermodynamic Models: Fundamental and Computational
+Aspects</em>, Tie-Line Publications (2004), is the formulation referenced by the
+implementation (<a href="http://dx.doi.org/10.1016/j.fluid.2005.11.032">review DOI</a>).</p>
+    </div>
+  </div>
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              yaeos
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2026-11-18 15:31 +0000             </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

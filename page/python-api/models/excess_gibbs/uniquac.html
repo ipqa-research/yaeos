@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>UNIQUAC &mdash; yaeos 4.5.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+  <title>UNIQUAC &mdash; yaeos 4.5.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=a284863f"></script>
+      <script src="../../_static/documentation_options.js?v=06fc0226"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -58,16 +58,19 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../init.html">Models</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../residual_helmholtz/init.html">Residual Helmholtz Models</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="init.html">Excess Gibbs Models</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="nrtl.html">NRTL</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unifacvle.html">UNIFACVLE</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unifac_dortmund.html">UNIFAC Dortmund</a></li>
-<li class="toctree-l3"><a class="reference internal" href="psrk_unifac.html">UNIFAC PSRK</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">UNIQUAC</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../init.html#choose-the-model-before-the-solver">Choose the model before the solver</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../residual_helmholtz/init.html">Residual Helmholtz Models</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="init.html">Excess Gibbs Models</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="nrtl.html">NRTL</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unifacvle.html">UNIFACVLE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unifac_dortmund.html">UNIFAC Dortmund</a></li>
+<li class="toctree-l4"><a class="reference internal" href="psrk_unifac.html">UNIFAC PSRK</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">UNIQUAC</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../groups.html">Groups module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../groups.html">Groups module</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -104,9 +107,29 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-yaeos.models.excess_gibbs.uniquac">
-<span id="uniquac"></span><h1>UNIQUAC<a class="headerlink" href="#module-yaeos.models.excess_gibbs.uniquac" title="Link to this heading"></a></h1>
-<p>UNIQUAC (UNIversal QUAsiChemical) Excess Gibbs free energy model.</p>
+  <section id="uniquac">
+<h1>UNIQUAC<a class="headerlink" href="#uniquac" title="Link to this heading"></a></h1>
+<p>UNIQUAC combines molecular size/shape effects with energetic interactions
+to describe liquid nonideality. Supply relative surface areas <code class="docutils literal notranslate"><span class="pre">qs</span></code> and
+relative volumes <code class="docutils literal notranslate"><span class="pre">rs</span></code> as dimensionless arrays in component order. Notice
+that the constructor takes <strong>q before r</strong>.</p>
+<p>Interaction matrices use the same component order on both axes and are
+directional, not generally symmetric. The implemented temperature dependence
+is</p>
+<div class="math notranslate nohighlight">
+\[\tau_{lk} = \exp\left(a_{lk} + \frac{b_{lk}}{T}
++ c_{lk}\ln T + d_{lk} T + e_{lk} T^2\right)\]</div>
+<p>so <code class="docutils literal notranslate"><span class="pre">b</span></code> carries the usual energy scale expressed in kelvin (it is
+<span class="math notranslate nohighlight">\(-\Delta U_{lk}/R\)</span>), and the other terms are optional corrections that
+are zero unless you supply them. Check the temperature dependence, sign, and
+energy-to-temperature conversion of any published parameter set before
+assigning it to <code class="docutils literal notranslate"><span class="pre">aij</span></code> through <code class="docutils literal notranslate"><span class="pre">eij</span></code>. Omitting an interaction matrix
+supplies zeros, not estimated interactions.</p>
+<p>Evaluate <code class="docutils literal notranslate"><span class="pre">ln_gamma(n,</span> <span class="pre">T)</span></code> with component moles and temperature in K; its
+exponential gives dimensionless activity coefficients. Continue with the
+<a class="reference internal" href="../../tutorial/gibbs_excess/models/uniquac.html"><span class="doc">UNIQUAC notebook</span></a> and
+<a class="reference internal" href="../../core.html"><span class="doc">Core Module</span></a> for liquid-liquid equilibrium and excess properties.</p>
+<p id="module-yaeos.models.excess_gibbs.uniquac">UNIQUAC (UNIversal QUAsiChemical) Excess Gibbs free energy model.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="yaeos.models.excess_gibbs.uniquac.UNIQUAC">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">UNIQUAC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aij</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bij</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cij</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dij</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eij</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/yaeos/models/excess_gibbs/uniquac.html#UNIQUAC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.models.excess_gibbs.uniquac.UNIQUAC" title="Link to this definition"></a></dt>
@@ -119,15 +142,15 @@ model’s information: <a class="reference external" href="https://ipqa-research
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>qs</strong> (<em>array_like</em>) – Molecule’s relative areas <span class="math notranslate nohighlight">\(Q_i\)</span></p></li>
 <li><p><strong>rs</strong> (<em>array_like</em>) – Molecule’s relative volumes <span class="math notranslate nohighlight">\(R_i\)</span></p></li>
-<li><p><strong>aij</strong> (<em>array_like</em>) – Interaction parameters matrix <span class="math notranslate nohighlight">\(a_{ij}\)</span> zero matrix if no
+<li><p><strong>aij</strong> (<em>array_like</em>) – Interaction parameters matrix <span class="math notranslate nohighlight">\(a_{ij}\)</span> zero matrix if not
 provided, by default None</p></li>
-<li><p><strong>bij</strong> (<em>array_like</em>) – Interaction parameters matrix <span class="math notranslate nohighlight">\(b_{ij}\)</span> zero matrix if no
+<li><p><strong>bij</strong> (<em>array_like</em>) – Interaction parameters matrix <span class="math notranslate nohighlight">\(b_{ij}\)</span> zero matrix if not
 provided, by default None</p></li>
-<li><p><strong>cij</strong> (<em>array_like</em>) – Interaction parameters matrix <span class="math notranslate nohighlight">\(c_{ij}\)</span> zero matrix if no
+<li><p><strong>cij</strong> (<em>array_like</em>) – Interaction parameters matrix <span class="math notranslate nohighlight">\(c_{ij}\)</span> zero matrix if not
 provided, by default None</p></li>
-<li><p><strong>dij</strong> (<em>array_like</em>) – Interaction parameters matrix <span class="math notranslate nohighlight">\(d_{ij}\)</span> zero matrix if no
+<li><p><strong>dij</strong> (<em>array_like</em>) – Interaction parameters matrix <span class="math notranslate nohighlight">\(d_{ij}\)</span> zero matrix if not
 provided, by default None</p></li>
-<li><p><strong>eij</strong> (<em>array_like</em>) – Interaction parameters matrix <span class="math notranslate nohighlight">\(e_{ij}\)</span> zero matrix if no
+<li><p><strong>eij</strong> (<em>array_like</em>) – Interaction parameters matrix <span class="math notranslate nohighlight">\(e_{ij}\)</span> zero matrix if not
 provided, by default None</p></li>
 </ul>
 </dd>
@@ -210,9 +233,9 @@ provided, by default None</p></li>
 </dd></dl>
 
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">UNIQUAC</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">UNIQUAC</span>
 
 <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
     <span class="p">[</span>

@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>abs_residual_helmholtz &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.2% of total for procedures.">27 statements</a>
+                 title=" 0.1% of total for procedures.">27 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -174,7 +175,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~46"></span>
+              <span class="anchor" id="variable-self~51"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -189,7 +190,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~69"></span>
+              <span class="anchor" id="variable-n~44"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -204,7 +205,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~18"></span>
+              <span class="anchor" id="variable-v~7"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -219,7 +220,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~29"></span>
+              <span class="anchor" id="variable-t~17"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -234,7 +235,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ar~4"></span>
+              <span class="anchor" id="variable-ar~8"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -244,12 +245,12 @@
             <td>::</td>
             <td><strong>Ar</strong></td>
             <td>
-                <p>Residual Helmoltz energy</p>
+                <p>Residual Helmholtz energy [bar L]</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arv~4"></span>
+              <span class="anchor" id="variable-arv~6"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -266,7 +267,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-art~2"></span>
+              <span class="anchor" id="variable-art~5"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -283,7 +284,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-artv~3"></span>
+              <span class="anchor" id="variable-artv~5"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -300,7 +301,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arv2~4"></span>
+              <span class="anchor" id="variable-arv2~6"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -317,7 +318,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-art2~2"></span>
+              <span class="anchor" id="variable-art2~5"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -334,7 +335,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arn~3"></span>
+              <span class="anchor" id="variable-arn~6"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -351,7 +352,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arvn~3"></span>
+              <span class="anchor" id="variable-arvn~6"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -368,7 +369,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-artn~3"></span>
+              <span class="anchor" id="variable-artn~6"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -385,7 +386,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arn2~3"></span>
+              <span class="anchor" id="variable-arn2~6"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -404,9 +405,11 @@
   </table>
 
     <h3>Description</h3>
-    <p>Residual Helmholtz model generic interface.</p>
+    <h1 id="abs_residual_helmholtz">abs_residual_helmholtz</h1>
+<h1 id="description">Description</h1>
+<p>Residual Helmholtz model generic interface.</p>
 <p>This interface represents how an Ar model should be implemented.
-By our standard, a Resiudal Helmholtz model takes as input:</p>
+By our standard, a Residual Helmholtz model takes as input:</p>
 <ul>
 <li>The mixture&rsquo;s number of moles vector.</li>
 <li>Volume, by default in liters.</li>
@@ -431,14 +434,14 @@ inside the procedure.</p>
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../../../favicon.png">
 
     <title>UNIQUAC &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../../../css/local.css" rel="stylesheet">
     <link href="../../../css/pygments.css" rel="stylesheet">
+      <link href="../../../css/user.css" rel="stylesheet">
     <script src="../../../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -92,7 +93,7 @@
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb justify-content-end mb-0">
                 <li class="breadcrumb-item"><a href='../../index.html'>User documentation</a></li>
-                <li class="breadcrumb-item"><a href='../index.html'>Using yaeos</a></li>
+                <li class="breadcrumb-item"><a href='../index.html'>Getting started</a></li>
                 <li class="breadcrumb-item"><a href='index.html'>Gibbs Excess Models</a></li>
               <li class="breadcrumb-item active" aria-current="page">UNIQUAC</li>
             </ol>
@@ -112,9 +113,10 @@
           </ul>
           <hr>
           <nav class="nav nav-pills flex-column">
-              <a class="nav-link" href="../index.html">Using yaeos</a>
+              <a class="nav-link" href="../index.html">Getting started</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../eos/index.html">Equations of State</a>
+                                <a class="nav-link" href="../fundamentals.html">Thermodynamics essentials</a>
+              <a class="nav-link" href="../eos/index.html">Equations of State</a>
                 <nav class="nav nav-pills flex-column">
                                 <a class="nav-link" href="../eos/cubics/index.html">Cubics</a>
                 <nav class="nav nav-pills flex-column">
@@ -122,27 +124,33 @@
               <a class="nav-link" href="../eos/cubics/mixing.html">Mixing Rules</a>
 
                 </nav>
+              <a class="nav-link" href="../eos/gerg2008.html">GERG2008</a>
+              <a class="nav-link" href="../eos/gerg2008_parameters.html">GERG2008 parameters</a>
+              <a class="nav-link" href="../eos/pc_saft.html">PC-SAFT</a>
 
                 </nav>
               <a class="nav-link" href="index.html">Gibbs Excess Models</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="nrtl-hv.html">NRTL-HV</a>
-              <a class="nav-link" href="nrtl.html">NRTL</a>
+                                <a class="nav-link" href="nrtl.html">NRTL</a>
+              <a class="nav-link" href="nrtl-hv.html">NRTL-HV</a>
+              <a class="nav-link active disabled" href="uniquac.html">UNIQUAC</a>
               <a class="nav-link" href="unifac_models/index.html">UNIFAC Models</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="unifac_models/dortmund.html">UNIFAC-Dortmund</a>
+                                <a class="nav-link" href="unifac_models/unifaclv.html">UNIFAC-LV</a>
+              <a class="nav-link" href="unifac_models/dortmund.html">UNIFAC-Dortmund</a>
               <a class="nav-link" href="unifac_models/psrk.html">UNIFAC-PSRK</a>
-              <a class="nav-link" href="unifac_models/unifaclv.html">UNIFAC-LV</a>
 
                 </nav>
-              <a class="nav-link active disabled" href="uniquac.html">UNIQUAC</a>
 
                 </nav>
               <a class="nav-link" href="../phase_equilibrium/index.html">Phase Equilibrium</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../phase_equilibrium/envelopes.html">Phase envelopes</a>
-              <a class="nav-link" href="../phase_equilibrium/flash.html">Flash calculations</a>
+                                <a class="nav-link" href="../phase_equilibrium/flash.html">Flash calculations</a>
               <a class="nav-link" href="../phase_equilibrium/saturation_points.html">Saturation Points</a>
+              <a class="nav-link" href="../phase_equilibrium/envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="../phase_equilibrium/stability.html">Stability analysis</a>
+              <a class="nav-link" href="../phase_equilibrium/critical.html">Critical points</a>
+              <a class="nav-link" href="../phase_equilibrium/multiphase.html">Multiphase flash</a>
 
                 </nav>
               <a class="nav-link" href="../newmodels/index.html">Adding your own models</a>
@@ -153,12 +161,24 @@
                 </nav>
 
                 </nav>
+              <a class="nav-link" href="../../python-api/index.html">Python-API</a>
+              <a class="nav-link" href="../../developer/index.html">Becoming a yaeos developer</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../developer/architecture.html">Architecture and repository map</a>
+              <a class="nav-link" href="../../developer/workflow.html">Developer workflow</a>
+              <a class="nav-link" href="../../developer/fortran.html">Working in the Fortran core</a>
+              <a class="nav-link" href="../../developer/numerics.html">Working on numerical algorithms</a>
+              <a class="nav-link" href="../../developer/c_interface.html">C interface layer</a>
+              <a class="nav-link" href="../../developer/python_interface.html">Python interface layer</a>
+              <a class="nav-link" href="../../developer/testing.html">Tests and numerical validation</a>
+              <a class="nav-link" href="../../developer/walkthrough.html">An end-to-end change</a>
+
+                </nav>
               <a class="nav-link" href="../../contributing/index.html">Contributing</a>
                 <nav class="nav nav-pills flex-column">
                                 <a class="nav-link" href="../../contributing/styleguide.html">Style guide</a>
 
                 </nav>
-              <a class="nav-link" href="../../python-api/index.html">Python-API</a>
           </nav>
         </div>
       </div>
@@ -167,17 +187,38 @@
       <div class="toc">
 <ul>
 <li><a href="#uniquac">UNIQUAC</a><ul>
+<li><a href="#physical-meaning-and-equation">Physical meaning and equation</a></li>
+<li><a href="#constructor-inputs-and-temperature-convention">Constructor inputs and temperature convention</a></li>
+<li><a href="#derivative-reference">Derivative reference</a></li>
 <li><a href="#temperature-derivatives">Temperature derivatives</a></li>
 <li><a href="#cross-temperature-compositional-derivative">Cross temperature-compositional derivative</a></li>
 <li><a href="#compositional-derivatives">Compositional derivatives</a></li>
-<li><a href="#examples">Examples</a></li>
+<li><a href="#examples">Examples</a><ul>
+<li><a href="#adding-temperature-dependent-parameters">Adding temperature-dependent parameters</a></li>
+</ul>
+</li>
+<li><a href="#checks-common-errors-and-limits">Checks, common errors, and limits</a></li>
 <li><a href="#references">References</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <h1 id="uniquac">UNIQUAC</h1>
-<p>UNIQUAC (<strong>uni</strong>versal <strong>qua</strong>si<strong>c</strong>hemical) Excess Gibbs free energy model.</p>
+<p>UNIQUAC (<strong>uni</strong>versal <strong>qua</strong>si<strong>c</strong>hemical) is an excess-Gibbs model for
+nonideal liquid mixtures. It separates two reasons why real mixing differs from
+ideal dilution: molecules occupy different amounts of space, and unlike
+neighbors interact differently from like neighbors. Use it when you have
+consistent molecular size/area parameters and fitted directional interaction
+parameters for your components. It does not infer these from chemical names.</p>
+<h2 id="physical-meaning-and-equation">Physical meaning and equation</h2>
+<p>The first two terms below are <strong>combinatorial</strong>: they account for molecular size
+and shape. The final <strong>residual</strong> term describes energetic contacts. Here
+&ldquo;residual&rdquo; is a part of the excess model, not an EOS departure from an ideal gas.
+The complete <script type="math/tex">G^E</script> is relative to an ideal liquid solution; it is not the total
+Gibbs energy of mixing. Differentiation gives <script type="math/tex">\ln\gamma_i</script>, where activity
+is <script type="math/tex">x_i\gamma_i</script>. Fugacity also needs a reference fugacity, as explained in
+the <a href="index.html">shared introduction</a>.</p>
+<p>With the usual coordination number <script type="math/tex">z=10</script>, UNIQUAC adds the three contributions:</p>
 <p>
 <script type="math/tex; mode=display"> 
 \frac{G^E}{RT} = \sum_k n_k \ln\frac{\phi_k}{x_k}
@@ -185,7 +226,8 @@
 - \sum_k q_k n_k \ln\left(\sum_l \theta_l \tau_{lk} \right)
 </script>
 </p>
-<p>With:</p>
+<p>The mole fraction <script type="math/tex">x_k</script>, volume fraction <script type="math/tex">\phi_k</script>, and surface fraction
+<script type="math/tex">\theta_k</script> use the same amounts but different weights:</p>
 <p>
 <script type="math/tex; mode=display">x_k = \frac{n_k}{\sum_l n_l}</script>
 </p>
@@ -204,9 +246,76 @@
 e_{lk}{T^2}
 </script>
 </p>
+<p>The dimensionless molecular parameters <script type="math/tex">r_k</script> and <script type="math/tex">q_k</script> represent relative
+volume and surface area, respectively. They are not measured volumes in L/mol
+or areas in square metres. The contact factor <script type="math/tex">\tau_{lk}</script> weights how the
+surface of component <code>l</code> interacts with component <code>k</code>; matrix direction matters.</p>
+<p>Two conventions are worth stating explicitly, because both are easy to get
+wrong when transcribing a published table.</p>
+<ul>
+<li><strong>Indices.</strong> This is the <em>molecular</em> form of UNIQUAC: the sums run over
+  components, not over functional groups. <code>r_k</code> and <code>q_k</code> belong to whole
+  molecules, and <code>tau(l,k)</code> couples component <code>l</code> to component <code>k</code>. The
+  interaction matrices are therefore <code>(nc,nc)</code>, with <code>nc</code> the number of
+  components.</li>
+<li><strong>Reference state.</strong> The residual term uses a pure-component reference, so
+  the diagonal coefficients are normally zero: <code>tau(k,k) = 1</code> for a pure
+  component, and the excess Gibbs energy of a pure component vanishes. Off-
+  diagonal coefficients are directional and generally not symmetric.</li>
+</ul>
+<h2 id="constructor-inputs-and-temperature-convention">Constructor inputs and temperature convention</h2>
+<p>Use <code>setup_uniquac(qs, rs, aij, bij, cij, dij, eij)</code>, preferably with keywords.
+The first array is <strong>area</strong> (<code>qs</code>) and the second is <strong>volume</strong> (<code>rs</code>). Both have
+length <code>nc</code>, should be positive, and must use the same component order as <code>n</code>.
+Each optional interaction array has shape <code>(nc,nc)</code>; omitted arrays are zero.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Coefficient in <code>ln(tau)</code></th>
+<th style="text-align: left;">Units with <code>T</code> in kelvin</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>aij</code></td>
+<td style="text-align: left;">Dimensionless</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>bij/T</code></td>
+<td style="text-align: left;"><code>bij</code> in K</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>cij*log(T)</code></td>
+<td style="text-align: left;">Dimensionless <code>cij</code>; logarithm uses the numerical kelvin value, equivalent to <code>ln(T/1 K)</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>dij*T</code></td>
+<td style="text-align: left;"><code>dij</code> in 1/K</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>eij*T**2</code></td>
+<td style="text-align: left;"><code>eij</code> in 1/K²</td>
+</tr>
+</tbody>
+</table>
+<p>These are coefficients of <strong><script type="math/tex">\ln\tau</script></strong>, not of <script type="math/tex">\Delta U</script>. In particular,
+for a constant <script type="math/tex">\Delta U_{ij}/R</script> tabulated in kelvin, pass
+<code>bij(i,j) = -Delta_U(i,j)/R</code>; the minus sign belongs in the conversion. Normally
+all diagonal coefficients are zero so <script type="math/tex">\tau_{ii}=1</script>. Off-diagonal coefficients
+are directional and generally not symmetric; <code>tau(l,k)</code> enters the sum for
+component <code>k</code>. Match your source&rsquo;s definition before deciding to transpose it.
+Do not reuse NRTL coefficients simply because some arguments have similar names.</p>
+<p>The runnable example is below the optional derivative reference. For a
+structure-based model without molecular binary fits, see
+<a href="unifac_models/index.html">UNIFAC</a>, which uses a related physical decomposition
+but different parameters.</p>
+<h2 id="derivative-reference">Derivative reference</h2>
+<p>The methods evaluate derivatives for you. The rewritten expressions below avoid
+ratios such as <code>0/0</code> in <script type="math/tex">\phi_k/x_k</script> when a component amount is zero, as long
+as the total amount and weighted sums remain positive.</p>
 <p>Some of the model&rsquo;s terms can be simplified to reduce the complexity of the
-derivatives. Also, allows the model to be evaluated in mole vector <code>n</code> where
-some of the composition are equal to zero.</p>
+derivatives. This also allows the model to be evaluated at mole vectors <code>n</code>
+where some of the amounts are zero.</p>
 <p>
 <script type="math/tex; mode=display">\frac{\phi_k}{x_k} = \frac{n_T r_k}{\sum_l r_l n_l}</script>
 </p>
@@ -250,7 +359,7 @@ n_l} \right) - \sum_k q_k n_k \ln\left(\sum_l \theta_l \tau_{lk} \right)
 </p>
 <p>
 <script type="math/tex; mode=display">
-\frac{\partial G^E}{\partial T^2} = -R\left[T \sum_k q_k n_k
+\frac{\partial^2 G^E}{\partial T^2} = -R\left[T \sum_k q_k n_k
 \left(\frac{(\sum_l \theta_l \frac{\partial^2 \tau_{lk}}{\partial T^2})}{\sum_l
 \theta_l \tau_{lk}}
 - \frac{(\sum_l \theta_l \frac{\partial \tau_{lk}}{\partial T})^2}{(\sum_l
@@ -343,7 +452,7 @@ T}}{\sum_l \theta_l \tau_{li}} + \sum_k q_k n_k \left(\frac{(\sum_l \frac{d
 <p>Differentiating each term of the first compositional derivative respect to
 <script type="math/tex">n_j</script> we get:</p>
 <p>
-<script type="math/tex">\frac{\partial \frac{G^E}{RT}}{\partial n_i \partial n_j} =</script>
+<script type="math/tex">\frac{\partial^2 \frac{G^E}{RT}}{\partial n_i \partial n_j} =</script>
 </p>
 <p>
 <script type="math/tex; mode=display">
@@ -364,7 +473,7 @@ T}}{\sum_l \theta_l \tau_{li}} + \sum_k q_k n_k \left(\frac{(\sum_l \frac{d
 </p>
 <p>
 <script type="math/tex; mode=display">
-\frac{z}{2} q_j \left( \frac{r_i \sum_l n_l q_l - q_i \sum_l n_l r_l}
++ \frac{z}{2} q_j \left( \frac{r_i \sum_l n_l q_l - q_i \sum_l n_l r_l}
 {(\sum_l n_l q_l)(\sum_l n_l r_l)}\right) + \frac{z}{2} \sum_k n_k q_k \left(
 \frac{q_i q_j}{(\sum_l n_l q_l)^2} - \frac{r_i r_j}{(\sum_l n_l r_l)^2} \right)
 </script>
@@ -387,7 +496,7 @@ T}}{\sum_l \theta_l \tau_{li}} + \sum_k q_k n_k \left(\frac{(\sum_l \frac{d
 </p>
 <h2 id="examples">Examples</h2>
 <p>Example from: Gmehling et al. (2012) [2]</p>
-<p>An example of having a mixture of Water-Ethanol-Bezene at 298.15 K with 
+<p>An example of a mixture of water–ethanol–benzene at 298.15 K with
 constant <script type="math/tex">\frac{\Delta U}{R}</script> [K]:</p>
 <table>
 <thead>
@@ -415,15 +524,26 @@ constant <script type="math/tex">\frac{\Delta U}{R}</script> [K]:</p>
 </tr>
 </tbody>
 </table>
-<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">setup_uniquac</span><span class="p">,</span><span class="w"> </span><span class="n">UNIQUAC</span>
+<p>Read that table as <script type="math/tex">\Delta U_{lk}/R</script>. Because the model expects the
+coefficients of <script type="math/tex">\ln\tau</script>, and <script type="math/tex">\ln\tau_{lk}=-\Delta U_{lk}/(RT)</script>, a constant
+energy difference becomes a coefficient of <script type="math/tex">1/T</script>, namely
+<code>bij(l,k) = -Delta_U(l,k)/R</code>. That is exactly the minus sign in the code
+below. It is the single most common transcription error: entering the table
+values directly produces a model with the wrong sign of interaction.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">program </span><span class="n">uniquac_activity</span>
+<span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">setup_uniquac</span><span class="p">,</span><span class="w"> </span><span class="n">UNIQUAC</span>
+<span class="k">implicit none</span>
 
 <span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">nc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span>
 
-<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">rs</span><span class="p">(</span><span class="n">nc</span><span class="p">),</span><span class="w"> </span><span class="n">qs</span><span class="p">(</span><span class="n">nc</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">rs</span><span class="p">(</span><span class="n">nc</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">qs</span><span class="p">(</span><span class="n">nc</span><span class="p">)</span>
 <span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">b</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span><span class="w"> </span><span class="n">nc</span><span class="p">)</span>
 <span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="n">nc</span><span class="p">)</span>
 
-<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ln_gammas</span><span class="p">(</span><span class="n">nc</span><span class="p">),</span><span class="w"> </span><span class="n">T</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ln_gammas</span><span class="p">(</span><span class="n">nc</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Ge</span>
 
 <span class="k">type</span><span class="p">(</span><span class="n">UNIQUAC</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
 
@@ -437,15 +557,77 @@ constant <script type="math/tex">\frac{\Delta U}{R}</script> [K]:</p>
 <span class="n">b</span><span class="p">(</span><span class="mi">2</span><span class="p">,:)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">31</span><span class="mf">8.06_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">9</span><span class="mf">1.532_pr</span><span class="p">]</span>
 <span class="n">b</span><span class="p">(</span><span class="mi">3</span><span class="p">,:)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="mi">132</span><span class="mf">5.1_pr</span><span class="p">,</span><span class="w"> </span><span class="o">-</span><span class="mi">30</span><span class="mf">2.57_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0_pr</span><span class="p">]</span>
 
-<span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">setup_uniquac</span><span class="p">(</span><span class="n">qs</span><span class="p">,</span><span class="w"> </span><span class="n">rs</span><span class="p">,</span><span class="w"> </span><span class="n">bij</span><span class="o">=</span><span class="n">b</span><span class="p">)</span>
+<span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">setup_uniquac</span><span class="p">(</span><span class="n">qs</span><span class="o">=</span><span class="n">qs</span><span class="p">,</span><span class="w"> </span><span class="n">rs</span><span class="o">=</span><span class="n">rs</span><span class="p">,</span><span class="w"> </span><span class="n">bij</span><span class="o">=</span><span class="n">b</span><span class="p">)</span>
 
 <span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">2.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">8.0_pr</span><span class="p">]</span>
 
 <span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">ln_activity_coefficient</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">ln_gammas</span><span class="p">)</span>
 
-<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="nb">exp</span><span class="p">(</span><span class="n">ln_gammas</span><span class="p">)</span><span class="w"> </span><span class="c">! [8.856, 0.860, 1.425]</span>
+<span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">excess_gibbs</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">Ge</span><span class="o">=</span><span class="n">Ge</span><span class="p">)</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;gamma: water, ethanol, benzene = &quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">exp</span><span class="p">(</span><span class="n">ln_gammas</span><span class="p">)</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;GE per mole [bar L/mol] = &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Ge</span><span class="o">/</span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Composition = &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="o">/</span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="k">end program </span><span class="n">uniquac_activity</span>
 </code></pre></div>
 
+<p>This is a complete program. Table rows and explicit <code>b(i,:)</code> assignments use the
+same water–ethanol–benzene order. Explicit rows avoid the column-major ordering
+trap of <code>reshape</code>. The amounts total 12 mol, so the composition is not the raw
+<code>n</code> vector. Coefficients are dimensionless; they may be above or below 1, and
+the output of <code>ln_activity_coefficient</code> must be exponentiated before interpreting
+it as <code>gamma</code>. No claim of a stable, single liquid follows from this property
+evaluation of a trial composition.</p>
+<p>The printed coefficients show how differently the components respond: water&rsquo;s
+coefficient is far above 1 while ethanol&rsquo;s is below 1, and benzene sits near
+the middle. Comparing these numbers with the values reported for the same
+system in the source reference is the most direct check that your parameter
+table and sign convention were transcribed correctly. A sign error in <code>bij</code>
+reverses this pattern, so it shows up immediately here.</p>
+<h3 id="adding-temperature-dependent-parameters">Adding temperature-dependent parameters</h3>
+<p>The five optional matrices allow a richer temperature dependence. Passing
+<code>dij</code> or <code>eij</code> adds a linear or quadratic term to <script type="math/tex">\ln\tau</script>, and <code>cij</code> adds a
+logarithmic term. For example, to give one pair a temperature-dependent
+interaction, add to the program above:</p>
+<div class="codehilite"><pre><span></span><code><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">dij</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span><span class="w"> </span><span class="n">nc</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">eij</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span><span class="w"> </span><span class="n">nc</span><span class="p">)</span>
+
+<span class="n">dij</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<span class="n">eij</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<span class="n">dij</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0e-3_pr</span>
+
+<span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">setup_uniquac</span><span class="p">(</span><span class="n">qs</span><span class="o">=</span><span class="n">qs</span><span class="p">,</span><span class="w"> </span><span class="n">rs</span><span class="o">=</span><span class="n">rs</span><span class="p">,</span><span class="w"> </span><span class="n">bij</span><span class="o">=</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">dij</span><span class="o">=</span><span class="n">dij</span><span class="p">,</span><span class="w"> </span><span class="n">eij</span><span class="o">=</span><span class="n">eij</span><span class="p">)</span>
+</code></pre></div>
+
+<p>The units follow the table in <a href="#constructor-inputs-and-temperature-convention">Constructor inputs</a>:
+<code>dij</code> in 1/K and <code>eij</code> in 1/K². <code>aij</code> adds a constant offset to <script type="math/tex">\ln\tau</script>.
+Use these terms only when your parameter source provides them; they are not
+defaults that improve accuracy by themselves.</p>
+<h2 id="checks-common-errors-and-limits">Checks, common errors, and limits</h2>
+<p>The most consequential mistake with UNIQUAC is a unit or sign error in the
+interaction parameters, because the model still returns a plausible-looking
+number. Use kelvin, never Celsius. If your energy table is in J/mol, convert
+it with a matching gas constant before setting <code>bij</code> in kelvin, and remember the
+minus sign described earlier. Do not swap <code>qs</code> and <code>rs</code>: changing molecular
+geometry is not equivalent to changing binary interaction energies, and the
+two errors are easy to make because the argument order is area first.</p>
+<p>A useful sanity check is the ideal limit. Unlike NRTL, setting the
+interaction matrices to zero does <strong>not</strong> generally make UNIQUAC ideal, because
+the combinatorial contribution survives: different-sized molecules still
+occupy different amounts of space. Identical <code>r</code> and <code>q</code> for every component
+together with zero interaction coefficients does give the ideal result, and is
+worth checking once when you first set up a model.</p>
+<p>Two further checks apply to every variant. Scaling all amounts must leave the
+activity coefficients unchanged. At a pure composition, the present
+component&rsquo;s coefficient approaches 1 for properly referenced parameters;
+coefficients of absent solutes need not approach 1, because a solute at
+infinite dilution has its own limiting value.</p>
+<p>Finally, a fitted temperature dependence is not a license for extrapolation.
+Very large exponents can overflow, and the model has no general electrolyte or
+near-critical treatment and supplies no density or vapor properties.</p>
+<p>Next, evaluate <a href="index.html">excess enthalpy and other shared properties</a> and
+compare with your parameter source. For phase splits, use
+<a href="../phase_equilibrium/index.html">stability and equilibrium methods</a>, not the
+sign of <code>Ge</code> or the size of a single coefficient alone.</p>
 <h2 id="references">References</h2>
 <ol>
 <li>Maurer, G., &amp; Prausnitz, J. M. (1978). On the derivation and extension of
@@ -467,14 +649,14 @@ constant <script type="math/tex">\frac{\Delta U}{R}</script> [K]:</p>
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

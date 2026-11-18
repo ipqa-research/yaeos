@@ -6,8 +6,8 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Generic Cubic Equation of State &mdash; yaeos 4.5.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+  <title>Generic Cubic Equation of State &mdash; yaeos 4.5.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
       <link rel="stylesheet" type="text/css" href="../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
@@ -15,7 +15,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=a284863f"></script>
+      <script src="../../../_static/documentation_options.js?v=06fc0226"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -52,28 +52,21 @@
               <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../tutorial_tree.html">Tutorial</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../../getting_started.html">Getting Started</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../equations_of_state.html">Equations of State (EoS)</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../bulk_properties.html">Bulk Properties</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="cubic_eos.html">Cubic Equations of State</a><ul class="current">
-<li class="toctree-l4 current"><a class="current reference internal" href="#">Generic Cubic Equation of State</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Peng-Robinson-(1976)">Peng-Robinson (1976)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Peng-Robinson-(1978)">Peng-Robinson (1978)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Soave-Redlich-Kwong">Soave-Redlich-Kwong</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#RKPR">RKPR</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Predictive-Soave-Redlich-Kwong-(PSRK)">Predictive Soave-Redlich-Kwong (PSRK)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cubic_alphas.html">Alpha functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cubic_mixing_rules.html">Mixing Rules</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../tutorial_tree.html#suggested-route">Suggested route</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../equations_of_state.html">Equations of State (EoS)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../bulk_properties.html">Bulk Properties</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="cubic_eos.html">Cubic Equations of State</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../multifluid_eos/multifluid_eos.html">Multifluid Equations of State</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../saft_eos/saft_eos.html">SAFT Equations of State</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../phase_equilibrium/phase_equilibrium.html">Phase Equilibrium Calculations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../gpec/gpec.html">GPEC (Global Phase Equilibrium Calculations)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../fitting/fitting.html">Fitting Equations of State</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../multifluid_eos/multifluid_eos.html">Multifluid Equations of State</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../saft_eos/saft_eos.html">SAFT Equations of State</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../phase_equilibrium/phase_equilibrium.html">Phase Equilibrium Calculations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../gpec/gpec.html">GPEC (Global Phase Equilibrium Calculations)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../fitting/fitting.html">Fitting Equations of State</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../gibbs_excess/gibbs_excess.html">Excess Gibbs models</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../gibbs_excess/gibbs_excess.html">Excess Gibbs models</a></li>
 </ul>
 </li>
 </ul>
@@ -145,7 +138,7 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">yaeos</span>
 
 
 <span class="n">Tcs</span> <span class="o">=</span> <span class="p">[</span><span class="mf">190.564</span><span class="p">,</span> <span class="mf">617.7</span><span class="p">]</span>      <span class="c1"># Critical temperatures [K]</span>
@@ -210,7 +203,7 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">yaeos</span>
 
 
 <span class="n">Tcs</span> <span class="o">=</span> <span class="p">[</span><span class="mf">190.564</span><span class="p">,</span> <span class="mf">617.7</span><span class="p">]</span>      <span class="c1"># Critical temperatures [K]</span>
@@ -271,7 +264,7 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">yaeos</span>
 
 
 <span class="n">Tcs</span> <span class="o">=</span> <span class="p">[</span><span class="mf">190.564</span><span class="p">,</span> <span class="mf">617.7</span><span class="p">]</span>      <span class="c1"># Critical temperatures [K]</span>
@@ -315,7 +308,8 @@
 </section>
 <section id="RKPR">
 <h1>RKPR<a class="headerlink" href="#RKPR" title="Link to this heading"></a></h1>
-<p>The RKPR EoS extends the classical formulation of Cubic Equations of State by freeing the parameter <span class="math notranslate nohighlight">\(\delta_1\)</span> and setting <span class="math notranslate nohighlight">\(\delta_2 = \frac{1+\delta_1}{1-\delta_1}\)</span>. This extra degree provides extra ways of implementing the equation in comparison of other Cubic EoS (like Peng-Robinson and Soave-Redlich-Kwong) which are limited to definition of their critical constants.</p>
+<p>The RKPR EoS extends the classical formulation of Cubic Equations of State by freeing the parameter <span class="math notranslate nohighlight">\(\delta_1\)</span> and setting <span class="math notranslate nohighlight">\(\delta_2 =
+\frac{1+\delta_1}{1-\delta_1}\)</span>. This extra degree provides extra ways of implementing the equation in comparison of other Cubic EoS (like Peng-Robinson and Soave-Redlich-Kwong) which are limited to definition of their critical constants.</p>
 <p>Besides that extra parameter, the RKPR includes another <span class="math notranslate nohighlight">\(\alpha\)</span> function:</p>
 <div class="math notranslate nohighlight">
 \[\alpha(T_r) = \left(\frac{3}{2+T_r}\right)^k\]</div>
@@ -330,9 +324,9 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">yaeos</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="n">Tcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">190.564</span><span class="p">,</span> <span class="mf">617.7</span><span class="p">])</span>      <span class="c1"># Critical temperatures [K]</span>
 <span class="n">Pcs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">45.99</span><span class="p">,</span> <span class="mf">21.1</span><span class="p">])</span>         <span class="c1"># Critical pressures [bar]</span>
@@ -406,7 +400,7 @@ i}}\right)^3\right]^2\]</div>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">yaeos</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">yaeos</span>
 
 
 <span class="c1"># methane - n-decane</span>
@@ -470,7 +464,7 @@ i}}\right)^3\right]^2\]</div>
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ugropy</span> <span class="k">as</span> <span class="nn">ug</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">ugropy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ug</span>
 
 <span class="c1"># Obtain the functional groups of the PSRK model</span>
 <span class="n">methane_groups</span> <span class="o">=</span> <span class="n">ug</span><span class="o">.</span><span class="n">psrk</span><span class="o">.</span><span class="n">get_groups</span><span class="p">(</span><span class="s2">&quot;methane&quot;</span><span class="p">)</span>

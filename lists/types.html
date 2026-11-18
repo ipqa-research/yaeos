@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>All Types &ndash; yaeos
@@ -36,6 +36,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -92,87 +93,79 @@
                  <td><a href='../type/alphafunction.html'>AlphaFunction</a></td>
                  <td><a href='../module/yaeos__models_ar_genericcubic.html'>yaeos__models_ar_genericcubic</a></td>
                  <td>None</td>
-                 <td><p>Abstract derived type that describe the required
-procedure for an alpha function.</p></td>
+                 <td><p>Abstract contract for temperature corrections to cubic attraction.</p><a href="../type/alphafunction.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/alphamathiascopeman.html'>AlphaMathiasCopeman</a></td>
                  <td><a href='../module/yaeos__models_ar_cubic_alphas.html'>yaeos__models_ar_cubic_alphas</a></td>
                  <td><a href='../type/alphafunction.html'>AlphaFunction</a></td>
-                 <td><p>Mathias Copeman <script type="math/tex">\alpha</script> function.</p></td>
+                 <td><p>Mathias-Copeman alpha function with component-specific coefficients.</p><a href="../type/alphamathiascopeman.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/alpharkpr.html'>AlphaRKPR</a></td>
                  <td><a href='../module/yaeos__models_ar_cubic_alphas.html'>yaeos__models_ar_cubic_alphas</a></td>
                  <td><a href='../type/alphafunction.html'>AlphaFunction</a></td>
-                 <td><p>RKPR <script type="math/tex">\alpha</script> function
-<script type="math/tex; mode=display">
-\alpha(T_r) = \left(\frac{3}{2 + T_r}\right)^k
-</script>
-</p></td>
+                 <td><p>RKPR alpha function for cubic EOS models.</p><a href="../type/alpharkpr.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/alphasoave.html'>AlphaSoave</a></td>
                  <td><a href='../module/yaeos__models_ar_cubic_alphas.html'>yaeos__models_ar_cubic_alphas</a></td>
                  <td><a href='../type/alphafunction.html'>AlphaFunction</a></td>
-                 <td><p>Soave <script type="math/tex">\alpha</script> function.
-<script type="math/tex"> \alpha(T_r) = (1 + k (1 - \sqrt{Tr}))^2 </script>
-</p></td>
+                 <td><p>Soave temperature correction for cubic EOS models.</p><a href="../type/alphasoave.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/armodel.html'>ArModel</a></td>
                  <td><a href='../module/yaeos__models_ar.html'>yaeos__models_ar</a></td>
                  <td><a href='../type/basemodel.html'>BaseModel</a></td>
-                 <td><p>Abstract residual Helmholtz model.</p><a href="../type/armodel.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+                 <td><p>Abstract interface for residual Helmholtz energy models.</p><a href="../type/armodel.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/armodeladiff.html'>ArModelAdiff</a></td>
                  <td><a href='../module/yaeos__adiff_hyperdual_ar_api.html'>yaeos__adiff_hyperdual_ar_api</a></td>
                  <td><a href='../type/armodel.html'>ArModel</a></td>
-                 <td></td>
+                 <td><p>Base type for residual Helmholtz models defined with hyperdual arithmetic.</p><a href="../type/armodeladiff.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/armodeltapenade.html'>ArModelTapenade</a></td>
                  <td><a href='../module/yaeos__tapenade_ar_api.html'>yaeos__tapenade_ar_api</a></td>
                  <td><a href='../type/armodel.html'>ArModel</a></td>
-                 <td></td>
+                 <td><p>Base class for EOS models with Tapenade-generated derivatives.</p><a href="../type/armodeltapenade.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/basemodel.html'>BaseModel</a></td>
                  <td><a href='../module/yaeos__models_base.html'>yaeos__models_base</a></td>
                  <td>None</td>
-                 <td><p>Base model type.</p><a href="../type/basemodel.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+                 <td><p>Common parent type for models that operate on a component set.</p><a href="../type/basemodel.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/binarythreephase.html'>BinaryThreePhase</a></td>
                  <td><a href='../module/yaeos__equilibria_binaries.html'>yaeos__equilibria_binaries</a></td>
                  <td>None</td>
-                 <td><p>Structure to hold the results of a binary LLV line calculation.</p><a href="../type/binarythreephase.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+                 <td><p>Tabulated state points along a binary liquid-liquid-vapor line.</p><a href="../type/binarythreephase.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/cmr.html'>CMR</a></td>
                  <td><a href='../module/yaeos__models_ar_cubic_cubic_mixing.html'>yaeos__models_ar_cubic_cubic_mixing</a></td>
                  <td><a href='../type/cubicmixrule.html'>CubicMixRule</a></td>
-                 <td><p>Cubic Mixing Rule (CMR) derived type. Classic Van der Waals mixing
-rules.</p><a href="../type/cmr.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+                 <td><p>Cubic mixing rule with ternary component interactions.</p><a href="../type/cmr.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/cmrtd.html'>CMRTD</a></td>
                  <td><a href='../module/yaeos__models_ar_cubic_cubic_mixing.html'>yaeos__models_ar_cubic_cubic_mixing</a></td>
                  <td><a href='../type/cmr.html'>CMR</a></td>
-                 <td></td>
+                 <td><p>Cubic mixing rule with temperature-dependent ternary interactions.</p><a href="../type/cmrtd.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/continuationvariable.html'>ContinuationVariable</a></td>
                  <td><a href='../module/yaeos__math_continuation.html'>yaeos__math_continuation</a></td>
                  <td>None</td>
-                 <td></td>
+                 <td><p>State of the unknown vector and specification at one curve point.</p><a href="../type/continuationvariable.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/cpspecs.html'>CPSpecs</a></td>
                  <td><a href='../module/yaeos__equilibria_critical.html'>yaeos__equilibria_critical</a></td>
                  <td>None</td>
-                 <td><p>Enumerator to handle the possible specifications for a critical point.</p></td>
+                 <td><p>Internal selector values for critical-point specifications.</p><a href="../type/cpspecs.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/criticalline.html'>CriticalLine</a></td>
@@ -183,52 +176,46 @@ The critical line is calculated using the <code>critical_line</code> function. I
 uses the continuation method.</p><a href="../type/criticalline.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
-                 <td><a href='../type/criticalpoint~3.html'>CriticalPoint</a></td>
-                 <td><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_pt.html'>yaeos__equilibria_boundaries_phase_envelopes_pt</a></td>
+                 <td><a href='../type/criticalpoint.html'>CriticalPoint</a></td>
+                 <td><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_px.html'>yaeos__equilibria_boundaries_phase_envelopes_px</a></td>
                  <td>None</td>
-                 <td><p>Critical point</p></td>
+                 <td><p>Critical point on a pressure-composition envelope.</p><a href="../type/criticalpoint.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/criticalpoint~2.html'>CriticalPoint</a></td>
                  <td><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_tx.html'>yaeos__equilibria_boundaries_phase_envelopes_tx</a></td>
                  <td>None</td>
-                 <td><p>Critical point</p></td>
+                 <td><p>Critical point marker for a TX envelope.</p><a href="../type/criticalpoint~2.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
-                 <td><a href='../type/criticalpoint.html'>CriticalPoint</a></td>
-                 <td><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_px.html'>yaeos__equilibria_boundaries_phase_envelopes_px</a></td>
+                 <td><a href='../type/criticalpoint~3.html'>CriticalPoint</a></td>
+                 <td><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_pt.html'>yaeos__equilibria_boundaries_phase_envelopes_pt</a></td>
                  <td>None</td>
-                 <td><p>Critical point</p></td>
+                 <td><p>Critical point located on a pressure-temperature envelope.</p><a href="../type/criticalpoint~3.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/cubiceos.html'>CubicEoS</a></td>
                  <td><a href='../module/yaeos__models_ar_genericcubic.html'>yaeos__models_ar_genericcubic</a></td>
                  <td><a href='../type/armodel.html'>ArModel</a></td>
-                 <td><p>Generic Cubic Equation of State as defined by Michelsen and Mollerup
-with a <script type="math/tex">\delta_1</script> parameter that is not constant,
-and a <script type="math/tex">\delta_2</script> parameter that depends on it. In the case of a
-two parameter EoS like PengRobinson the <script type="math/tex">\delta_1</script> is the same for
-all components so it can be considered as a constant instead of a
-variable. The expression of the Equation is:</p><a href="../type/cubiceos.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+                 <td><p>Generic cubic equation of state with configurable alpha and mixing rules.</p><a href="../type/cubiceos.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/cubicmixrule.html'>CubicMixRule</a></td>
                  <td><a href='../module/yaeos__models_ar_genericcubic.html'>yaeos__models_ar_genericcubic</a></td>
                  <td>None</td>
-                 <td><p>Abstract derived type that describe the required
-procedure for a mixing rule on a Cubic EoS</p></td>
+                 <td><p>Abstract contract for cubic-EOS mixture parameter calculations.</p><a href="../type/cubicmixrule.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/equilibriumstate.html'>EquilibriumState</a></td>
                  <td><a href='../module/yaeos__equilibria_equilibrium_state.html'>yaeos__equilibria_equilibrium_state</a></td>
                  <td>None</td>
-                 <td><p>Description of a two-phase equilibria state.</p><a href="../type/equilibriumstate.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+                 <td><p>Result of a two-phase flash or saturation-point calculation.</p><a href="../type/equilibriumstate.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/fixturefluid.html'>FixtureFluid</a></td>
                  <td><a href='../module/yaeos__extra_fluids.html'>yaeos__extra_fluids</a></td>
                  <td>None</td>
-                 <td></td>
+                 <td><p>A predefined model and composition set for a documented fluid system.</p><a href="../type/fixturefluid.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/gegcmodelparameters.html'>GeGCModelParameters</a></td>
@@ -241,49 +228,51 @@ procedure for a mixing rule on a Cubic EoS</p></td>
                  <td><a href='../type/gemodel.html'>GeModel</a></td>
                  <td><a href='../module/yaeos__models_ge.html'>yaeos__models_ge</a></td>
                  <td><a href='../type/basemodel.html'>BaseModel</a></td>
-                 <td><p>Excess Gibbs energy model.</p></td>
+                 <td><p>Abstract base for models defined by an excess Gibbs energy.</p><a href="../type/gemodel.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/gemodeladiff.html'>GeModelAdiff</a></td>
                  <td><a href='../module/yaeos__adiff_hyperdual_ge_api.html'>yaeos__adiff_hyperdual_ge_api</a></td>
                  <td><a href='../type/gemodel.html'>GeModel</a></td>
-                 <td></td>
+                 <td><p>Base type for hyperdual excess-Gibbs models.</p><a href="../type/gemodeladiff.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/gemodeltapenade.html'>GeModelTapenade</a></td>
                  <td><a href='../module/yaeos__tapenade_ge_api.html'>yaeos__tapenade_ge_api</a></td>
                  <td><a href='../type/gemodel.html'>GeModel</a></td>
-                 <td></td>
+                 <td><p>Base class for excess-Gibbs models with Tapenade-generated derivatives.</p><a href="../type/gemodeltapenade.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/generalizedisozline.html'>GeneralizedIsoZLine</a></td>
                  <td><a href='../module/yaeos__equilibria_boundaries_generalized_isopleths.html'>yaeos__equilibria_boundaries_generalized_isopleths</a></td>
                  <td>None</td>
-                 <td></td>
+                 <td><p>Stored points and stability status for a multiphase isopleth.</p><a href="../type/generalizedisozline.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/gerg2008.html'>Gerg2008</a></td>
                  <td><a href='../module/yaeos__models_ar_gerg2008.html'>yaeos__models_ar_gerg2008</a></td>
                  <td><a href='../type/armodeladiff.html'>ArModelAdiff</a></td>
-                 <td></td>
+                 <td><p>GERG2008 multifluid equation of state. Holds the pure-fluid and
+binary parameters of the selected components and an SRK model used
+to initialize the volume solver.</p><a href="../type/gerg2008.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/gerg2008binary.html'>Gerg2008Binary</a></td>
                  <td><a href='../module/yaeos__models_ar_multifluid_parameters_gerg2008.html'>yaeos__models_ar_multifluid_parameters_gerg2008</a></td>
                  <td>None</td>
-                 <td></td>
+                 <td><p>Reducing and departure parameters for one GERG2008 component pair.</p><a href="../type/gerg2008binary.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/gerg2008pure.html'>Gerg2008Pure</a></td>
                  <td><a href='../module/yaeos__models_ar_multifluid_parameters_gerg2008.html'>yaeos__models_ar_multifluid_parameters_gerg2008</a></td>
                  <td>None</td>
-                 <td></td>
+                 <td><p>Coefficient arrays for one GERG2008 pure-fluid Helmholtz function.</p><a href="../type/gerg2008pure.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/gerg2008selector.html'>GERG2008Selector</a></td>
                  <td><a href='../module/yaeos__models_ar_gerg2008.html'>yaeos__models_ar_gerg2008</a></td>
                  <td>None</td>
-                 <td></td>
+                 <td><p>Internal integer codes for the 21 components supported by GERG2008.</p><a href="../type/gerg2008selector.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/groups.html'>Groups</a></td>
@@ -295,88 +284,85 @@ procedure for a mixing rule on a Cubic EoS</p></td>
                  <td><a href='../type/hv.html'>HV</a></td>
                  <td><a href='../module/yaeos__models_cubic_mixing_rules_huron_vidal.html'>yaeos__models_cubic_mixing_rules_huron_vidal</a></td>
                  <td><a href='../type/cubicmixrule.html'>CubicMixRule</a></td>
-                 <td></td>
+                 <td><p>Huron-Vidal cubic mixing rule.</p><a href="../type/hv.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/hv_nrtl.html'>HV_NRTL</a></td>
                  <td><a href='../module/yaeos__models_cubic_mixing_rules_huron_vidal.html'>yaeos__models_cubic_mixing_rules_huron_vidal</a></td>
                  <td><a href='../type/cubicmixrule.html'>CubicMixRule</a></td>
-                 <td><p>Huron-Vidal mixing rule including the NRTL model modified by Huron
-and Vidal.</p><a href="../type/hv_nrtl.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+                 <td><p>Huron-Vidal cubic mixing rule with an NRTL-HV excess-Gibbs model.</p><a href="../type/hv_nrtl.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/hyperdual.html'>hyperdual</a></td>
                  <td><a href='../module/hyperdual_mod.html'>hyperdual_mod</a></td>
                  <td>None</td>
-                 <td></td>
+                 <td><p>Scalar number carrying a primal value and two derivative seeds.</p><a href="../type/hyperdual.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/kindenum.html'>KindEnum</a></td>
                  <td><a href='../module/yaeos__constants.html'>yaeos__constants</a></td>
                  <td>None</td>
-                 <td><p>Enumeration of the possible phases that can be used
-in the envelope calculations</p></td>
+                 <td><p>Named root selectors used by EOS volume calculations.</p><a href="../type/kindenum.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/llvvarenum.html'>LLVVarEnum</a></td>
                  <td><a href='../module/yaeos__equilibria_binaries.html'>yaeos__equilibria_binaries</a></td>
                  <td>None</td>
-                 <td></td>
+                 <td><p>Indices of the binary LLV unknown vector used by the solver.</p><a href="../type/llvvarenum.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/mhv.html'>MHV</a></td>
                  <td><a href='../module/yaeos__models_cubic_mixing_rules_huron_vidal.html'>yaeos__models_cubic_mixing_rules_huron_vidal</a></td>
                  <td><a href='../type/cubicmixrule.html'>CubicMixRule</a></td>
-                 <td><p>Mixing rule at zero-pressure which allows for the inclusion of an
-excess-gibbs model.</p><a href="../type/mhv.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+                 <td><p>Michelsen&rsquo;s modified Huron-Vidal cubic mixing rule.</p><a href="../type/mhv.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/mpequilibriumstate.html'>MPEquilibriumState</a></td>
                  <td><a href='../module/yaeos__equilibria_equilibrium_state.html'>yaeos__equilibria_equilibrium_state</a></td>
                  <td>None</td>
-                 <td><p>Type to hold the state of a multiphase equilibrium calculation.</p><a href="../type/mpequilibriumstate.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
-               </tr>
-			   <tr>
-                 <td><a href='../type/mppoint.html'>MPPoint</a></td>
-                 <td><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_mp.html'>yaeos__equilibria_boundaries_phase_envelopes_mp</a></td>
-                 <td>None</td>
-                 <td><p>Multiphase equilibria point.</p></td>
-               </tr>
-			   <tr>
-                 <td><a href='../type/mppoint~3.html'>MPPoint</a></td>
-                 <td><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_mp_tx.html'>yaeos__equilibria_boundaries_phase_envelopes_mp_tx</a></td>
-                 <td>None</td>
-                 <td><p>Multiphase equilibria point.</p></td>
+                 <td><p>Result of a multiphase equilibrium calculation.</p><a href="../type/mpequilibriumstate.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/mppoint~2.html'>MPPoint</a></td>
                  <td><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_mp_px.html'>yaeos__equilibria_boundaries_phase_envelopes_mp_px</a></td>
                  <td>None</td>
-                 <td><p>Multiphase equilibria point.</p></td>
+                 <td><p>One converged multiphase state on a pressure-composition envelope.</p><a href="../type/mppoint~2.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../type/mppoint~3.html'>MPPoint</a></td>
+                 <td><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_mp_tx.html'>yaeos__equilibria_boundaries_phase_envelopes_mp_tx</a></td>
+                 <td>None</td>
+                 <td><p>One converged multiphase state on an envelope.</p><a href="../type/mppoint~3.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+               </tr>
+			   <tr>
+                 <td><a href='../type/mppoint.html'>MPPoint</a></td>
+                 <td><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_mp.html'>yaeos__equilibria_boundaries_phase_envelopes_mp</a></td>
+                 <td>None</td>
+                 <td><p>One converged multiphase state on a PT envelope.</p><a href="../type/mppoint.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/nearcritical.html'>NearCritical</a></td>
                  <td><a href='../module/yaeos__equilibria_boundaries_auxiliar.html'>yaeos__equilibria_boundaries_auxiliar</a></td>
                  <td>None</td>
-                 <td><p>Near critical point information.</p></td>
+                 <td><p>State used to track a critical region during continuation.</p><a href="../type/nearcritical.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/newton_result.html'>newton_result</a></td>
                  <td><a href='../module/yaeos__newton_solver.html'>yaeos__newton_solver</a></td>
                  <td>None</td>
-                 <td></td>
+                 <td><p>Diagnostics produced by one nonlinear solve.</p><a href="../type/newton_result.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/newton_settings.html'>newton_settings</a></td>
                  <td><a href='../module/yaeos__newton_solver.html'>yaeos__newton_solver</a></td>
                  <td>None</td>
-                 <td></td>
+                 <td><p>Solver controls for convergence, damping, backtracking, and diagnostics.</p><a href="../type/newton_settings.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/nrtl.html'>NRTL</a></td>
                  <td><a href='../module/yaeos__models_ge_nrtl.html'>yaeos__models_ge_NRTL</a></td>
                  <td><a href='../type/gemodel.html'>GeModel</a></td>
-                 <td><p>Non-Random-Two-Liquid model</p><a href="../type/nrtl.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+                 <td><p>Non-Random-Two-Liquid excess-Gibbs model.</p><a href="../type/nrtl.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/nrtlhv.html'>NRTLHV</a></td>
@@ -388,7 +374,7 @@ excess-gibbs model.</p><a href="../type/mhv.html" class="pull-right"><emph>Read 
                  <td><a href='../type/pcsaft.html'>PCSAFT</a></td>
                  <td><a href='../module/yaeos__models_ar_saft_pcsaft.html'>YAEOS__MODELS_AR_SAFT_PCSAFT</a></td>
                  <td><a href='../type/armodeltapenade.html'>ArModelTapenade</a></td>
-                 <td></td>
+                 <td><p>Non-associating perturbed-chain statistical associating fluid model.</p><a href="../type/pcsaft.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/point.html'>Point</a></td>
@@ -407,25 +393,28 @@ excess-gibbs model.</p><a href="../type/mhv.html" class="pull-right"><emph>Read 
                  <td><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_pt.html'>yaeos__equilibria_boundaries_phase_envelopes_pt</a></td>
                  <td>None</td>
                  <td><p>Two-phase isopleth.
-Phase boundary line of a fluid at constant composition.</p></td>
+Phase boundary line of a fluid at constant composition.</p><a href="../type/ptenvel2.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/ptenvel3.html'>PTEnvel3</a></td>
                  <td><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_pt3.html'>yaeos__equilibria_boundaries_phase_envelopes_pt3</a></td>
                  <td>None</td>
-                 <td></td>
+                 <td><p>Three-phase isopleth at constant global composition. Each array
+stores one value per envelope point.</p><a href="../type/ptenvel3.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/ptenvelmp.html'>PTEnvelMP</a></td>
                  <td><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_mp.html'>yaeos__equilibria_boundaries_phase_envelopes_mp</a></td>
                  <td>None</td>
-                 <td><p>Multiphase PT envelope.</p></td>
+                 <td><p>Multiphase pressure-temperature envelope at fixed overall composition.</p><a href="../type/ptenvelmp.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/purepsat.html'>PurePsat</a></td>
                  <td><a href='../module/yaeos__equilibria_boundaries_pure_saturation.html'>yaeos__equilibria_boundaries_pure_saturation</a></td>
                  <td>None</td>
-                 <td></td>
+                 <td><p>Saturation line of a pure component. Contains the saturation
+temperatures, pressures, and phase volumes, together with linear
+interpolators for <code>get_T</code> and <code>get_P</code>.</p><a href="../type/purepsat.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/pxenvel2.html'>PXEnvel2</a></td>
@@ -433,50 +422,50 @@ Phase boundary line of a fluid at constant composition.</p></td>
                  <td>None</td>
                  <td><p>Two-phase PX envelope.
 Phase boundary line of a fluid at constant temperature
-with variation in composition.</p></td>
+with variation in composition.</p><a href="../type/pxenvel2.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/pxenvel3.html'>PXEnvel3</a></td>
                  <td><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_px3.html'>yaeos__equilibria_boundaries_phase_envelopes_px3</a></td>
                  <td>None</td>
-                 <td></td>
+                 <td><p>Three-phase envelope at constant temperature. Each array stores one
+value per envelope point.</p><a href="../type/pxenvel3.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/pxenvelmp.html'>PXEnvelMP</a></td>
                  <td><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_mp_px.html'>yaeos__equilibria_boundaries_phase_envelopes_mp_px</a></td>
                  <td>None</td>
-                 <td><p>Multiphase PX envelope.</p></td>
+                 <td><p>Multiphase pressure-composition envelope at fixed temperature.</p><a href="../type/pxenvelmp.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/qmr.html'>QMR</a></td>
                  <td><a href='../module/yaeos__models_ar_cubic_quadratic_mixing.html'>yaeos__models_ar_cubic_quadratic_mixing</a></td>
                  <td><a href='../type/cubicmixrule.html'>CubicMixRule</a></td>
-                 <td><p>Quadratic Mixing Rule (QMR) derived type. Classic Van der Waals mixing
-rules.</p><a href="../type/qmr.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+                 <td><p>Classic quadratic (van der Waals one-fluid) mixing rule.</p><a href="../type/qmr.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/qmrtd.html'>QMRTD</a></td>
                  <td><a href='../module/yaeos__models_ar_cubic_quadratic_mixing.html'>yaeos__models_ar_cubic_quadratic_mixing</a></td>
                  <td><a href='../type/qmr.html'>QMR</a></td>
-                 <td></td>
+                 <td><p>Quadratic mixing rule with temperature-dependent binary interactions.</p><a href="../type/qmrtd.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/quadraticpsi.html'>QuadraticPsi</a></td>
                  <td><a href='../module/yaeos__models_ge_gc_td.html'>yaeos__models_ge_gc_td</a></td>
                  <td><a href='../type/psifunction.html'>PsiFunction</a></td>
-                 <td></td>
+                 <td><p>Quadratic-in-temperature interaction function used by group models.</p><a href="../type/quadraticpsi.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/sddlc.html'>sDDLC</a></td>
                  <td><a href='../module/yaeos__models_ar_cubic_mixing_sddlc.html'>yaeos__models_ar_cubic_mixing_sddlc</a></td>
                  <td><a href='../type/qmrtd.html'>QMRTD</a></td>
-                 <td><p>Segmented Density-Dependent Local-Composition Mixing Rule.</p></td>
+                 <td><p>Segmented density-dependent local-composition mixing rule.</p><a href="../type/sddlc.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/substances.html'>Substances</a></td>
                  <td><a href='../module/yaeos__substance.html'>yaeos__substance</a></td>
                  <td>None</td>
-                 <td><p>Set of pure components</p></td>
+                 <td><p>Pure-component identifiers and critical properties.</p><a href="../type/substances.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/txenvel2.html'>TXEnvel2</a></td>
@@ -484,13 +473,13 @@ rules.</p><a href="../type/qmr.html" class="pull-right"><emph>Read more&hellip;<
                  <td>None</td>
                  <td><p>Two-phase TX envelope.
 Phase boundary line of a fluid at constant temperature
-with variation in composition.</p></td>
+with variation in composition.</p><a href="../type/txenvel2.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/txenvelmp.html'>TXEnvelMP</a></td>
                  <td><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_mp_tx.html'>yaeos__equilibria_boundaries_phase_envelopes_mp_tx</a></td>
                  <td>None</td>
-                 <td><p>Multiphase T<script type="math/tex">alpha</script> envelope.</p></td>
+                 <td><p>Multiphase temperature-composition envelope at fixed pressure.</p><a href="../type/txenvelmp.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/unifac.html'>UNIFAC</a></td>
@@ -502,11 +491,8 @@ with variation in composition.</p></td>
                  <td><a href='../type/unifacpsi.html'>UNIFACPsi</a></td>
                  <td><a href='../module/yaeos__models_ge_gc_td.html'>yaeos__models_ge_gc_td</a></td>
                  <td><a href='../type/psifunction.html'>PsiFunction</a></td>
-                 <td><p>
-<script type="math/tex; mode=display">
-   \psi_{ij}(T) = \exp(-\frac{A_{ij}}{T})
-</script>
-</p><a href="../type/unifacpsi.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
+                 <td><p>Implements the original UNIFAC pair factor <script type="math/tex">\psi_{ij}(T)</script> and its
+first and second temperature derivatives from the <code>Aij</code> matrix.</p><a href="../type/unifacpsi.html" class="pull-right"><emph>Read more&hellip;</emph></a></td>
                </tr>
 			   <tr>
                  <td><a href='../type/uniquac.html'>UNIQUAC</a></td>
@@ -519,20 +505,20 @@ model.</p><a href="../type/uniquac.html" class="pull-right"><emph>Read more&hell
              <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: type~~graph~~TypeGraph Pages: 1 -->
-<svg id="typegraphTypeGraph" width="855pt" height="1203pt"
- viewBox="0.00 0.00 855.00 1202.52" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="type~~graph~~TypeGraph" class="graph" transform="scale(0.71 0.71) rotate(0) translate(4 1695)">
+<svg id="typegraphTypeGraph" width="855pt" height="1214pt"
+ viewBox="0.00 0.00 855.00 1214.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="type~~graph~~TypeGraph" class="graph" transform="scale(0.712429 0.712429) rotate(0) translate(4 1700.27)">
 <title>type~~graph~~TypeGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-1695 1204,-1695 1204,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-1700.27 1196.12,-1700.27 1196.12,4 -4,4"/>
 <!-- type~alphafunction -->
 <g id="type~~graph~~TypeGraph_node1" class="node">
 <title>type~alphafunction</title>
 <g id="a_type~~graph~~TypeGraph_node1"><a xlink:href="../type/alphafunction.html" xlink:title="AlphaFunction">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="365,-817 277,-817 277,-793 365,-793 365,-817"/>
-<text text-anchor="middle" x="321" y="-802.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">AlphaFunction</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="361.81,-817.27 274.54,-817.27 274.54,-793 361.81,-793 361.81,-817.27"/>
+<text xml:space="preserve" text-anchor="middle" x="318.17" y="-801.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">AlphaFunction</text>
 </a>
 </g>
 </g>
@@ -540,52 +526,52 @@ model.</p><a href="../type/uniquac.html" class="pull-right"><emph>Read more&hell
 <g id="type~~graph~~TypeGraph_node2" class="node">
 <title>type~alphamathiascopeman</title>
 <g id="a_type~~graph~~TypeGraph_node2"><a xlink:href="../type/alphamathiascopeman.html" xlink:title="AlphaMathiasCopeman">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="653,-914 517,-914 517,-890 653,-890 653,-914"/>
-<text text-anchor="middle" x="585" y="-899.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">AlphaMathiasCopeman</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="648.58,-914.27 513.31,-914.27 513.31,-890 648.58,-890 648.58,-914.27"/>
+<text xml:space="preserve" text-anchor="middle" x="580.94" y="-898.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">AlphaMathiasCopeman</text>
 </a>
 </g>
 </g>
 <!-- type~alphamathiascopeman&#45;&gt;type~alphafunction -->
 <g id="type~~graph~~TypeGraph_edge1" class="edge">
 <title>type~alphamathiascopeman&#45;&gt;type~alphafunction</title>
-<path fill="none" stroke="#000000" d="M545.56,-889.95C510.66,-879.13 461.72,-864.3 442,-860"/>
+<path fill="none" stroke="#000000" d="M540,-889.56C505.38,-878.79 457.88,-864.37 438.56,-860.13"/>
 </g>
 <!-- type~alpharkpr -->
 <g id="type~~graph~~TypeGraph_node3" class="node">
 <title>type~alpharkpr</title>
 <g id="a_type~~graph~~TypeGraph_node3"><a xlink:href="../type/alpharkpr.html" xlink:title="AlphaRKPR">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="620.5,-872 549.5,-872 549.5,-848 620.5,-848 620.5,-872"/>
-<text text-anchor="middle" x="585" y="-857.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">AlphaRKPR</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="615.95,-872.27 545.93,-872.27 545.93,-848 615.95,-848 615.95,-872.27"/>
+<text xml:space="preserve" text-anchor="middle" x="580.94" y="-856.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">AlphaRKPR</text>
 </a>
 </g>
 </g>
 <!-- type~alpharkpr&#45;&gt;type~alphafunction -->
 <g id="type~~graph~~TypeGraph_edge2" class="edge">
 <title>type~alpharkpr&#45;&gt;type~alphafunction</title>
-<path fill="none" stroke="#000000" d="M549.42,-864.08C520.39,-866.54 478.01,-867.86 442,-860"/>
+<path fill="none" stroke="#000000" d="M545.51,-864.22C516.6,-866.67 474.4,-867.99 438.56,-860.13"/>
 </g>
 <!-- type~alphasoave -->
 <g id="type~~graph~~TypeGraph_node4" class="node">
 <title>type~alphasoave</title>
 <g id="a_type~~graph~~TypeGraph_node4"><a xlink:href="../type/alphasoave.html" xlink:title="AlphaSoave">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="623,-830 547,-830 547,-806 623,-806 623,-830"/>
-<text text-anchor="middle" x="585" y="-815.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">AlphaSoave</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="618.58,-830.27 543.31,-830.27 543.31,-806 618.58,-806 618.58,-830.27"/>
+<text xml:space="preserve" text-anchor="middle" x="580.94" y="-814.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">AlphaSoave</text>
 </a>
 </g>
 </g>
 <!-- type~alphasoave&#45;&gt;type~alphafunction -->
 <g id="type~~graph~~TypeGraph_edge3" class="edge">
 <title>type~alphasoave&#45;&gt;type~alphafunction</title>
-<path fill="none" stroke="#000000" d="M546.87,-829.46C505.69,-842.09 444.65,-860.58 442,-860"/>
-<path fill="none" stroke="#000000" d="M440,-860C407.39,-852.88 373.15,-835.68 350,-822.39"/>
-<polygon fill="#000000" stroke="#000000" points="351.49,-819.21 341.09,-817.16 347.94,-825.24 351.49,-819.21"/>
+<path fill="none" stroke="#000000" d="M542.97,-829.59C501.97,-842.22 441.2,-860.71 438.56,-860.13"/>
+<path fill="none" stroke="#000000" d="M436.56,-860.13C404.72,-853.15 371.34,-836.47 348.35,-823.3"/>
+<polygon fill="#000000" stroke="#000000" points="350.26,-820.36 339.87,-818.3 346.71,-826.39 350.26,-820.36"/>
 </g>
 <!-- type~armodel -->
 <g id="type~~graph~~TypeGraph_node5" class="node">
 <title>type~armodel</title>
 <g id="a_type~~graph~~TypeGraph_node5"><a xlink:href="../type/armodel.html" xlink:title="ArModel">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="349.5,-662 292.5,-662 292.5,-638 349.5,-638 349.5,-662"/>
-<text text-anchor="middle" x="321" y="-647.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="346.06,-662.27 290.29,-662.27 290.29,-638 346.06,-638 346.06,-662.27"/>
+<text xml:space="preserve" text-anchor="middle" x="318.17" y="-646.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel</text>
 </a>
 </g>
 </g>
@@ -593,69 +579,69 @@ model.</p><a href="../type/uniquac.html" class="pull-right"><emph>Read more&hell
 <g id="type~~graph~~TypeGraph_node8" class="node">
 <title>type~basemodel</title>
 <g id="a_type~~graph~~TypeGraph_node8"><a xlink:href="../type/basemodel.html" xlink:title="BaseModel">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="240,-662 169,-662 169,-638 240,-638 240,-662"/>
-<text text-anchor="middle" x="204.5" y="-647.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">BaseModel</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="237.54,-662.27 167.52,-662.27 167.52,-638 237.54,-638 237.54,-662.27"/>
+<text xml:space="preserve" text-anchor="middle" x="202.53" y="-646.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">BaseModel</text>
 </a>
 </g>
 </g>
 <!-- type~armodel&#45;&gt;type~basemodel -->
 <g id="type~~graph~~TypeGraph_edge4" class="edge">
 <title>type~armodel&#45;&gt;type~basemodel</title>
-<path fill="none" stroke="#000000" d="M292.31,-643.75C281.15,-642.74 268.66,-643.68 259,-650"/>
+<path fill="none" stroke="#000000" d="M289.96,-643.94C278.78,-642.9 266.23,-643.79 256.54,-650.13"/>
 </g>
 <!-- type~armodeladiff -->
 <g id="type~~graph~~TypeGraph_node6" class="node">
 <title>type~armodeladiff</title>
 <g id="a_type~~graph~~TypeGraph_node6"><a xlink:href="../type/armodeladiff.html" xlink:title="ArModelAdiff">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="625.5,-704 544.5,-704 544.5,-680 625.5,-680 625.5,-704"/>
-<text text-anchor="middle" x="585" y="-689.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModelAdiff</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="620.83,-704.27 541.06,-704.27 541.06,-680 620.83,-680 620.83,-704.27"/>
+<text xml:space="preserve" text-anchor="middle" x="580.94" y="-688.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModelAdiff</text>
 </a>
 </g>
 </g>
 <!-- type~armodeladiff&#45;&gt;type~armodel -->
 <g id="type~~graph~~TypeGraph_edge5" class="edge">
 <title>type~armodeladiff&#45;&gt;type~armodel</title>
-<path fill="none" stroke="#000000" d="M544.29,-702.59C515.52,-708.59 475.88,-713.39 442,-705"/>
-<path fill="none" stroke="#000000" d="M440,-705C407.8,-697.03 373.73,-680.12 350.52,-667.14"/>
-<polygon fill="#000000" stroke="#000000" points="352,-663.95 341.58,-662.03 348.53,-670.03 352,-663.95"/>
+<path fill="none" stroke="#000000" d="M540.71,-702.66C512.03,-708.69 472.41,-713.55 438.56,-705.13"/>
+<path fill="none" stroke="#000000" d="M436.56,-705.13C405.31,-697.36 372.32,-681.1 349.3,-668.26"/>
+<polygon fill="#000000" stroke="#000000" points="351.2,-665.32 340.78,-663.4 347.73,-671.39 351.2,-665.32"/>
 </g>
 <!-- type~armodeltapenade -->
 <g id="type~~graph~~TypeGraph_node7" class="node">
 <title>type~armodeltapenade</title>
 <g id="a_type~~graph~~TypeGraph_node7"><a xlink:href="../type/armodeltapenade.html" xlink:title="ArModelTapenade">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="639.5,-788 530.5,-788 530.5,-764 639.5,-764 639.5,-788"/>
-<text text-anchor="middle" x="585" y="-773.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModelTapenade</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="634.7,-788.27 527.18,-788.27 527.18,-764 634.7,-764 634.7,-788.27"/>
+<text xml:space="preserve" text-anchor="middle" x="580.94" y="-772.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModelTapenade</text>
 </a>
 </g>
 </g>
 <!-- type~armodeltapenade&#45;&gt;type~armodel -->
 <g id="type~~graph~~TypeGraph_edge6" class="edge">
 <title>type~armodeltapenade&#45;&gt;type~armodel</title>
-<path fill="none" stroke="#000000" d="M530.13,-784.1C486.94,-787.74 426.57,-786.11 383,-758 352.44,-738.28 335.66,-697.58 327.77,-672.16"/>
-<polygon fill="#000000" stroke="#000000" points="331.06,-670.94 324.92,-662.31 324.34,-672.89 331.06,-670.94"/>
+<path fill="none" stroke="#000000" d="M526.72,-784.17C483.68,-787.83 423.3,-786.29 379.81,-758.13 349.73,-738.67 333.12,-698.79 325.19,-673.32"/>
+<polygon fill="#000000" stroke="#000000" points="328.61,-672.53 322.47,-663.9 321.88,-674.47 328.61,-672.53"/>
 </g>
 <!-- type~substances -->
 <g id="type~~graph~~TypeGraph_node61" class="node">
 <title>type~substances</title>
 <g id="a_type~~graph~~TypeGraph_node61"><a xlink:href="../type/substances.html" xlink:title="Substances">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="73,-662 0,-662 0,-638 73,-638 73,-662"/>
-<text text-anchor="middle" x="36.5" y="-647.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Substances</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="72.27,-662.27 0,-662.27 0,-638 72.27,-638 72.27,-662.27"/>
+<text xml:space="preserve" text-anchor="middle" x="36.13" y="-646.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Substances</text>
 </a>
 </g>
 </g>
 <!-- type~basemodel&#45;&gt;type~substances -->
 <g id="type~~graph~~TypeGraph_edge7" class="edge">
 <title>type~basemodel&#45;&gt;type~substances</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M168.7,-650C143.94,-650 110.42,-650 83.47,-650"/>
-<polygon fill="#000000" stroke="#000000" points="83.11,-646.5 73.11,-650 83.11,-653.5 83.11,-646.5"/>
-<text text-anchor="middle" x="121" y="-652.4" font-family="Helvetica,sans-Serif" font-size="9.50">components</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M167.07,-650.13C142.95,-650.13 110.46,-650.13 83.99,-650.13"/>
+<polygon fill="#000000" stroke="#000000" points="84.2,-646.64 74.2,-650.14 84.2,-653.64 84.2,-646.64"/>
+<text xml:space="preserve" text-anchor="middle" x="119.89" y="-652.36" font-family="Helvetica,sans-Serif" font-size="9.50">components</text>
 </g>
 <!-- type~binarythreephase -->
 <g id="type~~graph~~TypeGraph_node9" class="node">
 <title>type~binarythreephase</title>
 <g id="a_type~~graph~~TypeGraph_node9"><a xlink:href="../type/binarythreephase.html" xlink:title="BinaryThreePhase">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="1186,-295 1077,-295 1077,-271 1186,-271 1186,-295"/>
-<text text-anchor="middle" x="1131.5" y="-280.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">BinaryThreePhase</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="1178.24,-488.27 1069.97,-488.27 1069.97,-464 1178.24,-464 1178.24,-488.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1124.11" y="-472.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">BinaryThreePhase</text>
 </a>
 </g>
 </g>
@@ -663,8 +649,8 @@ model.</p><a href="../type/uniquac.html" class="pull-right"><emph>Read more&hell
 <g id="type~~graph~~TypeGraph_node10" class="node">
 <title>type~cmr</title>
 <g id="a_type~~graph~~TypeGraph_node10"><a xlink:href="../type/cmr.html" xlink:title="CMR">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="612,-162 558,-162 558,-138 612,-138 612,-162"/>
-<text text-anchor="middle" x="585" y="-147.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CMR</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="607.94,-162.27 553.94,-162.27 553.94,-138 607.94,-138 607.94,-162.27"/>
+<text xml:space="preserve" text-anchor="middle" x="580.94" y="-146.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CMR</text>
 </a>
 </g>
 </g>
@@ -672,39 +658,39 @@ model.</p><a href="../type/uniquac.html" class="pull-right"><emph>Read more&hell
 <g id="type~~graph~~TypeGraph_node19" class="node">
 <title>type~cubicmixrule</title>
 <g id="a_type~~graph~~TypeGraph_node19"><a xlink:href="../type/cubicmixrule.html" xlink:title="CubicMixRule">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="363,-310 279,-310 279,-286 363,-286 363,-310"/>
-<text text-anchor="middle" x="321" y="-295.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CubicMixRule</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="359.56,-310.27 276.79,-310.27 276.79,-286 359.56,-286 359.56,-310.27"/>
+<text xml:space="preserve" text-anchor="middle" x="318.17" y="-294.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CubicMixRule</text>
 </a>
 </g>
 </g>
 <!-- type~cmr&#45;&gt;type~cubicmixrule -->
 <g id="type~~graph~~TypeGraph_edge8" class="edge">
 <title>type~cmr&#45;&gt;type~cubicmixrule</title>
-<path fill="none" stroke="#000000" d="M557.95,-155.7C545.15,-159.11 529.78,-164.13 517,-171 479.16,-191.35 481.76,-215.7 442,-232"/>
-<path fill="none" stroke="#000000" d="M440,-232C415.29,-242.13 406.57,-238.45 383,-251 368.57,-258.68 354,-269.75 342.72,-279.22"/>
-<polygon fill="#000000" stroke="#000000" points="340.43,-276.58 335.14,-285.76 345,-281.88 340.43,-276.58"/>
+<path fill="none" stroke="#000000" d="M553.71,-155.94C541.05,-159.34 525.91,-164.34 513.31,-171.13 475.57,-191.5 478.21,-215.81 438.56,-232.13"/>
+<path fill="none" stroke="#000000" d="M436.56,-232.13C411.97,-242.26 403.26,-238.59 379.81,-251.13 365.86,-258.6 351.81,-269.25 340.75,-278.53"/>
+<polygon fill="#000000" stroke="#000000" points="338.65,-275.72 333.37,-284.91 343.22,-281.01 338.65,-275.72"/>
 </g>
 <!-- type~cmrtd -->
 <g id="type~~graph~~TypeGraph_node11" class="node">
 <title>type~cmrtd</title>
 <g id="a_type~~graph~~TypeGraph_node11"><a xlink:href="../type/cmrtd.html" xlink:title="CMRTD">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="814,-162 760,-162 760,-138 814,-138 814,-162"/>
-<text text-anchor="middle" x="787" y="-147.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CMRTD</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="808.09,-162.27 754.09,-162.27 754.09,-138 808.09,-138 808.09,-162.27"/>
+<text xml:space="preserve" text-anchor="middle" x="781.09" y="-146.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CMRTD</text>
 </a>
 </g>
 </g>
 <!-- type~cmrtd&#45;&gt;type~cmr -->
 <g id="type~~graph~~TypeGraph_edge9" class="edge">
 <title>type~cmrtd&#45;&gt;type~cmr</title>
-<path fill="none" stroke="#000000" d="M759.85,-150C724.67,-150 661.92,-150 622.21,-150"/>
-<polygon fill="#000000" stroke="#000000" points="622.15,-146.5 612.15,-150 622.15,-153.5 622.15,-146.5"/>
+<path fill="none" stroke="#000000" d="M753.78,-150.13C719.43,-150.13 659.09,-150.13 619.82,-150.13"/>
+<polygon fill="#000000" stroke="#000000" points="619.88,-146.64 609.88,-150.14 619.88,-153.64 619.88,-146.64"/>
 </g>
 <!-- type~continuationvariable -->
 <g id="type~~graph~~TypeGraph_node12" class="node">
 <title>type~continuationvariable</title>
 <g id="a_type~~graph~~TypeGraph_node12"><a xlink:href="../type/continuationvariable.html" xlink:title="ContinuationVariable">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="1193.5,-578 1069.5,-578 1069.5,-554 1193.5,-554 1193.5,-578"/>
-<text text-anchor="middle" x="1131.5" y="-563.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ContinuationVariable</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="1185.74,-651.27 1062.47,-651.27 1062.47,-627 1185.74,-627 1185.74,-651.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1124.11" y="-635.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ContinuationVariable</text>
 </a>
 </g>
 </g>
@@ -712,8 +698,8 @@ model.</p><a href="../type/uniquac.html" class="pull-right"><emph>Read more&hell
 <g id="type~~graph~~TypeGraph_node13" class="node">
 <title>type~cpspecs</title>
 <g id="a_type~~graph~~TypeGraph_node13"><a xlink:href="../type/cpspecs.html" xlink:title="CPSpecs">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="1160.5,-740 1102.5,-740 1102.5,-716 1160.5,-716 1160.5,-740"/>
-<text text-anchor="middle" x="1131.5" y="-725.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CPSpecs</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="1152.37,-753.27 1095.85,-753.27 1095.85,-729 1152.37,-729 1152.37,-753.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1124.11" y="-737.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CPSpecs</text>
 </a>
 </g>
 </g>
@@ -721,8 +707,8 @@ model.</p><a href="../type/uniquac.html" class="pull-right"><emph>Read more&hell
 <g id="type~~graph~~TypeGraph_node14" class="node">
 <title>type~criticalline</title>
 <g id="a_type~~graph~~TypeGraph_node14"><a xlink:href="../type/criticalline.html" xlink:title="CriticalLine">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="1168,-896 1095,-896 1095,-872 1168,-872 1168,-896"/>
-<text text-anchor="middle" x="1131.5" y="-881.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CriticalLine</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="1159.87,-898.27 1088.35,-898.27 1088.35,-874 1159.87,-874 1159.87,-898.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1124.11" y="-882.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CriticalLine</text>
 </a>
 </g>
 </g>
@@ -730,24 +716,24 @@ model.</p><a href="../type/uniquac.html" class="pull-right"><emph>Read more&hell
 <g id="type~~graph~~TypeGraph_node20" class="node">
 <title>type~equilibriumstate</title>
 <g id="a_type~~graph~~TypeGraph_node20"><a xlink:href="../type/equilibriumstate.html" xlink:title="EquilibriumState">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="837.5,-913 736.5,-913 736.5,-889 837.5,-889 837.5,-913"/>
-<text text-anchor="middle" x="787" y="-898.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">EquilibriumState</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="831.1,-915.27 731.08,-915.27 731.08,-891 831.1,-891 831.1,-915.27"/>
+<text xml:space="preserve" text-anchor="middle" x="781.09" y="-899.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">EquilibriumState</text>
 </a>
 </g>
 </g>
 <!-- type~criticalline&#45;&gt;type~equilibriumstate -->
 <g id="type~~graph~~TypeGraph_edge10" class="edge">
 <title>type~criticalline&#45;&gt;type~equilibriumstate</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1094.89,-881.81C1043.5,-879.17 945.65,-876.13 863,-885 857.92,-885.55 852.67,-886.29 847.43,-887.15"/>
-<polygon fill="#000000" stroke="#000000" points="846.61,-883.74 837.39,-888.96 847.85,-890.63 846.61,-883.74"/>
-<text text-anchor="middle" x="954" y="-887.4" font-family="Helvetica,sans-Serif" font-size="9.50">CEP</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1088.05,-883.88C1036.97,-881.13 939.16,-877.87 856.6,-886.88 852.01,-887.39 847.29,-888.05 842.55,-888.83"/>
+<polygon fill="#000000" stroke="#000000" points="842.26,-885.33 833.04,-890.55 843.5,-892.22 842.26,-885.33"/>
+<text xml:space="preserve" text-anchor="middle" x="947.35" y="-889.11" font-family="Helvetica,sans-Serif" font-size="9.50">CEP</text>
 </g>
 <!-- type~criticalpoint -->
 <g id="type~~graph~~TypeGraph_node15" class="node">
 <title>type~criticalpoint</title>
 <g id="a_type~~graph~~TypeGraph_node15"><a xlink:href="../type/criticalpoint.html" xlink:title="CriticalPoint">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="825,-995 749,-995 749,-971 825,-971 825,-995"/>
-<text text-anchor="middle" x="787" y="-980.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CriticalPoint</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="818.72,-1000.27 743.45,-1000.27 743.45,-976 818.72,-976 818.72,-1000.27"/>
+<text xml:space="preserve" text-anchor="middle" x="781.09" y="-984.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CriticalPoint</text>
 </a>
 </g>
 </g>
@@ -755,8 +741,8 @@ model.</p><a href="../type/uniquac.html" class="pull-right"><emph>Read more&hell
 <g id="type~~graph~~TypeGraph_node16" class="node">
 <title>type~criticalpoint~2</title>
 <g id="a_type~~graph~~TypeGraph_node16"><a xlink:href="../type/criticalpoint~2.html" xlink:title="CriticalPoint">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="825,-830 749,-830 749,-806 825,-806 825,-830"/>
-<text text-anchor="middle" x="787" y="-815.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CriticalPoint</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="818.72,-830.27 743.45,-830.27 743.45,-806 818.72,-806 818.72,-830.27"/>
+<text xml:space="preserve" text-anchor="middle" x="781.09" y="-814.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CriticalPoint</text>
 </a>
 </g>
 </g>
@@ -764,8 +750,8 @@ model.</p><a href="../type/uniquac.html" class="pull-right"><emph>Read more&hell
 <g id="type~~graph~~TypeGraph_node17" class="node">
 <title>type~criticalpoint~3</title>
 <g id="a_type~~graph~~TypeGraph_node17"><a xlink:href="../type/criticalpoint~3.html" xlink:title="CriticalPoint">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="825,-1037 749,-1037 749,-1013 825,-1013 825,-1037"/>
-<text text-anchor="middle" x="787" y="-1022.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CriticalPoint</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="818.72,-1042.27 743.45,-1042.27 743.45,-1018 818.72,-1018 818.72,-1042.27"/>
+<text xml:space="preserve" text-anchor="middle" x="781.09" y="-1026.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CriticalPoint</text>
 </a>
 </g>
 </g>
@@ -773,52 +759,52 @@ model.</p><a href="../type/uniquac.html" class="pull-right"><emph>Read more&hell
 <g id="type~~graph~~TypeGraph_node18" class="node">
 <title>type~cubiceos</title>
 <g id="a_type~~graph~~TypeGraph_node18"><a xlink:href="../type/cubiceos.html" xlink:title="CubicEoS">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="616.5,-746 553.5,-746 553.5,-722 616.5,-722 616.5,-746"/>
-<text text-anchor="middle" x="585" y="-731.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CubicEoS</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="611.83,-746.27 550.06,-746.27 550.06,-722 611.83,-722 611.83,-746.27"/>
+<text xml:space="preserve" text-anchor="middle" x="580.94" y="-730.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CubicEoS</text>
 </a>
 </g>
 </g>
 <!-- type~cubiceos&#45;&gt;type~alphafunction -->
 <g id="type~~graph~~TypeGraph_edge12" class="edge">
 <title>type~cubiceos&#45;&gt;type~alphafunction</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M553.43,-742.28C509.72,-754.13 428.71,-776.08 375.08,-790.62"/>
-<polygon fill="#000000" stroke="#000000" points="374.14,-787.24 365.4,-793.24 375.97,-794 374.14,-787.24"/>
-<text text-anchor="middle" x="441" y="-790.4" font-family="Helvetica,sans-Serif" font-size="9.50">alpha</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M549.78,-742.35C506.59,-754.11 426.48,-775.92 373,-790.48"/>
+<polygon fill="#000000" stroke="#000000" points="372.2,-787.07 363.47,-793.08 374.04,-793.83 372.2,-787.07"/>
+<text xml:space="preserve" text-anchor="middle" x="437.56" y="-790.2" font-family="Helvetica,sans-Serif" font-size="9.50">alpha</text>
 </g>
 <!-- type~cubiceos&#45;&gt;type~armodel -->
 <g id="type~~graph~~TypeGraph_edge13" class="edge">
 <title>type~cubiceos&#45;&gt;type~armodel</title>
-<path fill="none" stroke="#000000" d="M553.37,-728.5C524.5,-723.14 480.1,-714.43 442,-705"/>
+<path fill="none" stroke="#000000" d="M549.72,-728.69C520.98,-723.33 476.62,-714.6 438.56,-705.13"/>
 </g>
 <!-- type~cubiceos&#45;&gt;type~cubicmixrule -->
 <g id="type~~graph~~TypeGraph_edge11" class="edge">
 <title>type~cubiceos&#45;&gt;type~cubicmixrule</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M553.48,-731.43C540.44,-728.76 526.16,-723.45 517,-713 486.1,-677.71 513.71,-653.54 499,-609 493.81,-593.29 374.54,-356.52 365,-343 358.55,-333.86 350.29,-324.76 342.73,-317.15"/>
-<polygon fill="#000000" stroke="#000000" points="345.11,-314.58 335.5,-310.1 340.22,-319.59 345.11,-314.58"/>
-<text text-anchor="middle" x="441" y="-611.4" font-family="Helvetica,sans-Serif" font-size="9.50">mixrule</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M549.57,-731.54C536.61,-728.86 522.4,-723.55 513.31,-713.13 482.11,-677.38 510.19,-652.95 495.31,-607.88 490.16,-592.29 371.19,-357.61 361.81,-344.13 355.51,-335.08 347.51,-325.98 340.15,-318.3"/>
+<polygon fill="#000000" stroke="#000000" points="343.11,-316.31 333.59,-311.66 338.13,-321.23 343.11,-316.31"/>
+<text xml:space="preserve" text-anchor="middle" x="437.56" y="-610.11" font-family="Helvetica,sans-Serif" font-size="9.50">mixrule</text>
 </g>
 <!-- type~fixturefluid -->
 <g id="type~~graph~~TypeGraph_node21" class="node">
 <title>type~fixturefluid</title>
 <g id="a_type~~graph~~TypeGraph_node21"><a xlink:href="../type/fixturefluid.html" xlink:title="FixtureFluid">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="621.5,-620 548.5,-620 548.5,-596 621.5,-596 621.5,-620"/>
-<text text-anchor="middle" x="585" y="-605.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">FixtureFluid</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="617.08,-620.27 544.81,-620.27 544.81,-596 617.08,-596 617.08,-620.27"/>
+<text xml:space="preserve" text-anchor="middle" x="580.94" y="-604.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">FixtureFluid</text>
 </a>
 </g>
 </g>
 <!-- type~fixturefluid&#45;&gt;type~armodel -->
 <g id="type~~graph~~TypeGraph_edge14" class="edge">
 <title>type~fixturefluid&#45;&gt;type~armodel</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M548.39,-613.71C499.02,-621.62 410.15,-635.87 359.69,-643.96"/>
-<polygon fill="#000000" stroke="#000000" points="358.86,-640.55 349.54,-645.59 359.96,-647.46 358.86,-640.55"/>
-<text text-anchor="middle" x="441" y="-642.4" font-family="Helvetica,sans-Serif" font-size="9.50">ar_model</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M544.51,-613.84C495.64,-621.71 407.93,-635.84 357.56,-643.95"/>
+<polygon fill="#000000" stroke="#000000" points="357.02,-640.49 347.7,-645.54 358.13,-647.41 357.02,-640.49"/>
+<text xml:space="preserve" text-anchor="middle" x="437.56" y="-642.21" font-family="Helvetica,sans-Serif" font-size="9.50">ar_model</text>
 </g>
 <!-- type~gegcmodelparameters -->
 <g id="type~~graph~~TypeGraph_node22" class="node">
 <title>type~gegcmodelparameters</title>
 <g id="a_type~~graph~~TypeGraph_node22"><a xlink:href="../type/gegcmodelparameters.html" xlink:title="GeGCModelParameters">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="1200,-1059 1063,-1059 1063,-1035 1200,-1035 1200,-1059"/>
-<text text-anchor="middle" x="1131.5" y="-1044.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">GeGCModelParameters</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="1192.12,-1064.27 1056.1,-1064.27 1056.1,-1040 1192.12,-1040 1192.12,-1064.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1124.11" y="-1048.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">GeGCModelParameters</text>
 </a>
 </g>
 </g>
@@ -826,52 +812,52 @@ model.</p><a href="../type/uniquac.html" class="pull-right"><emph>Read more&hell
 <g id="type~~graph~~TypeGraph_node23" class="node">
 <title>type~gemodel</title>
 <g id="a_type~~graph~~TypeGraph_node23"><a xlink:href="../type/gemodel.html" xlink:title="GeModel">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="351,-376 291,-376 291,-352 351,-352 351,-376"/>
-<text text-anchor="middle" x="321" y="-361.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">GeModel</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="347.56,-377.27 288.79,-377.27 288.79,-353 347.56,-353 347.56,-377.27"/>
+<text xml:space="preserve" text-anchor="middle" x="318.17" y="-361.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">GeModel</text>
 </a>
 </g>
 </g>
 <!-- type~gemodel&#45;&gt;type~basemodel -->
 <g id="type~~graph~~TypeGraph_edge15" class="edge">
 <title>type~gemodel&#45;&gt;type~basemodel</title>
-<path fill="none" stroke="#000000" d="M319.55,-376.16C317.4,-426.73 306.16,-619.15 259,-650"/>
-<path fill="none" stroke="#000000" d="M258,-650C255.53,-651.61 252.85,-652.82 250.05,-653.7"/>
-<polygon fill="#000000" stroke="#000000" points="249.39,-650.26 240.19,-655.51 250.66,-657.14 249.39,-650.26"/>
+<path fill="none" stroke="#000000" d="M316.72,-377.6C314.57,-428.5 303.41,-619.44 256.54,-650.13"/>
+<path fill="none" stroke="#000000" d="M255.54,-650.13C253.5,-651.47 251.32,-652.52 249.04,-653.34"/>
+<polygon fill="#000000" stroke="#000000" points="248.49,-649.88 239.38,-655.3 249.88,-656.74 248.49,-649.88"/>
 </g>
 <!-- type~gemodeladiff -->
 <g id="type~~graph~~TypeGraph_node24" class="node">
 <title>type~gemodeladiff</title>
 <g id="a_type~~graph~~TypeGraph_node24"><a xlink:href="../type/gemodeladiff.html" xlink:title="GeModelAdiff">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="627,-494 543,-494 543,-470 627,-470 627,-494"/>
-<text text-anchor="middle" x="585" y="-479.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">GeModelAdiff</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="622.33,-494.27 539.56,-494.27 539.56,-470 622.33,-470 622.33,-494.27"/>
+<text xml:space="preserve" text-anchor="middle" x="580.94" y="-478.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">GeModelAdiff</text>
 </a>
 </g>
 </g>
 <!-- type~gemodeladiff&#45;&gt;type~gemodel -->
 <g id="type~~graph~~TypeGraph_edge16" class="edge">
 <title>type~gemodeladiff&#45;&gt;type~gemodel</title>
-<path fill="none" stroke="#000000" d="M543.64,-469.94C515.23,-461.48 476.32,-449.95 442,-440"/>
+<path fill="none" stroke="#000000" d="M539.16,-469.83C510.95,-461.36 472.52,-449.92 438.56,-440.13"/>
 </g>
 <!-- type~gemodeltapenade -->
 <g id="type~~graph~~TypeGraph_node25" class="node">
 <title>type~gemodeltapenade</title>
 <g id="a_type~~graph~~TypeGraph_node25"><a xlink:href="../type/gemodeltapenade.html" xlink:title="GeModelTapenade">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="641,-452 529,-452 529,-428 641,-428 641,-452"/>
-<text text-anchor="middle" x="585" y="-437.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">GeModelTapenade</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="636.2,-452.27 525.68,-452.27 525.68,-428 636.2,-428 636.2,-452.27"/>
+<text xml:space="preserve" text-anchor="middle" x="580.94" y="-436.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">GeModelTapenade</text>
 </a>
 </g>
 </g>
 <!-- type~gemodeltapenade&#45;&gt;type~gemodel -->
 <g id="type~~graph~~TypeGraph_edge17" class="edge">
 <title>type~gemodeltapenade&#45;&gt;type~gemodel</title>
-<path fill="none" stroke="#000000" d="M528.71,-447.09C502.02,-448.73 469.82,-448.07 442,-440"/>
+<path fill="none" stroke="#000000" d="M525.25,-447.12C498.61,-448.78 466.39,-448.15 438.56,-440.13"/>
 </g>
 <!-- type~generalizedisozline -->
 <g id="type~~graph~~TypeGraph_node26" class="node">
 <title>type~generalizedisozline</title>
 <g id="a_type~~graph~~TypeGraph_node26"><a xlink:href="../type/generalizedisozline.html" xlink:title="GeneralizedIsoZLine">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="1192.5,-1103 1070.5,-1103 1070.5,-1079 1192.5,-1079 1192.5,-1103"/>
-<text text-anchor="middle" x="1131.5" y="-1088.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">GeneralizedIsoZLine</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="1184.62,-1108.27 1063.6,-1108.27 1063.6,-1084 1184.62,-1084 1184.62,-1108.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1124.11" y="-1092.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">GeneralizedIsoZLine</text>
 </a>
 </g>
 </g>
@@ -879,78 +865,78 @@ model.</p><a href="../type/uniquac.html" class="pull-right"><emph>Read more&hell
 <g id="type~~graph~~TypeGraph_node38" class="node">
 <title>type~mpequilibriumstate</title>
 <g id="a_type~~graph~~TypeGraph_node38"><a xlink:href="../type/mpequilibriumstate.html" xlink:title="MPEquilibriumState">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="845,-1103 729,-1103 729,-1079 845,-1079 845,-1103"/>
-<text text-anchor="middle" x="787" y="-1088.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">MPEquilibriumState</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="838.6,-1108.27 723.58,-1108.27 723.58,-1084 838.6,-1084 838.6,-1108.27"/>
+<text xml:space="preserve" text-anchor="middle" x="781.09" y="-1092.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">MPEquilibriumState</text>
 </a>
 </g>
 </g>
 <!-- type~generalizedisozline&#45;&gt;type~mpequilibriumstate -->
 <g id="type~~graph~~TypeGraph_edge18" class="edge">
 <title>type~generalizedisozline&#45;&gt;type~mpequilibriumstate</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1070.45,-1091C1010.3,-1091 917.89,-1091 855.3,-1091"/>
-<polygon fill="#000000" stroke="#000000" points="855.13,-1087.5 845.13,-1091 855.13,-1094.5 855.13,-1087.5"/>
-<text text-anchor="middle" x="954" y="-1093.4" font-family="Helvetica,sans-Serif" font-size="9.50">points</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1063.32,-1096.13C1003.8,-1096.13 912.56,-1096.13 850.26,-1096.13"/>
+<polygon fill="#000000" stroke="#000000" points="850.49,-1092.64 840.49,-1096.14 850.49,-1099.64 850.49,-1092.64"/>
+<text xml:space="preserve" text-anchor="middle" x="947.35" y="-1098.36" font-family="Helvetica,sans-Serif" font-size="9.50">points</text>
 </g>
 <!-- type~gerg2008 -->
 <g id="type~~graph~~TypeGraph_node27" class="node">
 <title>type~gerg2008</title>
 <g id="a_type~~graph~~TypeGraph_node27"><a xlink:href="../type/gerg2008.html" xlink:title="Gerg2008">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="820,-679 754,-679 754,-655 820,-655 820,-679"/>
-<text text-anchor="middle" x="787" y="-664.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Gerg2008</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="813.47,-679.27 748.7,-679.27 748.7,-655 813.47,-655 813.47,-679.27"/>
+<text xml:space="preserve" text-anchor="middle" x="781.09" y="-663.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Gerg2008</text>
 </a>
 </g>
 </g>
 <!-- type~gerg2008&#45;&gt;type~armodeladiff -->
 <g id="type~~graph~~TypeGraph_edge22" class="edge">
 <title>type~gerg2008&#45;&gt;type~armodeladiff</title>
-<path fill="none" stroke="#000000" d="M753.87,-671.02C721.97,-675 672.64,-681.17 635.69,-685.79"/>
-<polygon fill="#000000" stroke="#000000" points="635.11,-682.33 625.63,-687.05 635.98,-689.28 635.11,-682.33"/>
+<path fill="none" stroke="#000000" d="M748.25,-671.15C717.06,-675.09 669.03,-681.15 632.59,-685.75"/>
+<polygon fill="#000000" stroke="#000000" points="632.19,-682.27 622.7,-686.99 633.06,-689.21 632.19,-682.27"/>
 </g>
 <!-- type~gerg2008&#45;&gt;type~cubiceos -->
 <g id="type~~graph~~TypeGraph_edge21" class="edge">
 <title>type~gerg2008&#45;&gt;type~cubiceos</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M753.84,-678.43C726.96,-687.91 687.58,-701.62 653,-713 644.42,-715.82 635.19,-718.77 626.41,-721.54"/>
-<polygon fill="#000000" stroke="#000000" points="625.24,-718.24 616.74,-724.56 627.33,-724.92 625.24,-718.24"/>
-<text text-anchor="middle" x="691" y="-709.4" font-family="Helvetica,sans-Serif" font-size="9.50">srk</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M748.3,-678.57C721.72,-688.05 682.78,-701.77 648.58,-713.13 640.34,-715.87 631.49,-718.73 623.02,-721.41"/>
+<polygon fill="#000000" stroke="#000000" points="622.13,-718.02 613.64,-724.37 624.23,-724.7 622.13,-718.02"/>
+<text xml:space="preserve" text-anchor="middle" x="686.08" y="-708.09" font-family="Helvetica,sans-Serif" font-size="9.50">srk</text>
 </g>
 <!-- type~gerg2008binary -->
 <g id="type~~graph~~TypeGraph_node28" class="node">
 <title>type~gerg2008binary</title>
 <g id="a_type~~graph~~TypeGraph_node28"><a xlink:href="../type/gerg2008binary.html" xlink:title="Gerg2008Binary">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="635,-662 535,-662 535,-638 635,-638 635,-662"/>
-<text text-anchor="middle" x="585" y="-647.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Gerg2008Binary</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="630.58,-662.27 531.31,-662.27 531.31,-638 630.58,-638 630.58,-662.27"/>
+<text xml:space="preserve" text-anchor="middle" x="580.94" y="-646.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Gerg2008Binary</text>
 </a>
 </g>
 </g>
 <!-- type~gerg2008&#45;&gt;type~gerg2008binary -->
 <g id="type~~graph~~TypeGraph_edge20" class="edge">
 <title>type~gerg2008&#45;&gt;type~gerg2008binary</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M753.89,-663.91C740.62,-662.66 725.07,-661.22 711,-660 689.66,-658.15 666.26,-656.25 645.54,-654.6"/>
-<polygon fill="#000000" stroke="#000000" points="645.53,-651.09 635.29,-653.79 644.98,-658.07 645.53,-651.09"/>
-<text text-anchor="middle" x="691" y="-662.4" font-family="Helvetica,sans-Serif" font-size="9.50">binaries</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M748.21,-663.32C735.03,-661.82 719.58,-660.15 705.58,-658.88 684.97,-657.02 662.4,-655.32 642.25,-653.92"/>
+<polygon fill="#000000" stroke="#000000" points="642.74,-650.45 632.53,-653.26 642.27,-657.43 642.74,-650.45"/>
+<text xml:space="preserve" text-anchor="middle" x="686.08" y="-661.11" font-family="Helvetica,sans-Serif" font-size="9.50">binaries</text>
 </g>
 <!-- type~gerg2008pure -->
 <g id="type~~graph~~TypeGraph_node29" class="node">
 <title>type~gerg2008pure</title>
 <g id="a_type~~graph~~TypeGraph_node29"><a xlink:href="../type/gerg2008pure.html" xlink:title="Gerg2008Pure">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="629.5,-578 540.5,-578 540.5,-554 629.5,-554 629.5,-578"/>
-<text text-anchor="middle" x="585" y="-563.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Gerg2008Pure</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="624.95,-578.27 536.93,-578.27 536.93,-554 624.95,-554 624.95,-578.27"/>
+<text xml:space="preserve" text-anchor="middle" x="580.94" y="-562.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Gerg2008Pure</text>
 </a>
 </g>
 </g>
 <!-- type~gerg2008&#45;&gt;type~gerg2008pure -->
 <g id="type~~graph~~TypeGraph_edge19" class="edge">
 <title>type~gerg2008&#45;&gt;type~gerg2008pure</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M768.67,-654.72C743.96,-637.66 696.74,-606.67 653,-587 648.64,-585.04 644.05,-583.19 639.4,-581.46"/>
-<polygon fill="#000000" stroke="#000000" points="640.41,-578.1 629.81,-578.08 638.08,-584.7 640.41,-578.1"/>
-<text text-anchor="middle" x="691" y="-619.4" font-family="Helvetica,sans-Serif" font-size="9.50">pures</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M762.55,-654.56C738.03,-637.44 691.66,-606.68 648.58,-587.13 644.53,-585.3 640.28,-583.56 635.96,-581.92"/>
+<polygon fill="#000000" stroke="#000000" points="637.2,-578.65 626.6,-578.59 634.85,-585.24 637.2,-578.65"/>
+<text xml:space="preserve" text-anchor="middle" x="686.08" y="-619.1" font-family="Helvetica,sans-Serif" font-size="9.50">pures</text>
 </g>
 <!-- type~gerg2008selector -->
 <g id="type~~graph~~TypeGraph_node30" class="node">
 <title>type~gerg2008selector</title>
 <g id="a_type~~graph~~TypeGraph_node30"><a xlink:href="../type/gerg2008selector.html" xlink:title="GERG2008Selector">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="1189,-1145 1074,-1145 1074,-1121 1189,-1121 1189,-1145"/>
-<text text-anchor="middle" x="1131.5" y="-1130.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">GERG2008Selector</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="1180.87,-1150.27 1067.35,-1150.27 1067.35,-1126 1180.87,-1126 1180.87,-1150.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1124.11" y="-1134.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">GERG2008Selector</text>
 </a>
 </g>
 </g>
@@ -958,8 +944,8 @@ model.</p><a href="../type/uniquac.html" class="pull-right"><emph>Read more&hell
 <g id="type~~graph~~TypeGraph_node31" class="node">
 <title>type~groups</title>
 <g id="a_type~~graph~~TypeGraph_node31"><a xlink:href="../type/groups.html" xlink:title="Groups">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="348,-132 294,-132 294,-108 348,-108 348,-132"/>
-<text text-anchor="middle" x="321" y="-117.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Groups</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="345.17,-133.27 291.17,-133.27 291.17,-109 345.17,-109 345.17,-133.27"/>
+<text xml:space="preserve" text-anchor="middle" x="318.17" y="-117.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Groups</text>
 </a>
 </g>
 </g>
@@ -967,59 +953,59 @@ model.</p><a href="../type/uniquac.html" class="pull-right"><emph>Read more&hell
 <g id="type~~graph~~TypeGraph_node32" class="node">
 <title>type~hv</title>
 <g id="a_type~~graph~~TypeGraph_node32"><a xlink:href="../type/hv.html" xlink:title="HV">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="612,-326 558,-326 558,-302 612,-302 612,-326"/>
-<text text-anchor="middle" x="585" y="-311.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">HV</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="607.94,-326.27 553.94,-326.27 553.94,-302 607.94,-302 607.94,-326.27"/>
+<text xml:space="preserve" text-anchor="middle" x="580.94" y="-310.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">HV</text>
 </a>
 </g>
 </g>
 <!-- type~hv&#45;&gt;type~cubicmixrule -->
 <g id="type~~graph~~TypeGraph_edge24" class="edge">
 <title>type~hv&#45;&gt;type~cubicmixrule</title>
-<path fill="none" stroke="#000000" d="M557.92,-309.01C529.52,-304.06 482.68,-297.29 442,-298"/>
+<path fill="none" stroke="#000000" d="M553.46,-309.06C525.13,-304.11 478.82,-297.43 438.56,-298.13"/>
 </g>
 <!-- type~hv&#45;&gt;type~gemodel -->
 <g id="type~~graph~~TypeGraph_edge23" class="edge">
 <title>type~hv&#45;&gt;type~gemodel</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M557.77,-321.77C545.35,-325.57 530.34,-330.32 517,-335 508.9,-337.84 507.32,-339.9 499,-342 452.55,-353.73 397.59,-359.32 361.37,-361.9"/>
-<polygon fill="#000000" stroke="#000000" points="360.97,-358.42 351.22,-362.58 361.44,-365.4 360.97,-358.42"/>
-<text text-anchor="middle" x="441" y="-362.4" font-family="Helvetica,sans-Serif" font-size="9.50">ge</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M553.76,-321.64C541.38,-325.38 526.47,-330.16 513.31,-335.13 505.12,-338.23 503.74,-340.79 495.31,-343.13 449.63,-355.84 395.24,-361.22 359.11,-363.49"/>
+<polygon fill="#000000" stroke="#000000" points="359.35,-359.97 349.56,-364.04 359.75,-366.96 359.35,-359.97"/>
+<text xml:space="preserve" text-anchor="middle" x="437.56" y="-363.93" font-family="Helvetica,sans-Serif" font-size="9.50">ge</text>
 </g>
 <!-- type~hv_nrtl -->
 <g id="type~~graph~~TypeGraph_node33" class="node">
 <title>type~hv_nrtl</title>
 <g id="a_type~~graph~~TypeGraph_node33"><a xlink:href="../type/hv_nrtl.html" xlink:title="HV_NRTL">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="817.5,-391 756.5,-391 756.5,-367 817.5,-367 817.5,-391"/>
-<text text-anchor="middle" x="787" y="-376.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">HV_NRTL</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="810.85,-327.27 751.33,-327.27 751.33,-303 810.85,-303 810.85,-327.27"/>
+<text xml:space="preserve" text-anchor="middle" x="781.09" y="-311.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">HV_NRTL</text>
 </a>
 </g>
 </g>
 <!-- type~hv_nrtl&#45;&gt;type~cubicmixrule -->
 <g id="type~~graph~~TypeGraph_edge26" class="edge">
 <title>type~hv_nrtl&#45;&gt;type~cubicmixrule</title>
-<path fill="none" stroke="#000000" d="M777.78,-366.73C759.2,-340.13 711.02,-277.47 653,-251 610.17,-231.46 485.56,-214.14 442,-232"/>
+<path fill="none" stroke="#000000" d="M761.33,-302.62C708.76,-269.21 556.2,-183.68 438.56,-232.13"/>
 </g>
 <!-- type~nrtlhv -->
 <g id="type~~graph~~TypeGraph_node46" class="node">
 <title>type~nrtlhv</title>
 <g id="a_type~~graph~~TypeGraph_node46"><a xlink:href="../type/nrtlhv.html" xlink:title="NRTLHV">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="612.5,-536 557.5,-536 557.5,-512 612.5,-512 612.5,-536"/>
-<text text-anchor="middle" x="585" y="-521.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">NRTLHV</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="608.08,-536.27 553.81,-536.27 553.81,-512 608.08,-512 608.08,-536.27"/>
+<text xml:space="preserve" text-anchor="middle" x="580.94" y="-520.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">NRTLHV</text>
 </a>
 </g>
 </g>
 <!-- type~hv_nrtl&#45;&gt;type~nrtlhv -->
 <g id="type~~graph~~TypeGraph_edge25" class="edge">
 <title>type~hv_nrtl&#45;&gt;type~nrtlhv</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M776.32,-391.11C756.03,-415.72 706.48,-471.88 653,-503 643.58,-508.48 632.56,-512.7 622.22,-515.86"/>
-<polygon fill="#000000" stroke="#000000" points="621.25,-512.5 612.58,-518.58 623.15,-519.23 621.25,-512.5"/>
-<text text-anchor="middle" x="691" y="-492.4" font-family="Helvetica,sans-Serif" font-size="9.50">ge</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M775,-327.32C760.45,-360.65 715.39,-454.13 648.58,-503.13 640.05,-509.39 629.6,-513.82 619.53,-516.94"/>
+<polygon fill="#000000" stroke="#000000" points="618.65,-513.56 609.91,-519.55 620.47,-520.31 618.65,-513.56"/>
+<text xml:space="preserve" text-anchor="middle" x="686.08" y="-489.69" font-family="Helvetica,sans-Serif" font-size="9.50">ge</text>
 </g>
 <!-- type~hyperdual -->
 <g id="type~~graph~~TypeGraph_node34" class="node">
 <title>type~hyperdual</title>
 <g id="a_type~~graph~~TypeGraph_node34"><a xlink:href="../type/hyperdual.html" xlink:title="hyperdual">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="1165,-1187 1098,-1187 1098,-1163 1165,-1163 1165,-1187"/>
-<text text-anchor="middle" x="1131.5" y="-1172.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">hyperdual</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="1156.87,-1192.27 1091.35,-1192.27 1091.35,-1168 1156.87,-1168 1156.87,-1192.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1124.11" y="-1176.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">hyperdual</text>
 </a>
 </g>
 </g>
@@ -1027,8 +1013,8 @@ model.</p><a href="../type/uniquac.html" class="pull-right"><emph>Read more&hell
 <g id="type~~graph~~TypeGraph_node35" class="node">
 <title>type~kindenum</title>
 <g id="a_type~~graph~~TypeGraph_node35"><a xlink:href="../type/kindenum.html" xlink:title="KindEnum">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="1165,-1229 1098,-1229 1098,-1205 1165,-1205 1165,-1229"/>
-<text text-anchor="middle" x="1131.5" y="-1214.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">KindEnum</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="1156.87,-1234.27 1091.35,-1234.27 1091.35,-1210 1156.87,-1210 1156.87,-1234.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1124.11" y="-1218.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">KindEnum</text>
 </a>
 </g>
 </g>
@@ -1036,8 +1022,8 @@ model.</p><a href="../type/uniquac.html" class="pull-right"><emph>Read more&hell
 <g id="type~~graph~~TypeGraph_node36" class="node">
 <title>type~llvvarenum</title>
 <g id="a_type~~graph~~TypeGraph_node36"><a xlink:href="../type/llvvarenum.html" xlink:title="LLVVarEnum">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="1171,-1271 1092,-1271 1092,-1247 1171,-1247 1171,-1271"/>
-<text text-anchor="middle" x="1131.5" y="-1256.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">LLVVarEnum</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="1162.87,-1276.27 1085.35,-1276.27 1085.35,-1252 1162.87,-1252 1162.87,-1276.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1124.11" y="-1260.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">LLVVarEnum</text>
 </a>
 </g>
 </g>
@@ -1045,31 +1031,31 @@ model.</p><a href="../type/uniquac.html" class="pull-right"><emph>Read more&hell
 <g id="type~~graph~~TypeGraph_node37" class="node">
 <title>type~mhv</title>
 <g id="a_type~~graph~~TypeGraph_node37"><a xlink:href="../type/mhv.html" xlink:title="MHV">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="612,-284 558,-284 558,-260 612,-260 612,-284"/>
-<text text-anchor="middle" x="585" y="-269.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">MHV</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="607.94,-284.27 553.94,-284.27 553.94,-260 607.94,-260 607.94,-284.27"/>
+<text xml:space="preserve" text-anchor="middle" x="580.94" y="-268.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">MHV</text>
 </a>
 </g>
 </g>
 <!-- type~mhv&#45;&gt;type~cubicmixrule -->
 <g id="type~~graph~~TypeGraph_edge28" class="edge">
 <title>type~mhv&#45;&gt;type~cubicmixrule</title>
-<path fill="none" stroke="#000000" d="M557.83,-279.45C529.53,-286.88 482.97,-297.29 442,-298"/>
-<path fill="none" stroke="#000000" d="M440,-298C418.18,-298.38 394.1,-298.44 373.4,-298.39"/>
-<polygon fill="#000000" stroke="#000000" points="373.25,-294.89 363.23,-298.35 373.22,-301.89 373.25,-294.89"/>
+<path fill="none" stroke="#000000" d="M553.63,-279.66C525.43,-287.08 479.23,-297.43 438.56,-298.13"/>
+<path fill="none" stroke="#000000" d="M436.56,-298.13C415.17,-298.51 391.58,-298.57 371.2,-298.52"/>
+<polygon fill="#000000" stroke="#000000" points="371.45,-295.03 361.44,-298.49 371.42,-302.03 371.45,-295.03"/>
 </g>
 <!-- type~mhv&#45;&gt;type~gemodel -->
 <g id="type~~graph~~TypeGraph_edge27" class="edge">
 <title>type~mhv&#45;&gt;type~gemodel</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M557.82,-277.46C544.99,-280.81 529.62,-285.85 517,-293 507.69,-298.27 508.61,-304.28 499,-309 451.91,-332.16 432.44,-313.42 383,-331 371.62,-335.05 359.8,-340.99 349.62,-346.72"/>
-<polygon fill="#000000" stroke="#000000" points="347.67,-343.8 340.8,-351.86 351.2,-349.85 347.67,-343.8"/>
-<text text-anchor="middle" x="441" y="-333.4" font-family="Helvetica,sans-Serif" font-size="9.50">ge</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M553.58,-277.71C540.89,-281.06 525.76,-286.07 513.31,-293.13 504,-298.42 504.94,-304.46 495.31,-309.13 448.4,-331.92 428.76,-311.89 379.81,-329.88 368.32,-334.11 356.51,-340.45 346.4,-346.59"/>
+<polygon fill="#000000" stroke="#000000" points="344.79,-343.47 338.21,-351.77 348.53,-349.38 344.79,-343.47"/>
+<text xml:space="preserve" text-anchor="middle" x="437.56" y="-332.11" font-family="Helvetica,sans-Serif" font-size="9.50">ge</text>
 </g>
 <!-- type~mppoint -->
 <g id="type~~graph~~TypeGraph_node39" class="node">
 <title>type~mppoint</title>
 <g id="a_type~~graph~~TypeGraph_node39"><a xlink:href="../type/mppoint.html" xlink:title="MPPoint">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="814,-1313 760,-1313 760,-1289 814,-1289 814,-1313"/>
-<text text-anchor="middle" x="787" y="-1298.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">MPPoint</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="808.09,-1318.27 754.09,-1318.27 754.09,-1294 808.09,-1294 808.09,-1318.27"/>
+<text xml:space="preserve" text-anchor="middle" x="781.09" y="-1302.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">MPPoint</text>
 </a>
 </g>
 </g>
@@ -1077,8 +1063,8 @@ model.</p><a href="../type/uniquac.html" class="pull-right"><emph>Read more&hell
 <g id="type~~graph~~TypeGraph_node40" class="node">
 <title>type~mppoint~2</title>
 <g id="a_type~~graph~~TypeGraph_node40"><a xlink:href="../type/mppoint~2.html" xlink:title="MPPoint">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="814,-1355 760,-1355 760,-1331 814,-1331 814,-1355"/>
-<text text-anchor="middle" x="787" y="-1340.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">MPPoint</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="808.09,-1360.27 754.09,-1360.27 754.09,-1336 808.09,-1336 808.09,-1360.27"/>
+<text xml:space="preserve" text-anchor="middle" x="781.09" y="-1344.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">MPPoint</text>
 </a>
 </g>
 </g>
@@ -1086,8 +1072,8 @@ model.</p><a href="../type/uniquac.html" class="pull-right"><emph>Read more&hell
 <g id="type~~graph~~TypeGraph_node41" class="node">
 <title>type~mppoint~3</title>
 <g id="a_type~~graph~~TypeGraph_node41"><a xlink:href="../type/mppoint~3.html" xlink:title="MPPoint">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="814,-1397 760,-1397 760,-1373 814,-1373 814,-1397"/>
-<text text-anchor="middle" x="787" y="-1382.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">MPPoint</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="808.09,-1402.27 754.09,-1402.27 754.09,-1378 808.09,-1378 808.09,-1402.27"/>
+<text xml:space="preserve" text-anchor="middle" x="781.09" y="-1386.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">MPPoint</text>
 </a>
 </g>
 </g>
@@ -1095,8 +1081,8 @@ model.</p><a href="../type/uniquac.html" class="pull-right"><emph>Read more&hell
 <g id="type~~graph~~TypeGraph_node42" class="node">
 <title>type~nearcritical</title>
 <g id="a_type~~graph~~TypeGraph_node42"><a xlink:href="../type/nearcritical.html" xlink:title="NearCritical">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="1169.5,-1439 1093.5,-1439 1093.5,-1415 1169.5,-1415 1169.5,-1439"/>
-<text text-anchor="middle" x="1131.5" y="-1424.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">NearCritical</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="1161.37,-1444.27 1086.85,-1444.27 1086.85,-1420 1161.37,-1420 1161.37,-1444.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1124.11" y="-1428.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">NearCritical</text>
 </a>
 </g>
 </g>
@@ -1104,8 +1090,8 @@ model.</p><a href="../type/uniquac.html" class="pull-right"><emph>Read more&hell
 <g id="type~~graph~~TypeGraph_node43" class="node">
 <title>type~newton_result</title>
 <g id="a_type~~graph~~TypeGraph_node43"><a xlink:href="../type/newton_result.html" xlink:title="newton_result">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="1174.5,-1481 1088.5,-1481 1088.5,-1457 1174.5,-1457 1174.5,-1481"/>
-<text text-anchor="middle" x="1131.5" y="-1466.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">newton_result</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="1166.62,-1486.27 1081.6,-1486.27 1081.6,-1462 1166.62,-1462 1166.62,-1486.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1124.11" y="-1470.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">newton_result</text>
 </a>
 </g>
 </g>
@@ -1113,8 +1099,8 @@ model.</p><a href="../type/uniquac.html" class="pull-right"><emph>Read more&hell
 <g id="type~~graph~~TypeGraph_node44" class="node">
 <title>type~newton_settings</title>
 <g id="a_type~~graph~~TypeGraph_node44"><a xlink:href="../type/newton_settings.html" xlink:title="newton_settings">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="1180.5,-1523 1082.5,-1523 1082.5,-1499 1180.5,-1499 1180.5,-1523"/>
-<text text-anchor="middle" x="1131.5" y="-1508.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">newton_settings</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="1172.62,-1528.27 1075.6,-1528.27 1075.6,-1504 1172.62,-1504 1172.62,-1528.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1124.11" y="-1512.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">newton_settings</text>
 </a>
 </g>
 </g>
@@ -1122,42 +1108,42 @@ model.</p><a href="../type/uniquac.html" class="pull-right"><emph>Read more&hell
 <g id="type~~graph~~TypeGraph_node45" class="node">
 <title>type~nrtl</title>
 <g id="a_type~~graph~~TypeGraph_node45"><a xlink:href="../type/nrtl.html" xlink:title="NRTL">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="612,-410 558,-410 558,-386 612,-386 612,-410"/>
-<text text-anchor="middle" x="585" y="-395.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">NRTL</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="607.94,-410.27 553.94,-410.27 553.94,-386 607.94,-386 607.94,-410.27"/>
+<text xml:space="preserve" text-anchor="middle" x="580.94" y="-394.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">NRTL</text>
 </a>
 </g>
 </g>
 <!-- type~nrtl&#45;&gt;type~gemodel -->
 <g id="type~~graph~~TypeGraph_edge29" class="edge">
 <title>type~nrtl&#45;&gt;type~gemodel</title>
-<path fill="none" stroke="#000000" d="M557.95,-406.09C517.74,-418.53 444.85,-440.83 442,-440"/>
+<path fill="none" stroke="#000000" d="M553.68,-406.33C513.58,-418.78 441.4,-440.95 438.56,-440.13"/>
 </g>
 <!-- type~nrtlhv&#45;&gt;type~gemodel -->
 <g id="type~~graph~~TypeGraph_edge30" class="edge">
 <title>type~nrtlhv&#45;&gt;type~gemodel</title>
-<path fill="none" stroke="#000000" d="M557.25,-518.21C544.58,-514.83 529.51,-509.85 517,-503 478.82,-482.08 483.81,-452.13 442,-440"/>
+<path fill="none" stroke="#000000" d="M553.34,-518.33C540.73,-514.95 525.75,-509.97 513.31,-503.13 475.24,-482.2 480.31,-452.16 438.56,-440.13"/>
 </g>
 <!-- type~pcsaft -->
 <g id="type~~graph~~TypeGraph_node47" class="node">
 <title>type~pcsaft</title>
 <g id="a_type~~graph~~TypeGraph_node47"><a xlink:href="../type/pcsaft.html" xlink:title="PCSAFT">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="814,-788 760,-788 760,-764 814,-764 814,-788"/>
-<text text-anchor="middle" x="787" y="-773.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PCSAFT</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="808.09,-788.27 754.09,-788.27 754.09,-764 808.09,-764 808.09,-788.27"/>
+<text xml:space="preserve" text-anchor="middle" x="781.09" y="-772.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PCSAFT</text>
 </a>
 </g>
 </g>
 <!-- type~pcsaft&#45;&gt;type~armodeltapenade -->
 <g id="type~~graph~~TypeGraph_edge31" class="edge">
 <title>type~pcsaft&#45;&gt;type~armodeltapenade</title>
-<path fill="none" stroke="#000000" d="M759.85,-776C732.08,-776 687.12,-776 649.89,-776"/>
-<polygon fill="#000000" stroke="#000000" points="649.61,-772.5 639.61,-776 649.61,-779.5 649.61,-772.5"/>
+<path fill="none" stroke="#000000" d="M753.78,-776.13C726.4,-776.13 682.49,-776.13 645.92,-776.13"/>
+<polygon fill="#000000" stroke="#000000" points="646.34,-772.64 636.34,-776.14 646.34,-779.64 646.34,-772.64"/>
 </g>
 <!-- type~point -->
 <g id="type~~graph~~TypeGraph_node48" class="node">
 <title>type~point</title>
 <g id="a_type~~graph~~TypeGraph_node48"><a xlink:href="../type/point.html" xlink:title="Point">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="1158.5,-1565 1104.5,-1565 1104.5,-1541 1158.5,-1541 1158.5,-1565"/>
-<text text-anchor="middle" x="1131.5" y="-1550.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Point</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="1151.11,-1570.27 1097.11,-1570.27 1097.11,-1546 1151.11,-1546 1151.11,-1570.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1124.11" y="-1554.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Point</text>
 </a>
 </g>
 </g>
@@ -1165,8 +1151,8 @@ model.</p><a href="../type/uniquac.html" class="pull-right"><emph>Read more&hell
 <g id="type~~graph~~TypeGraph_node49" class="node">
 <title>type~psifunction</title>
 <g id="a_type~~graph~~TypeGraph_node49"><a xlink:href="../type/psifunction.html" xlink:title="PsiFunction">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="357,-78 285,-78 285,-54 357,-54 357,-78"/>
-<text text-anchor="middle" x="321" y="-63.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PsiFunction</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="353.56,-79.27 282.79,-79.27 282.79,-55 353.56,-55 353.56,-79.27"/>
+<text xml:space="preserve" text-anchor="middle" x="318.17" y="-63.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PsiFunction</text>
 </a>
 </g>
 </g>
@@ -1174,31 +1160,31 @@ model.</p><a href="../type/uniquac.html" class="pull-right"><emph>Read more&hell
 <g id="type~~graph~~TypeGraph_node50" class="node">
 <title>type~ptenvel2</title>
 <g id="a_type~~graph~~TypeGraph_node50"><a xlink:href="../type/ptenvel2.html" xlink:title="PTEnvel2">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="1162,-1013 1101,-1013 1101,-989 1162,-989 1162,-1013"/>
-<text text-anchor="middle" x="1131.5" y="-998.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PTEnvel2</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="1154.24,-1018.27 1093.97,-1018.27 1093.97,-994 1154.24,-994 1154.24,-1018.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1124.11" y="-1002.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PTEnvel2</text>
 </a>
 </g>
 </g>
 <!-- type~ptenvel2&#45;&gt;type~criticalpoint~3 -->
 <g id="type~~graph~~TypeGraph_edge33" class="edge">
 <title>type~ptenvel2&#45;&gt;type~criticalpoint~3</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1100.7,-1003.09C1041.14,-1007.26 906.94,-1016.67 835.25,-1021.69"/>
-<polygon fill="#000000" stroke="#000000" points="834.87,-1018.21 825.14,-1022.4 835.36,-1025.19 834.87,-1018.21"/>
-<text text-anchor="middle" x="954" y="-1022.4" font-family="Helvetica,sans-Serif" font-size="9.50">cps</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1093.74,-1008.2C1034.97,-1012.34 902.41,-1021.67 830.56,-1026.72"/>
+<polygon fill="#000000" stroke="#000000" points="830.39,-1023.23 820.66,-1027.42 830.88,-1030.21 830.39,-1023.23"/>
+<text xml:space="preserve" text-anchor="middle" x="947.35" y="-1026.56" font-family="Helvetica,sans-Serif" font-size="9.50">cps</text>
 </g>
 <!-- type~ptenvel2&#45;&gt;type~equilibriumstate -->
 <g id="type~~graph~~TypeGraph_edge32" class="edge">
 <title>type~ptenvel2&#45;&gt;type~equilibriumstate</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1100.86,-992.43C1088.39,-987.92 1074.21,-981.52 1063,-973 1052.67,-965.14 1056.31,-956.38 1045,-950 974.03,-909.97 942.28,-946.81 863,-928 850.8,-925.11 837.84,-920.88 826.18,-916.62"/>
-<polygon fill="#000000" stroke="#000000" points="827.34,-913.32 816.74,-913.07 824.87,-919.87 827.34,-913.32"/>
-<text text-anchor="middle" x="954" y="-952.4" font-family="Helvetica,sans-Serif" font-size="9.50">points</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1093.67,-996.58C1081.3,-991.68 1067.22,-984.88 1056.1,-976.13 1045.83,-968.06 1049.49,-959.3 1038.1,-952.88 967.36,-913.04 935.42,-951.63 856.6,-932.13 844.45,-929.13 831.61,-924.64 820.08,-920.09"/>
+<polygon fill="#000000" stroke="#000000" points="821.47,-916.88 810.89,-916.33 818.82,-923.36 821.47,-916.88"/>
+<text xml:space="preserve" text-anchor="middle" x="947.35" y="-955.11" font-family="Helvetica,sans-Serif" font-size="9.50">points</text>
 </g>
 <!-- type~ptenvel3 -->
 <g id="type~~graph~~TypeGraph_node51" class="node">
 <title>type~ptenvel3</title>
 <g id="a_type~~graph~~TypeGraph_node51"><a xlink:href="../type/ptenvel3.html" xlink:title="PTEnvel3">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="1162,-1607 1101,-1607 1101,-1583 1162,-1583 1162,-1607"/>
-<text text-anchor="middle" x="1131.5" y="-1592.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PTEnvel3</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="1154.24,-1612.27 1093.97,-1612.27 1093.97,-1588 1154.24,-1588 1154.24,-1612.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1124.11" y="-1596.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PTEnvel3</text>
 </a>
 </g>
 </g>
@@ -1206,69 +1192,69 @@ model.</p><a href="../type/uniquac.html" class="pull-right"><emph>Read more&hell
 <g id="type~~graph~~TypeGraph_node52" class="node">
 <title>type~ptenvelmp</title>
 <g id="a_type~~graph~~TypeGraph_node52"><a xlink:href="../type/ptenvelmp.html" xlink:title="PTEnvelMP">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="1166.5,-1313 1096.5,-1313 1096.5,-1289 1166.5,-1289 1166.5,-1313"/>
-<text text-anchor="middle" x="1131.5" y="-1298.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PTEnvelMP</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="1158.37,-1318.27 1089.85,-1318.27 1089.85,-1294 1158.37,-1294 1158.37,-1318.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1124.11" y="-1302.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PTEnvelMP</text>
 </a>
 </g>
 </g>
 <!-- type~ptenvelmp&#45;&gt;type~mppoint -->
 <g id="type~~graph~~TypeGraph_edge34" class="edge">
 <title>type~ptenvelmp&#45;&gt;type~mppoint</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1096.41,-1301C1031.52,-1301 890.82,-1301 824.27,-1301"/>
-<polygon fill="#000000" stroke="#000000" points="824.25,-1297.5 814.25,-1301 824.25,-1304.5 824.25,-1297.5"/>
-<text text-anchor="middle" x="954" y="-1303.4" font-family="Helvetica,sans-Serif" font-size="9.50">points</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1089.48,-1306.13C1025.44,-1306.13 886.42,-1306.13 819.53,-1306.13"/>
+<polygon fill="#000000" stroke="#000000" points="819.8,-1302.64 809.8,-1306.14 819.8,-1309.64 819.8,-1302.64"/>
+<text xml:space="preserve" text-anchor="middle" x="947.35" y="-1308.36" font-family="Helvetica,sans-Serif" font-size="9.50">points</text>
 </g>
 <!-- type~purepsat -->
 <g id="type~~graph~~TypeGraph_node53" class="node">
 <title>type~purepsat</title>
 <g id="a_type~~graph~~TypeGraph_node53"><a xlink:href="../type/purepsat.html" xlink:title="PurePsat">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="1160.5,-1649 1102.5,-1649 1102.5,-1625 1160.5,-1625 1160.5,-1649"/>
-<text text-anchor="middle" x="1131.5" y="-1634.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PurePsat</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="1152.37,-1654.27 1095.85,-1654.27 1095.85,-1630 1152.37,-1630 1152.37,-1654.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1124.11" y="-1638.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PurePsat</text>
 </a>
 </g>
 </g>
 <!-- linear_interp_1d -->
 <g id="type~~graph~~TypeGraph_node67" class="node">
 <title>linear_interp_1d</title>
-<polygon fill="#5cb85c" stroke="#5cb85c" points="836.5,-1649 737.5,-1649 737.5,-1625 836.5,-1625 836.5,-1649"/>
-<text text-anchor="middle" x="787" y="-1634.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">linear_interp_1d</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="829.97,-1654.27 732.2,-1654.27 732.2,-1630 829.97,-1630 829.97,-1654.27"/>
+<text xml:space="preserve" text-anchor="middle" x="781.09" y="-1638.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">linear_interp_1d</text>
 </g>
 <!-- type~purepsat&#45;&gt;linear_interp_1d -->
 <g id="type~~graph~~TypeGraph_edge35" class="edge">
 <title>type~purepsat&#45;&gt;linear_interp_1d</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1102.47,-1637C1046.85,-1637 921.49,-1637 846.93,-1637"/>
-<polygon fill="#000000" stroke="#000000" points="846.76,-1633.5 836.76,-1637 846.76,-1640.5 846.76,-1633.5"/>
-<text text-anchor="middle" x="954" y="-1639.4" font-family="Helvetica,sans-Serif" font-size="9.50">interpolator_get_T, interpolator_get_P</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1095.49,-1642.13C1040.55,-1642.13 916.46,-1642.13 841.96,-1642.13"/>
+<polygon fill="#000000" stroke="#000000" points="841.96,-1638.64 831.96,-1642.14 841.96,-1645.64 841.96,-1638.64"/>
+<text xml:space="preserve" text-anchor="middle" x="947.35" y="-1644.36" font-family="Helvetica,sans-Serif" font-size="9.50">interpolator_get_T, interpolator_get_P</text>
 </g>
 <!-- type~pxenvel2 -->
 <g id="type~~graph~~TypeGraph_node54" class="node">
 <title>type~pxenvel2</title>
 <g id="a_type~~graph~~TypeGraph_node54"><a xlink:href="../type/pxenvel2.html" xlink:title="PXEnvel2">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="1162.5,-964 1100.5,-964 1100.5,-940 1162.5,-940 1162.5,-964"/>
-<text text-anchor="middle" x="1131.5" y="-949.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PXEnvel2</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="1154.62,-967.27 1093.6,-967.27 1093.6,-943 1154.62,-943 1154.62,-967.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1124.11" y="-951.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PXEnvel2</text>
 </a>
 </g>
 </g>
 <!-- type~pxenvel2&#45;&gt;type~criticalpoint -->
 <g id="type~~graph~~TypeGraph_edge37" class="edge">
 <title>type~pxenvel2&#45;&gt;type~criticalpoint</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1100.44,-955.31C1084.06,-957.08 1063.42,-959.24 1045,-961 971.81,-967.98 886.78,-975.06 835.21,-979.24"/>
-<polygon fill="#000000" stroke="#000000" points="834.73,-975.76 825.05,-980.06 835.3,-982.74 834.73,-975.76"/>
-<text text-anchor="middle" x="954" y="-979.4" font-family="Helvetica,sans-Serif" font-size="9.50">cps</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1093.25,-959.32C1076.97,-961.52 1056.45,-964.16 1038.1,-966.13 965.88,-973.91 881.97,-980.69 830.45,-984.6"/>
+<polygon fill="#000000" stroke="#000000" points="830.24,-981.11 820.53,-985.35 830.77,-988.09 830.24,-981.11"/>
+<text xml:space="preserve" text-anchor="middle" x="947.35" y="-984.41" font-family="Helvetica,sans-Serif" font-size="9.50">cps</text>
 </g>
 <!-- type~pxenvel2&#45;&gt;type~equilibriumstate -->
 <g id="type~~graph~~TypeGraph_edge36" class="edge">
 <title>type~pxenvel2&#45;&gt;type~equilibriumstate</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1106.09,-939.92C1089.33,-932.22 1066.35,-922.82 1045,-918 978.76,-903.03 900.66,-899.84 848.09,-899.72"/>
-<polygon fill="#000000" stroke="#000000" points="847.92,-896.22 837.93,-899.73 847.93,-903.22 847.92,-896.22"/>
-<text text-anchor="middle" x="954" y="-920.4" font-family="Helvetica,sans-Serif" font-size="9.50">points</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1098.12,-942.64C1081.53,-934.96 1059.03,-925.7 1038.1,-920.88 972.51,-905.8 895.17,-902.33 842.8,-902.03"/>
+<polygon fill="#000000" stroke="#000000" points="842.88,-898.53 832.87,-902.02 842.87,-905.53 842.88,-898.53"/>
+<text xml:space="preserve" text-anchor="middle" x="947.35" y="-923.11" font-family="Helvetica,sans-Serif" font-size="9.50">points</text>
 </g>
 <!-- type~pxenvel3 -->
 <g id="type~~graph~~TypeGraph_node55" class="node">
 <title>type~pxenvel3</title>
 <g id="a_type~~graph~~TypeGraph_node55"><a xlink:href="../type/pxenvel3.html" xlink:title="PXEnvel3">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="1162.5,-1691 1100.5,-1691 1100.5,-1667 1162.5,-1667 1162.5,-1691"/>
-<text text-anchor="middle" x="1131.5" y="-1676.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PXEnvel3</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="1154.62,-1696.27 1093.6,-1696.27 1093.6,-1672 1154.62,-1672 1154.62,-1696.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1124.11" y="-1680.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PXEnvel3</text>
 </a>
 </g>
 </g>
@@ -1276,175 +1262,175 @@ model.</p><a href="../type/uniquac.html" class="pull-right"><emph>Read more&hell
 <g id="type~~graph~~TypeGraph_node56" class="node">
 <title>type~pxenvelmp</title>
 <g id="a_type~~graph~~TypeGraph_node56"><a xlink:href="../type/pxenvelmp.html" xlink:title="PXEnvelMP">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="1166.5,-1355 1096.5,-1355 1096.5,-1331 1166.5,-1331 1166.5,-1355"/>
-<text text-anchor="middle" x="1131.5" y="-1340.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PXEnvelMP</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="1158.74,-1360.27 1089.47,-1360.27 1089.47,-1336 1158.74,-1336 1158.74,-1360.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1124.11" y="-1344.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PXEnvelMP</text>
 </a>
 </g>
 </g>
 <!-- type~pxenvelmp&#45;&gt;type~mppoint~2 -->
 <g id="type~~graph~~TypeGraph_edge38" class="edge">
 <title>type~pxenvelmp&#45;&gt;type~mppoint~2</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1096.41,-1343C1031.52,-1343 890.82,-1343 824.27,-1343"/>
-<polygon fill="#000000" stroke="#000000" points="824.25,-1339.5 814.25,-1343 824.25,-1346.5 824.25,-1339.5"/>
-<text text-anchor="middle" x="954" y="-1345.4" font-family="Helvetica,sans-Serif" font-size="9.50">points</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1089.16,-1348.13C1024.96,-1348.13 886.19,-1348.13 819.44,-1348.13"/>
+<polygon fill="#000000" stroke="#000000" points="819.74,-1344.64 809.74,-1348.14 819.74,-1351.64 819.74,-1344.64"/>
+<text xml:space="preserve" text-anchor="middle" x="947.35" y="-1350.36" font-family="Helvetica,sans-Serif" font-size="9.50">points</text>
 </g>
 <!-- type~qmr -->
 <g id="type~~graph~~TypeGraph_node57" class="node">
 <title>type~qmr</title>
 <g id="a_type~~graph~~TypeGraph_node57"><a xlink:href="../type/qmr.html" xlink:title="QMR">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="612,-204 558,-204 558,-180 612,-180 612,-204"/>
-<text text-anchor="middle" x="585" y="-189.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">QMR</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="607.94,-204.27 553.94,-204.27 553.94,-180 607.94,-180 607.94,-204.27"/>
+<text xml:space="preserve" text-anchor="middle" x="580.94" y="-188.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">QMR</text>
 </a>
 </g>
 </g>
 <!-- type~qmr&#45;&gt;type~cubicmixrule -->
 <g id="type~~graph~~TypeGraph_edge39" class="edge">
 <title>type~qmr&#45;&gt;type~cubicmixrule</title>
-<path fill="none" stroke="#000000" d="M557.75,-197.49C528.79,-203.99 481.1,-215.97 442,-232"/>
+<path fill="none" stroke="#000000" d="M553.54,-197.69C524.68,-204.2 477.36,-216.15 438.56,-232.13"/>
 </g>
 <!-- type~qmrtd -->
 <g id="type~~graph~~TypeGraph_node58" class="node">
 <title>type~qmrtd</title>
 <g id="a_type~~graph~~TypeGraph_node58"><a xlink:href="../type/qmrtd.html" xlink:title="QMRTD">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="814,-204 760,-204 760,-180 814,-180 814,-204"/>
-<text text-anchor="middle" x="787" y="-189.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">QMRTD</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="808.09,-204.27 754.09,-204.27 754.09,-180 808.09,-180 808.09,-204.27"/>
+<text xml:space="preserve" text-anchor="middle" x="781.09" y="-188.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">QMRTD</text>
 </a>
 </g>
 </g>
 <!-- type~qmrtd&#45;&gt;type~qmr -->
 <g id="type~~graph~~TypeGraph_edge40" class="edge">
 <title>type~qmrtd&#45;&gt;type~qmr</title>
-<path fill="none" stroke="#000000" d="M759.85,-192C724.67,-192 661.92,-192 622.21,-192"/>
-<polygon fill="#000000" stroke="#000000" points="622.15,-188.5 612.15,-192 622.15,-195.5 622.15,-188.5"/>
+<path fill="none" stroke="#000000" d="M753.78,-192.13C719.43,-192.13 659.09,-192.13 619.82,-192.13"/>
+<polygon fill="#000000" stroke="#000000" points="619.88,-188.64 609.88,-192.14 619.88,-195.64 619.88,-188.64"/>
 </g>
 <!-- type~quadraticpsi -->
 <g id="type~~graph~~TypeGraph_node59" class="node">
 <title>type~quadraticpsi</title>
 <g id="a_type~~graph~~TypeGraph_node59"><a xlink:href="../type/quadraticpsi.html" xlink:title="QuadraticPsi">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="624.5,-66 545.5,-66 545.5,-42 624.5,-42 624.5,-66"/>
-<text text-anchor="middle" x="585" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">QuadraticPsi</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="620.08,-66.27 541.81,-66.27 541.81,-42 620.08,-42 620.08,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="580.94" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">QuadraticPsi</text>
 </a>
 </g>
 </g>
 <!-- type~quadraticpsi&#45;&gt;type~psifunction -->
 <g id="type~~graph~~TypeGraph_edge41" class="edge">
 <title>type~quadraticpsi&#45;&gt;type~psifunction</title>
-<path fill="none" stroke="#000000" d="M545.27,-51.46C516.64,-50.2 476.75,-49.73 442,-54"/>
+<path fill="none" stroke="#000000" d="M541.37,-51.51C512.85,-50.2 473.13,-49.72 438.56,-54.13"/>
 </g>
 <!-- type~sddlc -->
 <g id="type~~graph~~TypeGraph_node60" class="node">
 <title>type~sddlc</title>
 <g id="a_type~~graph~~TypeGraph_node60"><a xlink:href="../type/sddlc.html" xlink:title="sDDLC">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="1158.5,-204 1104.5,-204 1104.5,-180 1158.5,-180 1158.5,-204"/>
-<text text-anchor="middle" x="1131.5" y="-189.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">sDDLC</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="1151.11,-204.27 1097.11,-204.27 1097.11,-180 1151.11,-180 1151.11,-204.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1124.11" y="-188.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">sDDLC</text>
 </a>
 </g>
 </g>
 <!-- type~sddlc&#45;&gt;type~qmrtd -->
 <g id="type~~graph~~TypeGraph_edge42" class="edge">
 <title>type~sddlc&#45;&gt;type~qmrtd</title>
-<path fill="none" stroke="#000000" d="M1104.48,-192C1044.04,-192 894.07,-192 824.51,-192"/>
-<polygon fill="#000000" stroke="#000000" points="824.45,-188.5 814.45,-192 824.45,-195.5 824.45,-188.5"/>
+<path fill="none" stroke="#000000" d="M1096.63,-192.13C1036.43,-192.13 889.09,-192.13 819.57,-192.13"/>
+<polygon fill="#000000" stroke="#000000" points="819.83,-188.64 809.83,-192.14 819.83,-195.64 819.83,-188.64"/>
 </g>
 <!-- type~txenvel2 -->
 <g id="type~~graph~~TypeGraph_node62" class="node">
 <title>type~txenvel2</title>
 <g id="a_type~~graph~~TypeGraph_node62"><a xlink:href="../type/txenvel2.html" xlink:title="TXEnvel2">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="1163,-842 1100,-842 1100,-818 1163,-818 1163,-842"/>
-<text text-anchor="middle" x="1131.5" y="-827.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">TXEnvel2</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="1154.99,-843.27 1093.22,-843.27 1093.22,-819 1154.99,-819 1154.99,-843.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1124.11" y="-827.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">TXEnvel2</text>
 </a>
 </g>
 </g>
 <!-- type~txenvel2&#45;&gt;type~criticalpoint~2 -->
 <g id="type~~graph~~TypeGraph_edge44" class="edge">
 <title>type~txenvel2&#45;&gt;type~criticalpoint~2</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1099.72,-825.1C1083.49,-822.76 1063.22,-820.2 1045,-819 971.9,-814.17 886.85,-815.13 835.25,-816.43"/>
-<polygon fill="#000000" stroke="#000000" points="834.98,-812.94 825.08,-816.7 835.17,-819.93 834.98,-812.94"/>
-<text text-anchor="middle" x="954" y="-821.4" font-family="Helvetica,sans-Serif" font-size="9.50">cps</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1092.93,-825.73C1076.73,-823.1 1056.39,-820.22 1038.1,-818.88 965.93,-813.61 882,-814.74 830.47,-816.26"/>
+<polygon fill="#000000" stroke="#000000" points="830.43,-812.76 820.55,-816.57 830.65,-819.76 830.43,-812.76"/>
+<text xml:space="preserve" text-anchor="middle" x="947.35" y="-821.11" font-family="Helvetica,sans-Serif" font-size="9.50">cps</text>
 </g>
 <!-- type~txenvel2&#45;&gt;type~equilibriumstate -->
 <g id="type~~graph~~TypeGraph_edge43" class="edge">
 <title>type~txenvel2&#45;&gt;type~equilibriumstate</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1099.79,-831.12C1049.4,-833.63 946.41,-841.54 863,-866 847.8,-870.46 831.78,-877.57 818.47,-884.22"/>
-<polygon fill="#000000" stroke="#000000" points="816.6,-881.24 809.31,-888.93 819.8,-887.47 816.6,-881.24"/>
-<text text-anchor="middle" x="954" y="-868.4" font-family="Helvetica,sans-Serif" font-size="9.50">points</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1092.84,-831.82C1042.68,-833.67 939.6,-840.52 856.6,-865.88 841.43,-870.52 825.58,-878.02 812.42,-885.08"/>
+<polygon fill="#000000" stroke="#000000" points="810.87,-881.94 803.83,-889.85 814.27,-888.06 810.87,-881.94"/>
+<text xml:space="preserve" text-anchor="middle" x="947.35" y="-868.11" font-family="Helvetica,sans-Serif" font-size="9.50">points</text>
 </g>
 <!-- type~txenvelmp -->
 <g id="type~~graph~~TypeGraph_node63" class="node">
 <title>type~txenvelmp</title>
 <g id="a_type~~graph~~TypeGraph_node63"><a xlink:href="../type/txenvelmp.html" xlink:title="TXEnvelMP">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="1167,-1397 1096,-1397 1096,-1373 1167,-1373 1167,-1397"/>
-<text text-anchor="middle" x="1131.5" y="-1382.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">TXEnvelMP</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="1159.12,-1402.27 1089.1,-1402.27 1089.1,-1378 1159.12,-1378 1159.12,-1402.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1124.11" y="-1386.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">TXEnvelMP</text>
 </a>
 </g>
 </g>
 <!-- type~txenvelmp&#45;&gt;type~mppoint~3 -->
 <g id="type~~graph~~TypeGraph_edge45" class="edge">
 <title>type~txenvelmp&#45;&gt;type~mppoint~3</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1095.77,-1385C1030.69,-1385 890.95,-1385 824.52,-1385"/>
-<polygon fill="#000000" stroke="#000000" points="824.13,-1381.5 814.13,-1385 824.13,-1388.5 824.13,-1381.5"/>
-<text text-anchor="middle" x="954" y="-1387.4" font-family="Helvetica,sans-Serif" font-size="9.50">points</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1088.85,-1390.13C1024.48,-1390.13 885.97,-1390.13 819.36,-1390.13"/>
+<polygon fill="#000000" stroke="#000000" points="819.68,-1386.64 809.68,-1390.14 819.68,-1393.64 819.68,-1386.64"/>
+<text xml:space="preserve" text-anchor="middle" x="947.35" y="-1392.36" font-family="Helvetica,sans-Serif" font-size="9.50">points</text>
 </g>
 <!-- type~unifac -->
 <g id="type~~graph~~TypeGraph_node64" class="node">
 <title>type~unifac</title>
 <g id="a_type~~graph~~TypeGraph_node64"><a xlink:href="../type/unifac.html" xlink:title="UNIFAC">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="612,-120 558,-120 558,-96 612,-96 612,-120"/>
-<text text-anchor="middle" x="585" y="-105.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">UNIFAC</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="607.94,-120.27 553.94,-120.27 553.94,-96 607.94,-96 607.94,-120.27"/>
+<text xml:space="preserve" text-anchor="middle" x="580.94" y="-104.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">UNIFAC</text>
 </a>
 </g>
 </g>
 <!-- type~unifac&#45;&gt;type~gemodel -->
 <g id="type~~graph~~TypeGraph_edge48" class="edge">
 <title>type~unifac&#45;&gt;type~gemodel</title>
-<path fill="none" stroke="#000000" d="M557.79,-109.68C543.66,-112 527.09,-117.26 517,-129 482.71,-168.9 529.85,-203.38 499,-246 465.09,-292.86 430.09,-271.41 383,-305 367.06,-316.37 351.23,-331.83 339.69,-344.08"/>
-<polygon fill="#000000" stroke="#000000" points="336.98,-341.86 332.77,-351.58 342.13,-346.6 336.98,-341.86"/>
+<path fill="none" stroke="#000000" d="M553.55,-109.91C539.56,-112.27 523.26,-117.54 513.31,-129.13 479.05,-169.07 526.12,-203.49 495.31,-246.13 461.56,-292.86 426.52,-271.35 379.81,-305.13 363.97,-316.59 348.35,-332.18 336.93,-344.6"/>
+<polygon fill="#000000" stroke="#000000" points="334.5,-342.07 330.43,-351.85 339.71,-346.74 334.5,-342.07"/>
 </g>
 <!-- type~unifac&#45;&gt;type~groups -->
 <g id="type~~graph~~TypeGraph_edge47" class="edge">
 <title>type~unifac&#45;&gt;type~groups</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M557.92,-109.19C510.96,-111.35 412.09,-115.87 358.46,-118.33"/>
-<polygon fill="#000000" stroke="#000000" points="358.19,-114.84 348.36,-118.79 358.51,-121.83 358.19,-114.84"/>
-<text text-anchor="middle" x="441" y="-120.4" font-family="Helvetica,sans-Serif" font-size="9.50">molecules, groups_stew</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M553.51,-109.45C506.92,-111.78 410.09,-116.6 356.64,-119.27"/>
+<polygon fill="#000000" stroke="#000000" points="356.62,-115.76 346.81,-119.76 356.97,-122.76 356.62,-115.76"/>
+<text xml:space="preserve" text-anchor="middle" x="437.56" y="-120.22" font-family="Helvetica,sans-Serif" font-size="9.50">molecules, groups_stew</text>
 </g>
 <!-- type~unifac&#45;&gt;type~psifunction -->
 <g id="type~~graph~~TypeGraph_edge46" class="edge">
 <title>type~unifac&#45;&gt;type~psifunction</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M557.92,-103.82C513.42,-96.69 422.29,-82.08 367.23,-73.25"/>
-<polygon fill="#000000" stroke="#000000" points="367.48,-69.75 357.05,-71.62 366.37,-76.66 367.48,-69.75"/>
-<text text-anchor="middle" x="441" y="-96.4" font-family="Helvetica,sans-Serif" font-size="9.50">psi_function</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M553.51,-103.98C509.26,-97.02 419.7,-82.94 365.02,-74.34"/>
+<polygon fill="#000000" stroke="#000000" points="365.83,-70.93 355.41,-72.83 364.74,-77.84 365.83,-70.93"/>
+<text xml:space="preserve" text-anchor="middle" x="437.56" y="-95.93" font-family="Helvetica,sans-Serif" font-size="9.50">psi_function</text>
 </g>
 <!-- type~unifacpsi -->
 <g id="type~~graph~~TypeGraph_node65" class="node">
 <title>type~unifacpsi</title>
 <g id="a_type~~graph~~TypeGraph_node65"><a xlink:href="../type/unifacpsi.html" xlink:title="UNIFACPsi">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="617,-24 553,-24 553,0 617,0 617,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">UNIFACPsi</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="612.58,-24.27 549.31,-24.27 549.31,0 612.58,0 612.58,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="580.94" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">UNIFACPsi</text>
 </a>
 </g>
 </g>
 <!-- type~unifacpsi&#45;&gt;type~psifunction -->
 <g id="type~~graph~~TypeGraph_edge49" class="edge">
 <title>type~unifacpsi&#45;&gt;type~psifunction</title>
-<path fill="none" stroke="#000000" d="M552.71,-21.85C514.36,-33.83 453.07,-52.64 442,-54"/>
-<path fill="none" stroke="#000000" d="M440,-54C416,-56.95 389.2,-59.72 367.21,-61.85"/>
-<polygon fill="#000000" stroke="#000000" points="366.77,-58.37 357.15,-62.81 367.44,-65.34 366.77,-58.37"/>
+<path fill="none" stroke="#000000" d="M549.12,-21.87C510.95,-33.83 449.61,-52.72 438.56,-54.13"/>
+<path fill="none" stroke="#000000" d="M436.56,-54.13C413.03,-57.14 386.79,-60.08 365.09,-62.41"/>
+<polygon fill="#000000" stroke="#000000" points="364.96,-58.9 355.39,-63.44 365.7,-65.86 364.96,-58.9"/>
 </g>
 <!-- type~uniquac -->
 <g id="type~~graph~~TypeGraph_node66" class="node">
 <title>type~uniquac</title>
 <g id="a_type~~graph~~TypeGraph_node66"><a xlink:href="../type/uniquac.html" xlink:title="UNIQUAC">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="615.5,-368 554.5,-368 554.5,-344 615.5,-344 615.5,-368"/>
-<text text-anchor="middle" x="585" y="-353.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">UNIQUAC</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="610.7,-368.27 551.18,-368.27 551.18,-344 610.7,-344 610.7,-368.27"/>
+<text xml:space="preserve" text-anchor="middle" x="580.94" y="-352.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">UNIQUAC</text>
 </a>
 </g>
 </g>
 <!-- type~uniquac&#45;&gt;type~gemodel -->
 <g id="type~~graph~~TypeGraph_edge50" class="edge">
 <title>type~uniquac&#45;&gt;type~gemodel</title>
-<path fill="none" stroke="#000000" d="M554.29,-362.6C542.27,-365.95 528.55,-370.67 517,-377 478.82,-397.92 483.81,-452.13 442,-440"/>
-<path fill="none" stroke="#000000" d="M440,-440C402.23,-429.05 365.19,-401.7 342.96,-382.98"/>
-<polygon fill="#000000" stroke="#000000" points="345.06,-380.17 335.2,-376.28 340.49,-385.47 345.06,-380.17"/>
+<path fill="none" stroke="#000000" d="M550.72,-362.65C538.69,-366.01 524.89,-370.76 513.31,-377.13 475.24,-398.07 480.31,-452.16 438.56,-440.13"/>
+<path fill="none" stroke="#000000" d="M436.56,-440.13C399.76,-429.53 363.56,-403.34 341.31,-384.91"/>
+<polygon fill="#000000" stroke="#000000" points="343.7,-382.35 333.82,-378.54 339.17,-387.68 343.7,-382.35"/>
 </g>
 </g>
 </svg>
@@ -1467,25 +1453,25 @@ model.</p><a href="../type/uniquac.html" class="pull-right"><emph>Read more&hell
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="186pt" height="32pt"
- viewBox="0.00 0.00 185.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="184pt" height="32pt"
+ viewBox="0.00 0.00 184.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 181.5,-28 181.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 179.88,-28.27 179.88,4 -4,4"/>
 <!-- Type -->
 <g id="node1" class="node">
 <title>Type</title>
-<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node2" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="177.5,-24 72.5,-24 72.5,0 177.5,0 177.5,-24"/>
-<text text-anchor="middle" x="125" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="175.88,-24.27 72.12,-24.27 72.12,0 175.88,0 175.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="124" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -1509,14 +1495,14 @@ said component(s).
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

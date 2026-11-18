@@ -1,11 +1,31 @@
 module yaeos__models_ge_NRTL
+   !! # NRTL activity-coefficient model
+   !!
+   !! # Description
+   !! Non-Random-Two-Liquid model for excess Gibbs energy. The constructor is
+   !! [[NRTL]] and the model extends [[GeModel]]. It uses local compositions
+   !! and temperature-dependent pair interactions to represent liquid
+   !! non-ideality.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! model = NRTL(A, B, alpha)
+   !! call model%ln_activity_coefficient(n, T, ln_gamma)
+   !! ```
+   !!
+   !! # References
+   !! Renon, H., and J. M. Prausnitz (1968). Local compositions in
+   !! thermodynamic excess functions for liquid mixtures. *AIChE Journal*, 14,
+   !! 135-144.
    use yaeos__models_ge, only: GeModel
    use yaeos__constants, only: pr, R
    implicit none
 
    type, extends(GeModel) ::  NRTL
-      !! Non-Random-Two-Liquid model
+      !! # NRTL
+      !! Non-Random-Two-Liquid excess-Gibbs model.
       !!
+      !! # Description
       !! \[
       !!    G^E = nRT \cdot \sum_i x_i \frac{\sum_j x_j \tau_{ji} G_{ji}}{\sum_j x_j G_{ji}}
       !! \]
@@ -14,10 +34,15 @@ module yaeos__models_ge_NRTL
       !!
       !! \[\tau_{ij} = A_{ij} + \frac{B_{ij}}{T}\]
       !!
-      !! \[G_{ij} = exp(-\frac{C_{ij}}{\tau_{ij}})\]
-      real(pr), allocatable :: a(:, :) !! A_{ij} matrix
-      real(pr), allocatable :: b(:, :) !! B_{ij} matrix
-      real(pr), allocatable :: c(:, :) !! C_{ij} matrix
+      !! \[G_{ij} = \exp(-C_{ij}\tau_{ij})\]
+      !!
+      !! # Examples
+      !! ```fortran
+      !! model = NRTL(A, B, C)
+      !! ```
+      real(pr), allocatable :: a(:, :) !! \(A_{ij}\) matrix
+      real(pr), allocatable :: b(:, :) !! \(B_{ij}\) matrix [K]
+      real(pr), allocatable :: c(:, :) !! \(C_{ij}\) non-randomness matrix
    contains
       procedure :: excess_gibbs => excess_gibbs
    end type NRTL
@@ -27,9 +52,21 @@ module yaeos__models_ge_NRTL
    end interface NRTL
 contains
    type(NRTL) function init(a, b, c)
-      real(pr), intent(in) :: a(:, :)
-      real(pr), intent(in) :: b(:, :)
-      real(pr), intent(in) :: c(:, :)
+      !! # init
+      !! Construct an NRTL model from its interaction matrices.
+      !!
+      !! # Description
+      !! Stores the \(A_{ij}\) (dimensionless), \(B_{ij}\) [K], and
+      !! non-randomness \(C_{ij}\) matrices used by the NRTL temperature and
+      !! local-composition terms.
+      !!
+      !! # Examples
+      !! ```fortran
+      !! model = NRTL(A, B, C)
+      !! ```
+      real(pr), intent(in) :: a(:, :) !! \(A_{ij}\) matrix
+      real(pr), intent(in) :: b(:, :) !! \(B_{ij}\) matrix
+      real(pr), intent(in) :: c(:, :) !! \(C_{ij}\) matrix
 
       init%a = a
       init%b = b
@@ -46,9 +83,11 @@ contains
       real(pr), optional, intent(out) :: GeT !! \(\frac{dG^E}{dT}\)
       real(pr), optional, intent(out) :: GeT2 !! \(\frac{d^2G^E}{dT^2}\)
       real(pr), optional, intent(out) :: Gen(size(n)) !! \(\frac{dG^E}{dn}\)
-      real(pr), optional, intent(out) :: GeTn(size(n))
-      real(pr), optional, intent(out) :: Gen2(size(n), size(n))
-      real(pr) :: tau(size(n), size(n)), dtaudt(size(n), size(n)), dtaudt2(size(n), size(n))
+      real(pr), optional, intent(out) :: GeTn(size(n)) !! Mixed temperature-mole-number derivative.
+      real(pr), optional, intent(out) :: Gen2(size(n), size(n)) !! Hessian with respect to mole amounts.
+      real(pr) :: tau(size(n), size(n))
+      real(pr) :: dtaudt(size(n), size(n))
+      real(pr) :: dtaudt2(size(n), size(n))
 
       real(pr) :: b(size(n))
 

@@ -1,0 +1,331 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
+    <link rel="icon" href="../../favicon.png">
+
+    <title>Becoming a yaeos developer &ndash; yaeos</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../../css/brands.min.css" rel="stylesheet">
+    <link href="../../css/regular.min.css" rel="stylesheet">
+    <link href="../../css/solid.min.css" rel="stylesheet">
+    <link href="../../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../../css/local.css" rel="stylesheet">
+    <link href="../../css/pygments.css" rel="stylesheet">
+      <link href="../../css/user.css" rel="stylesheet">
+    <script src="../../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../../index.html">yaeos </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="../index.html">User documentation</a></li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>Becoming a yaeos developer</h1>
+    <div class="container p-2 mb-4 bg-light border rounded-3">
+      <div class="row align-items-center justify-content-between">
+        <div class="col">
+          <ul class="list-inline" style="margin-bottom:0px; display:inline">
+          </ul>
+        </div>
+        <div class="col">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../index.html'>User documentation</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Becoming a yaeos developer</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+      <div class="col-3">
+        <div class="card card-body bg-light" id="sidebar-toc">
+          <ul class="nav flex-column align-items">
+            <li class="nav-item">
+              <a class="nav-link" href="../index.html">User documentation</a>
+            </li>
+          </ul>
+          <hr>
+          <nav class="nav nav-pills flex-column">
+              <a class="nav-link" href="../usage/index.html">Getting started</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/fundamentals.html">Thermodynamics essentials</a>
+              <a class="nav-link" href="../usage/eos/index.html">Equations of State</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/eos/cubics/index.html">Cubics</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/eos/cubics/alpha.html">Alpha functions</a>
+              <a class="nav-link" href="../usage/eos/cubics/mixing.html">Mixing Rules</a>
+
+                </nav>
+              <a class="nav-link" href="../usage/eos/gerg2008.html">GERG2008</a>
+              <a class="nav-link" href="../usage/eos/gerg2008_parameters.html">GERG2008 parameters</a>
+              <a class="nav-link" href="../usage/eos/pc_saft.html">PC-SAFT</a>
+
+                </nav>
+              <a class="nav-link" href="../usage/excessmodels/index.html">Gibbs Excess Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/excessmodels/nrtl.html">NRTL</a>
+              <a class="nav-link" href="../usage/excessmodels/nrtl-hv.html">NRTL-HV</a>
+              <a class="nav-link" href="../usage/excessmodels/uniquac.html">UNIQUAC</a>
+              <a class="nav-link" href="../usage/excessmodels/unifac_models/index.html">UNIFAC Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
+              <a class="nav-link" href="../usage/excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
+              <a class="nav-link" href="../usage/excessmodels/unifac_models/psrk.html">UNIFAC-PSRK</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../usage/phase_equilibrium/index.html">Phase Equilibrium</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/phase_equilibrium/flash.html">Flash calculations</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/saturation_points.html">Saturation Points</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/stability.html">Stability analysis</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/critical.html">Critical points</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/multiphase.html">Multiphase flash</a>
+
+                </nav>
+              <a class="nav-link" href="../usage/newmodels/index.html">Adding your own models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/newmodels/analtical.html">Analytical derivatives</a>
+              <a class="nav-link" href="../usage/newmodels/autodiff.html">Automatic differentiation</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../python-api/index.html">Python-API</a>
+              <a class="nav-link active disabled" href="index.html">Becoming a yaeos developer</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="architecture.html">Architecture and repository map</a>
+              <a class="nav-link" href="workflow.html">Developer workflow</a>
+              <a class="nav-link" href="fortran.html">Working in the Fortran core</a>
+              <a class="nav-link" href="numerics.html">Working on numerical algorithms</a>
+              <a class="nav-link" href="c_interface.html">C interface layer</a>
+              <a class="nav-link" href="python_interface.html">Python interface layer</a>
+              <a class="nav-link" href="testing.html">Tests and numerical validation</a>
+              <a class="nav-link" href="walkthrough.html">An end-to-end change</a>
+
+                </nav>
+              <a class="nav-link" href="../contributing/index.html">Contributing</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../contributing/styleguide.html">Style guide</a>
+
+                </nav>
+          </nav>
+        </div>
+      </div>
+
+    <div class="col-9" id='text'>
+      <div class="toc">
+<ul>
+<li><a href="#how-to-become-a-yaeos-developer">How to become a yaeos developer</a><ul>
+<li><a href="#your-first-week-a-suggested-route">Your first week: a suggested route</a></li>
+<li><a href="#pick-the-smallest-useful-change">Pick the smallest useful change</a></li>
+<li><a href="#a-feature-can-cross-several-layers">A feature can cross several layers</a></li>
+<li><a href="#what-this-handbook-treats-as-authoritative">What this handbook treats as authoritative</a></li>
+<li><a href="#before-asking-for-review">Before asking for review</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h1 id="how-to-become-a-yaeos-developer">How to become a yaeos developer</h1>
+<p>This handbook is for someone who can use a model but now wants to understand
+the implementation, fix a calculation, add a feature, or expose it to another
+language. It covers the Fortran library <strong>and</strong> the interface layers around it.
+You do not need to read every source file before making a useful contribution.</p>
+<p>If you have never run <code>yaeos</code>, first complete the
+<a href="../usage/index.html">user tutorial</a>. For terminology such as residual energy,
+phase fraction, or volume root, use
+<a href="../usage/fundamentals.html">thermodynamics essentials</a>. This handbook explains
+where those concepts live in the code and how to change them safely.</p>
+<h2 id="your-first-week-a-suggested-route">Your first week: a suggested route</h2>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Guide</th>
+<th>Practical outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><a href="architecture.html">Architecture and repository map</a></td>
+<td>Locate the implementation behind a public call</td>
+</tr>
+<tr>
+<td>2</td>
+<td><a href="workflow.html">Development workflow</a></td>
+<td>Build and test a checkout rather than an installed release</td>
+</tr>
+<tr>
+<td>3</td>
+<td><a href="fortran.html">Working in the Fortran core</a></td>
+<td>Understand types, bindings, derivative contracts, and exports</td>
+</tr>
+<tr>
+<td>4</td>
+<td><a href="numerics.html">Working on numerical algorithms</a></td>
+<td>Separate model errors from residual, Jacobian, and solver errors</td>
+</tr>
+<tr>
+<td>5</td>
+<td><a href="c_interface.html">The C-facing interface layer</a></td>
+<td>Understand integer model handles and the actual interoperability boundary</td>
+</tr>
+<tr>
+<td>6</td>
+<td><a href="python_interface.html">The Python interface</a></td>
+<td>Follow a Python call through the compiled wrapper into Fortran</td>
+</tr>
+<tr>
+<td>7</td>
+<td><a href="testing.html">Tests and numerical validation</a></td>
+<td>Add a regression and check more than numerical convergence</td>
+</tr>
+<tr>
+<td>8</td>
+<td><a href="walkthrough.html">An end-to-end change</a></td>
+<td>Plan a feature across implementation, interfaces, tests, and docs</td>
+</tr>
+</tbody>
+</table>
+<h2 id="pick-the-smallest-useful-change">Pick the smallest useful change</h2>
+<p>For a first contribution, choose a change with a clear expected result: a
+missing explanation, an incorrect argument description, an additional
+regression test, or a small wrapper around an existing calculation. An entirely
+new thermodynamic model is possible, but it adds both mathematical and
+software-design questions at once.</p>
+<p>Write down three things before editing:</p>
+<ol>
+<li><strong>The contract:</strong> what inputs, units, shapes, and output behavior should be
+   preserved or added?</li>
+<li><strong>The evidence:</strong> what test or calculation will distinguish the old behavior
+   from the corrected behavior?</li>
+<li><strong>The affected layers:</strong> is this a Fortran-only change, or must callers,
+   wrappers, Python classes, exports, and documentation also change?</li>
+</ol>
+<p>These questions keep a local fix from becoming an accidental API break.</p>
+<h2 id="a-feature-can-cross-several-layers">A feature can cross several layers</h2>
+<div class="codehilite"><pre><span></span><code>Python user code
+    -&gt; Python model method / result conversion
+    -&gt; compiled f2py wrapper
+    -&gt; yaeos_c module: handle lookup and argument adaptation
+    -&gt; Fortran model or equilibrium entry point
+    -&gt; property/derivative kernel and numerical routines
+</code></pre></div>
+
+<p>A native Fortran program starts at the Fortran entry point and bypasses the
+Python layers. The directory name <code>c_interface</code> and use of <code>iso_c_binding</code>
+do not, on their own, establish that every routine is an independently callable
+standard C ABI. The <a href="c_interface.html">interface guide</a> explains what the
+current build actually exposes and what a new C client would require.</p>
+<h2 id="what-this-handbook-treats-as-authoritative">What this handbook treats as authoritative</h2>
+<p>The explanation follows the current repository&rsquo;s code and build configuration.
+The architecture discussion was informed by the author&rsquo;s thesis material on
+modularity, derivative adapters, and language interfaces. The thesis was used
+as read-only background, not copied into the repository or treated as an API
+specification. Names, signatures, and interface mechanisms can evolve between
+a research description and an implementation.</p>
+<p>Source comments and generated API pages help you navigate, but verify an
+important claim against the actual procedure body and its tests. In
+particular, do not assume that every solver has the same failure convention,
+that a declared optional argument is handled safely on every path, or that a
+model with mutable global support state is thread-safe.</p>
+<h2 id="before-asking-for-review">Before asking for review</h2>
+<p>Keep implementation, regression tests, and documentation together. Explain
+which commands you actually ran and which checks were unavailable. Do not
+report a Python build as tested merely because the native Fortran build
+succeeded. The <a href="testing.html">testing guide</a> and the
+<a href="../contributing/index.html">contribution guide</a> provide the next steps.</p>
+    </div>
+  </div>
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              yaeos
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2026-11-18 15:31 +0000             </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

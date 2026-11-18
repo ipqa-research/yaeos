@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>ArModelTapenade &ndash; yaeos </title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title="<p> 1.4% of total for derived types.</p>Including implementation: 834 statements,  8.6% of total for derived types.">9 statements</a>
+                 title="<p> 1.4% of total for derived types.</p>Including implementation: 1013 statements,  9.0% of total for derived types.">9 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -168,7 +169,7 @@
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-cv_residual_pt">Cv_residual_pt</a>
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-cv_residual_vt">Cv_residual_vt</a>
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-psat_pure">Psat_pure</a>
-            <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-ar~3">ar</a>
+            <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-ar~11">ar</a>
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-ar_b">ar_b</a>
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-ar_d">ar_d</a>
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-ar_d_b">ar_d_b</a>
@@ -179,7 +180,7 @@
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-entropy_excess">entropy_excess</a>
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-entropy_residual_pt">entropy_residual_pt</a>
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-entropy_residual_vt">entropy_residual_vt</a>
-            <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-get_v0~3">get_v0</a>
+            <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-get_v0~2">get_v0</a>
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-gibbs_excess">gibbs_excess</a>
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-gibbs_residual_pt">gibbs_residual_pt</a>
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-gibbs_residual_vt">gibbs_residual_vt</a>
@@ -188,13 +189,13 @@
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-internal_energy_excess">internal_energy_excess</a>
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-internal_energy_residual_pt">internal_energy_residual_pt</a>
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-internal_energy_residual_vt">internal_energy_residual_vt</a>
-            <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-ln_activity_coefficient~3">ln_activity_coefficient</a>
+            <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-ln_activity_coefficient">ln_activity_coefficient</a>
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-lnfug_vt">lnfug_vt</a>
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-lnphi_pt">lnphi_pt</a>
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-lnphi_vt">lnphi_vt</a>
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-pressure">pressure</a>
-            <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-residual_helmholtz">residual_helmholtz</a>
-            <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-volume~3">volume</a>
+            <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-residual_helmholtz~4">residual_helmholtz</a>
+            <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-volume~2">volume</a>
             <a class="list-group-item" href="../type/armodeltapenade.html#boundprocedure-volume_excess">volume_excess</a>
         </div>
       </div>
@@ -211,7 +212,14 @@
     <div class="col-md-9" id='text'>
       <h2 id="type-def-statement">
         type, public, abstract, extends(<a href='armodel.html'>ArModel</a>) :: ArModelTapenade</h2>
-    
+    <h1 id="armodeltapenade">ArModelTapenade</h1>
+<p>Base class for EOS models with Tapenade-generated derivatives.</p>
+<h1 id="description">Description</h1>
+<p>Concrete extensions provide the primal <code>ar</code> routine and its
+forward/reverse derivative variants. The inherited adapter evaluates
+requested <code>ArModel</code> derivatives by dispatching to those routines.</p>
+<h1 id="examples">Examples</h1>
+<p>See the <code>PCSAFT</code> model for an integrated implementation.</p>
 <br>      <div class="card">
         <div class="card-header">
           <h3 class="card-title">Inherits</h3>
@@ -220,65 +228,65 @@
           <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: type~~armodeltapenade~~InheritsGraph Pages: 1 -->
-<svg id="typearmodeltapenadeInheritsGraph" width="488pt" height="32pt"
- viewBox="0.00 0.00 488.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="type~~armodeltapenade~~InheritsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg id="typearmodeltapenadeInheritsGraph" width="483pt" height="32pt"
+ viewBox="0.00 0.00 483.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="type~~armodeltapenade~~InheritsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>type~~armodeltapenade~~InheritsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 484,-28 484,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 478.83,-28.27 478.83,4 -4,4"/>
 <!-- type~armodeltapenade -->
 <g id="type~~armodeltapenade~~InheritsGraph_node1" class="node">
 <title>type~armodeltapenade</title>
-<polygon fill="none" stroke="black" points="480,-24 371,-24 371,0 480,0 480,-24"/>
-<text text-anchor="middle" x="425.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">ArModelTapenade</text>
+<polygon fill="none" stroke="black" points="474.83,-24.27 367.31,-24.27 367.31,0 474.83,0 474.83,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="421.07" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">ArModelTapenade</text>
 </g>
 <!-- type~armodel -->
 <g id="type~~armodeltapenade~~InheritsGraph_node2" class="node">
 <title>type~armodel</title>
 <g id="a_type~~armodeltapenade~~InheritsGraph_node2"><a xlink:href="../type/armodel.html" xlink:title="ArModel">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="334,-24 277,-24 277,0 334,0 334,-24"/>
-<text text-anchor="middle" x="305.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="330.31,-24.27 274.54,-24.27 274.54,0 330.31,0 330.31,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="302.42" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel</text>
 </a>
 </g>
 </g>
 <!-- type~armodeltapenade&#45;&gt;type~armodel -->
 <g id="type~~armodeltapenade~~InheritsGraph_edge1" class="edge">
 <title>type~armodeltapenade&#45;&gt;type~armodel</title>
-<path fill="none" stroke="#000000" d="M370.68,-12C361.79,-12 352.74,-12 344.35,-12"/>
-<polygon fill="#000000" stroke="#000000" points="344.14,-8.5 334.14,-12 344.14,-15.5 344.14,-8.5"/>
+<path fill="none" stroke="#000000" d="M366.87,-12.13C358.57,-12.13 350.13,-12.13 342.23,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="342.26,-8.64 332.26,-12.14 342.26,-15.64 342.26,-8.64"/>
 </g>
 <!-- type~basemodel -->
 <g id="type~~armodeltapenade~~InheritsGraph_node3" class="node">
 <title>type~basemodel</title>
 <g id="a_type~~armodeltapenade~~InheritsGraph_node3"><a xlink:href="../type/basemodel.html" xlink:title="BaseModel">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="240,-24 169,-24 169,0 240,0 240,-24"/>
-<text text-anchor="middle" x="204.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">BaseModel</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="237.54,-24.27 167.52,-24.27 167.52,0 237.54,0 237.54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="202.53" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">BaseModel</text>
 </a>
 </g>
 </g>
 <!-- type~armodel&#45;&gt;type~basemodel -->
 <g id="type~~armodeltapenade~~InheritsGraph_edge2" class="edge">
 <title>type~armodel&#45;&gt;type~basemodel</title>
-<path fill="none" stroke="#000000" d="M276.92,-12C268.69,-12 259.45,-12 250.41,-12"/>
-<polygon fill="#000000" stroke="#000000" points="250.36,-8.5 240.36,-12 250.36,-15.5 250.36,-8.5"/>
+<path fill="none" stroke="#000000" d="M274.16,-12.13C266.45,-12.13 257.86,-12.13 249.38,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="249.51,-8.64 239.51,-12.14 249.51,-15.64 249.51,-8.64"/>
 </g>
 <!-- type~substances -->
 <g id="type~~armodeltapenade~~InheritsGraph_node4" class="node">
 <title>type~substances</title>
 <g id="a_type~~armodeltapenade~~InheritsGraph_node4"><a xlink:href="../type/substances.html" xlink:title="Substances">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="73,-24 0,-24 0,0 73,0 73,-24"/>
-<text text-anchor="middle" x="36.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Substances</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="72.27,-24.27 0,-24.27 0,0 72.27,0 72.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="36.13" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Substances</text>
 </a>
 </g>
 </g>
 <!-- type~basemodel&#45;&gt;type~substances -->
 <g id="type~~armodeltapenade~~InheritsGraph_edge3" class="edge">
 <title>type~basemodel&#45;&gt;type~substances</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M168.7,-12C143.94,-12 110.42,-12 83.47,-12"/>
-<polygon fill="#000000" stroke="#000000" points="83.11,-8.5 73.11,-12 83.11,-15.5 83.11,-8.5"/>
-<text text-anchor="middle" x="121" y="-14.4" font-family="Helvetica,sans-Serif" font-size="9.50">components</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M167.07,-12.13C142.95,-12.13 110.46,-12.13 83.99,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="84.2,-8.64 74.2,-12.14 84.2,-15.64 84.2,-8.64"/>
+<text xml:space="preserve" text-anchor="middle" x="119.89" y="-14.36" font-family="Helvetica,sans-Serif" font-size="9.50">components</text>
 </g>
 </g>
 </svg>
@@ -297,25 +305,25 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="186pt" height="32pt"
- viewBox="0.00 0.00 185.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="184pt" height="32pt"
+ viewBox="0.00 0.00 184.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 181.5,-28 181.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 179.88,-28.27 179.88,4 -4,4"/>
 <!-- Type -->
 <g id="node1" class="node">
 <title>Type</title>
-<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node2" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="177.5,-24 72.5,-24 72.5,0 177.5,0 177.5,-24"/>
-<text text-anchor="middle" x="125" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="175.88,-24.27 72.12,-24.27 72.12,0 175.88,0 175.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="124" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -339,34 +347,34 @@ said component(s).
           <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: type~~armodeltapenade~~InheritedByGraph Pages: 1 -->
-<svg id="typearmodeltapenadeInheritedByGraph" width="207pt" height="32pt"
- viewBox="0.00 0.00 207.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="type~~armodeltapenade~~InheritedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg id="typearmodeltapenadeInheritedByGraph" width="206pt" height="32pt"
+ viewBox="0.00 0.00 206.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="type~~armodeltapenade~~InheritedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>type~~armodeltapenade~~InheritedByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 203,-28 203,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 201.52,-28.27 201.52,4 -4,4"/>
 <!-- type~armodeltapenade -->
 <g id="type~~armodeltapenade~~InheritedByGraph_node1" class="node">
 <title>type~armodeltapenade</title>
-<polygon fill="none" stroke="black" points="109,-24 0,-24 0,0 109,0 109,-24"/>
-<text text-anchor="middle" x="54.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">ArModelTapenade</text>
+<polygon fill="none" stroke="black" points="107.52,-24.27 0,-24.27 0,0 107.52,0 107.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="53.76" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">ArModelTapenade</text>
 </g>
 <!-- type~pcsaft -->
 <g id="type~~armodeltapenade~~InheritedByGraph_node2" class="node">
 <title>type~pcsaft</title>
 <g id="a_type~~armodeltapenade~~InheritedByGraph_node2"><a xlink:href="../type/pcsaft.html" xlink:title="PCSAFT">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="199,-24 145,-24 145,0 199,0 199,-24"/>
-<text text-anchor="middle" x="172" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PCSAFT</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="197.52,-24.27 143.52,-24.27 143.52,0 197.52,0 197.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="170.52" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PCSAFT</text>
 </a>
 </g>
 </g>
 <!-- type~pcsaft&#45;&gt;type~armodeltapenade -->
 <g id="type~~armodeltapenade~~InheritedByGraph_edge1" class="edge">
 <title>type~pcsaft&#45;&gt;type~armodeltapenade</title>
-<path fill="none" stroke="#000000" d="M144.79,-12C137.15,-12 128.45,-12 119.54,-12"/>
-<polygon fill="#000000" stroke="#000000" points="119.45,-8.5 109.45,-12 119.45,-15.5 119.45,-8.5"/>
+<path fill="none" stroke="#000000" d="M143.19,-12.13C135.83,-12.13 127.49,-12.13 118.95,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="119.18,-8.64 109.18,-12.14 119.18,-15.64 119.18,-8.64"/>
 </g>
 </g>
 </svg>
@@ -385,25 +393,25 @@ said component(s).
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="186pt" height="32pt"
- viewBox="0.00 0.00 185.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="184pt" height="32pt"
+ viewBox="0.00 0.00 184.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 181.5,-28 181.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 179.88,-28.27 179.88,4 -4,4"/>
 <!-- Type -->
 <g id="node1" class="node">
 <title>Type</title>
-<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node2" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="177.5,-24 72.5,-24 72.5,0 177.5,0 177.5,-24"/>
-<text text-anchor="middle" x="125" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="175.88,-24.27 72.12,-24.27 72.12,0 175.88,0 175.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="124" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -447,7 +455,7 @@ said component(s).
                 <td></td>
                 <td></td>
             <td>
-                <p>Substances contained in the module</p>
+                <p>Pure-component properties for the model&rsquo;s component order.</p>
             </td>
         </tr>
         <tr>
@@ -984,8 +992,11 @@ temperature.</p><a href="../proc/cv_residual_pt.html" class="pull-right"><emph>R
 </h3>
     
 
-  <p>Calculation of saturation pressure of a pure component using the
-secant method.</p>
+  <p>Calculation of saturation pressure of a pure component. Liquid and
+vapor volumes are initialized at 100 bar and 0.001 bar, then
+<code>solve_point_psat</code> applies Newton iterations at fixed temperature.
+The returned value is the pressure evaluated at the converged liquid
+volume [bar].</p><a href="../proc/psat_pure.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -1106,7 +1117,7 @@ will be calculated</p>
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-ar~3"></span>
+      <span class="anchor" id="boundprocedure-ar~11"></span>
       <h3>
           procedure(<a href='../interface/tapenade_ar.html'>tapenade_ar</a>), public, deferred ::
   <strong>ar</strong>
@@ -1119,7 +1130,8 @@ will be calculated</p>
      subroutine tapenade_ar(model, n, v, t, arval)  
 <small>Prototype</small></h3>
 
-  
+  <h1 id="tapenade_ar">tapenade_ar</h1>
+<p>Primal residual Helmholtz callback required by <code>ArModelTapenade</code>.</p>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -1144,7 +1156,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>model</strong></td>
             <td>
-                
+                <p>Model parameters.</p>
             </td>
         </tr>
         <tr>
@@ -1159,7 +1171,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>n</strong>(:)</td>
             <td>
-                
+                <p>Component mole amounts [mol].</p>
             </td>
         </tr>
         <tr>
@@ -1174,7 +1186,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>v</strong></td>
             <td>
-                
+                <p>Total volume [L].</p>
             </td>
         </tr>
         <tr>
@@ -1189,7 +1201,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>t</strong></td>
             <td>
-                
+                <p>Temperature [K].</p>
             </td>
         </tr>
         <tr>
@@ -1204,7 +1216,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>arval</strong></td>
             <td>
-                
+                <p>Residual Helmholtz energy.</p>
             </td>
         </tr>
     </tbody>
@@ -1232,7 +1244,8 @@ will be calculated</p>
      subroutine tapenade_ar_b(model, n, nb, v, vb, t, tb, arval, arvalb)  
 <small>Prototype</small></h3>
 
-  
+  <h1 id="tapenade_ar_b">tapenade_ar_b</h1>
+<p>Reverse-mode adjoint callback for the residual Helmholtz energy.</p>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -1257,7 +1270,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>model</strong></td>
             <td>
-                
+                <p>Model parameters.</p>
             </td>
         </tr>
         <tr>
@@ -1272,7 +1285,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>n</strong>(:)</td>
             <td>
-                
+                <p>Component mole amounts [mol].</p>
             </td>
         </tr>
         <tr>
@@ -1287,7 +1300,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>nb</strong>(:)</td>
             <td>
-                
+                <p>Adjoint value for component mole amounts.</p>
             </td>
         </tr>
         <tr>
@@ -1302,7 +1315,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>v</strong></td>
             <td>
-                
+                <p>Total volume [L].</p>
             </td>
         </tr>
         <tr>
@@ -1317,7 +1330,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>vb</strong></td>
             <td>
-                
+                <p>Adjoint value for volume.</p>
             </td>
         </tr>
         <tr>
@@ -1332,7 +1345,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>t</strong></td>
             <td>
-                
+                <p>Temperature [K].</p>
             </td>
         </tr>
         <tr>
@@ -1347,7 +1360,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>tb</strong></td>
             <td>
-                
+                <p>Adjoint value for temperature.</p>
             </td>
         </tr>
         <tr>
@@ -1362,7 +1375,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>arval</strong></td>
             <td>
-                
+                <p>Primal energy value.</p>
             </td>
         </tr>
         <tr>
@@ -1377,7 +1390,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>arvalb</strong></td>
             <td>
-                
+                <p>Incoming adjoint seed on the energy.</p>
             </td>
         </tr>
     </tbody>
@@ -1405,7 +1418,8 @@ will be calculated</p>
      subroutine tapenade_ar_d(model, n, nd, v, vd, t, td, arval, arvald)  
 <small>Prototype</small></h3>
 
-  
+  <h1 id="tapenade_ar_d">tapenade_ar_d</h1>
+<p>Forward directional derivative callback for the residual Helmholtz energy.</p>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -1430,7 +1444,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>model</strong></td>
             <td>
-                
+                <p>Model parameters.</p>
             </td>
         </tr>
         <tr>
@@ -1445,7 +1459,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>n</strong>(:)</td>
             <td>
-                
+                <p>Component mole amounts [mol].</p>
             </td>
         </tr>
         <tr>
@@ -1460,7 +1474,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>nd</strong>(:)</td>
             <td>
-                
+                <p>Tangent seed for component mole amounts (nd).</p>
             </td>
         </tr>
         <tr>
@@ -1475,7 +1489,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>v</strong></td>
             <td>
-                
+                <p>Total volume [L].</p>
             </td>
         </tr>
         <tr>
@@ -1490,7 +1504,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>vd</strong></td>
             <td>
-                
+                <p>Tangent seed for volume (vd).</p>
             </td>
         </tr>
         <tr>
@@ -1505,7 +1519,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>t</strong></td>
             <td>
-                
+                <p>Temperature [K].</p>
             </td>
         </tr>
         <tr>
@@ -1520,7 +1534,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>td</strong></td>
             <td>
-                
+                <p>Tangent seed for temperature (td).</p>
             </td>
         </tr>
         <tr>
@@ -1535,7 +1549,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>arval</strong></td>
             <td>
-                
+                <p>Primal residual Helmholtz energy.</p>
             </td>
         </tr>
         <tr>
@@ -1550,7 +1564,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>arvald</strong></td>
             <td>
-                
+                <p>Forward directional derivative of residual Helmholtz energy.</p>
             </td>
         </tr>
     </tbody>
@@ -1578,7 +1592,8 @@ will be calculated</p>
      subroutine tapenade_ar_d_b(model, n, nb, nd, ndb, v, vb, vd, vdb, t, tb, td, tdb, arval, arvalb, arvald, arvaldb)  
 <small>Prototype</small></h3>
 
-  
+  <h1 id="tapenade_ar_d_b">tapenade_ar_d_b</h1>
+<p>Mixed forward/reverse callback used for Hessian and mixed derivatives.</p>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -1603,7 +1618,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>model</strong></td>
             <td>
-                
+                <p>Model parameters.</p>
             </td>
         </tr>
         <tr>
@@ -1618,7 +1633,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>n</strong>(:)</td>
             <td>
-                
+                <p>Component mole amounts [mol].</p>
             </td>
         </tr>
         <tr>
@@ -1633,7 +1648,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>nb</strong>(:)</td>
             <td>
-                
+                <p>Adjoint value for component mole amounts.</p>
             </td>
         </tr>
         <tr>
@@ -1648,7 +1663,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>nd</strong>(:)</td>
             <td>
-                
+                <p>Forward tangent seed for the mole amounts.</p>
             </td>
         </tr>
         <tr>
@@ -1663,7 +1678,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>ndb</strong>(:)</td>
             <td>
-                
+                <p>Mixed tangent-adjoint value for component mole amounts.</p>
             </td>
         </tr>
         <tr>
@@ -1678,7 +1693,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>v</strong></td>
             <td>
-                
+                <p>Total volume [L].</p>
             </td>
         </tr>
         <tr>
@@ -1693,7 +1708,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>vb</strong></td>
             <td>
-                
+                <p>Adjoint value for volume.</p>
             </td>
         </tr>
         <tr>
@@ -1708,7 +1723,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>vd</strong></td>
             <td>
-                
+                <p>Forward tangent seed for the volume.</p>
             </td>
         </tr>
         <tr>
@@ -1723,7 +1738,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>vdb</strong></td>
             <td>
-                
+                <p>Mixed tangent-adjoint value for volume.</p>
             </td>
         </tr>
         <tr>
@@ -1738,7 +1753,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>t</strong></td>
             <td>
-                
+                <p>Temperature [K].</p>
             </td>
         </tr>
         <tr>
@@ -1753,7 +1768,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>tb</strong></td>
             <td>
-                
+                <p>Adjoint value for temperature.</p>
             </td>
         </tr>
         <tr>
@@ -1768,7 +1783,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>td</strong></td>
             <td>
-                
+                <p>Forward tangent seed for the temperature.</p>
             </td>
         </tr>
         <tr>
@@ -1783,7 +1798,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>tdb</strong></td>
             <td>
-                
+                <p>Mixed tangent-adjoint value for temperature.</p>
             </td>
         </tr>
         <tr>
@@ -1798,7 +1813,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>arval</strong></td>
             <td>
-                
+                <p>Primal energy value.</p>
             </td>
         </tr>
         <tr>
@@ -1813,7 +1828,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>arvalb</strong></td>
             <td>
-                
+                <p>Adjoint seed for the primal energy output.</p>
             </td>
         </tr>
         <tr>
@@ -1828,7 +1843,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>arvald</strong></td>
             <td>
-                
+                <p>Forward directional energy derivative.</p>
             </td>
         </tr>
         <tr>
@@ -1843,7 +1858,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>arvaldb</strong></td>
             <td>
-                
+                <p>Mixed tangent-adjoint energy output.</p>
             </td>
         </tr>
     </tbody>
@@ -1871,7 +1886,8 @@ will be calculated</p>
      subroutine tapenade_ar_d_d(model, n, nd, v, vd0, vd, t, td0, td, arval, arvald0, arvald, arvaldd)  
 <small>Prototype</small></h3>
 
-  
+  <h1 id="tapenade_ar_d_d">tapenade_ar_d_d</h1>
+<p>Nested forward-mode callback for second directional derivatives.</p>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -1896,7 +1912,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>model</strong></td>
             <td>
-                
+                <p>Model parameters.</p>
             </td>
         </tr>
         <tr>
@@ -1911,7 +1927,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>n</strong>(:)</td>
             <td>
-                
+                <p>Component mole amounts [mol].</p>
             </td>
         </tr>
         <tr>
@@ -1926,7 +1942,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>nd</strong>(:)</td>
             <td>
-                
+                <p>Tangent seed for component mole amounts (nd).</p>
             </td>
         </tr>
         <tr>
@@ -1941,7 +1957,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>v</strong></td>
             <td>
-                
+                <p>Total volume [L].</p>
             </td>
         </tr>
         <tr>
@@ -1956,7 +1972,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>vd0</strong></td>
             <td>
-                
+                <p>Tangent seed for volume (vd0).</p>
             </td>
         </tr>
         <tr>
@@ -1971,7 +1987,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>vd</strong></td>
             <td>
-                
+                <p>Tangent seed for volume (vd).</p>
             </td>
         </tr>
         <tr>
@@ -1986,7 +2002,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>t</strong></td>
             <td>
-                
+                <p>Temperature [K].</p>
             </td>
         </tr>
         <tr>
@@ -2001,7 +2017,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>td0</strong></td>
             <td>
-                
+                <p>Tangent seed for temperature (td0).</p>
             </td>
         </tr>
         <tr>
@@ -2016,7 +2032,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>td</strong></td>
             <td>
-                
+                <p>Tangent seed for temperature (td).</p>
             </td>
         </tr>
         <tr>
@@ -2031,7 +2047,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>arval</strong></td>
             <td>
-                
+                <p>Primal residual Helmholtz energy.</p>
             </td>
         </tr>
         <tr>
@@ -2046,7 +2062,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>arvald0</strong></td>
             <td>
-                
+                <p>First nested tangent of residual Helmholtz energy.</p>
             </td>
         </tr>
         <tr>
@@ -2061,7 +2077,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>arvald</strong></td>
             <td>
-                
+                <p>Forward directional derivative of residual Helmholtz energy.</p>
             </td>
         </tr>
         <tr>
@@ -2076,7 +2092,7 @@ will be calculated</p>
             <td>::</td>
             <td><strong>arvaldd</strong></td>
             <td>
-                
+                <p>Mixed second tangent of residual Helmholtz energy.</p>
             </td>
         </tr>
     </tbody>
@@ -2352,7 +2368,7 @@ will be calculated</p>
             <td><strong>HrP</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dH^r}}{dP}</script>
+<script type="math/tex">\frac{dH^r}{dP}</script>
 </p>
             </td>
         </tr>
@@ -2369,7 +2385,7 @@ will be calculated</p>
             <td><strong>HrT</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dH^r}}{dT}</script>
+<script type="math/tex">\frac{dH^r}{dT}</script>
 </p>
             </td>
         </tr>
@@ -2386,7 +2402,7 @@ will be calculated</p>
             <td><strong>Hrn</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">\frac{dH^r}}{dn}</script>
+<script type="math/tex">\frac{dH^r}{dn}</script>
 </p>
             </td>
         </tr>
@@ -2517,7 +2533,7 @@ will be calculated</p>
             <td><strong>HrV</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dH^r}}{dV}</script>
+<script type="math/tex">\frac{dH^r}{dV}</script>
 </p>
             </td>
         </tr>
@@ -2534,7 +2550,7 @@ will be calculated</p>
             <td><strong>HrT</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dH^r}}{dT}</script>
+<script type="math/tex">\frac{dH^r}{dT}</script>
 </p>
             </td>
         </tr>
@@ -2551,7 +2567,7 @@ will be calculated</p>
             <td><strong>Hrn</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">\frac{dH^r}}{dn}</script>
+<script type="math/tex">\frac{dH^r}{dn}</script>
 </p>
             </td>
         </tr>
@@ -2828,7 +2844,7 @@ will be calculated</p>
             <td><strong>SrP</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dS^r}}{dP}</script>
+<script type="math/tex">\frac{dS^r}{dP}</script>
 </p>
             </td>
         </tr>
@@ -2845,7 +2861,7 @@ will be calculated</p>
             <td><strong>SrT</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dS^r}}{dT}</script>
+<script type="math/tex">\frac{dS^r}{dT}</script>
 </p>
             </td>
         </tr>
@@ -2862,7 +2878,7 @@ will be calculated</p>
             <td><strong>Srn</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">\frac{dS^r}}{dn}</script>
+<script type="math/tex">\frac{dS^r}{dn}</script>
 </p>
             </td>
         </tr>
@@ -2993,7 +3009,7 @@ will be calculated</p>
             <td><strong>SrV</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dS^r}}{dV}</script>
+<script type="math/tex">\frac{dS^r}{dV}</script>
 </p>
             </td>
         </tr>
@@ -3010,7 +3026,7 @@ will be calculated</p>
             <td><strong>SrT</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dS^r}}{dT}</script>
+<script type="math/tex">\frac{dS^r}{dT}</script>
 </p>
             </td>
         </tr>
@@ -3027,7 +3043,7 @@ will be calculated</p>
             <td><strong>Srn</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">\frac{dS^r}}{dn}</script>
+<script type="math/tex">\frac{dS^r}{dn}</script>
 </p>
             </td>
         </tr>
@@ -3043,7 +3059,7 @@ will be calculated</p>
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-get_v0~3"></span>
+      <span class="anchor" id="boundprocedure-get_v0~2"></span>
       <h3>
           procedure(<a href='../interface/abs_volume_initializer.html'>abs_volume_initializer</a>), public, deferred ::
   <strong>get_v0</strong>
@@ -3056,7 +3072,9 @@ will be calculated</p>
      function abs_volume_initializer(self, n, p, t)  
 <small>Prototype</small></h3>
 
-  <p>Function that provides an initializer value for the liquid-root
+  <h1 id="abs_volume_initializer">abs_volume_initializer</h1>
+<h1 id="description">Description</h1>
+<p>Function that provides an initializer value for the liquid-root
 of newton solver of volume. In the case the model will use the
 <code>volume_michelsen</code> routine this value should provide the co-volume
 of the model.</p>
@@ -3281,7 +3299,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>GeP</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dG^E}}{dP}</script>
+<script type="math/tex">\frac{dG^E}{dP}</script>
 </p>
             </td>
         </tr>
@@ -3298,7 +3316,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>GeT</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dG^E}}{dT}</script>
+<script type="math/tex">\frac{dG^E}{dT}</script>
 </p>
             </td>
         </tr>
@@ -3315,7 +3333,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>Gen</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">\frac{dG^E}}{dn}</script>
+<script type="math/tex">\frac{dG^E}{dn}</script>
 </p>
             </td>
         </tr>
@@ -3462,7 +3480,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>GrP</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dG^r}}{dP}</script>
+<script type="math/tex">\frac{dG^r}{dP}</script>
 </p>
             </td>
         </tr>
@@ -3479,7 +3497,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>GrT</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dG^r}}{dT}</script>
+<script type="math/tex">\frac{dG^r}{dT}</script>
 </p>
             </td>
         </tr>
@@ -3496,7 +3514,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>Grn</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">\frac{dG^r}}{dn}</script>
+<script type="math/tex">\frac{dG^r}{dn}</script>
 </p>
             </td>
         </tr>
@@ -3627,7 +3645,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>GrV</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dG^r}}{dV}</script>
+<script type="math/tex">\frac{dG^r}{dV}</script>
 </p>
             </td>
         </tr>
@@ -3644,7 +3662,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>GrT</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dG^r}}{dT}</script>
+<script type="math/tex">\frac{dG^r}{dT}</script>
 </p>
             </td>
         </tr>
@@ -3661,7 +3679,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>Grn</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">\frac{dG^r}}{dn}</script>
+<script type="math/tex">\frac{dG^r}{dn}</script>
 </p>
             </td>
         </tr>
@@ -3938,7 +3956,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>ArP</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dA^r}}{dP}</script>
+<script type="math/tex">\frac{dA^r}{dP}</script>
 </p>
             </td>
         </tr>
@@ -3955,7 +3973,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>ArT</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dA^r}}{dT}</script>
+<script type="math/tex">\frac{dA^r}{dT}</script>
 </p>
             </td>
         </tr>
@@ -3972,7 +3990,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>Arn</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">\frac{dA^r}}{dn}</script>
+<script type="math/tex">\frac{dA^r}{dn}</script>
 </p>
             </td>
         </tr>
@@ -4249,7 +4267,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>UrP</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dU^r}}{dP}</script>
+<script type="math/tex">\frac{dU^r}{dP}</script>
 </p>
             </td>
         </tr>
@@ -4266,7 +4284,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>UrT</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dU^r}}{dT}</script>
+<script type="math/tex">\frac{dU^r}{dT}</script>
 </p>
             </td>
         </tr>
@@ -4283,7 +4301,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>Urn</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">\frac{dU^r}}{dn}</script>
+<script type="math/tex">\frac{dU^r}{dn}</script>
 </p>
             </td>
         </tr>
@@ -4414,7 +4432,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>UrV</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dU^r}}{dV}</script>
+<script type="math/tex">\frac{dU^r}{dV}</script>
 </p>
             </td>
         </tr>
@@ -4431,7 +4449,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>UrT</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dU^r}}{dT}</script>
+<script type="math/tex">\frac{dU^r}{dT}</script>
 </p>
             </td>
         </tr>
@@ -4448,7 +4466,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>Urn</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">\frac{dU^r}}{dn}</script>
+<script type="math/tex">\frac{dU^r}{dn}</script>
 </p>
             </td>
         </tr>
@@ -4464,7 +4482,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-ln_activity_coefficient~3"></span>
+      <span class="anchor" id="boundprocedure-ln_activity_coefficient"></span>
       <h3>
           procedure, public ::
   <strong>ln_activity_coefficient</strong>
@@ -4474,12 +4492,12 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
       <ul class="list-group">
           <li class="list-group-item">
                     <h3>
-    private  subroutine <a href='../proc/ln_activity_coefficient~3.html'>ln_activity_coefficient</a>(eos, n, P, T, root_type, lngamma, dlngammadP, dlngammadT, dlngammadn)  
+    private  subroutine <a href='../proc/ln_activity_coefficient.html'>ln_activity_coefficient</a>(eos, n, P, T, root_type, lngamma, dlngammadP, dlngammadT, dlngammadn)  
 </h3>
     
 
   <p>Calculate natural logarithm of activity coefficients and its
-derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coefficient~3.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coefficient.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -4596,7 +4614,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
             <td><strong>dlngammadP</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">\frac{d\ln\gamma}}{dP}</script>
+<script type="math/tex">\frac{d\ln\gamma}{dP}</script>
 </p>
             </td>
         </tr>
@@ -4613,7 +4631,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
             <td><strong>dlngammadT</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">\frac{d\ln\gamma}}{dT}</script>
+<script type="math/tex">\frac{d\ln\gamma}{dT}</script>
 </p>
             </td>
         </tr>
@@ -4630,7 +4648,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
             <td><strong>dlngammadn</strong>(size(n),size(n))</td>
             <td>
 <p>
-<script type="math/tex">\frac{d\ln\gamma}}{dn}</script>
+<script type="math/tex">\frac{d\ln\gamma}{dn}</script>
 </p>
             </td>
         </tr>
@@ -4761,7 +4779,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
             <td><strong>lnf</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">\ln(\f_i)</script> vector</p>
+<script type="math/tex">\ln(f_i)</script> vector</p>
             </td>
         </tr>
         <tr>
@@ -4777,7 +4795,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
             <td><strong>dlnfdV</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">ln(f_i)</script> Volume derivative</p>
+<script type="math/tex">\ln(f_i)</script> Volume derivative</p>
             </td>
         </tr>
         <tr>
@@ -4793,7 +4811,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
             <td><strong>dlnfdT</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">ln(f_i)</script> Temp derivative</p>
+<script type="math/tex">\ln(f_i)</script> Temp derivative</p>
             </td>
         </tr>
         <tr>
@@ -4809,7 +4827,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
             <td><strong>dlnfdn</strong>(size(n),size(n))</td>
             <td>
 <p>
-<script type="math/tex">ln(f_i)</script> compositional derivative</p>
+<script type="math/tex">\ln(f_i)</script> compositional derivative</p>
             </td>
         </tr>
         <tr>
@@ -5005,7 +5023,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
             <td><strong>lnPhi</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">\ln(phi)</script> vector</p>
+<script type="math/tex">\ln(\phi_i)</script> vector</p>
             </td>
         </tr>
         <tr>
@@ -5020,7 +5038,8 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
             <td>::</td>
             <td><strong>dlnPhidP</strong>(size(n))</td>
             <td>
-<p>ln(phi) Presssure derivative</p>
+<p>
+<script type="math/tex">\partial \ln\phi_i/\partial P</script> [1/bar]</p>
             </td>
         </tr>
         <tr>
@@ -5035,7 +5054,8 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
             <td>::</td>
             <td><strong>dlnPhidT</strong>(size(n))</td>
             <td>
-<p>ln(phi) Temperature derivative</p>
+<p>
+<script type="math/tex">\partial \ln\phi_i/\partial T</script> [1/K]</p>
             </td>
         </tr>
         <tr>
@@ -5050,7 +5070,9 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
             <td>::</td>
             <td><strong>dlnPhidn</strong>(size(n),size(n))</td>
             <td>
-<p>ln(phi) compositional derivative</p>
+<p>
+<script type="math/tex">\partial \ln\phi_i/\partial n_j</script>
+</p>
             </td>
         </tr>
         <tr>
@@ -5117,7 +5139,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
             <td><strong>lnPhiP</strong>(:)</td>
             <td>
 <p>
-<script type="math/tex">\ln(\phi_i)P </script>. It is useful to calculate fugacity coefficients
+<script type="math/tex">\ln(\phi_i P)</script>. It is useful to calculate fugacity coefficients
 at negatives pressures.</p>
             </td>
         </tr>
@@ -5264,7 +5286,7 @@ at negatives pressures.</p>
             <td><strong>dlnPhidP</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">ln(phi_i)</script> Presssure derivative</p>
+<script type="math/tex">\ln(\phi_i)</script> Pressure derivative</p>
             </td>
         </tr>
         <tr>
@@ -5280,7 +5302,7 @@ at negatives pressures.</p>
             <td><strong>dlnPhidT</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">ln(phi_i)</script> Temp derivative</p>
+<script type="math/tex">\ln(\phi_i)</script> Temp derivative</p>
             </td>
         </tr>
         <tr>
@@ -5296,7 +5318,7 @@ at negatives pressures.</p>
             <td><strong>dlnPhidn</strong>(size(n),size(n))</td>
             <td>
 <p>
-<script type="math/tex">ln(phi_i)</script> compositional derivative</p>
+<script type="math/tex">\ln(\phi_i)</script> compositional derivative</p>
             </td>
         </tr>
         <tr>
@@ -5363,7 +5385,7 @@ at negatives pressures.</p>
             <td><strong>lnPhiP</strong>(:)</td>
             <td>
 <p>
-<script type="math/tex">\ln(\phi_i)P </script>. It is useful to calculate fugacity coefficients
+<script type="math/tex">\ln(\phi_i P)</script>. It is useful to calculate fugacity coefficients
 at negatives pressures.</p>
             </td>
         </tr>
@@ -5494,7 +5516,7 @@ at negatives pressures.</p>
             <td><strong>dPdV</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dP}}{dV}</script>
+<script type="math/tex">\frac{dP}{dV}</script>
 </p>
             </td>
         </tr>
@@ -5511,7 +5533,7 @@ at negatives pressures.</p>
             <td><strong>dPdT</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dP}}{dT}</script>
+<script type="math/tex">\frac{dP}{dT}</script>
 </p>
             </td>
         </tr>
@@ -5528,7 +5550,7 @@ at negatives pressures.</p>
             <td><strong>dPdn</strong>(:)</td>
             <td>
 <p>
-<script type="math/tex">\frac{dP}}{dn_i}</script>
+<script type="math/tex">\frac{dP}{dn_i}</script>
 </p>
             </td>
         </tr>
@@ -5544,7 +5566,7 @@ at negatives pressures.</p>
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-residual_helmholtz"></span>
+      <span class="anchor" id="boundprocedure-residual_helmholtz~4"></span>
       <h3>
           procedure, public ::
   <strong>residual_helmholtz</strong>
@@ -5554,7 +5576,7 @@ at negatives pressures.</p>
       <ul class="list-group">
           <li class="list-group-item">
                     <h3>
-    private  subroutine <a href='../proc/residual_helmholtz.html'>residual_helmholtz</a>(self, n, v, t, Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2)  
+    private  subroutine <a href='../proc/residual_helmholtz~2.html'>residual_helmholtz</a>(self, n, v, t, Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2)  
 </h3>
     
 
@@ -5583,7 +5605,7 @@ at negatives pressures.</p>
             <td>::</td>
             <td><strong>self</strong></td>
             <td>
-
+<p>Model instance.</p>
             </td>
         </tr>
         <tr>
@@ -5598,7 +5620,7 @@ at negatives pressures.</p>
             <td>::</td>
             <td><strong>n</strong>(:)</td>
             <td>
-
+<p>Component mole amounts [mol].</p>
             </td>
         </tr>
         <tr>
@@ -5613,7 +5635,7 @@ at negatives pressures.</p>
             <td>::</td>
             <td><strong>v</strong></td>
             <td>
-
+<p>Total volume [L].</p>
             </td>
         </tr>
         <tr>
@@ -5628,7 +5650,7 @@ at negatives pressures.</p>
             <td>::</td>
             <td><strong>t</strong></td>
             <td>
-
+<p>Temperature [K].</p>
             </td>
         </tr>
         <tr>
@@ -5643,7 +5665,7 @@ at negatives pressures.</p>
             <td>::</td>
             <td><strong>Ar</strong></td>
             <td>
-
+<p>Residual Helmholtz energy [bar L].</p>
             </td>
         </tr>
         <tr>
@@ -5658,7 +5680,8 @@ at negatives pressures.</p>
             <td>::</td>
             <td><strong>ArV</strong></td>
             <td>
-
+<p>
+<script type="math/tex">\partial A^r/\partial V</script> [bar].</p>
             </td>
         </tr>
         <tr>
@@ -5673,7 +5696,8 @@ at negatives pressures.</p>
             <td>::</td>
             <td><strong>ArT</strong></td>
             <td>
-
+<p>
+<script type="math/tex">\partial A^r/\partial T</script> [bar L/K].</p>
             </td>
         </tr>
         <tr>
@@ -5688,7 +5712,8 @@ at negatives pressures.</p>
             <td>::</td>
             <td><strong>ArTV</strong></td>
             <td>
-
+<p>
+<script type="math/tex">\partial^2 A^r/\partial T\partial V</script> [bar/K].</p>
             </td>
         </tr>
         <tr>
@@ -5703,7 +5728,8 @@ at negatives pressures.</p>
             <td>::</td>
             <td><strong>ArV2</strong></td>
             <td>
-
+<p>
+<script type="math/tex">\partial^2 A^r/\partial V^2</script> [bar/L].</p>
             </td>
         </tr>
         <tr>
@@ -5718,7 +5744,8 @@ at negatives pressures.</p>
             <td>::</td>
             <td><strong>ArT2</strong></td>
             <td>
-
+<p>
+<script type="math/tex">\partial^2 A^r/\partial T^2</script> [bar L/K^2].</p>
             </td>
         </tr>
         <tr>
@@ -5733,7 +5760,8 @@ at negatives pressures.</p>
             <td>::</td>
             <td><strong>Arn</strong></td>
             <td>
-
+<p>
+<script type="math/tex">\partial A^r/\partial n_i</script> [bar L/mol].</p>
             </td>
         </tr>
         <tr>
@@ -5748,7 +5776,8 @@ at negatives pressures.</p>
             <td>::</td>
             <td><strong>ArVn</strong></td>
             <td>
-
+<p>
+<script type="math/tex">\partial^2 A^r/\partial V\partial n_i</script> [bar/mol].</p>
             </td>
         </tr>
         <tr>
@@ -5763,7 +5792,8 @@ at negatives pressures.</p>
             <td>::</td>
             <td><strong>ArTn</strong></td>
             <td>
-
+<p>
+<script type="math/tex">\partial^2 A^r/\partial T\partial n_i</script> [bar L/(K mol)].</p>
             </td>
         </tr>
         <tr>
@@ -5778,7 +5808,8 @@ at negatives pressures.</p>
             <td>::</td>
             <td><strong>Arn2</strong>(size(n),size(n))</td>
             <td>
-
+<p>
+<script type="math/tex">\partial^2 A^r/\partial n_i\partial n_j</script> [bar L/mol^2].</p>
             </td>
         </tr>
     </tbody>
@@ -5793,7 +5824,7 @@ at negatives pressures.</p>
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-volume~3"></span>
+      <span class="anchor" id="boundprocedure-volume~2"></span>
       <h3>
           procedure, public ::
   <strong>volume</strong>
@@ -5803,11 +5834,11 @@ at negatives pressures.</p>
       <ul class="list-group">
           <li class="list-group-item">
                     <h3>
-    public  subroutine <a href='../proc/volume~3.html'>volume</a>(eos, n, P, T, V, root_type)  
+    public  subroutine <a href='../proc/volume~2.html'>volume</a>(eos, n, P, T, V, root_type)  
 </h3>
     
 
-  <p>Volume solver routine for residual Helmholtz models.</p><a href="../proc/volume~3.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+  <p>Volume solver routine for residual Helmholtz models.</p><a href="../proc/volume~2.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -6064,14 +6095,14 @@ at negatives pressures.</p>
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

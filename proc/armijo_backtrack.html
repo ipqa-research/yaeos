@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>armijo_backtrack &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -135,7 +136,7 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/armijo_backtrack.html#variable-k~4">k</a>
+            <a class="list-group-item" href="../proc/armijo_backtrack.html#variable-k~21">k</a>
             <a class="list-group-item" href="../proc/armijo_backtrack.html#variable-m_new">m_new</a>
             <a class="list-group-item" href="../proc/armijo_backtrack.html#variable-m_old">m_old</a>
             <a class="list-group-item" href="../proc/armijo_backtrack.html#variable-slope">slope</a>
@@ -172,6 +173,10 @@
 </h2>
     
 
+    <h1 id="armijo_backtrack">armijo_backtrack</h1>
+<h1 id="description">Description</h1>
+<p>Backtrack along a proposed step until sufficient decrease is met or
+the configured minimum step length is reached.</p>
 
 
     <h3>Arguments</h3>
@@ -212,12 +217,12 @@
             <td>::</td>
             <td><strong>X_old</strong>(:)</td>
             <td>
-                
+                <p>Iterate before step</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-f~12"></span>
+              <span class="anchor" id="variable-f~39"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -227,12 +232,12 @@
             <td>::</td>
             <td><strong>F</strong>(:)</td>
             <td>
-                
+                <p>F(X_old)</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-j~3"></span>
+              <span class="anchor" id="variable-j~6"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -242,12 +247,12 @@
             <td>::</td>
             <td><strong>J</strong>(:,:)</td>
             <td>
-                
+                <p>J(X_old)</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dx~5"></span>
+              <span class="anchor" id="variable-dx~18"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -257,12 +262,12 @@
             <td>::</td>
             <td><strong>dX</strong>(:)</td>
             <td>
-                
+                <p>Newton step direction</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-s~4"></span>
+              <span class="anchor" id="variable-s~5"></span>
               type(<a href='../type/newton_settings.html'>newton_settings</a>),
             </td>
 <td>intent(in)</td>
@@ -272,12 +277,12 @@
             <td>::</td>
             <td><strong>s</strong></td>
             <td>
-                
+                <p>Solver settings</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~8"></span>
+              <span class="anchor" id="variable-t~35"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -287,7 +292,7 @@
             <td>::</td>
             <td><strong>t</strong></td>
             <td>
-                
+                <p>Step length [0,1]</p>
             </td>
         </tr>
         <tr>
@@ -302,7 +307,7 @@
             <td>::</td>
             <td><strong>F_new</strong>(:)</td>
             <td>
-                
+                <p>F at trial point</p>
             </td>
         </tr>
         <tr>
@@ -317,7 +322,7 @@
             <td>::</td>
             <td><strong>J_new</strong>(:,:)</td>
             <td>
-                
+                <p>J at trial point</p>
             </td>
         </tr>
         <tr>
@@ -332,12 +337,12 @@
             <td>::</td>
             <td><strong>f_norm_new</strong></td>
             <td>
-                
+                <p>||F_new||_inf</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-failed~3"></span>
+              <span class="anchor" id="variable-failed~2"></span>
               logical,
             </td>
 <td>intent(out)</td>
@@ -347,7 +352,7 @@
             <td>::</td>
             <td><strong>failed</strong></td>
             <td>
-                
+                <p>.true. = no step found</p>
             </td>
         </tr>
     </tbody>
@@ -362,49 +367,49 @@
   <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: proc~~armijo_backtrack~~CallsGraph Pages: 1 -->
-<svg id="procarmijo_backtrackCallsGraph" width="225pt" height="74pt"
- viewBox="0.00 0.00 225.00 74.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~armijo_backtrack~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 70)">
+<svg id="procarmijo_backtrackCallsGraph" width="222pt" height="74pt"
+ viewBox="0.00 0.00 222.00 74.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~armijo_backtrack~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 70.27)">
 <title>proc~~armijo_backtrack~~CallsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-70 221,-70 221,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-70.27 218.29,-70.27 218.29,4 -4,4"/>
 <!-- proc~armijo_backtrack -->
 <g id="proc~~armijo_backtrack~~CallsGraph_node1" class="node">
 <title>proc~armijo_backtrack</title>
-<polygon fill="none" stroke="black" points="105,-45 0,-45 0,-21 105,-21 105,-45"/>
-<text text-anchor="middle" x="52.5" y="-30.6" font-family="Helvetica,sans-Serif" font-size="10.50">armijo_backtrack</text>
+<polygon fill="none" stroke="black" points="103.77,-45.27 0,-45.27 0,-21 103.77,-21 103.77,-45.27"/>
+<text xml:space="preserve" text-anchor="middle" x="51.88" y="-29.53" font-family="Helvetica,sans-Serif" font-size="10.50">armijo_backtrack</text>
 </g>
 <!-- proc~has_nan_inf -->
 <g id="proc~~armijo_backtrack~~CallsGraph_node2" class="node">
 <title>proc~has_nan_inf</title>
 <g id="a_proc~~armijo_backtrack~~CallsGraph_node2"><a xlink:href="../proc/has_nan_inf.html" xlink:title="has_nan_inf">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="217,-66 141,-66 141,-42 217,-42 217,-66"/>
-<text text-anchor="middle" x="179" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">has_nan_inf</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="214.29,-66.27 139.77,-66.27 139.77,-42 214.29,-42 214.29,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="177.03" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">has_nan_inf</text>
 </a>
 </g>
 </g>
 <!-- proc~armijo_backtrack&#45;&gt;proc~has_nan_inf -->
 <g id="proc~~armijo_backtrack~~CallsGraph_edge1" class="edge">
 <title>proc~armijo_backtrack&#45;&gt;proc~has_nan_inf</title>
-<path fill="none" stroke="#000000" d="M105.22,-41.72C113.67,-43.15 122.39,-44.62 130.73,-46.03"/>
-<polygon fill="#000000" stroke="#000000" points="130.23,-49.49 140.67,-47.7 131.4,-42.59 130.23,-49.49"/>
+<path fill="none" stroke="#000000" d="M104.04,-41.86C112.03,-43.22 120.26,-44.63 128.18,-45.97"/>
+<polygon fill="#000000" stroke="#000000" points="127.54,-49.42 137.99,-47.65 128.72,-42.52 127.54,-49.42"/>
 </g>
 <!-- proc~norm_inf -->
 <g id="proc~~armijo_backtrack~~CallsGraph_node3" class="node">
 <title>proc~norm_inf</title>
 <g id="a_proc~~armijo_backtrack~~CallsGraph_node3"><a xlink:href="../proc/norm_inf.html" xlink:title="norm_inf">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="209,-24 149,-24 149,0 209,0 209,-24"/>
-<text text-anchor="middle" x="179" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">norm_inf</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="206.41,-24.27 147.65,-24.27 147.65,0 206.41,0 206.41,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="177.03" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">norm_inf</text>
 </a>
 </g>
 </g>
 <!-- proc~armijo_backtrack&#45;&gt;proc~norm_inf -->
 <g id="proc~~armijo_backtrack~~CallsGraph_edge2" class="edge">
 <title>proc~armijo_backtrack&#45;&gt;proc~norm_inf</title>
-<path fill="none" stroke="#000000" d="M105.22,-24.28C116.34,-22.4 127.93,-20.45 138.5,-18.66"/>
-<polygon fill="#000000" stroke="#000000" points="139.4,-22.06 148.68,-16.95 138.23,-15.16 139.4,-22.06"/>
+<path fill="none" stroke="#000000" d="M104.04,-24.41C114.79,-22.58 125.99,-20.67 136.25,-18.92"/>
+<polygon fill="#000000" stroke="#000000" points="136.61,-22.41 145.88,-17.28 135.43,-15.51 136.61,-22.41"/>
 </g>
 </g>
 </svg>
@@ -423,55 +428,55 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
 <svg width="641pt" height="28pt"
- viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
 <!-- Subroutine -->
 <g id="node1" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node2" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Interface -->
 <g id="node3" class="node">
 <title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
 </g>
 <!-- Type Bound Procedure -->
 <g id="node4" class="node">
 <title>Type Bound Procedure</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
-<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
 </g>
 <!-- Unknown Procedure Type -->
 <g id="node5" class="node">
 <title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
-<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
 </g>
 <!-- Program -->
 <g id="node6" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node7" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
-<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -495,34 +500,34 @@ implementation in a submodule of an interface in a parent module.
   <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: proc~~armijo_backtrack~~CalledByGraph Pages: 1 -->
-<svg id="procarmijo_backtrackCalledByGraph" width="203pt" height="32pt"
- viewBox="0.00 0.00 203.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~armijo_backtrack~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg id="procarmijo_backtrackCalledByGraph" width="202pt" height="32pt"
+ viewBox="0.00 0.00 202.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~armijo_backtrack~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>proc~~armijo_backtrack~~CalledByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 199,-28 199,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 197.77,-28.27 197.77,4 -4,4"/>
 <!-- proc~armijo_backtrack -->
 <g id="proc~~armijo_backtrack~~CalledByGraph_node1" class="node">
 <title>proc~armijo_backtrack</title>
-<polygon fill="none" stroke="black" points="195,-24 90,-24 90,0 195,0 195,-24"/>
-<text text-anchor="middle" x="142.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">armijo_backtrack</text>
+<polygon fill="none" stroke="black" points="193.77,-24.27 90,-24.27 90,0 193.77,0 193.77,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="141.88" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">armijo_backtrack</text>
 </g>
 <!-- proc~newton -->
 <g id="proc~~armijo_backtrack~~CalledByGraph_node2" class="node">
 <title>proc~newton</title>
 <g id="a_proc~~armijo_backtrack~~CalledByGraph_node2"><a xlink:href="../proc/newton.html" xlink:title="newton">
-<polygon fill="#d9534f" stroke="#d9534f" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">newton</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">newton</text>
 </a>
 </g>
 </g>
 <!-- proc~newton&#45;&gt;proc~armijo_backtrack -->
 <g id="proc~~armijo_backtrack~~CalledByGraph_edge1" class="edge">
 <title>proc~newton&#45;&gt;proc~armijo_backtrack</title>
-<path fill="none" stroke="#000000" d="M54.04,-12C61.74,-12 70.53,-12 79.49,-12"/>
-<polygon fill="#000000" stroke="#000000" points="79.63,-15.5 89.63,-12 79.63,-8.5 79.63,-15.5"/>
+<path fill="none" stroke="#000000" d="M54.47,-12.13C61.72,-12.13 69.91,-12.13 78.29,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="78.23,-15.64 88.23,-12.14 78.23,-8.64 78.23,-15.64"/>
 </g>
 </g>
 </svg>
@@ -541,55 +546,55 @@ implementation in a submodule of an interface in a parent module.
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
 <svg width="641pt" height="28pt"
- viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
 <!-- Subroutine -->
 <g id="node1" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node2" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Interface -->
 <g id="node3" class="node">
 <title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
 </g>
 <!-- Type Bound Procedure -->
 <g id="node4" class="node">
 <title>Type Bound Procedure</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
-<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
 </g>
 <!-- Unknown Procedure Type -->
 <g id="node5" class="node">
 <title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
-<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
 </g>
 <!-- Program -->
 <g id="node6" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node7" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
-<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -622,7 +627,7 @@ implementation in a submodule of an interface in a parent module.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-k~4"></span>
+              <span class="anchor" id="variable-k~21"></span>
               integer,
             </td>
               <td>private</td>
@@ -634,7 +639,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Backtracking iteration counter</p>
             </td>
         </tr>
         <tr>
@@ -651,7 +656,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Merit value at trial:  0.5*||F_new||_2^2</p>
             </td>
         </tr>
         <tr>
@@ -668,7 +673,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Merit value at X_old:  0.5*||F||_2^2</p>
             </td>
         </tr>
         <tr>
@@ -685,7 +690,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Directional derivative of m at X_old along dX</p>
             </td>
         </tr>
     </tbody>
@@ -714,14 +719,14 @@ implementation in a submodule of an interface in a parent module.
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

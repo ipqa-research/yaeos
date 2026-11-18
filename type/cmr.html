@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>CMR &ndash; yaeos </title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title="<p> 1.4% of total for derived types.</p>Including implementation: 88 statements,  0.9% of total for derived types.">9 statements</a>
+                 title="<p> 1.4% of total for derived types.</p>Including implementation: 95 statements,  0.8% of total for derived types.">9 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -137,8 +138,8 @@
         <div class="list-group list-group-flush">
             <a class="list-group-item" href="../type/cmr.html#variable-dn2~2">dn2</a>
             <a class="list-group-item" href="../type/cmr.html#variable-is_d_ddlc">is_D_ddlc</a>
-            <a class="list-group-item" href="../type/cmr.html#variable-k~12">k</a>
-            <a class="list-group-item" href="../type/cmr.html#variable-l~8">l</a>
+            <a class="list-group-item" href="../type/cmr.html#variable-k~10">k</a>
+            <a class="list-group-item" href="../type/cmr.html#variable-l~21">l</a>
         </div>
       </div>
     </div>
@@ -165,9 +166,9 @@
       </a>
       <div id="boundprocs-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../type/cmr.html#boundprocedure-bmix">Bmix</a>
-            <a class="list-group-item" href="../type/cmr.html#boundprocedure-d1mix">D1mix</a>
-            <a class="list-group-item" href="../type/cmr.html#boundprocedure-dmix">Dmix</a>
+            <a class="list-group-item" href="../type/cmr.html#boundprocedure-bmix~6">Bmix</a>
+            <a class="list-group-item" href="../type/cmr.html#boundprocedure-d1mix~2">D1mix</a>
+            <a class="list-group-item" href="../type/cmr.html#boundprocedure-dmix~6">Dmix</a>
             <a class="list-group-item" href="../type/cmr.html#boundprocedure-aijk">aijk</a>
         </div>
       </div>
@@ -184,15 +185,20 @@
     <div class="col-md-9" id='text'>
       <h2 id="type-def-statement">
         type, public, extends(<a href='cubicmixrule.html'>CubicMixRule</a>) :: CMR</h2>
-    <p>Cubic Mixing Rule (CMR) derived type. Classic Van der Waals mixing
-rules.</p>
-<p>QMR depends on binary interaction parameters, on a Cubic EoS
-the mixture is obtained by the combination of an attractive and
-repulsive parameter matrices.</p>
+    <h1 id="cmr">CMR</h1>
+<p>Cubic mixing rule with ternary component interactions.</p>
+<h1 id="description">Description</h1>
+<p>CMR depends on ternary interaction parameters; on a Cubic EoS
+the mixture is obtained by the combination of attractive and
+repulsive parameter tensors.</p>
 <p>By default the attractive parameter matrix is calculated with:
 <script type="math/tex; mode=display">a_{ijk} = \sqrt[3]{a_i a_j a_k}(1 - k_{ijk})</script>
-generating the <script type="math/tex">a_{ijk}</script> matrix, but this procedure can be overriden
-replacing the <code>aijk</code> pointer procedure.</p>
+generating the <script type="math/tex">a_{ijk}</script> tensor, but this procedure can be overridden
+in an extended type by rebinding the <code>aijk</code> type-bound procedure.</p>
+<h1 id="examples">Examples</h1>
+<div class="codehilite"><pre><span></span><code><span class="n">rule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CMR</span><span class="p">(</span><span class="n">k</span><span class="o">=</span><span class="n">kijk</span><span class="p">,</span><span class="w"> </span><span class="n">l</span><span class="o">=</span><span class="n">l3</span><span class="p">)</span>
+<span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">set_mixrule</span><span class="p">(</span><span class="n">rule</span><span class="p">)</span>
+</code></pre></div>
 <br>      <div class="card">
         <div class="card-header">
           <h3 class="card-title">Inherits</h3>
@@ -201,34 +207,34 @@ replacing the <code>aijk</code> pointer procedure.</p>
           <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: type~~cmr~~InheritsGraph Pages: 1 -->
-<svg id="typecmrInheritsGraph" width="182pt" height="32pt"
- viewBox="0.00 0.00 182.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="type~~cmr~~InheritsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg id="typecmrInheritsGraph" width="181pt" height="32pt"
+ viewBox="0.00 0.00 181.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="type~~cmr~~InheritsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>type~~cmr~~InheritsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 178,-28 178,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 176.77,-28.27 176.77,4 -4,4"/>
 <!-- type~cmr -->
 <g id="type~~cmr~~InheritsGraph_node1" class="node">
 <title>type~cmr</title>
-<polygon fill="none" stroke="black" points="174,-24 120,-24 120,0 174,0 174,-24"/>
-<text text-anchor="middle" x="147" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">CMR</text>
+<polygon fill="none" stroke="black" points="172.77,-24.27 118.77,-24.27 118.77,0 172.77,0 172.77,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="145.77" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">CMR</text>
 </g>
 <!-- type~cubicmixrule -->
 <g id="type~~cmr~~InheritsGraph_node2" class="node">
 <title>type~cubicmixrule</title>
 <g id="a_type~~cmr~~InheritsGraph_node2"><a xlink:href="../type/cubicmixrule.html" xlink:title="CubicMixRule">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="84,-24 0,-24 0,0 84,0 84,-24"/>
-<text text-anchor="middle" x="42" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CubicMixRule</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="82.77,-24.27 0,-24.27 0,0 82.77,0 82.77,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="41.38" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CubicMixRule</text>
 </a>
 </g>
 </g>
 <!-- type~cmr&#45;&gt;type~cubicmixrule -->
 <g id="type~~cmr~~InheritsGraph_edge1" class="edge">
 <title>type~cmr&#45;&gt;type~cubicmixrule</title>
-<path fill="none" stroke="#000000" d="M119.74,-12C111.95,-12 103.12,-12 94.31,-12"/>
-<polygon fill="#000000" stroke="#000000" points="94.03,-8.5 84.03,-12 94.03,-15.5 94.03,-8.5"/>
+<path fill="none" stroke="#000000" d="M118.4,-12.13C110.99,-12.13 102.66,-12.13 94.3,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="94.49,-8.64 84.49,-12.14 94.49,-15.64 94.49,-8.64"/>
 </g>
 </g>
 </svg>
@@ -247,25 +253,25 @@ replacing the <code>aijk</code> pointer procedure.</p>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="186pt" height="32pt"
- viewBox="0.00 0.00 185.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="184pt" height="32pt"
+ viewBox="0.00 0.00 184.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 181.5,-28 181.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 179.88,-28.27 179.88,4 -4,4"/>
 <!-- Type -->
 <g id="node1" class="node">
 <title>Type</title>
-<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node2" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="177.5,-24 72.5,-24 72.5,0 177.5,0 177.5,-24"/>
-<text text-anchor="middle" x="125" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="175.88,-24.27 72.12,-24.27 72.12,0 175.88,0 175.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="124" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -289,34 +295,34 @@ said component(s).
           <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: type~~cmr~~InheritedByGraph Pages: 1 -->
 <svg id="typecmrInheritedByGraph" width="152pt" height="32pt"
  viewBox="0.00 0.00 152.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="type~~cmr~~InheritedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<g id="type~~cmr~~InheritedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>type~~cmr~~InheritedByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 148,-28 148,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 148,-28.27 148,4 -4,4"/>
 <!-- type~cmr -->
 <g id="type~~cmr~~InheritedByGraph_node1" class="node">
 <title>type~cmr</title>
-<polygon fill="none" stroke="black" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">CMR</text>
+<polygon fill="none" stroke="black" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">CMR</text>
 </g>
 <!-- type~cmrtd -->
 <g id="type~~cmr~~InheritedByGraph_node2" class="node">
 <title>type~cmrtd</title>
 <g id="a_type~~cmr~~InheritedByGraph_node2"><a xlink:href="../type/cmrtd.html" xlink:title="CMRTD">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="144,-24 90,-24 90,0 144,0 144,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CMRTD</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="144,-24.27 90,-24.27 90,0 144,0 144,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="117" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CMRTD</text>
 </a>
 </g>
 </g>
 <!-- type~cmrtd&#45;&gt;type~cmr -->
 <g id="type~~cmr~~InheritedByGraph_edge1" class="edge">
 <title>type~cmrtd&#45;&gt;type~cmr</title>
-<path fill="none" stroke="#000000" d="M89.6,-12C81.61,-12 72.69,-12 64.18,-12"/>
-<polygon fill="#000000" stroke="#000000" points="64.08,-8.5 54.08,-12 64.08,-15.5 64.08,-8.5"/>
+<path fill="none" stroke="#000000" d="M89.6,-12.13C82.11,-12.13 73.82,-12.13 65.8,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="65.9,-8.64 55.9,-12.14 65.9,-15.64 65.9,-8.64"/>
 </g>
 </g>
 </svg>
@@ -335,25 +341,25 @@ said component(s).
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="186pt" height="32pt"
- viewBox="0.00 0.00 185.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="184pt" height="32pt"
+ viewBox="0.00 0.00 184.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 181.5,-28 181.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 179.88,-28.27 179.88,4 -4,4"/>
 <!-- Type -->
 <g id="node1" class="node">
 <title>Type</title>
-<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node2" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="177.5,-24 72.5,-24 72.5,0 177.5,0 177.5,-24"/>
-<text text-anchor="middle" x="125" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="175.88,-24.27 72.12,-24.27 72.12,0 175.88,0 175.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="124" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -397,7 +403,7 @@ said component(s).
 <td> =</td>
                 <td>.false.</td>
             <td>
-                <p>Calculate second order derivatives</p>
+                <p>Calculate second-order mole-number derivatives</p>
             </td>
         </tr>
         <tr>
@@ -414,12 +420,12 @@ said component(s).
 <td> =</td>
                 <td>.false.</td>
             <td>
-                <p>Mixing rule D parameter dependant on density</p>
+                <p>Mixing rule D parameter depends on volume (density)</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-k~12"></span>
+              <span class="anchor" id="variable-k~10"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -431,12 +437,13 @@ said component(s).
                 <td></td>
                 <td></td>
             <td>
-                <p>Attractive Binary Interatction parameter matrix</p>
+                <p>Attractive ternary interaction parameters <script type="math/tex">k_{ijk}</script>
+</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-l~8"></span>
+              <span class="anchor" id="variable-l~21"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -448,7 +455,8 @@ said component(s).
                 <td></td>
                 <td></td>
             <td>
-                <p>Repulsive Binary Interatction parameter matrix</p>
+                <p>Repulsive ternary interaction parameters <script type="math/tex">l_{ijk}</script>
+</p>
             </td>
         </tr>
     </tbody>
@@ -464,7 +472,7 @@ said component(s).
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-bmix"></span>
+      <span class="anchor" id="boundprocedure-bmix~6"></span>
       <h3>
           procedure, public ::
   <strong>Bmix</strong>
@@ -537,7 +545,7 @@ said component(s).
             <td>::</td>
             <td><strong>bi</strong>(:)</td>
             <td>
-<p>Pure components repulsive parameters.</p>
+<p>Pure-component covolumes [L/mol]</p>
             </td>
         </tr>
         <tr>
@@ -552,7 +560,7 @@ said component(s).
             <td>::</td>
             <td><strong>B</strong></td>
             <td>
-<p>Mixture repulsive parameter.</p>
+<p>Mixture covolume <script type="math/tex">B</script> [L]</p>
             </td>
         </tr>
         <tr>
@@ -601,10 +609,10 @@ said component(s).
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-d1mix"></span>
+      <span class="anchor" id="boundprocedure-d1mix~2"></span>
       <h3>
           procedure, public ::
-  <strong>D1mix</strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/rkpr_d1mix.html'>RKPR_D1mix</a>
+  <strong>D1mix</strong> => <a href='../proc/rkpr_d1mix.html'>RKPR_D1mix</a>
         
       </h3>
     </div>
@@ -640,7 +648,7 @@ said component(s).
             <td>::</td>
             <td><strong>self</strong></td>
             <td>
-
+<p>Mixing rule object.</p>
             </td>
         </tr>
         <tr>
@@ -655,7 +663,7 @@ said component(s).
             <td>::</td>
             <td><strong>n</strong>(:)</td>
             <td>
-
+<p>Component mole amounts [mol]</p>
             </td>
         </tr>
         <tr>
@@ -670,7 +678,7 @@ said component(s).
             <td>::</td>
             <td><strong>d1i</strong>(:)</td>
             <td>
-
+<p>Pure-component <script type="math/tex">\delta_{1i}</script> values</p>
             </td>
         </tr>
         <tr>
@@ -685,7 +693,8 @@ said component(s).
             <td>::</td>
             <td><strong>D1</strong></td>
             <td>
-
+<p>Mixture <script type="math/tex">\Delta_1</script>
+</p>
             </td>
         </tr>
         <tr>
@@ -700,7 +709,9 @@ said component(s).
             <td>::</td>
             <td><strong>dD1i</strong>(:)</td>
             <td>
-
+<p>
+<script type="math/tex">\partial \Delta_1/\partial n_i</script>
+</p>
             </td>
         </tr>
         <tr>
@@ -715,7 +726,9 @@ said component(s).
             <td>::</td>
             <td><strong>dD1ij</strong>(:,:)</td>
             <td>
-
+<p>
+<script type="math/tex">\partial^2 \Delta_1/\partial n_i \partial n_j</script>
+</p>
             </td>
         </tr>
     </tbody>
@@ -730,7 +743,7 @@ said component(s).
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-dmix"></span>
+      <span class="anchor" id="boundprocedure-dmix~6"></span>
       <h3>
           procedure, public ::
   <strong>Dmix</strong>
@@ -748,7 +761,7 @@ said component(s).
 </h3>
     
 
-  <p>Attractive parameter mixing rule with quadratic mix.</p><a href="../proc/dmix.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+  <p>Attractive parameter mixing rule with cubic mix.</p><a href="../proc/dmix.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -900,8 +913,7 @@ said component(s).
             <td><strong>dDdV</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dD}{dT}</script>
-</p>
+<script type="math/tex">\frac{dD}{dV}</script> (zero)</p>
             </td>
         </tr>
         <tr>
@@ -917,7 +929,7 @@ said component(s).
             <td><strong>dDdT</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dD}{dV}</script>
+<script type="math/tex">\frac{dD}{dT}</script>
 </p>
             </td>
         </tr>
@@ -985,7 +997,7 @@ said component(s).
             <td><strong>dDdTV</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{d^2D}{dTV</script>
+<script type="math/tex">\frac{d^2D}{dTV}</script>
 </p>
             </td>
         </tr>
@@ -1055,7 +1067,7 @@ said component(s).
       <span class="anchor" id="boundprocedure-aijk"></span>
       <h3>
           procedure, public ::
-  <strong>aijk</strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/kijk_constant.html'>kijk_constant</a>
+  <strong>aijk</strong> => <a href='../proc/kijk_constant.html'>kijk_constant</a>
         
       </h3>
     </div>
@@ -1095,7 +1107,7 @@ said component(s).
             <td>::</td>
             <td><strong>self</strong></td>
             <td>
-
+<p>Mixing rule object.</p>
             </td>
         </tr>
         <tr>
@@ -1125,7 +1137,8 @@ said component(s).
             <td>::</td>
             <td><strong>ai</strong>(:)</td>
             <td>
-<p>Pure components attractive parameters (\a_i)</p>
+<p>Pure components attractive parameters <script type="math/tex">a_i</script>
+</p>
             </td>
         </tr>
         <tr>
@@ -1191,7 +1204,7 @@ said component(s).
             <td><strong>dadt</strong>(:,:,:)</td>
             <td>
 <p>
-<script type="math/tex">\frac{da_{ijk}{dT}</script>
+<script type="math/tex">\frac{da_{ijk}}{dT}</script>
 </p>
             </td>
         </tr>
@@ -1208,7 +1221,7 @@ said component(s).
             <td><strong>dadt2</strong>(:,:,:)</td>
             <td>
 <p>
-<script type="math/tex">\frac{d^2a_{ijk}{dT^2}</script>
+<script type="math/tex">\frac{d^2a_{ijk}}{dT^2}</script>
 </p>
             </td>
         </tr>
@@ -1235,14 +1248,14 @@ said component(s).
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../../../favicon.png">
 
     <title>Adding your own models &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../../../css/local.css" rel="stylesheet">
     <link href="../../../css/pygments.css" rel="stylesheet">
+      <link href="../../../css/user.css" rel="stylesheet">
     <script src="../../../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -92,7 +93,7 @@
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb justify-content-end mb-0">
                 <li class="breadcrumb-item"><a href='../../index.html'>User documentation</a></li>
-                <li class="breadcrumb-item"><a href='../index.html'>Using yaeos</a></li>
+                <li class="breadcrumb-item"><a href='../index.html'>Getting started</a></li>
               <li class="breadcrumb-item active" aria-current="page">Adding your own models</li>
             </ol>
           </nav>
@@ -111,9 +112,10 @@
           </ul>
           <hr>
           <nav class="nav nav-pills flex-column">
-              <a class="nav-link" href="../index.html">Using yaeos</a>
+              <a class="nav-link" href="../index.html">Getting started</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../eos/index.html">Equations of State</a>
+                                <a class="nav-link" href="../fundamentals.html">Thermodynamics essentials</a>
+              <a class="nav-link" href="../eos/index.html">Equations of State</a>
                 <nav class="nav nav-pills flex-column">
                                 <a class="nav-link" href="../eos/cubics/index.html">Cubics</a>
                 <nav class="nav nav-pills flex-column">
@@ -121,27 +123,33 @@
               <a class="nav-link" href="../eos/cubics/mixing.html">Mixing Rules</a>
 
                 </nav>
+              <a class="nav-link" href="../eos/gerg2008.html">GERG2008</a>
+              <a class="nav-link" href="../eos/gerg2008_parameters.html">GERG2008 parameters</a>
+              <a class="nav-link" href="../eos/pc_saft.html">PC-SAFT</a>
 
                 </nav>
               <a class="nav-link" href="../excessmodels/index.html">Gibbs Excess Models</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../excessmodels/nrtl-hv.html">NRTL-HV</a>
-              <a class="nav-link" href="../excessmodels/nrtl.html">NRTL</a>
+                                <a class="nav-link" href="../excessmodels/nrtl.html">NRTL</a>
+              <a class="nav-link" href="../excessmodels/nrtl-hv.html">NRTL-HV</a>
+              <a class="nav-link" href="../excessmodels/uniquac.html">UNIQUAC</a>
               <a class="nav-link" href="../excessmodels/unifac_models/index.html">UNIFAC Models</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
+                                <a class="nav-link" href="../excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
+              <a class="nav-link" href="../excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
               <a class="nav-link" href="../excessmodels/unifac_models/psrk.html">UNIFAC-PSRK</a>
-              <a class="nav-link" href="../excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
 
                 </nav>
-              <a class="nav-link" href="../excessmodels/uniquac.html">UNIQUAC</a>
 
                 </nav>
               <a class="nav-link" href="../phase_equilibrium/index.html">Phase Equilibrium</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../phase_equilibrium/envelopes.html">Phase envelopes</a>
-              <a class="nav-link" href="../phase_equilibrium/flash.html">Flash calculations</a>
+                                <a class="nav-link" href="../phase_equilibrium/flash.html">Flash calculations</a>
               <a class="nav-link" href="../phase_equilibrium/saturation_points.html">Saturation Points</a>
+              <a class="nav-link" href="../phase_equilibrium/envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="../phase_equilibrium/stability.html">Stability analysis</a>
+              <a class="nav-link" href="../phase_equilibrium/critical.html">Critical points</a>
+              <a class="nav-link" href="../phase_equilibrium/multiphase.html">Multiphase flash</a>
 
                 </nav>
               <a class="nav-link active disabled" href="index.html">Adding your own models</a>
@@ -152,66 +160,228 @@
                 </nav>
 
                 </nav>
+              <a class="nav-link" href="../../python-api/index.html">Python-API</a>
+              <a class="nav-link" href="../../developer/index.html">Becoming a yaeos developer</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../developer/architecture.html">Architecture and repository map</a>
+              <a class="nav-link" href="../../developer/workflow.html">Developer workflow</a>
+              <a class="nav-link" href="../../developer/fortran.html">Working in the Fortran core</a>
+              <a class="nav-link" href="../../developer/numerics.html">Working on numerical algorithms</a>
+              <a class="nav-link" href="../../developer/c_interface.html">C interface layer</a>
+              <a class="nav-link" href="../../developer/python_interface.html">Python interface layer</a>
+              <a class="nav-link" href="../../developer/testing.html">Tests and numerical validation</a>
+              <a class="nav-link" href="../../developer/walkthrough.html">An end-to-end change</a>
+
+                </nav>
               <a class="nav-link" href="../../contributing/index.html">Contributing</a>
                 <nav class="nav nav-pills flex-column">
                                 <a class="nav-link" href="../../contributing/styleguide.html">Style guide</a>
 
                 </nav>
-              <a class="nav-link" href="../../python-api/index.html">Python-API</a>
           </nav>
         </div>
       </div>
 
     <div class="col-9" id='text'>
-      <p>Most of thermodynamic properties calculated in <code>yaeos</code> heavily depend on
-different kind of models and their respective derivatives. Since obtaining the
-derivatives of complex models can be a tedious and error-prone task. We provide
-two different ways of getting them automatically (in some cases with some
-performance-cost), but there is also the possibility of using analytical
-obtained expressions instead.</p>
-<p>The calculation of thermodynamic properties heavily depends on </p>
-<p>On <code>yaeos</code> there are three different ways of adding your own model:W</p>
+      <p>Most thermodynamic properties calculated in <code>yaeos</code> depend heavily on different
+kinds of models and their derivatives. Obtaining the derivatives of complex
+models can be tedious and error-prone, so <code>yaeos</code> provides three ways to add a
+new model:</p>
+<ol>
+<li>Analytical derivatives, implemented by hand.</li>
+<li>Automatic differentiation with hyperdual numbers.</li>
+<li>Source-to-source differentiation with Tapenade.</li>
+</ol>
+<p>These are implementation choices, not different thermodynamic models. Begin
+with the same energy equation and choose how to obtain its derivatives.</p>
 <div class="toc">
 <ul>
+<li><a href="#configure-first-extend-only-when-necessary">Configure first, extend only when necessary</a></li>
+<li><a href="#why-start-from-an-energy-and-its-derivatives">Why start from an energy and its derivatives?</a></li>
 <li><a href="#residual-helmholtz-models">Residual Helmholtz models</a></li>
+<li><a href="#a-validation-ladder">A validation ladder</a></li>
+<li><a href="#guides">Guides</a></li>
+<li><a href="#where-this-fits-in-the-codebase">Where this fits in the codebase</a></li>
+<li><a href="#example-models">Example models</a></li>
 </ul>
 </div>
+<h1 id="configure-first-extend-only-when-necessary">Configure first, extend only when necessary</h1>
+<p>You do <strong>not</strong> need a new derived type to change critical constants, interaction
+parameters, or parameters of an existing activity model. Start with the
+<a href="../eos/index.html">equations of state</a> and
+<a href="../excessmodels/index.html">excess Gibbs models</a>. For a cubic EOS, an existing
+alpha function or mixing rule may already express your intended change.
+Extending just that component is usually smaller and easier to test than
+rewriting the whole EOS.</p>
+<p>Implement a new model when the energy equation itself is missing, or when you
+need a genuinely new functional form. Before doing so, you should be able to:</p>
+<ol>
+<li>Construct an existing model and calculate pressure at specified <code>n, V, T</code>.</li>
+<li>Distinguish total volume from molar volume and residual from ideal-gas energy.</li>
+<li>Read a Fortran module, a derived type, a type-bound procedure, and an optional
+   dummy argument. The <a href="../../contributing/styleguide.html">style guide</a> explains
+   the conventions used here.</li>
+<li>State the new equation&rsquo;s parameters, units, validity range, and limiting cases.</li>
+</ol>
+<p>A useful beginner path is to reproduce the
+<a href="analtical.html">analytic van der Waals example</a>, test its derivatives, then
+translate the primal energy into hyperdual arithmetic. Only then tackle a more
+complex model or a Tapenade generation workflow. Keep the first tests at a
+single, well-behaved state; phase-equilibrium solvers are not derivative debuggers.</p>
+<h1 id="why-start-from-an-energy-and-its-derivatives">Why start from an energy and its derivatives?</h1>
+<p>An EOS provides an extensive residual Helmholtz energy
+<script type="math/tex">A^r(\mathbf n,V,T)</script>: the departure from the ideal gas at the same
+<code>n, V, T</code>. For example,</p>
+<p>
+<script type="math/tex; mode=display">
+P=\frac{(\sum_i n_i)RT}{V}-A^r_V,\qquad S^r=-A^r_T.
+</script>
+</p>
+<p>Mole derivatives supply residual chemical potentials; second derivatives supply
+property sensitivities and the Jacobians used by nonlinear solvers. Deriving
+these quantities from a common energy helps preserve thermodynamic identities.
+Do not add the ideal-gas pressure inside <code>residual_helmholtz</code>: the inherited
+<code>pressure</code> method already adds it.</p>
+<p>An activity model instead supplies extensive excess Gibbs energy
+<script type="math/tex">G^E(\mathbf n,T)</script>, relative to an ideal solution, with
+<script type="math/tex">\ln\gamma_i=G^E_{n_i}/(RT)</script>. It is not an EOS and does not independently
+provide pressure or a liquid density. Its abstract base is <a href="../../../type/gemodel.html">GeModel</a>;
+implement its <code>excess_gibbs</code> subroutine with the optional energy, temperature,
+and mole derivatives in <code>src/models/excess_gibbs/ge_models.f90</code>.
+There is no <code>get_v0</code> obligation for a <code>GeModel</code>.</p>
+<p>Both energies are returned in <strong>bar L</strong>, not joules, molar energy, or energy
+divided by <code>RT</code>. Use <code>R</code> supplied by <code>yaeos</code>; 1 bar L is 100 J. Inputs are
+component mole amounts [mol], total volume [L] for an EOS, and temperature [K].
+Using mole fractions as <code>n</code> is a one-mole basis, not permission to normalize
+<code>n</code> internally. A composition derivative changes one mole amount while holding
+the other mole amounts fixed, not while forcing their sum to one.</p>
 <h1 id="residual-helmholtz-models">Residual Helmholtz models</h1>
 <p>Residual Helmholtz models are the basis to obtain the residual properties.</p>
-<p>The main basis in <code>yaeos</code> to define a new object that extends the <code>abstract
-type</code>called` <a href="../../../type/armodel.html">ArModel</a>. Which enforces the expected functionality of this
-kind of models.</p>
+<p>The main basis in <code>yaeos</code> is the abstract type <a href="../../../type/armodel.html">ArModel</a>, which enforces the
+expected functionality of this kind of model. <strong>Abstract</strong> means that it
+describes a contract, not a model you can instantiate. A <strong>concrete type</strong> stores
+parameters and supplies all deferred procedures in that contract. An abstract
+interface specifies the procedure kind (function or subroutine), argument
+names, types, ranks, and attributes. The compiler checks your bindings against
+it; matching just the procedure name is not enough.</p>
+<p>This deliberately incomplete sketch illustrates inheritance, not a compilable
+concrete model:</p>
 <div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">ArModel</span>
 
-<span class="k">type</span><span class="p">,</span><span class="w"> </span><span class="k">extends</span><span class="p">(</span><span class="n">ArModel</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">MyNewModel</span>
+<span class="k">type</span><span class="p">,</span><span class="w"> </span><span class="k">abstract</span><span class="p">,</span><span class="w"> </span><span class="k">extends</span><span class="p">(</span><span class="n">ArModel</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">MyNewModel</span>
 <span class="k">end type</span>
 </code></pre></div>
 
-<p>The definition of an <code>ArModel</code> expects that two procedures are defined:</p>
+<p>The definition of an <code>ArModel</code> requires two procedures:</p>
 <ul>
-<li><a href="../../../interface/abs_residual_helmholtz.html">abs_residual_helmholtz</a>: Procedure to calculate residual
-      Helmholtz energy and it&rsquo;s derivatives</li>
-<li><a href="../../../interface/abs_volume_initializer.html">abs_volume_initializer</a>: Volume initializer to find a liquid
-      root, given a pressure and temperature.</li>
+<li><a href="../../../interface/abs_residual_helmholtz.html">abs_residual_helmholtz</a>: calculates the residual Helmholtz
+  energy and its derivatives.</li>
+<li><a href="../../../interface/abs_volume_initializer.html">abs_volume_initializer</a>: provides an initial volume to find a
+  liquid root at a given pressure and temperature.</li>
 </ul>
 <div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">ArModel</span>
 
 <span class="k">type</span><span class="p">,</span><span class="w"> </span><span class="k">extends</span><span class="p">(</span><span class="n">ArModel</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">MyNewModel</span>
 <span class="k">contains</span>
-<span class="k">    procedure</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">residual_helmholtz</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">an_Ar_implementation</span>
-<span class="w">    </span><span class="k">procedure</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">volume_initializer</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">an_v0_implementation</span>
+<span class="k">   procedure</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">residual_helmholtz</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">an_Ar_implementation</span>
+<span class="w">   </span><span class="k">procedure</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">get_v0</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">an_v0_implementation</span>
 <span class="k">end type</span>
 </code></pre></div>
 
-<p>Satisfying those requirements, our model will be ready to make calculations!</p>
-<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pressure</span>
-<span class="k">use </span><span class="n">my_model</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">MyNewModel</span>
+<p>The binding sketch above needs module procedures with the exact interfaces.
+Once those procedures and a parameter constructor are defined, the model can
+use inherited methods (the following is a usage fragment):</p>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">my_model</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">MyNewModel</span>
 
 <span class="k">type</span><span class="p">(</span><span class="n">MyNewModel</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
 
-<span class="c">! Assuming model parameters are set-up</span>
-<span class="k">call </span><span class="n">pressure</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">)</span>
+<span class="c">! Assuming the model parameters are set up</span>
+<span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">)</span>
 </code></pre></div>
+
+<p><code>type(MyNewModel)</code> declares that specific implementation;
+<code>class(ArModel), allocatable</code> can hold any concrete extension of <code>ArModel</code>.
+That polymorphism lets the same flash or property routine work with different
+EOS implementations without knowing their parameter layout.</p>
+<h1 id="a-validation-ladder">A validation ladder</h1>
+<p>Before trusting a new model, check in this order:</p>
+<ol>
+<li><strong>Primal equation:</strong> units, parameter dimensions, admissible logarithms and
+   denominators, pure-component and low-density limits.</li>
+<li><strong>Derivatives:</strong> finite differences over several step sizes, Hessian symmetry,
+   and each optional output requested alone as well as together.</li>
+<li><strong>Extensivity:</strong> at fixed <code>T</code>, scaling both <code>n</code> and <code>V</code> by a positive factor
+   must scale <code>Ar</code> by that factor and leave pressure unchanged. For <code>Ge</code>, scale
+   <code>n</code> only: <code>Ge</code> scales and activity coefficients stay unchanged.</li>
+<li><strong>Thermodynamic identities:</strong> collect the consistency residuals rather than
+   assuming that a call without outputs prints a pass/fail report.</li>
+<li><strong>Solvers:</strong> test volume roots before saturation, flash, or envelopes; a
+   converged result does not establish that the physical equation is correct.</li>
+</ol>
+<p>See the analytic guide for executable checks and how to interpret failures.</p>
+<h1 id="guides">Guides</h1>
+<ul>
+<li><a href="analtical.html">Analytical derivatives</a> shows how to implement the
+  <code>residual_helmholtz</code> and <code>get_v0</code> procedures by hand, with a complete
+  van der Waals example.</li>
+<li><a href="autodiff.html">Automatic differentiation</a> shows how to obtain the derivatives
+  with hyperdual numbers and with Tapenade.</li>
+<li><a href="../excessmodels/index.html">Excess Gibbs models</a> describes how to add an
+  activity coefficient model.</li>
+</ul>
+<h1 id="where-this-fits-in-the-codebase">Where this fits in the codebase</h1>
+<p>These pages teach the model author&rsquo;s side of the work. The
+<a href="../../developer/index.html">developer handbook</a> covers the surrounding
+codebase: the repository map, the Fortran contracts, the numerical algorithms,
+the build and test workflow, and the language-interface layers. Read it when
+you need to know <em>where</em> something lives or <em>how</em> to build and test the
+project, not only how to write the energy equation.</p>
+<p>A few handbook pages pair directly with this guide:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Need</th>
+<th style="text-align: left;">Handbook page</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Where a model, solver, or interface lives</td>
+<td style="text-align: left;"><a href="../../developer/architecture.html">Architecture</a></td>
+</tr>
+<tr>
+<td style="text-align: left;">Exact interface rules and optional-output handling</td>
+<td style="text-align: left;"><a href="../../developer/fortran.html">Fortran core</a></td>
+</tr>
+<tr>
+<td style="text-align: left;">Turning a derivative check into a regression test</td>
+<td style="text-align: left;"><a href="../../developer/testing.html">Testing</a></td>
+</tr>
+<tr>
+<td style="text-align: left;">Build, test, and documentation commands</td>
+<td style="text-align: left;"><a href="../../developer/workflow.html">Workflow</a></td>
+</tr>
+<tr>
+<td style="text-align: left;">Debugging a solver that will not converge</td>
+<td style="text-align: left;"><a href="../../developer/numerics.html">Numerical algorithms</a></td>
+</tr>
+</tbody>
+</table>
+<h1 id="example-models">Example models</h1>
+<p>The source tree contains complete implementations that can be used as
+references:</p>
+<ul>
+<li><code>src/models/residual_helmholtz/cubic/</code> for cubic equations of state.</li>
+<li><code>src/models/residual_helmholtz/multifluid/gerg2008.f90</code> for a multifluid
+  model with hyperdual automatic differentiation.</li>
+<li><code>src/models/residual_helmholtz/saft/pc_saft.f90</code> for a Tapenade-generated
+  model.</li>
+<li><code>src/models/excess_gibbs/</code> for activity-coefficient models.</li>
+</ul>
+<p>The <a href="../../developer/architecture.html">architecture page of the developer handbook</a>
+places these in the type hierarchy and explains how a user call reaches them.
+The <a href="../../developer/testing.html">testing handbook</a> shows how the shipped
+models are checked, which is the pattern to copy for a new one.</p>
     </div>
   </div>
       <hr>
@@ -222,14 +392,14 @@ kind of models.</p>
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

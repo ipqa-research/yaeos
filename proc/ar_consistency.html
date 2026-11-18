@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>ar_consistency &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.2% of total for procedures.">42 statements</a>
+                 title=" 0.3% of total for procedures.">50 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -138,16 +139,16 @@
             <a class="list-group-item" href="../proc/ar_consistency.html#variable-grp">Grp</a>
             <a class="list-group-item" href="../proc/ar_consistency.html#variable-grv">Grv</a>
             <a class="list-group-item" href="../proc/ar_consistency.html#variable-hrv">Hrv</a>
-            <a class="list-group-item" href="../proc/ar_consistency.html#variable-p~63">P</a>
-            <a class="list-group-item" href="../proc/ar_consistency.html#variable-dpdn~12">dPdn</a>
-            <a class="list-group-item" href="../proc/ar_consistency.html#variable-dlnphidp~3">dlnPhidP</a>
-            <a class="list-group-item" href="../proc/ar_consistency.html#variable-dlnphidt~5">dlnPhidT</a>
-            <a class="list-group-item" href="../proc/ar_consistency.html#variable-dlnphidn~5">dlnPhidn</a>
-            <a class="list-group-item" href="../proc/ar_consistency.html#variable-i~99">i</a>
-            <a class="list-group-item" href="../proc/ar_consistency.html#variable-j~57">j</a>
-            <a class="list-group-item" href="../proc/ar_consistency.html#variable-lnphi~4">lnphi</a>
+            <a class="list-group-item" href="../proc/ar_consistency.html#variable-p~15">P</a>
+            <a class="list-group-item" href="../proc/ar_consistency.html#variable-dpdn">dPdn</a>
+            <a class="list-group-item" href="../proc/ar_consistency.html#variable-dlnphidp">dlnPhidP</a>
+            <a class="list-group-item" href="../proc/ar_consistency.html#variable-dlnphidt">dlnPhidT</a>
+            <a class="list-group-item" href="../proc/ar_consistency.html#variable-dlnphidn">dlnPhidn</a>
+            <a class="list-group-item" href="../proc/ar_consistency.html#variable-i~32">i</a>
+            <a class="list-group-item" href="../proc/ar_consistency.html#variable-j~21">j</a>
+            <a class="list-group-item" href="../proc/ar_consistency.html#variable-lnphi~3">lnphi</a>
             <a class="list-group-item" href="../proc/ar_consistency.html#variable-ntot">ntot</a>
-            <a class="list-group-item" href="../proc/ar_consistency.html#variable-z~38">z</a>
+            <a class="list-group-item" href="../proc/ar_consistency.html#variable-z~13">z</a>
         </div>
       </div>
     </div>
@@ -272,7 +273,7 @@ Fundamentals &amp; computational aspects (2. ed). Tie-Line Publications.</li>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-eos~31"></span>
+              <span class="anchor" id="variable-eos"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -287,7 +288,7 @@ Fundamentals &amp; computational aspects (2. ed). Tie-Line Publications.</li>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~97"></span>
+              <span class="anchor" id="variable-n~6"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -302,7 +303,7 @@ Fundamentals &amp; computational aspects (2. ed). Tie-Line Publications.</li>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~36"></span>
+              <span class="anchor" id="variable-v~3"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -317,7 +318,7 @@ Fundamentals &amp; computational aspects (2. ed). Tie-Line Publications.</li>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~92"></span>
+              <span class="anchor" id="variable-t~20"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -417,109 +418,109 @@ Fundamentals &amp; computational aspects (2. ed). Tie-Line Publications.</li>
   <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: proc~~ar_consistency~~CallsGraph Pages: 1 -->
-<svg id="procar_consistencyCallsGraph" width="458pt" height="158pt"
- viewBox="0.00 0.00 458.00 158.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~ar_consistency~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 154)">
+<svg id="procar_consistencyCallsGraph" width="456pt" height="158pt"
+ viewBox="0.00 0.00 456.00 158.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~ar_consistency~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 154.27)">
 <title>proc~~ar_consistency~~CallsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-154 454,-154 454,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-154.27 451.81,-154.27 451.81,4 -4,4"/>
 <!-- proc~ar_consistency -->
 <g id="proc~~ar_consistency~~CallsGraph_node1" class="node">
 <title>proc~ar_consistency</title>
-<polygon fill="none" stroke="black" points="91,-87 0,-87 0,-63 91,-63 91,-87"/>
-<text text-anchor="middle" x="45.5" y="-72.6" font-family="Helvetica,sans-Serif" font-size="10.50">ar_consistency</text>
+<polygon fill="none" stroke="black" points="90.27,-87.27 0,-87.27 0,-63 90.27,-63 90.27,-87.27"/>
+<text xml:space="preserve" text-anchor="middle" x="45.13" y="-71.54" font-family="Helvetica,sans-Serif" font-size="10.50">ar_consistency</text>
 </g>
 <!-- proc~enthalpy_residual_vt -->
 <g id="proc~~ar_consistency~~CallsGraph_node2" class="node">
 <title>proc~enthalpy_residual_vt</title>
 <g id="a_proc~~ar_consistency~~CallsGraph_node2"><a xlink:href="../proc/enthalpy_residual_vt.html" xlink:title="ArModel%enthalpy_residual_vt">
-<polygon fill="#d9534f" stroke="#d9534f" points="302,-150 127,-150 127,-126 302,-126 302,-150"/>
-<text text-anchor="middle" x="214.5" y="-135.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%enthalpy_residual_vt</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="300.54,-150.27 126.27,-150.27 126.27,-126 300.54,-126 300.54,-150.27"/>
+<text xml:space="preserve" text-anchor="middle" x="213.41" y="-134.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%enthalpy_residual_vt</text>
 </a>
 </g>
 </g>
 <!-- proc~ar_consistency&#45;&gt;proc~enthalpy_residual_vt -->
 <g id="proc~~ar_consistency~~CallsGraph_edge1" class="edge">
 <title>proc~ar_consistency&#45;&gt;proc~enthalpy_residual_vt</title>
-<path fill="none" stroke="#000000" d="M66.38,-87.11C82.3,-96.38 105.46,-108.9 127,-117 132.89,-119.21 139.09,-121.25 145.35,-123.12"/>
-<polygon fill="#000000" stroke="#000000" points="144.64,-126.55 155.21,-125.91 146.54,-119.82 144.64,-126.55"/>
+<path fill="none" stroke="#000000" d="M66.58,-87.63C82.4,-96.86 105.11,-109.15 126.27,-117.14 131.23,-119.01 136.41,-120.76 141.67,-122.38"/>
+<polygon fill="#000000" stroke="#000000" points="140.49,-125.68 151.07,-125.12 142.44,-118.96 140.49,-125.68"/>
 </g>
 <!-- proc~gibbs_residual_vt -->
 <g id="proc~~ar_consistency~~CallsGraph_node3" class="node">
 <title>proc~gibbs_residual_vt</title>
 <g id="a_proc~~ar_consistency~~CallsGraph_node3"><a xlink:href="../proc/gibbs_residual_vt.html" xlink:title="ArModel%gibbs_residual_vt">
-<polygon fill="#d9534f" stroke="#d9534f" points="293,-108 136,-108 136,-84 293,-84 293,-108"/>
-<text text-anchor="middle" x="214.5" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%gibbs_residual_vt</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="291.54,-108.27 135.27,-108.27 135.27,-84 291.54,-84 291.54,-108.27"/>
+<text xml:space="preserve" text-anchor="middle" x="213.41" y="-92.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%gibbs_residual_vt</text>
 </a>
 </g>
 </g>
 <!-- proc~ar_consistency&#45;&gt;proc~gibbs_residual_vt -->
 <g id="proc~~ar_consistency~~CallsGraph_edge2" class="edge">
 <title>proc~ar_consistency&#45;&gt;proc~gibbs_residual_vt</title>
-<path fill="none" stroke="#000000" d="M91.25,-80.63C101.97,-81.98 113.78,-83.46 125.71,-84.96"/>
-<polygon fill="#000000" stroke="#000000" points="125.38,-88.45 135.74,-86.22 126.26,-81.5 125.38,-88.45"/>
+<path fill="none" stroke="#000000" d="M90.69,-80.76C100.94,-82.06 112.19,-83.48 123.58,-84.92"/>
+<polygon fill="#000000" stroke="#000000" points="123.12,-88.39 133.48,-86.17 124,-81.44 123.12,-88.39"/>
 </g>
 <!-- proc~lnphi_vt -->
 <g id="proc~~ar_consistency~~CallsGraph_node4" class="node">
 <title>proc~lnphi_vt</title>
 <g id="a_proc~~ar_consistency~~CallsGraph_node4"><a xlink:href="../proc/lnphi_vt.html" xlink:title="ArModel%lnphi_vt">
-<polygon fill="#d9534f" stroke="#d9534f" points="268.5,-66 160.5,-66 160.5,-42 268.5,-42 268.5,-66"/>
-<text text-anchor="middle" x="214.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%lnphi_vt</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="266.79,-66.27 160.02,-66.27 160.02,-42 266.79,-42 266.79,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="213.41" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%lnphi_vt</text>
 </a>
 </g>
 </g>
 <!-- proc~ar_consistency&#45;&gt;proc~lnphi_vt -->
 <g id="proc~~ar_consistency~~CallsGraph_edge3" class="edge">
 <title>proc~ar_consistency&#45;&gt;proc~lnphi_vt</title>
-<path fill="none" stroke="#000000" d="M91.25,-69.37C109.35,-67.1 130.57,-64.43 150.21,-61.96"/>
-<polygon fill="#000000" stroke="#000000" points="150.82,-65.41 160.31,-60.69 149.95,-58.46 150.82,-65.41"/>
+<path fill="none" stroke="#000000" d="M90.69,-69.51C108.46,-67.26 129.26,-64.64 148.58,-62.2"/>
+<polygon fill="#000000" stroke="#000000" points="148.76,-65.7 158.25,-60.98 147.89,-58.76 148.76,-65.7"/>
 </g>
 <!-- proc~pressure -->
 <g id="proc~~ar_consistency~~CallsGraph_node5" class="node">
 <title>proc~pressure</title>
 <g id="a_proc~~ar_consistency~~CallsGraph_node5"><a xlink:href="../proc/pressure.html" xlink:title="ArModel%pressure">
-<polygon fill="#d9534f" stroke="#d9534f" points="270.5,-24 158.5,-24 158.5,0 270.5,0 270.5,-24"/>
-<text text-anchor="middle" x="214.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%pressure</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="268.67,-24.27 158.15,-24.27 158.15,0 268.67,0 268.67,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="213.41" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%pressure</text>
 </a>
 </g>
 </g>
 <!-- proc~ar_consistency&#45;&gt;proc~pressure -->
 <g id="proc~~ar_consistency~~CallsGraph_edge4" class="edge">
 <title>proc~ar_consistency&#45;&gt;proc~pressure</title>
-<path fill="none" stroke="#000000" d="M66.38,-62.89C82.3,-53.62 105.46,-41.1 127,-33 133.86,-30.42 141.15,-28.08 148.47,-25.97"/>
-<polygon fill="#000000" stroke="#000000" points="149.72,-29.26 158.44,-23.24 147.87,-22.5 149.72,-29.26"/>
+<path fill="none" stroke="#000000" d="M66.58,-62.64C82.4,-53.41 105.11,-41.12 126.27,-33.13 132.89,-30.64 139.9,-28.36 146.96,-26.31"/>
+<polygon fill="#000000" stroke="#000000" points="147.86,-29.69 156.57,-23.66 146,-22.94 147.86,-29.69"/>
 </g>
 <!-- residual_helmholtz -->
 <g id="proc~~ar_consistency~~CallsGraph_node6" class="node">
 <title>residual_helmholtz</title>
-<polygon fill="#777777" stroke="#777777" points="450,-87 338,-87 338,-63 450,-63 450,-87"/>
-<text text-anchor="middle" x="394" y="-72.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">residual_helmholtz</text>
+<polygon fill="#777777" stroke="#777777" points="447.81,-87.27 336.54,-87.27 336.54,-63 447.81,-63 447.81,-87.27"/>
+<text xml:space="preserve" text-anchor="middle" x="392.18" y="-71.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">residual_helmholtz</text>
 </g>
 <!-- proc~enthalpy_residual_vt&#45;&gt;residual_helmholtz -->
 <g id="proc~~ar_consistency~~CallsGraph_edge5" class="edge">
 <title>proc~enthalpy_residual_vt&#45;&gt;residual_helmholtz</title>
-<path fill="none" stroke="#000000" d="M272.26,-125.89C282.27,-123.29 292.51,-120.31 302,-117 322.1,-110 343.77,-100.09 360.92,-91.66"/>
-<polygon fill="#000000" stroke="#000000" points="362.56,-94.76 369.95,-87.16 359.44,-88.49 362.56,-94.76"/>
+<path fill="none" stroke="#000000" d="M272.77,-125.54C282.15,-123.05 291.68,-120.24 300.54,-117.14 319.93,-110.35 340.77,-100.86 357.58,-92.61"/>
+<polygon fill="#000000" stroke="#000000" points="358.73,-95.95 366.12,-88.35 355.61,-89.68 358.73,-95.95"/>
 </g>
 <!-- proc~gibbs_residual_vt&#45;&gt;residual_helmholtz -->
 <g id="proc~~ar_consistency~~CallsGraph_edge6" class="edge">
 <title>proc~gibbs_residual_vt&#45;&gt;residual_helmholtz</title>
-<path fill="none" stroke="#000000" d="M293.1,-86.82C304.67,-85.45 316.49,-84.05 327.77,-82.72"/>
-<polygon fill="#000000" stroke="#000000" points="328.44,-86.16 337.96,-81.51 327.62,-79.21 328.44,-86.16"/>
+<path fill="none" stroke="#000000" d="M291.94,-86.92C302.91,-85.62 314.1,-84.29 324.83,-83.02"/>
+<polygon fill="#000000" stroke="#000000" points="325.24,-86.49 334.76,-81.84 324.42,-79.54 325.24,-86.49"/>
 </g>
 <!-- proc~lnphi_vt&#45;&gt;residual_helmholtz -->
 <g id="proc~~ar_consistency~~CallsGraph_edge7" class="edge">
 <title>proc~lnphi_vt&#45;&gt;residual_helmholtz</title>
-<path fill="none" stroke="#000000" d="M268.76,-60.3C287.37,-62.5 308.47,-65 327.93,-67.3"/>
-<polygon fill="#000000" stroke="#000000" points="327.59,-70.79 337.94,-68.49 328.42,-63.83 327.59,-70.79"/>
+<path fill="none" stroke="#000000" d="M266.96,-60.38C285.08,-62.53 305.62,-64.97 324.71,-67.24"/>
+<polygon fill="#000000" stroke="#000000" points="324.21,-70.7 334.55,-68.41 325.04,-63.75 324.21,-70.7"/>
 </g>
 <!-- proc~pressure&#45;&gt;residual_helmholtz -->
 <g id="proc~~ar_consistency~~CallsGraph_edge8" class="edge">
 <title>proc~pressure&#45;&gt;residual_helmholtz</title>
-<path fill="none" stroke="#000000" d="M270.88,-23.75C281.32,-26.44 292.08,-29.54 302,-33 322.1,-40 343.77,-49.91 360.92,-58.34"/>
-<polygon fill="#000000" stroke="#000000" points="359.44,-61.51 369.95,-62.84 362.56,-55.24 359.44,-61.51"/>
+<path fill="none" stroke="#000000" d="M269.09,-23.77C279.64,-26.49 290.52,-29.63 300.54,-33.13 319.93,-39.92 340.77,-49.41 357.58,-57.66"/>
+<polygon fill="#000000" stroke="#000000" points="355.61,-60.59 366.12,-61.92 358.73,-54.32 355.61,-60.59"/>
 </g>
 </g>
 </svg>
@@ -538,55 +539,55 @@ Fundamentals &amp; computational aspects (2. ed). Tie-Line Publications.</li>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
 <svg width="641pt" height="28pt"
- viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
 <!-- Subroutine -->
 <g id="node1" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node2" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Interface -->
 <g id="node3" class="node">
 <title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
 </g>
 <!-- Type Bound Procedure -->
 <g id="node4" class="node">
 <title>Type Bound Procedure</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
-<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
 </g>
 <!-- Unknown Procedure Type -->
 <g id="node5" class="node">
 <title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
-<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
 </g>
 <!-- Program -->
 <g id="node6" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node7" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
-<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -670,7 +671,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~63"></span>
+              <span class="anchor" id="variable-p~15"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -687,7 +688,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dpdn~12"></span>
+              <span class="anchor" id="variable-dpdn"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -704,7 +705,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dlnphidp~3"></span>
+              <span class="anchor" id="variable-dlnphidp"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -721,7 +722,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dlnphidt~5"></span>
+              <span class="anchor" id="variable-dlnphidt"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -738,7 +739,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dlnphidn~5"></span>
+              <span class="anchor" id="variable-dlnphidn"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -755,7 +756,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-i~99"></span>
+              <span class="anchor" id="variable-i~32"></span>
               integer,
             </td>
               <td>public</td>
@@ -772,7 +773,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-j~57"></span>
+              <span class="anchor" id="variable-j~21"></span>
               integer,
             </td>
               <td>public</td>
@@ -789,7 +790,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lnphi~4"></span>
+              <span class="anchor" id="variable-lnphi~3"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -801,7 +802,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Log fugacity coefficients.</p>
             </td>
         </tr>
         <tr>
@@ -818,12 +819,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Total number of moles.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z~38"></span>
+              <span class="anchor" id="variable-z~13"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -835,7 +836,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Compressibility factor <script type="math/tex">Z = PV/(nRT)</script>.</p>
             </td>
         </tr>
     </tbody>
@@ -864,14 +865,14 @@ implementation in a submodule of an interface in a parent module.
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

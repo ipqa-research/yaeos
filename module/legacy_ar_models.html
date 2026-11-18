@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>legacy_ar_models &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 2.9% of total for modules and submodules.">535 statements</a>
+                 title=" 3.1% of total for modules and submodules.">634 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -134,25 +135,25 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../module/legacy_ar_models.html#variable-ac~3">ac</a>
-            <a class="list-group-item" href="../module/legacy_ar_models.html#variable-b~12">b</a>
-            <a class="list-group-item" href="../module/legacy_ar_models.html#variable-bij~6">bij</a>
+            <a class="list-group-item" href="../module/legacy_ar_models.html#variable-ac~6">ac</a>
+            <a class="list-group-item" href="../module/legacy_ar_models.html#variable-b~14">b</a>
+            <a class="list-group-item" href="../module/legacy_ar_models.html#variable-bij~5">bij</a>
             <a class="list-group-item" href="../module/legacy_ar_models.html#variable-dc">dc</a>
             <a class="list-group-item" href="../module/legacy_ar_models.html#variable-del1~6">del1</a>
-            <a class="list-group-item" href="../module/legacy_ar_models.html#variable-k~27">k</a>
-            <a class="list-group-item" href="../module/legacy_ar_models.html#variable-kij~18">kij</a>
+            <a class="list-group-item" href="../module/legacy_ar_models.html#variable-k~17">k</a>
+            <a class="list-group-item" href="../module/legacy_ar_models.html#variable-kij~3">kij</a>
             <a class="list-group-item" href="../module/legacy_ar_models.html#variable-kij0">kij0</a>
             <a class="list-group-item" href="../module/legacy_ar_models.html#variable-kinf">kinf</a>
-            <a class="list-group-item" href="../module/legacy_ar_models.html#variable-lij~9">lij</a>
+            <a class="list-group-item" href="../module/legacy_ar_models.html#variable-lij~2">lij</a>
             <a class="list-group-item" href="../module/legacy_ar_models.html#variable-mixing_rule">mixing_rule</a>
-            <a class="list-group-item" href="../module/legacy_ar_models.html#variable-nc~88">nc</a>
-            <a class="list-group-item" href="../module/legacy_ar_models.html#variable-pc~9">pc</a>
-            <a class="list-group-item" href="../module/legacy_ar_models.html#variable-tc~9">tc</a>
+            <a class="list-group-item" href="../module/legacy_ar_models.html#variable-nc~78">nc</a>
+            <a class="list-group-item" href="../module/legacy_ar_models.html#variable-pc~2">pc</a>
+            <a class="list-group-item" href="../module/legacy_ar_models.html#variable-tc~2">tc</a>
             <a class="list-group-item" href="../module/legacy_ar_models.html#variable-tdep">tdep</a>
             <a class="list-group-item" href="../module/legacy_ar_models.html#variable-thermo_model">thermo_model</a>
             <a class="list-group-item" href="../module/legacy_ar_models.html#variable-tstar">tstar</a>
-            <a class="list-group-item" href="../module/legacy_ar_models.html#variable-w~25">w</a>
-            <a class="list-group-item" href="../module/legacy_ar_models.html#variable-z~39">z</a>
+            <a class="list-group-item" href="../module/legacy_ar_models.html#variable-w~31">w</a>
+            <a class="list-group-item" href="../module/legacy_ar_models.html#variable-z~49">z</a>
         </div>
       </div>
     </div>
@@ -218,11 +219,18 @@
     </div>
 
     <div class="col-md-9" id='text'>
-      <p>Legacy Thermodynamic routines
-Module for a cubic eos system, made with the intention to keep
-compatiblity with legacy codes but with a better structure.
-this should be later adapted into a simple oop system where an eos object
-stores the relevant parameters (or some functional oriented approach)</p>
+      <h1 id="legacy-cubic-eos-procedures">Legacy cubic EOS procedures</h1>
+<p>Compatibility layer for older applications that use global EOS state and procedure pointers.</p>
+<h1 id="description">Description</h1>
+<p>This module stores model configuration, component data, and mixing
+parameters in module variables, then dispatches properties through the
+<code>ar_fun</code> and <code>vinit</code> pointers from <code>ar_interface</code>. It is retained for
+compatibility only: it is not reentrant or thread-safe, and new code
+should use the object-oriented model types exported by <code>yaeos</code>.</p>
+<h1 id="examples">Examples</h1>
+<div class="codehilite"><pre><span></span><code><span class="k">call </span><span class="n">setup</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span><span class="w"> </span><span class="n">nmodel</span><span class="p">,</span><span class="w"> </span><span class="n">ntdep</span><span class="p">,</span><span class="w"> </span><span class="n">ncomb</span><span class="p">)</span>
+<span class="k">call </span><span class="n">PR78_factory</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">ac</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">Tc</span><span class="p">,</span><span class="w"> </span><span class="n">Pc</span><span class="p">,</span><span class="w"> </span><span class="n">omega</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">)</span>
+</code></pre></div>
 <br>          <div class="card mb-4">
       <h3 class="card-header card-title bg-light">Uses</h3>
       <div class="card-body">
@@ -237,76 +245,76 @@ stores the relevant parameters (or some functional oriented approach)</p>
               <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: module~~legacy_ar_models~~UsesGraph Pages: 1 -->
-<svg id="modulelegacy_ar_modelsUsesGraph" width="502pt" height="72pt"
- viewBox="0.00 0.00 502.00 72.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="module~~legacy_ar_models~~UsesGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 68)">
+<svg id="modulelegacy_ar_modelsUsesGraph" width="497pt" height="72pt"
+ viewBox="0.00 0.00 497.00 72.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~legacy_ar_models~~UsesGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 68.27)">
 <title>module~~legacy_ar_models~~UsesGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-68 498,-68 498,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-68.27 493.33,-68.27 493.33,4 -4,4"/>
 <!-- module~legacy_ar_models -->
 <g id="module~~legacy_ar_models~~UsesGraph_node1" class="node">
 <title>module~legacy_ar_models</title>
-<polygon fill="none" stroke="black" points="494,-44 385,-44 385,-20 494,-20 494,-44"/>
-<text text-anchor="middle" x="439.5" y="-29.6" font-family="Helvetica,sans-Serif" font-size="10.50">legacy_ar_models</text>
+<polygon fill="none" stroke="black" points="489.33,-44.27 381.81,-44.27 381.81,-20 489.33,-20 489.33,-44.27"/>
+<text xml:space="preserve" text-anchor="middle" x="435.57" y="-28.53" font-family="Helvetica,sans-Serif" font-size="10.50">legacy_ar_models</text>
 </g>
 <!-- module~ar_interface -->
 <g id="module~~legacy_ar_models~~UsesGraph_node2" class="node">
 <title>module~ar_interface</title>
 <g id="a_module~~legacy_ar_models~~UsesGraph_node2"><a xlink:href="../module/ar_interface.html" xlink:title="ar_interface">
-<polygon fill="#337ab7" stroke="#337ab7" points="349,-24 272,-24 272,0 349,0 349,-24"/>
-<text text-anchor="middle" x="310.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ar_interface</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="345.81,-24.27 269.79,-24.27 269.79,0 345.81,0 345.81,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="307.8" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ar_interface</text>
 </a>
 </g>
 </g>
 <!-- module~legacy_ar_models&#45;&gt;module~ar_interface -->
 <g id="module~~legacy_ar_models~~UsesGraph_edge1" class="edge">
 <title>module~legacy_ar_models&#45;&gt;module~ar_interface</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M384.64,-23.52C376.18,-22.19 367.49,-20.82 359.18,-19.51"/>
-<polygon fill="#000000" stroke="#000000" points="359.7,-16.05 349.28,-17.95 358.62,-22.96 359.7,-16.05"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M381.6,-23.71C373.57,-22.43 365.32,-21.12 357.39,-19.86"/>
+<polygon fill="#000000" stroke="#000000" points="357.98,-16.41 347.56,-18.3 356.88,-23.33 357.98,-16.41"/>
 </g>
 <!-- module~yaeos__constants -->
 <g id="module~~legacy_ar_models~~UsesGraph_node3" class="node">
 <title>module~yaeos__constants</title>
 <g id="a_module~~legacy_ar_models~~UsesGraph_node3"><a xlink:href="../module/yaeos__constants.html" xlink:title="yaeos__constants">
-<polygon fill="#337ab7" stroke="#337ab7" points="236,-64 130,-64 130,-40 236,-40 236,-64"/>
-<text text-anchor="middle" x="183" y="-49.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__constants</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="233.79,-64.27 129.27,-64.27 129.27,-40 233.79,-40 233.79,-64.27"/>
+<text xml:space="preserve" text-anchor="middle" x="181.53" y="-48.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__constants</text>
 </a>
 </g>
 </g>
 <!-- module~legacy_ar_models&#45;&gt;module~yaeos__constants -->
 <g id="module~~legacy_ar_models~~UsesGraph_edge2" class="edge">
 <title>module~legacy_ar_models&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M384.84,-36.22C344.42,-39.39 288.91,-43.76 246.49,-47.09"/>
-<polygon fill="#000000" stroke="#000000" points="245.98,-43.62 236.28,-47.89 246.53,-50.6 245.98,-43.62"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M381.43,-36.35C341.69,-39.51 287.23,-43.83 245.34,-47.15"/>
+<polygon fill="#000000" stroke="#000000" points="245.08,-43.66 235.39,-47.94 245.63,-50.64 245.08,-43.66"/>
 </g>
 <!-- module~ar_interface&#45;&gt;module~yaeos__constants -->
 <g id="module~~legacy_ar_models~~UsesGraph_edge4" class="edge">
 <title>module~ar_interface&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M271.85,-24C259.3,-28 245.16,-32.51 231.94,-36.72"/>
-<polygon fill="#000000" stroke="#000000" points="230.53,-33.5 222.06,-39.87 232.65,-40.17 230.53,-33.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M269.51,-24.14C257.79,-27.91 244.66,-32.14 232.22,-36.14"/>
+<polygon fill="#000000" stroke="#000000" points="231.4,-32.73 222.95,-39.12 233.55,-39.39 231.4,-32.73"/>
 </g>
 <!-- iso_fortran_env -->
 <g id="module~~legacy_ar_models~~UsesGraph_node4" class="node">
 <title>iso_fortran_env</title>
 <g id="a_module~~legacy_ar_models~~UsesGraph_node4"><a xlink:href="http://fortranwiki.org/fortran/show/iso_fortran_env" xlink:title="iso_fortran_env">
-<polygon fill="#337ab7" stroke="#337ab7" points="94,-44 0,-44 0,-20 94,-20 94,-44"/>
-<text text-anchor="middle" x="47" y="-29.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="93.27,-44.27 0,-44.27 0,-20 93.27,-20 93.27,-44.27"/>
+<text xml:space="preserve" text-anchor="middle" x="46.63" y="-28.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
 </a>
 </g>
 </g>
 <!-- module~ar_interface&#45;&gt;iso_fortran_env -->
 <g id="module~~legacy_ar_models~~UsesGraph_edge3" class="edge">
 <title>module~ar_interface&#45;&gt;iso_fortran_env</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M271.75,-14.89C227.82,-18.25 154.85,-23.83 104.23,-27.7"/>
-<polygon fill="#000000" stroke="#000000" points="103.81,-24.22 94.11,-28.47 104.35,-31.2 103.81,-24.22"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M269.39,-15.02C226.22,-18.35 154.73,-23.87 104.63,-27.74"/>
+<polygon fill="#000000" stroke="#000000" points="104.54,-24.23 94.84,-28.49 105.08,-31.21 104.54,-24.23"/>
 </g>
 <!-- module~yaeos__constants&#45;&gt;iso_fortran_env -->
 <g id="module~~legacy_ar_models~~UsesGraph_edge5" class="edge">
 <title>module~yaeos__constants&#45;&gt;iso_fortran_env</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.81,-44.21C121.45,-42.96 112.77,-41.67 104.32,-40.41"/>
-<polygon fill="#000000" stroke="#000000" points="104.57,-36.9 94.16,-38.89 103.54,-43.83 104.57,-36.9"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.15,-44.4C121.21,-43.21 112.96,-41.97 104.9,-40.75"/>
+<polygon fill="#000000" stroke="#000000" points="105.58,-37.32 95.17,-39.29 104.54,-44.24 105.58,-37.32"/>
 </g>
 </g>
 </svg>
@@ -325,49 +333,49 @@ stores the relevant parameters (or some functional oriented approach)</p>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="518pt" height="32pt"
- viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="511pt" height="32pt"
+ viewBox="0.00 0.00 511.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 506.88,-28.27 506.88,4 -4,4"/>
 <!-- Module -->
 <g id="node1" class="node">
 <title>Module</title>
-<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
 </g>
 <!-- Submodule -->
 <g id="node2" class="node">
 <title>Submodule</title>
-<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
-<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="144.13,-24.27 71.87,-24.27 71.87,0 144.13,0 144.13,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="108" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
 </g>
 <!-- Subroutine -->
 <g id="node3" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
-<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="231.63,-24.27 162.37,-24.27 162.37,0 231.63,0 231.63,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="197" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node4" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
-<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="306.26,-24.27 249.74,-24.27 249.74,0 306.26,0 306.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="278" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Program -->
 <g id="node5" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
-<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="381.26,-24.27 324.74,-24.27 324.74,0 381.26,0 381.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="353" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node6" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
-<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="502.88,-24.27 399.12,-24.27 399.12,0 502.88,0 502.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="451" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -393,34 +401,34 @@ modules which it uses.
               <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: module~~legacy_ar_models~~UsedByGraph Pages: 1 -->
-<svg id="modulelegacy_ar_modelsUsedByGraph" width="304pt" height="32pt"
- viewBox="0.00 0.00 304.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="module~~legacy_ar_models~~UsedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg id="modulelegacy_ar_modelsUsedByGraph" width="302pt" height="32pt"
+ viewBox="0.00 0.00 302.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~legacy_ar_models~~UsedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>module~~legacy_ar_models~~UsedByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 300,-28 300,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 297.79,-28.27 297.79,4 -4,4"/>
 <!-- module~legacy_ar_models -->
 <g id="module~~legacy_ar_models~~UsedByGraph_node1" class="node">
 <title>module~legacy_ar_models</title>
-<polygon fill="none" stroke="black" points="109,-24 0,-24 0,0 109,0 109,-24"/>
-<text text-anchor="middle" x="54.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">legacy_ar_models</text>
+<polygon fill="none" stroke="black" points="107.52,-24.27 0,-24.27 0,0 107.52,0 107.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="53.76" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">legacy_ar_models</text>
 </g>
 <!-- module~legacy_thermo_properties -->
 <g id="module~~legacy_ar_models~~UsedByGraph_node2" class="node">
 <title>module~legacy_thermo_properties</title>
 <g id="a_module~~legacy_ar_models~~UsedByGraph_node2"><a xlink:href="../module/legacy_thermo_properties.html" xlink:title="legacy_thermo_properties">
-<polygon fill="#337ab7" stroke="#337ab7" points="296,-24 145,-24 145,0 296,0 296,-24"/>
-<text text-anchor="middle" x="220.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">legacy_thermo_properties</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="293.79,-24.27 143.52,-24.27 143.52,0 293.79,0 293.79,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="218.65" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">legacy_thermo_properties</text>
 </a>
 </g>
 </g>
 <!-- module~legacy_thermo_properties&#45;&gt;module~legacy_ar_models -->
 <g id="module~~legacy_ar_models~~UsedByGraph_edge1" class="edge">
 <title>module~legacy_thermo_properties&#45;&gt;module~legacy_ar_models</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M144.7,-12C136.17,-12 127.54,-12 119.17,-12"/>
-<polygon fill="#000000" stroke="#000000" points="119.13,-8.5 109.13,-12 119.13,-15.5 119.13,-8.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M143.36,-12.13C135.24,-12.13 127.03,-12.13 119.04,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="119.06,-8.64 109.06,-12.14 119.06,-15.64 119.06,-8.64"/>
 </g>
 </g>
 </svg>
@@ -439,49 +447,49 @@ modules which it uses.
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="518pt" height="32pt"
- viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="511pt" height="32pt"
+ viewBox="0.00 0.00 511.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 506.88,-28.27 506.88,4 -4,4"/>
 <!-- Module -->
 <g id="node1" class="node">
 <title>Module</title>
-<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
 </g>
 <!-- Submodule -->
 <g id="node2" class="node">
 <title>Submodule</title>
-<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
-<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="144.13,-24.27 71.87,-24.27 71.87,0 144.13,0 144.13,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="108" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
 </g>
 <!-- Subroutine -->
 <g id="node3" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
-<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="231.63,-24.27 162.37,-24.27 162.37,0 231.63,0 231.63,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="197" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node4" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
-<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="306.26,-24.27 249.74,-24.27 249.74,0 306.26,0 306.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="278" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Program -->
 <g id="node5" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
-<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="381.26,-24.27 324.74,-24.27 324.74,0 381.26,0 381.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="353" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node6" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
-<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="502.88,-24.27 399.12,-24.27 399.12,0 502.88,0 502.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="451" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -516,7 +524,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-ac~3"></span>
+              <span class="anchor" id="variable-ac~6"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -533,7 +541,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~12"></span>
+              <span class="anchor" id="variable-b~14"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -550,7 +558,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-bij~6"></span>
+              <span class="anchor" id="variable-bij~5"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -562,7 +570,7 @@ modules which it uses.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Pair covolume matrix used by quadratic mixing.</p>
             </td>
         </tr>
         <tr>
@@ -602,7 +610,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-k~27"></span>
+              <span class="anchor" id="variable-k~17"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -619,7 +627,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kij~18"></span>
+              <span class="anchor" id="variable-kij~3"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -648,7 +656,7 @@ modules which it uses.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Low-temperature binary interaction coefficients.</p>
             </td>
         </tr>
         <tr>
@@ -665,12 +673,12 @@ modules which it uses.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Asymptotic binary interaction coefficients.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lij~9"></span>
+              <span class="anchor" id="variable-lij~2"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -699,12 +707,12 @@ modules which it uses.
                 <td></td>
                 <td></td>
             <td>
-                <p>What mixing rule to use</p>
+                <p>Legacy integer selector for the mixing rule.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~88"></span>
+              <span class="anchor" id="variable-nc~78"></span>
               integer,
             </td>
               <td>public</td>
@@ -716,12 +724,12 @@ modules which it uses.
                 <td></td>
                 <td></td>
             <td>
-                <p>Number of components</p>
+                <p>Number of active components.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-pc~9"></span>
+              <span class="anchor" id="variable-pc~2"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -738,7 +746,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tc~9"></span>
+              <span class="anchor" id="variable-tc~2"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -767,7 +775,7 @@ modules which it uses.
                 <td></td>
                 <td></td>
             <td>
-                <p>Temperature dependance of kij</p>
+                <p>Legacy selector for temperature-dependent binary interactions.</p>
             </td>
         </tr>
         <tr>
@@ -784,7 +792,7 @@ modules which it uses.
                 <td></td>
                 <td></td>
             <td>
-                <p>Which thermodynamic model to use</p>
+                <p>Legacy integer selector for the cubic EOS alpha/covolume formulation.</p>
             </td>
         </tr>
         <tr>
@@ -801,12 +809,12 @@ modules which it uses.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Reference temperatures for the binary interaction law.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-w~25"></span>
+              <span class="anchor" id="variable-w~31"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -823,7 +831,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z~39"></span>
+              <span class="anchor" id="variable-z~49"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -855,7 +863,7 @@ modules which it uses.
 </h3></div>
     <div class="card-body">
           
-  
+  <p>Return a cubic-EOS liquid-volume initial estimate for legacy solvers.</p><a href="../proc/cubic_v0.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -870,7 +878,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-z~43"></span>
+              <span class="anchor" id="variable-z~53"></span>
               real(kind=pr)
             </td>
 <td></td>
@@ -880,12 +888,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>z</strong>(:)</td>
             <td>
-
+<p>Feed or overall composition.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~6"></span>
+              <span class="anchor" id="variable-p~5"></span>
               real(kind=pr)
             </td>
 <td></td>
@@ -900,7 +908,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~34"></span>
+              <span class="anchor" id="variable-t~25"></span>
               real(kind=pr)
             </td>
 <td></td>
@@ -935,7 +943,7 @@ modules which it uses.
 </h3></div>
     <div class="card-body">
           
-  
+  <p>Dispatch the configured legacy residual Helmholtz implementation.</p><a href="../proc/arvnder.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -950,7 +958,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~90"></span>
+              <span class="anchor" id="variable-nc~80"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -960,7 +968,7 @@ modules which it uses.
             <td>::</td>
             <td><strong>nc</strong></td>
             <td>
-
+<p>Number of active components.</p>
             </td>
         </tr>
         <tr>
@@ -975,7 +983,7 @@ modules which it uses.
             <td>::</td>
             <td><strong>nder</strong></td>
             <td>
-
+<p>Get compositional derivatives</p>
             </td>
         </tr>
         <tr>
@@ -990,12 +998,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>ntemp</strong></td>
             <td>
-
+<p>Get temperature derivatives</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z~42"></span>
+              <span class="anchor" id="variable-z~52"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1005,12 +1013,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>z</strong>(nc)</td>
             <td>
-
+<p>Component mole amounts/composition vector.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~40"></span>
+              <span class="anchor" id="variable-v~43"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1020,12 +1028,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>V</strong></td>
             <td>
-
+<p>Total volume [L].</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~96"></span>
+              <span class="anchor" id="variable-t~100"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1035,12 +1043,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>T</strong></td>
             <td>
-
+<p>Temperature [K].</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ar~8"></span>
+              <span class="anchor" id="variable-ar~6"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1050,12 +1058,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>ar</strong></td>
             <td>
-
+<p>Residual Helmholtz energy.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arv~4"></span>
+              <span class="anchor" id="variable-arv~6"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1065,12 +1073,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>arv</strong></td>
             <td>
-
+<p>First volume derivative of residual Helmholtz energy.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-artv~4"></span>
+              <span class="anchor" id="variable-artv~6"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1080,12 +1088,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>artv</strong></td>
             <td>
-
+<p>Mixed volume-temperature derivative of residual Helmholtz energy.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arv2~4"></span>
+              <span class="anchor" id="variable-arv2~6"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1095,12 +1103,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>arv2</strong></td>
             <td>
-
+<p>Second volume derivative of residual Helmholtz energy.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arn~16"></span>
+              <span class="anchor" id="variable-arn~19"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -1110,12 +1118,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>Arn</strong></td>
             <td>
-
+<p>Composition gradient of residual Helmholtz energy.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arvn~15"></span>
+              <span class="anchor" id="variable-arvn~18"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -1125,12 +1133,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>ArVn</strong></td>
             <td>
-
+<p>Mixed volume-composition derivatives.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-artn~15"></span>
+              <span class="anchor" id="variable-artn~18"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -1140,12 +1148,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>ArTn</strong></td>
             <td>
-
+<p>Mixed temperature-composition derivatives.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arn2~12"></span>
+              <span class="anchor" id="variable-arn2~15"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1155,7 +1163,7 @@ modules which it uses.
             <td>::</td>
             <td><strong>Arn2</strong>(size(z),size(z))</td>
             <td>
-
+<p>Composition Hessian of residual Helmholtz energy.</p>
             </td>
         </tr>
     </tbody>
@@ -1170,7 +1178,7 @@ modules which it uses.
 </h3></div>
     <div class="card-body">
           
-  
+  <p>Evaluate the legacy quadratic-mixture covolume and derivatives.</p><a href="../proc/bnder.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -1185,7 +1193,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~94"></span>
+              <span class="anchor" id="variable-nc~84"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -1195,7 +1203,7 @@ modules which it uses.
             <td>::</td>
             <td><strong>nc</strong></td>
             <td>
-
+<p>Number of active components.</p>
             </td>
         </tr>
         <tr>
@@ -1210,12 +1218,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>rn</strong>(nc)</td>
             <td>
-
+<p>Component mole amounts used in mixture rules.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-bmix~8"></span>
+              <span class="anchor" id="variable-bmix~9"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1225,12 +1233,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>Bmix</strong></td>
             <td>
-
+<p>Mixture covolume.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dbi~11"></span>
+              <span class="anchor" id="variable-dbi~14"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1240,12 +1248,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>dBi</strong>(nc)</td>
             <td>
-
+<p>Mole-number gradient of the mixture covolume.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dbij~11"></span>
+              <span class="anchor" id="variable-dbij~14"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1255,7 +1263,7 @@ modules which it uses.
             <td>::</td>
             <td><strong>dBij</strong>(nc,nc)</td>
             <td>
-
+<p>Mole-number Hessian of the mixture covolume.</p>
             </td>
         </tr>
     </tbody>
@@ -1270,7 +1278,7 @@ modules which it uses.
 </h3></div>
     <div class="card-body">
           
-  
+  <p>Evaluate the mole-averaged cubic denominator parameter and derivatives.</p><a href="../proc/deltander.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -1285,7 +1293,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~93"></span>
+              <span class="anchor" id="variable-nc~83"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -1295,7 +1303,7 @@ modules which it uses.
             <td>::</td>
             <td><strong>nc</strong></td>
             <td>
-
+<p>Number of active components.</p>
             </td>
         </tr>
         <tr>
@@ -1310,7 +1318,7 @@ modules which it uses.
             <td>::</td>
             <td><strong>rn</strong>(nc)</td>
             <td>
-
+<p>Component mole amounts used in mixture rules.</p>
             </td>
         </tr>
         <tr>
@@ -1325,12 +1333,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>D1m</strong></td>
             <td>
-
+<p>Mixture cubic denominator parameter.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dd1i~9"></span>
+              <span class="anchor" id="variable-dd1i~12"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1340,12 +1348,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>dD1i</strong>(nc)</td>
             <td>
-
+<p>Mole-number gradient of the cubic denominator parameter.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dd1ij~9"></span>
+              <span class="anchor" id="variable-dd1ij~12"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1355,7 +1363,7 @@ modules which it uses.
             <td>::</td>
             <td><strong>dD1ij</strong>(nc,nc)</td>
             <td>
-
+<p>Mole-number Hessian of the cubic denominator parameter.</p>
             </td>
         </tr>
     </tbody>
@@ -1370,7 +1378,7 @@ modules which it uses.
 </h3></div>
     <div class="card-body">
           
-  
+  <p>Evaluate the legacy mixture attractive parameter and derivatives.</p><a href="../proc/dandtnder.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -1395,12 +1403,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>ntd</strong></td>
             <td>
-
+<p>Flag selecting temperature-dependent derivative calculations.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~92"></span>
+              <span class="anchor" id="variable-nc~82"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -1410,12 +1418,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>nc</strong></td>
             <td>
-
+<p>Number of active components.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~99"></span>
+              <span class="anchor" id="variable-t~103"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1425,7 +1433,7 @@ modules which it uses.
             <td>::</td>
             <td><strong>T</strong></td>
             <td>
-
+<p>Temperature [K].</p>
             </td>
         </tr>
         <tr>
@@ -1440,12 +1448,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>rn</strong>(nc)</td>
             <td>
-
+<p>Component mole amounts used in mixture rules.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-d~11"></span>
+              <span class="anchor" id="variable-d~14"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1455,12 +1463,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>D</strong></td>
             <td>
-
+<p>Mixture attractive parameter.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ddi~10"></span>
+              <span class="anchor" id="variable-ddi~13"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1470,7 +1478,8 @@ modules which it uses.
             <td>::</td>
             <td><strong>dDi</strong>(nc)</td>
             <td>
-
+<p>
+<script type="math/tex">\partial D/\partial n_i</script>.</p>
             </td>
         </tr>
         <tr>
@@ -1485,12 +1494,13 @@ modules which it uses.
             <td>::</td>
             <td><strong>dDiT</strong>(nc)</td>
             <td>
-
+<p>
+<script type="math/tex">\partial^2 D/\partial n_i \partial T</script>.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ddij~10"></span>
+              <span class="anchor" id="variable-ddij~13"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1500,12 +1510,13 @@ modules which it uses.
             <td>::</td>
             <td><strong>dDij</strong>(nc,nc)</td>
             <td>
-
+<p>
+<script type="math/tex">\partial^2 D/\partial n_i \partial n_j</script>.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dddt~10"></span>
+              <span class="anchor" id="variable-dddt~13"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1515,12 +1526,13 @@ modules which it uses.
             <td>::</td>
             <td><strong>dDdT</strong></td>
             <td>
-
+<p>
+<script type="math/tex">\partial D/\partial T</script>.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dddt2~10"></span>
+              <span class="anchor" id="variable-dddt2~13"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1530,7 +1542,8 @@ modules which it uses.
             <td>::</td>
             <td><strong>dDdT2</strong></td>
             <td>
-
+<p>
+<script type="math/tex">\partial^2 D/\partial T^2</script>.</p>
             </td>
         </tr>
     </tbody>
@@ -1545,7 +1558,7 @@ modules which it uses.
 </h3></div>
     <div class="card-body">
           
-  <p>Calculate the reduced residual Helmholtz Energy and it&rsquo;s derivatives with the RKPR EOS</p>
+  <p>Calculate the reduced residual Helmholtz Energy and it&rsquo;s derivatives with the RKPR EOS</p><a href="../proc/helmrkpr.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -1570,7 +1583,7 @@ modules which it uses.
             <td>::</td>
             <td><strong>nco</strong></td>
             <td>
-
+<p>Number of components in the mixture.</p>
             </td>
         </tr>
         <tr>
@@ -1585,7 +1598,7 @@ modules which it uses.
             <td>::</td>
             <td><strong>NDE</strong></td>
             <td>
-
+<p>Compositional derivative order; <code>2</code> also computes <code>Arn2</code>.</p>
             </td>
         </tr>
         <tr>
@@ -1600,7 +1613,7 @@ modules which it uses.
             <td>::</td>
             <td><strong>NTD</strong></td>
             <td>
-
+<p>Flag selecting temperature-dependent derivative calculations.</p>
             </td>
         </tr>
         <tr>
@@ -1615,12 +1628,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>rn</strong>(nco)</td>
             <td>
-
+<p>Component mole amounts used in mixture rules.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~39"></span>
+              <span class="anchor" id="variable-v~42"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1630,12 +1643,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>V</strong></td>
             <td>
-
+<p>Total volume [L].</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~95"></span>
+              <span class="anchor" id="variable-t~99"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1645,12 +1658,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>T</strong></td>
             <td>
-
+<p>Temperature [K].</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ar~16"></span>
+              <span class="anchor" id="variable-ar~19"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1660,12 +1673,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>Ar</strong></td>
             <td>
-
+<p>Residual Helmholtz energy.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arv~14"></span>
+              <span class="anchor" id="variable-arv~15"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1675,12 +1688,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>ArV</strong></td>
             <td>
-
+<p>First volume derivative of residual Helmholtz energy.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-artv~14"></span>
+              <span class="anchor" id="variable-artv~15"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1690,12 +1703,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>ArTV</strong></td>
             <td>
-
+<p>Mixed volume-temperature derivative of residual Helmholtz energy.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arv2~14"></span>
+              <span class="anchor" id="variable-arv2~15"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1705,12 +1718,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>ArV2</strong></td>
             <td>
-
+<p>Second volume derivative of residual Helmholtz energy.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arn~15"></span>
+              <span class="anchor" id="variable-arn~18"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1720,12 +1733,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>Arn</strong>(nco)</td>
             <td>
-
+<p>Mole-number gradient of residual Helmholtz energy.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arvn~14"></span>
+              <span class="anchor" id="variable-arvn~17"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1735,12 +1748,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>ArVn</strong>(nco)</td>
             <td>
-
+<p>Mixed volume/mole-number derivative of residual Helmholtz energy.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-artn~14"></span>
+              <span class="anchor" id="variable-artn~17"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1750,12 +1763,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>ArTn</strong>(nco)</td>
             <td>
-
+<p>Mixed temperature/mole-number derivative of residual Helmholtz energy.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arn2~11"></span>
+              <span class="anchor" id="variable-arn2~14"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1765,7 +1778,7 @@ modules which it uses.
             <td>::</td>
             <td><strong>Arn2</strong>(nco,nco)</td>
             <td>
-
+<p>Mole-number Hessian of residual Helmholtz energy.</p>
             </td>
         </tr>
     </tbody>
@@ -1780,7 +1793,7 @@ modules which it uses.
 </h3></div>
     <div class="card-body">
           
-  
+  <p>Evaluate the SRK/PR-family residual Helmholtz expression and derivatives.</p><a href="../proc/helmsrkpr.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -1795,7 +1808,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~89"></span>
+              <span class="anchor" id="variable-nc~79"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -1810,7 +1823,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nd~11"></span>
+              <span class="anchor" id="variable-nd~3"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -1825,7 +1838,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nt~8"></span>
+              <span class="anchor" id="variable-nt~7"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -1855,7 +1868,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~21"></span>
+              <span class="anchor" id="variable-v~11"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1870,7 +1883,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~33"></span>
+              <span class="anchor" id="variable-t~24"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1885,7 +1898,1023 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ar~7"></span>
+              <span class="anchor" id="variable-ar~5"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ar</strong></td>
+            <td>
+<p>Residual Helmholtz</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-arv~5"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>arv</strong></td>
+            <td>
+<p>dAr/dV</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-artv~5"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>artv</strong></td>
+            <td>
+<p>dAr2/dTV</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-arv2~5"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>arv2</strong></td>
+            <td>
+<p>dAr2/dV2</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-arn~17"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Arn</strong>(nc)</td>
+            <td>
+<p>dAr/dn</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-arvn~16"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ArVn</strong>(nc)</td>
+            <td>
+<p>dAr2/dVn</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-artn~16"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ArTn</strong>(nc)</td>
+            <td>
+<p>dAr2/dTn</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-arn2~13"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Arn2</strong>(nc,nc)</td>
+            <td>
+<p>dAr2/dn2</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-pr76_factory"></span> <h3>public  subroutine <a href='../proc/pr76_factory.html'>PR76_factory</a>(moles_in, ac_in, b_in, tc_in, pc_in, w_in, k_in)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>PengRobinson 76 factory</p><a href="../proc/pr76_factory.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-moles_in~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>moles_in</strong>(nc)</td>
+            <td>
+<p>Component mole amounts or feed composition used to initialize the legacy model.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ac_in~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ac_in</strong>(nc)</td>
+            <td>
+<p>Optional precomputed critical attractive parameters.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b_in~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>b_in</strong>(nc)</td>
+            <td>
+<p>Optional precomputed covolumes.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tc_in~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tc_in</strong>(nc)</td>
+            <td>
+<p>Optional critical temperatures [K].</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-pc_in~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>pc_in</strong>(nc)</td>
+            <td>
+<p>Optional critical pressures [bar].</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-w_in~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>w_in</strong>(nc)</td>
+            <td>
+<p>Optional acentric factors.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-k_in~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>k_in</strong>(nc)</td>
+            <td>
+<p>Optional alpha-function parameters.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-pr78_factory"></span> <h3>public  subroutine <a href='../proc/pr78_factory.html'>PR78_factory</a>(moles_in, ac_in, b_in, tc_in, pc_in, w_in, k_in)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>PengRobinson 78 factory</p><a href="../proc/pr78_factory.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-moles_in"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>moles_in</strong>(nc)</td>
+            <td>
+<p>Component mole amounts or feed composition used to initialize the legacy model.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ac_in"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ac_in</strong>(nc)</td>
+            <td>
+<p>Optional precomputed critical attractive parameters.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b_in"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>b_in</strong>(nc)</td>
+            <td>
+<p>Optional precomputed covolumes.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tc_in"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tc_in</strong>(nc)</td>
+            <td>
+<p>Optional critical temperatures [K].</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-pc_in"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>pc_in</strong>(nc)</td>
+            <td>
+<p>Optional critical pressures [bar].</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-w_in"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>w_in</strong>(nc)</td>
+            <td>
+<p>Optional acentric factors.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-k_in"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>k_in</strong>(nc)</td>
+            <td>
+<p>Optional alpha-function parameters.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-srk_factory"></span> <h3>public  subroutine <a href='../proc/srk_factory.html'>SRK_factory</a>(moles_in, ac_in, b_in, tc_in, pc_in, w_in, k_in)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>SoaveRedlichKwong factory</p><a href="../proc/srk_factory.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-moles_in~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>moles_in</strong>(nc)</td>
+            <td>
+<p>Component mole amounts or feed composition used to initialize the legacy model.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ac_in~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ac_in</strong>(nc)</td>
+            <td>
+<p>Optional precomputed critical attractive parameters.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-b_in~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>b_in</strong>(nc)</td>
+            <td>
+<p>Optional precomputed covolumes.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tc_in~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tc_in</strong>(nc)</td>
+            <td>
+<p>Optional critical temperatures [K].</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-pc_in~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>pc_in</strong>(nc)</td>
+            <td>
+<p>Optional critical pressures [bar].</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-w_in~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>w_in</strong>(nc)</td>
+            <td>
+<p>Optional acentric factors.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-k_in~3"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>k_in</strong>(nc)</td>
+            <td>
+<p>Optional alpha-function parameters.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-atder"></span> <h3>public  subroutine <a href='../proc/atder.html'>aTder</a>(ac, Tc, k, T, a, dadT, dadT2)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Evaluate the configured cubic alpha correction and its temperature derivatives.</p><a href="../proc/atder.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ac~7"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ac</strong></td>
+            <td>
+<p>Pure-component critical attractive parameter.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tc~8"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Tc</strong></td>
+            <td>
+<p>Pure-component critical temperature [K].</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-k~18"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>k</strong></td>
+            <td>
+<p>Alpha-function parameter.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~101"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+<p>Temperature [K].</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-a~38"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>a</strong></td>
+            <td>
+<p>Attractive parameter at the state.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dadt"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dadT</strong></td>
+            <td>
+<p>First temperature derivative of the attractive parameter.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-dadt2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>dadT2</strong></td>
+            <td>
+<p>Second temperature derivative of the attractive parameter.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-aijtder"></span> <h3>public  subroutine <a href='../proc/aijtder.html'>aijTder</a>(ntd, nc, T, aij, daijdT, daijdT2)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Build pair attractive parameters and their temperature derivatives.</p><a href="../proc/aijtder.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ntd"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ntd</strong></td>
+            <td>
+<p>Flag selecting temperature-dependent derivative calculations.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-nc~81"></span>
+              integer,
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>nc</strong></td>
+            <td>
+<p>Number of active components.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~102"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+<p>Temperature [K].</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-aij~6"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>aij</strong>(nc,nc)</td>
+            <td>
+<p>Pair attractive-parameter matrix.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daijdt~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>daijdT</strong>(nc,nc)</td>
+            <td>
+<p>Temperature derivative of the pair attractive parameters.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-daijdt2~2"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>daijdT2</strong>(nc,nc)</td>
+            <td>
+<p>Second temperature derivative of the pair attractive parameters.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-ar_rkpr"></span> <h3>public  subroutine <a href='../proc/ar_rkpr.html'>ar_rkpr</a>(z, v, t, ar, arv, artv, arv2, Arn, ArVn, ArTn, Arn2)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Evaluate residual Helmholtz derivatives for the legacy RKPR model.</p><a href="../proc/ar_rkpr.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-z~51"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>z</strong>(:)</td>
+            <td>
+<p>Number of moles</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v~10"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>v</strong></td>
+            <td>
+<p>Volume [L]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~23"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>t</strong></td>
+            <td>
+<p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ar~4"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ar</strong></td>
+            <td>
+<p>Residual Helmholtz</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-arv~4"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>arv</strong></td>
+            <td>
+<p>dAr/dV</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-artv~4"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>artv</strong></td>
+            <td>
+<p>dAr2/dTV</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-arv2~4"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>arv2</strong></td>
+            <td>
+<p>dAr2/dV2</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-arn~16"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Arn</strong>(size(z))</td>
+            <td>
+<p>dAr/dn</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-arvn~15"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ArVn</strong>(size(z))</td>
+            <td>
+<p>dAr2/dVn</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-artn~15"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>ArTn</strong>(size(z))</td>
+            <td>
+<p>dAr2/dTn</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-arn2~12"></span>
+              real(kind=pr),
+            </td>
+<td>intent(out)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Arn2</strong>(size(z),size(z))</td>
+            <td>
+<p>dAr2/dn2</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+    </div>
+  </div>
+
+              <div class="card">
+    <div class="card-header codesum"><span class="anchor" id="proc-ar_srkpr"></span> <h3>public  subroutine <a href='../proc/ar_srkpr.html'>ar_srkpr</a>(z, v, t, ar, arv, artv, arv2, Arn, ArVn, ArTn, Arn2)  
+</h3></div>
+    <div class="card-body">
+          
+  <p>Wrapper subroutine to the SRK/PR Residula Helmholtz function to
+use the general interface</p><a href="../proc/ar_srkpr.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+
+  <h4>Arguments</h4>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-z~50"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>z</strong>(:)</td>
+            <td>
+<p>Number of moles</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v~9"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>v</strong></td>
+            <td>
+<p>Volume [L]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~22"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>t</strong></td>
+            <td>
+<p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ar~3"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1945,832 +2974,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arn~14"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Arn</strong>(nc)</td>
-            <td>
-<p>dAr/dn</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-arvn~13"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>ArVn</strong>(nc)</td>
-            <td>
-<p>dAr2/dVn</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-artn~13"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>ArTn</strong>(nc)</td>
-            <td>
-<p>dAr2/dTn</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-arn2~10"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Arn2</strong>(nc,nc)</td>
-            <td>
-<p>dAr2/dn2</p>
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-    </div>
-  </div>
-
-              <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-pr76_factory"></span> <h3>public  subroutine <a href='../proc/pr76_factory.html'>PR76_factory</a>(moles_in, ac_in, b_in, tc_in, pc_in, w_in, k_in)  
-</h3></div>
-    <div class="card-body">
-          
-  <p>PengRobinson 76 factory</p><a href="../proc/pr76_factory.html" class="pull-right"><emph>Read more&hellip;</emph></a>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-moles_in~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>moles_in</strong>(nc)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-ac_in~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>ac_in</strong>(nc)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-b_in~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>b_in</strong>(nc)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-tc_in~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>tc_in</strong>(nc)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-pc_in~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>pc_in</strong>(nc)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-w_in~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>w_in</strong>(nc)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-k_in~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>k_in</strong>(nc)</td>
-            <td>
-
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-    </div>
-  </div>
-
-              <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-pr78_factory"></span> <h3>public  subroutine <a href='../proc/pr78_factory.html'>PR78_factory</a>(moles_in, ac_in, b_in, tc_in, pc_in, w_in, k_in)  
-</h3></div>
-    <div class="card-body">
-          
-  <p>PengRobinson 78 factory</p><a href="../proc/pr78_factory.html" class="pull-right"><emph>Read more&hellip;</emph></a>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-moles_in"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>moles_in</strong>(nc)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-ac_in"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>ac_in</strong>(nc)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-b_in"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>b_in</strong>(nc)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-tc_in"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>tc_in</strong>(nc)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-pc_in"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>pc_in</strong>(nc)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-w_in"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>w_in</strong>(nc)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-k_in"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>k_in</strong>(nc)</td>
-            <td>
-
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-    </div>
-  </div>
-
-              <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-srk_factory"></span> <h3>public  subroutine <a href='../proc/srk_factory.html'>SRK_factory</a>(moles_in, ac_in, b_in, tc_in, pc_in, w_in, k_in)  
-</h3></div>
-    <div class="card-body">
-          
-  <p>SoaveRedlichKwong factory</p><a href="../proc/srk_factory.html" class="pull-right"><emph>Read more&hellip;</emph></a>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-moles_in~3"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>moles_in</strong>(nc)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-ac_in~3"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>ac_in</strong>(nc)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-b_in~3"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>b_in</strong>(nc)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-tc_in~3"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>tc_in</strong>(nc)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-pc_in~3"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>pc_in</strong>(nc)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-w_in~3"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>w_in</strong>(nc)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-k_in~3"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in),</td>
-              <td>optional</td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>k_in</strong>(nc)</td>
-            <td>
-
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-    </div>
-  </div>
-
-              <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-atder"></span> <h3>public  subroutine <a href='../proc/atder.html'>aTder</a>(ac, Tc, k, T, a, dadT, dadT2)  
-</h3></div>
-    <div class="card-body">
-          
-  
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-ac~4"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>ac</strong></td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-tc~12"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Tc</strong></td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-k~28"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>k</strong></td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-t~97"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>T</strong></td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-a~34"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>a</strong></td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dadt"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dadT</strong></td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dadt2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>dadT2</strong></td>
-            <td>
-
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-    </div>
-  </div>
-
-              <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-aijtder"></span> <h3>public  subroutine <a href='../proc/aijtder.html'>aijTder</a>(ntd, nc, T, aij, daijdT, daijdT2)  
-</h3></div>
-    <div class="card-body">
-          
-  
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-ntd"></span>
-              integer,
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>ntd</strong></td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-nc~91"></span>
-              integer,
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>nc</strong></td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-t~98"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>T</strong></td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-aij~8"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>aij</strong>(nc,nc)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-daijdt~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>daijdT</strong>(nc,nc)</td>
-            <td>
-
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-daijdt2~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>daijdT2</strong>(nc,nc)</td>
-            <td>
-
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-    </div>
-  </div>
-
-              <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-ar_rkpr"></span> <h3>public  subroutine <a href='../proc/ar_rkpr.html'>ar_rkpr</a>(z, v, t, ar, arv, artv, arv2, Arn, ArVn, ArTn, Arn2)  
-</h3></div>
-    <div class="card-body">
-          
-  
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-z~41"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>z</strong>(:)</td>
-            <td>
-<p>Number of moles</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-v~20"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>v</strong></td>
-            <td>
-<p>Volume [L]</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-t~32"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>t</strong></td>
-            <td>
-<p>Temperature [K]</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-ar~6"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>ar</strong></td>
-            <td>
-<p>Residual Helmholtz</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-arv~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>arv</strong></td>
-            <td>
-<p>dAr/dV</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-artv~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>artv</strong></td>
-            <td>
-<p>dAr2/dTV</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-arv2~2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>arv2</strong></td>
-            <td>
-<p>dAr2/dV2</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-arn~13"></span>
+              <span class="anchor" id="variable-arn~15"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -2785,7 +2989,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arvn~12"></span>
+              <span class="anchor" id="variable-arvn~14"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -2800,7 +3004,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-artn~12"></span>
+              <span class="anchor" id="variable-artn~14"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -2815,198 +3019,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arn2~9"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Arn2</strong>(size(z),size(z))</td>
-            <td>
-<p>dAr2/dn2</p>
-            </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-    </div>
-  </div>
-
-              <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-ar_srkpr"></span> <h3>public  subroutine <a href='../proc/ar_srkpr.html'>ar_srkpr</a>(z, v, t, ar, arv, artv, arv2, Arn, ArVn, ArTn, Arn2)  
-</h3></div>
-    <div class="card-body">
-          
-  <p>Wrapper subroutine to the SRK/PR Residula Helmholtz function to
-use the general interface</p>
-
-  <h4>Arguments</h4>
-      <table class="table table-striped varlist">
-    <thead>
-      <tr>
-        <th scope="col">Type</th>
-<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
-        <th scope="col"></th>
-        <th scope="col">Name</th>
-        <th scope="col"></th>
-    </thead>
-    <tbody>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-z~40"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>z</strong>(:)</td>
-            <td>
-<p>Number of moles</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-v~19"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>v</strong></td>
-            <td>
-<p>Volume [L]</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-t~31"></span>
-              real(kind=pr),
-            </td>
-<td>intent(in)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>t</strong></td>
-            <td>
-<p>Temperature [K]</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-ar~5"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>ar</strong></td>
-            <td>
-<p>Residual Helmholtz</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-arv"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>arv</strong></td>
-            <td>
-<p>dAr/dV</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-artv"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>artv</strong></td>
-            <td>
-<p>dAr2/dTV</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-arv2"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>arv2</strong></td>
-            <td>
-<p>dAr2/dV2</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-arn~12"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Arn</strong>(size(z))</td>
-            <td>
-<p>dAr/dn</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-arvn~11"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>ArVn</strong>(size(z))</td>
-            <td>
-<p>dAr2/dVn</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-artn~11"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>ArTn</strong>(size(z))</td>
-            <td>
-<p>dAr2/dTn</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-arn2~8"></span>
+              <span class="anchor" id="variable-arn2~11"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -3031,7 +3044,7 @@ use the general interface</p>
 </h3></div>
     <div class="card-body">
           
-  <p>Calculate Zc, OMa and OMb from the delta_1 parameter.</p>
+  <p>Calculate Zc, OMa and OMb from the delta_1 parameter.</p><a href="../proc/get_zc_oma_omb.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -3076,7 +3089,7 @@ use the general interface</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-oma~3"></span>
+              <span class="anchor" id="variable-oma"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -3091,7 +3104,7 @@ use the general interface</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-omb~3"></span>
+              <span class="anchor" id="variable-omb"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -3116,7 +3129,7 @@ use the general interface</p>
 </h3></div>
     <div class="card-body">
           
-  <p>Setup the basics variables that describe the model.</p>
+  <p>Initialize the global configuration and allocate legacy model arrays.</p><a href="../proc/setup.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -3131,7 +3144,7 @@ use the general interface</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~100"></span>
+              <span class="anchor" id="variable-n~80"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -3212,14 +3225,14 @@ use the general interface</p>
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

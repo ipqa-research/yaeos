@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>ArModel &ndash; yaeos </title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title="<p> 4.9% of total for derived types.</p>Including implementation: 717 statements,  7.4% of total for derived types.">32 statements</a>
+                 title="<p> 4.9% of total for derived types.</p>Including implementation: 869 statements,  7.7% of total for derived types.">32 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -174,7 +175,7 @@
             <a class="list-group-item" href="../type/armodel.html#boundprocedure-entropy_excess">entropy_excess</a>
             <a class="list-group-item" href="../type/armodel.html#boundprocedure-entropy_residual_pt">entropy_residual_pt</a>
             <a class="list-group-item" href="../type/armodel.html#boundprocedure-entropy_residual_vt">entropy_residual_vt</a>
-            <a class="list-group-item" href="../type/armodel.html#boundprocedure-get_v0~3">get_v0</a>
+            <a class="list-group-item" href="../type/armodel.html#boundprocedure-get_v0~2">get_v0</a>
             <a class="list-group-item" href="../type/armodel.html#boundprocedure-gibbs_excess">gibbs_excess</a>
             <a class="list-group-item" href="../type/armodel.html#boundprocedure-gibbs_residual_pt">gibbs_residual_pt</a>
             <a class="list-group-item" href="../type/armodel.html#boundprocedure-gibbs_residual_vt">gibbs_residual_vt</a>
@@ -183,13 +184,13 @@
             <a class="list-group-item" href="../type/armodel.html#boundprocedure-internal_energy_excess">internal_energy_excess</a>
             <a class="list-group-item" href="../type/armodel.html#boundprocedure-internal_energy_residual_pt">internal_energy_residual_pt</a>
             <a class="list-group-item" href="../type/armodel.html#boundprocedure-internal_energy_residual_vt">internal_energy_residual_vt</a>
-            <a class="list-group-item" href="../type/armodel.html#boundprocedure-ln_activity_coefficient~3">ln_activity_coefficient</a>
+            <a class="list-group-item" href="../type/armodel.html#boundprocedure-ln_activity_coefficient">ln_activity_coefficient</a>
             <a class="list-group-item" href="../type/armodel.html#boundprocedure-lnfug_vt">lnfug_vt</a>
             <a class="list-group-item" href="../type/armodel.html#boundprocedure-lnphi_pt">lnphi_pt</a>
             <a class="list-group-item" href="../type/armodel.html#boundprocedure-lnphi_vt">lnphi_vt</a>
             <a class="list-group-item" href="../type/armodel.html#boundprocedure-pressure">pressure</a>
-            <a class="list-group-item" href="../type/armodel.html#boundprocedure-residual_helmholtz~2">residual_helmholtz</a>
-            <a class="list-group-item" href="../type/armodel.html#boundprocedure-volume~3">volume</a>
+            <a class="list-group-item" href="../type/armodel.html#boundprocedure-residual_helmholtz~3">residual_helmholtz</a>
+            <a class="list-group-item" href="../type/armodel.html#boundprocedure-volume~2">volume</a>
             <a class="list-group-item" href="../type/armodel.html#boundprocedure-volume_excess">volume_excess</a>
         </div>
       </div>
@@ -206,14 +207,16 @@
     <div class="col-md-9" id='text'>
       <h2 id="type-def-statement">
         type, public, abstract, extends(<a href='basemodel.html'>BaseModel</a>) :: ArModel</h2>
-    <p>Abstract residual Helmholtz model.</p>
-<p>This derived type defines the basics needed for the calculation
-of residual properties.
-The basics of a residual Helmholtz model is a routine that calculates
-all the needed derivatives of <script type="math/tex">Ar</script>
-<code>residual_helmholtz</code> and
-a volume initializer function, that is used to initialize a Newton
-solver of volume when specifying pressure.</p>
+    <h1 id="armodel">ArModel</h1>
+<p>Abstract interface for residual Helmholtz energy models.</p>
+<h1 id="description">Description</h1>
+<p>A concrete extension implements <code>residual_helmholtz</code> and <code>get_v0</code>.
+The first returns requested derivatives of <script type="math/tex">A^r(n,V,T)</script>; the second
+provides an initial volume for pressure-specified volume solves.
+This type supplies the shared property methods listed in the type&rsquo;s
+bound-procedure interface.</p>
+<h1 id="examples">Examples</h1>
+<p>See <code>PengRobinson76</code>, <code>Gerg2008</code>, and <code>PcSaft</code> for concrete models.</p>
 <br>      <div class="card">
         <div class="card-header">
           <h3 class="card-title">Inherits</h3>
@@ -222,50 +225,50 @@ solver of volume when specifying pressure.</p>
           <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: type~~armodel~~InheritsGraph Pages: 1 -->
-<svg id="typearmodelInheritsGraph" width="342pt" height="32pt"
- viewBox="0.00 0.00 342.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="type~~armodel~~InheritsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg id="typearmodelInheritsGraph" width="338pt" height="32pt"
+ viewBox="0.00 0.00 338.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="type~~armodel~~InheritsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>type~~armodel~~InheritsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 338,-28 338,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 334.31,-28.27 334.31,4 -4,4"/>
 <!-- type~armodel -->
 <g id="type~~armodel~~InheritsGraph_node1" class="node">
 <title>type~armodel</title>
-<polygon fill="none" stroke="black" points="334,-24 277,-24 277,0 334,0 334,-24"/>
-<text text-anchor="middle" x="305.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">ArModel</text>
+<polygon fill="none" stroke="black" points="330.31,-24.27 274.54,-24.27 274.54,0 330.31,0 330.31,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="302.42" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">ArModel</text>
 </g>
 <!-- type~basemodel -->
 <g id="type~~armodel~~InheritsGraph_node2" class="node">
 <title>type~basemodel</title>
 <g id="a_type~~armodel~~InheritsGraph_node2"><a xlink:href="../type/basemodel.html" xlink:title="BaseModel">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="240,-24 169,-24 169,0 240,0 240,-24"/>
-<text text-anchor="middle" x="204.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">BaseModel</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="237.54,-24.27 167.52,-24.27 167.52,0 237.54,0 237.54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="202.53" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">BaseModel</text>
 </a>
 </g>
 </g>
 <!-- type~armodel&#45;&gt;type~basemodel -->
 <g id="type~~armodel~~InheritsGraph_edge1" class="edge">
 <title>type~armodel&#45;&gt;type~basemodel</title>
-<path fill="none" stroke="#000000" d="M276.92,-12C268.69,-12 259.45,-12 250.41,-12"/>
-<polygon fill="#000000" stroke="#000000" points="250.36,-8.5 240.36,-12 250.36,-15.5 250.36,-8.5"/>
+<path fill="none" stroke="#000000" d="M274.16,-12.13C266.45,-12.13 257.86,-12.13 249.38,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="249.51,-8.64 239.51,-12.14 249.51,-15.64 249.51,-8.64"/>
 </g>
 <!-- type~substances -->
 <g id="type~~armodel~~InheritsGraph_node3" class="node">
 <title>type~substances</title>
 <g id="a_type~~armodel~~InheritsGraph_node3"><a xlink:href="../type/substances.html" xlink:title="Substances">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="73,-24 0,-24 0,0 73,0 73,-24"/>
-<text text-anchor="middle" x="36.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Substances</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="72.27,-24.27 0,-24.27 0,0 72.27,0 72.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="36.13" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Substances</text>
 </a>
 </g>
 </g>
 <!-- type~basemodel&#45;&gt;type~substances -->
 <g id="type~~armodel~~InheritsGraph_edge2" class="edge">
 <title>type~basemodel&#45;&gt;type~substances</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M168.7,-12C143.94,-12 110.42,-12 83.47,-12"/>
-<polygon fill="#000000" stroke="#000000" points="83.11,-8.5 73.11,-12 83.11,-15.5 83.11,-8.5"/>
-<text text-anchor="middle" x="121" y="-14.4" font-family="Helvetica,sans-Serif" font-size="9.50">components</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M167.07,-12.13C142.95,-12.13 110.46,-12.13 83.99,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="84.2,-8.64 74.2,-12.14 84.2,-15.64 84.2,-8.64"/>
+<text xml:space="preserve" text-anchor="middle" x="119.89" y="-14.36" font-family="Helvetica,sans-Serif" font-size="9.50">components</text>
 </g>
 </g>
 </svg>
@@ -284,25 +287,25 @@ solver of volume when specifying pressure.</p>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="186pt" height="32pt"
- viewBox="0.00 0.00 185.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="184pt" height="32pt"
+ viewBox="0.00 0.00 184.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 181.5,-28 181.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 179.88,-28.27 179.88,4 -4,4"/>
 <!-- Type -->
 <g id="node1" class="node">
 <title>Type</title>
-<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node2" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="177.5,-24 72.5,-24 72.5,0 177.5,0 177.5,-24"/>
-<text text-anchor="middle" x="125" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="175.88,-24.27 72.12,-24.27 72.12,0 175.88,0 175.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="124" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -326,116 +329,116 @@ said component(s).
           <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: type~~armodel~~InheritedByGraph Pages: 1 -->
-<svg id="typearmodelInheritedByGraph" width="372pt" height="158pt"
- viewBox="0.00 0.00 372.00 158.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="type~~armodel~~InheritedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 154)">
+<svg id="typearmodelInheritedByGraph" width="367pt" height="158pt"
+ viewBox="0.00 0.00 367.00 158.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="type~~armodel~~InheritedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 154.27)">
 <title>type~~armodel~~InheritedByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-154 368,-154 368,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-154.27 362.56,-154.27 362.56,4 -4,4"/>
 <!-- type~armodel -->
 <g id="type~~armodel~~InheritedByGraph_node1" class="node">
 <title>type~armodel</title>
-<polygon fill="none" stroke="black" points="57,-66 0,-66 0,-42 57,-42 57,-66"/>
-<text text-anchor="middle" x="28.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50">ArModel</text>
+<polygon fill="none" stroke="black" points="55.77,-66.27 0,-66.27 0,-42 55.77,-42 55.77,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27.88" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50">ArModel</text>
 </g>
 <!-- type~armodeladiff -->
 <g id="type~~armodel~~InheritedByGraph_node2" class="node">
 <title>type~armodeladiff</title>
 <g id="a_type~~armodel~~InheritedByGraph_node2"><a xlink:href="../type/armodeladiff.html" xlink:title="ArModelAdiff">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="233,-150 152,-150 152,-126 233,-126 233,-150"/>
-<text text-anchor="middle" x="192.5" y="-135.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModelAdiff</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="229.66,-150.27 149.89,-150.27 149.89,-126 229.66,-126 229.66,-150.27"/>
+<text xml:space="preserve" text-anchor="middle" x="189.78" y="-134.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModelAdiff</text>
 </a>
 </g>
 </g>
 <!-- type~armodeladiff&#45;&gt;type~armodel -->
 <g id="type~~armodel~~InheritedByGraph_edge3" class="edge">
 <title>type~armodeladiff&#45;&gt;type~armodel</title>
-<path fill="none" stroke="#000000" d="M159,-125.93C152.01,-123.14 144.71,-120.09 138,-117 119.94,-108.69 117.64,-101.37 98.5,-96"/>
+<path fill="none" stroke="#000000" d="M155.6,-125.6C149.06,-122.94 142.28,-120.05 136.02,-117.14 118.13,-108.81 115.88,-101.52 96.89,-96.14"/>
 </g>
 <!-- type~armodeltapenade -->
 <g id="type~~armodel~~InheritedByGraph_node3" class="node">
 <title>type~armodeltapenade</title>
 <g id="a_type~~armodel~~InheritedByGraph_node3"><a xlink:href="../type/armodeltapenade.html" xlink:title="ArModelTapenade">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="247,-66 138,-66 138,-42 247,-42 247,-66"/>
-<text text-anchor="middle" x="192.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModelTapenade</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="243.54,-66.27 136.02,-66.27 136.02,-42 243.54,-42 243.54,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="189.78" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModelTapenade</text>
 </a>
 </g>
 </g>
 <!-- type~armodeltapenade&#45;&gt;type~armodel -->
-<g id="type~~armodel~~InheritedByGraph_edge4" class="edge">
+<g id="type~~armodel~~InheritedByGraph_edge2" class="edge">
 <title>type~armodeltapenade&#45;&gt;type~armodel</title>
-<path fill="none" stroke="#000000" d="M159,-66.07C152.01,-68.86 144.71,-71.91 138,-75 119.94,-83.31 117.64,-101.37 98.5,-96"/>
-<path fill="none" stroke="#000000" d="M96.5,-96C80.33,-91.47 64.32,-81.68 52,-72.69"/>
-<polygon fill="#000000" stroke="#000000" points="53.81,-69.67 43.74,-66.37 49.56,-75.23 53.81,-69.67"/>
+<path fill="none" stroke="#000000" d="M155.6,-66.67C149.06,-69.33 142.28,-72.22 136.02,-75.14 118.13,-83.46 115.88,-101.52 96.89,-96.14"/>
+<path fill="none" stroke="#000000" d="M94.89,-96.14C79.33,-91.72 63.95,-82.31 51.96,-73.52"/>
+<polygon fill="#000000" stroke="#000000" points="54.39,-70.97 44.33,-67.63 50.11,-76.51 54.39,-70.97"/>
 </g>
 <!-- type~cubiceos -->
 <g id="type~~armodel~~InheritedByGraph_node4" class="node">
 <title>type~cubiceos</title>
 <g id="a_type~~armodel~~InheritedByGraph_node4"><a xlink:href="../type/cubiceos.html" xlink:title="CubicEoS">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="224,-108 161,-108 161,-84 224,-84 224,-108"/>
-<text text-anchor="middle" x="192.5" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CubicEoS</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="220.66,-108.27 158.89,-108.27 158.89,-84 220.66,-84 220.66,-108.27"/>
+<text xml:space="preserve" text-anchor="middle" x="189.78" y="-92.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CubicEoS</text>
 </a>
 </g>
 </g>
 <!-- type~cubiceos&#45;&gt;type~armodel -->
-<g id="type~~armodel~~InheritedByGraph_edge2" class="edge">
+<g id="type~~armodel~~InheritedByGraph_edge4" class="edge">
 <title>type~cubiceos&#45;&gt;type~armodel</title>
-<path fill="none" stroke="#000000" d="M160.78,-100.12C142.38,-101.58 118.71,-101.67 98.5,-96"/>
+<path fill="none" stroke="#000000" d="M158.41,-100.25C140.23,-101.71 116.84,-101.8 96.89,-96.14"/>
 </g>
 <!-- type~fixturefluid -->
 <g id="type~~armodel~~InheritedByGraph_node5" class="node">
 <title>type~fixturefluid</title>
 <g id="a_type~~armodel~~InheritedByGraph_node5"><a xlink:href="../type/fixturefluid.html" xlink:title="FixtureFluid">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="229,-24 156,-24 156,0 229,0 229,-24"/>
-<text text-anchor="middle" x="192.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">FixtureFluid</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="225.91,-24.27 153.64,-24.27 153.64,0 225.91,0 225.91,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="189.78" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">FixtureFluid</text>
 </a>
 </g>
 </g>
 <!-- type~fixturefluid&#45;&gt;type~armodel -->
 <g id="type~~armodel~~InheritedByGraph_edge1" class="edge">
 <title>type~fixturefluid&#45;&gt;type~armodel</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M155.95,-21.22C129.6,-28.05 93.77,-37.34 66.98,-44.28"/>
-<polygon fill="#000000" stroke="#000000" points="65.99,-40.92 57.19,-46.82 67.75,-47.7 65.99,-40.92"/>
-<text text-anchor="middle" x="97.5" y="-44.4" font-family="Helvetica,sans-Serif" font-size="9.50">ar_model</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M153.29,-21.46C127.73,-28.17 93.27,-37.22 67.1,-44.1"/>
+<polygon fill="#000000" stroke="#000000" points="66.33,-40.68 57.54,-46.61 68.1,-47.45 66.33,-40.68"/>
+<text xml:space="preserve" text-anchor="middle" x="95.89" y="-43.95" font-family="Helvetica,sans-Serif" font-size="9.50">ar_model</text>
 </g>
 <!-- type~gerg2008 -->
 <g id="type~~armodel~~InheritedByGraph_node6" class="node">
 <title>type~gerg2008</title>
 <g id="a_type~~armodel~~InheritedByGraph_node6"><a xlink:href="../type/gerg2008.html" xlink:title="Gerg2008">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="364,-128 298,-128 298,-104 364,-104 364,-128"/>
-<text text-anchor="middle" x="331" y="-113.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Gerg2008</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="358.56,-121.27 293.79,-121.27 293.79,-97 358.56,-97 358.56,-121.27"/>
+<text xml:space="preserve" text-anchor="middle" x="326.17" y="-105.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Gerg2008</text>
 </a>
 </g>
 </g>
 <!-- type~gerg2008&#45;&gt;type~armodeladiff -->
 <g id="type~~armodel~~InheritedByGraph_edge5" class="edge">
 <title>type~gerg2008&#45;&gt;type~armodeladiff</title>
-<path fill="none" stroke="#000000" d="M298,-121.16C281.64,-123.79 261.37,-127.06 243.05,-130.01"/>
-<polygon fill="#000000" stroke="#000000" points="242.43,-126.57 233.11,-131.62 243.54,-133.48 242.43,-126.57"/>
+<path fill="none" stroke="#000000" d="M293.33,-116.01C277.79,-119.36 258.73,-123.47 241.27,-127.24"/>
+<polygon fill="#000000" stroke="#000000" points="240.6,-123.8 231.57,-129.33 242.08,-130.65 240.6,-123.8"/>
 </g>
 <!-- type~gerg2008&#45;&gt;type~cubiceos -->
 <g id="type~~armodel~~InheritedByGraph_edge7" class="edge">
 <title>type~gerg2008&#45;&gt;type~cubiceos</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M298,-111.31C278.99,-108.53 254.69,-104.97 234.31,-101.98"/>
-<polygon fill="#000000" stroke="#000000" points="234.77,-98.51 224.36,-100.52 233.75,-105.43 234.77,-98.51"/>
-<text text-anchor="middle" x="272.5" y="-110.4" font-family="Helvetica,sans-Serif" font-size="9.50">srk</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M293.33,-106.05C275.11,-104.29 252.06,-102.06 232.42,-100.16"/>
+<polygon fill="#000000" stroke="#000000" points="232.81,-96.68 222.52,-99.21 232.14,-103.65 232.81,-96.68"/>
+<text xml:space="preserve" text-anchor="middle" x="268.66" y="-106.41" font-family="Helvetica,sans-Serif" font-size="9.50">srk</text>
 </g>
 <!-- type~pcsaft -->
 <g id="type~~armodel~~InheritedByGraph_node7" class="node">
 <title>type~pcsaft</title>
 <g id="a_type~~armodel~~InheritedByGraph_node7"><a xlink:href="../type/pcsaft.html" xlink:title="PCSAFT">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="358,-66 304,-66 304,-42 358,-42 358,-66"/>
-<text text-anchor="middle" x="331" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PCSAFT</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="353.17,-66.27 299.17,-66.27 299.17,-42 353.17,-42 353.17,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="326.17" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PCSAFT</text>
 </a>
 </g>
 </g>
 <!-- type~pcsaft&#45;&gt;type~armodeltapenade -->
 <g id="type~~armodel~~InheritedByGraph_edge6" class="edge">
 <title>type~pcsaft&#45;&gt;type~armodeltapenade</title>
-<path fill="none" stroke="#000000" d="M303.68,-54C290.4,-54 273.66,-54 257.27,-54"/>
-<polygon fill="#000000" stroke="#000000" points="257.14,-50.5 247.14,-54 257.14,-57.5 257.14,-50.5"/>
+<path fill="none" stroke="#000000" d="M298.94,-54.13C286.34,-54.13 270.63,-54.13 255.13,-54.13"/>
+<polygon fill="#000000" stroke="#000000" points="255.43,-50.64 245.43,-54.14 255.43,-57.64 255.43,-50.64"/>
 </g>
 </g>
 </svg>
@@ -454,25 +457,25 @@ said component(s).
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="186pt" height="32pt"
- viewBox="0.00 0.00 185.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="184pt" height="32pt"
+ viewBox="0.00 0.00 184.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 181.5,-28 181.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 179.88,-28.27 179.88,4 -4,4"/>
 <!-- Type -->
 <g id="node1" class="node">
 <title>Type</title>
-<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node2" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="177.5,-24 72.5,-24 72.5,0 177.5,0 177.5,-24"/>
-<text text-anchor="middle" x="125" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="175.88,-24.27 72.12,-24.27 72.12,0 175.88,0 175.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="124" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -516,7 +519,7 @@ said component(s).
                 <td></td>
                 <td></td>
             <td>
-                <p>Substances contained in the module</p>
+                <p>Pure-component properties for the model&rsquo;s component order.</p>
             </td>
         </tr>
         <tr>
@@ -1053,8 +1056,11 @@ temperature.</p><a href="../proc/cv_residual_pt.html" class="pull-right"><emph>R
 </h3>
     
 
-  <p>Calculation of saturation pressure of a pure component using the
-secant method.</p>
+  <p>Calculation of saturation pressure of a pure component. Liquid and
+vapor volumes are initialized at 100 bar and 0.001 bar, then
+<code>solve_point_psat</code> applies Newton iterations at fixed temperature.
+The returned value is the pressure evaluated at the converged liquid
+volume [bar].</p><a href="../proc/psat_pure.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -1436,7 +1442,7 @@ will be calculated</p>
             <td><strong>HrP</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dH^r}}{dP}</script>
+<script type="math/tex">\frac{dH^r}{dP}</script>
 </p>
             </td>
         </tr>
@@ -1453,7 +1459,7 @@ will be calculated</p>
             <td><strong>HrT</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dH^r}}{dT}</script>
+<script type="math/tex">\frac{dH^r}{dT}</script>
 </p>
             </td>
         </tr>
@@ -1470,7 +1476,7 @@ will be calculated</p>
             <td><strong>Hrn</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">\frac{dH^r}}{dn}</script>
+<script type="math/tex">\frac{dH^r}{dn}</script>
 </p>
             </td>
         </tr>
@@ -1601,7 +1607,7 @@ will be calculated</p>
             <td><strong>HrV</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dH^r}}{dV}</script>
+<script type="math/tex">\frac{dH^r}{dV}</script>
 </p>
             </td>
         </tr>
@@ -1618,7 +1624,7 @@ will be calculated</p>
             <td><strong>HrT</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dH^r}}{dT}</script>
+<script type="math/tex">\frac{dH^r}{dT}</script>
 </p>
             </td>
         </tr>
@@ -1635,7 +1641,7 @@ will be calculated</p>
             <td><strong>Hrn</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">\frac{dH^r}}{dn}</script>
+<script type="math/tex">\frac{dH^r}{dn}</script>
 </p>
             </td>
         </tr>
@@ -1912,7 +1918,7 @@ will be calculated</p>
             <td><strong>SrP</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dS^r}}{dP}</script>
+<script type="math/tex">\frac{dS^r}{dP}</script>
 </p>
             </td>
         </tr>
@@ -1929,7 +1935,7 @@ will be calculated</p>
             <td><strong>SrT</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dS^r}}{dT}</script>
+<script type="math/tex">\frac{dS^r}{dT}</script>
 </p>
             </td>
         </tr>
@@ -1946,7 +1952,7 @@ will be calculated</p>
             <td><strong>Srn</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">\frac{dS^r}}{dn}</script>
+<script type="math/tex">\frac{dS^r}{dn}</script>
 </p>
             </td>
         </tr>
@@ -2077,7 +2083,7 @@ will be calculated</p>
             <td><strong>SrV</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dS^r}}{dV}</script>
+<script type="math/tex">\frac{dS^r}{dV}</script>
 </p>
             </td>
         </tr>
@@ -2094,7 +2100,7 @@ will be calculated</p>
             <td><strong>SrT</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dS^r}}{dT}</script>
+<script type="math/tex">\frac{dS^r}{dT}</script>
 </p>
             </td>
         </tr>
@@ -2111,7 +2117,7 @@ will be calculated</p>
             <td><strong>Srn</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">\frac{dS^r}}{dn}</script>
+<script type="math/tex">\frac{dS^r}{dn}</script>
 </p>
             </td>
         </tr>
@@ -2127,7 +2133,7 @@ will be calculated</p>
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-get_v0~3"></span>
+      <span class="anchor" id="boundprocedure-get_v0~2"></span>
       <h3>
           procedure(<a href='../interface/abs_volume_initializer.html'>abs_volume_initializer</a>), public, deferred ::
   <strong>get_v0</strong>
@@ -2140,7 +2146,9 @@ will be calculated</p>
      function abs_volume_initializer(self, n, p, t)  
 <small>Prototype</small></h3>
 
-  <p>Function that provides an initializer value for the liquid-root
+  <h1 id="abs_volume_initializer">abs_volume_initializer</h1>
+<h1 id="description">Description</h1>
+<p>Function that provides an initializer value for the liquid-root
 of newton solver of volume. In the case the model will use the
 <code>volume_michelsen</code> routine this value should provide the co-volume
 of the model.</p>
@@ -2365,7 +2373,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>GeP</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dG^E}}{dP}</script>
+<script type="math/tex">\frac{dG^E}{dP}</script>
 </p>
             </td>
         </tr>
@@ -2382,7 +2390,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>GeT</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dG^E}}{dT}</script>
+<script type="math/tex">\frac{dG^E}{dT}</script>
 </p>
             </td>
         </tr>
@@ -2399,7 +2407,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>Gen</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">\frac{dG^E}}{dn}</script>
+<script type="math/tex">\frac{dG^E}{dn}</script>
 </p>
             </td>
         </tr>
@@ -2546,7 +2554,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>GrP</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dG^r}}{dP}</script>
+<script type="math/tex">\frac{dG^r}{dP}</script>
 </p>
             </td>
         </tr>
@@ -2563,7 +2571,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>GrT</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dG^r}}{dT}</script>
+<script type="math/tex">\frac{dG^r}{dT}</script>
 </p>
             </td>
         </tr>
@@ -2580,7 +2588,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>Grn</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">\frac{dG^r}}{dn}</script>
+<script type="math/tex">\frac{dG^r}{dn}</script>
 </p>
             </td>
         </tr>
@@ -2711,7 +2719,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>GrV</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dG^r}}{dV}</script>
+<script type="math/tex">\frac{dG^r}{dV}</script>
 </p>
             </td>
         </tr>
@@ -2728,7 +2736,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>GrT</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dG^r}}{dT}</script>
+<script type="math/tex">\frac{dG^r}{dT}</script>
 </p>
             </td>
         </tr>
@@ -2745,7 +2753,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>Grn</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">\frac{dG^r}}{dn}</script>
+<script type="math/tex">\frac{dG^r}{dn}</script>
 </p>
             </td>
         </tr>
@@ -3022,7 +3030,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>ArP</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dA^r}}{dP}</script>
+<script type="math/tex">\frac{dA^r}{dP}</script>
 </p>
             </td>
         </tr>
@@ -3039,7 +3047,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>ArT</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dA^r}}{dT}</script>
+<script type="math/tex">\frac{dA^r}{dT}</script>
 </p>
             </td>
         </tr>
@@ -3056,7 +3064,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>Arn</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">\frac{dA^r}}{dn}</script>
+<script type="math/tex">\frac{dA^r}{dn}</script>
 </p>
             </td>
         </tr>
@@ -3333,7 +3341,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>UrP</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dU^r}}{dP}</script>
+<script type="math/tex">\frac{dU^r}{dP}</script>
 </p>
             </td>
         </tr>
@@ -3350,7 +3358,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>UrT</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dU^r}}{dT}</script>
+<script type="math/tex">\frac{dU^r}{dT}</script>
 </p>
             </td>
         </tr>
@@ -3367,7 +3375,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>Urn</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">\frac{dU^r}}{dn}</script>
+<script type="math/tex">\frac{dU^r}{dn}</script>
 </p>
             </td>
         </tr>
@@ -3498,7 +3506,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>UrV</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dU^r}}{dV}</script>
+<script type="math/tex">\frac{dU^r}{dV}</script>
 </p>
             </td>
         </tr>
@@ -3515,7 +3523,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>UrT</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dU^r}}{dT}</script>
+<script type="math/tex">\frac{dU^r}{dT}</script>
 </p>
             </td>
         </tr>
@@ -3532,7 +3540,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
             <td><strong>Urn</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">\frac{dU^r}}{dn}</script>
+<script type="math/tex">\frac{dU^r}{dn}</script>
 </p>
             </td>
         </tr>
@@ -3548,7 +3556,7 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-ln_activity_coefficient~3"></span>
+      <span class="anchor" id="boundprocedure-ln_activity_coefficient"></span>
       <h3>
           procedure, public ::
   <strong>ln_activity_coefficient</strong>
@@ -3558,12 +3566,12 @@ temperature.</p><a href="../proc/gibbs_excess.html" class="pull-right"><emph>Rea
       <ul class="list-group">
           <li class="list-group-item">
                     <h3>
-    private  subroutine <a href='../proc/ln_activity_coefficient~3.html'>ln_activity_coefficient</a>(eos, n, P, T, root_type, lngamma, dlngammadP, dlngammadT, dlngammadn)  
+    private  subroutine <a href='../proc/ln_activity_coefficient.html'>ln_activity_coefficient</a>(eos, n, P, T, root_type, lngamma, dlngammadP, dlngammadT, dlngammadn)  
 </h3>
     
 
   <p>Calculate natural logarithm of activity coefficients and its
-derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coefficient~3.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coefficient.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -3680,7 +3688,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
             <td><strong>dlngammadP</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">\frac{d\ln\gamma}}{dP}</script>
+<script type="math/tex">\frac{d\ln\gamma}{dP}</script>
 </p>
             </td>
         </tr>
@@ -3697,7 +3705,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
             <td><strong>dlngammadT</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">\frac{d\ln\gamma}}{dT}</script>
+<script type="math/tex">\frac{d\ln\gamma}{dT}</script>
 </p>
             </td>
         </tr>
@@ -3714,7 +3722,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
             <td><strong>dlngammadn</strong>(size(n),size(n))</td>
             <td>
 <p>
-<script type="math/tex">\frac{d\ln\gamma}}{dn}</script>
+<script type="math/tex">\frac{d\ln\gamma}{dn}</script>
 </p>
             </td>
         </tr>
@@ -3845,7 +3853,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
             <td><strong>lnf</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">\ln(\f_i)</script> vector</p>
+<script type="math/tex">\ln(f_i)</script> vector</p>
             </td>
         </tr>
         <tr>
@@ -3861,7 +3869,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
             <td><strong>dlnfdV</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">ln(f_i)</script> Volume derivative</p>
+<script type="math/tex">\ln(f_i)</script> Volume derivative</p>
             </td>
         </tr>
         <tr>
@@ -3877,7 +3885,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
             <td><strong>dlnfdT</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">ln(f_i)</script> Temp derivative</p>
+<script type="math/tex">\ln(f_i)</script> Temp derivative</p>
             </td>
         </tr>
         <tr>
@@ -3893,7 +3901,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
             <td><strong>dlnfdn</strong>(size(n),size(n))</td>
             <td>
 <p>
-<script type="math/tex">ln(f_i)</script> compositional derivative</p>
+<script type="math/tex">\ln(f_i)</script> compositional derivative</p>
             </td>
         </tr>
         <tr>
@@ -4089,7 +4097,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
             <td><strong>lnPhi</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">\ln(phi)</script> vector</p>
+<script type="math/tex">\ln(\phi_i)</script> vector</p>
             </td>
         </tr>
         <tr>
@@ -4104,7 +4112,8 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
             <td>::</td>
             <td><strong>dlnPhidP</strong>(size(n))</td>
             <td>
-<p>ln(phi) Presssure derivative</p>
+<p>
+<script type="math/tex">\partial \ln\phi_i/\partial P</script> [1/bar]</p>
             </td>
         </tr>
         <tr>
@@ -4119,7 +4128,8 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
             <td>::</td>
             <td><strong>dlnPhidT</strong>(size(n))</td>
             <td>
-<p>ln(phi) Temperature derivative</p>
+<p>
+<script type="math/tex">\partial \ln\phi_i/\partial T</script> [1/K]</p>
             </td>
         </tr>
         <tr>
@@ -4134,7 +4144,9 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
             <td>::</td>
             <td><strong>dlnPhidn</strong>(size(n),size(n))</td>
             <td>
-<p>ln(phi) compositional derivative</p>
+<p>
+<script type="math/tex">\partial \ln\phi_i/\partial n_j</script>
+</p>
             </td>
         </tr>
         <tr>
@@ -4201,7 +4213,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
             <td><strong>lnPhiP</strong>(:)</td>
             <td>
 <p>
-<script type="math/tex">\ln(\phi_i)P </script>. It is useful to calculate fugacity coefficients
+<script type="math/tex">\ln(\phi_i P)</script>. It is useful to calculate fugacity coefficients
 at negatives pressures.</p>
             </td>
         </tr>
@@ -4348,7 +4360,7 @@ at negatives pressures.</p>
             <td><strong>dlnPhidP</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">ln(phi_i)</script> Presssure derivative</p>
+<script type="math/tex">\ln(\phi_i)</script> Pressure derivative</p>
             </td>
         </tr>
         <tr>
@@ -4364,7 +4376,7 @@ at negatives pressures.</p>
             <td><strong>dlnPhidT</strong>(size(n))</td>
             <td>
 <p>
-<script type="math/tex">ln(phi_i)</script> Temp derivative</p>
+<script type="math/tex">\ln(\phi_i)</script> Temp derivative</p>
             </td>
         </tr>
         <tr>
@@ -4380,7 +4392,7 @@ at negatives pressures.</p>
             <td><strong>dlnPhidn</strong>(size(n),size(n))</td>
             <td>
 <p>
-<script type="math/tex">ln(phi_i)</script> compositional derivative</p>
+<script type="math/tex">\ln(\phi_i)</script> compositional derivative</p>
             </td>
         </tr>
         <tr>
@@ -4447,7 +4459,7 @@ at negatives pressures.</p>
             <td><strong>lnPhiP</strong>(:)</td>
             <td>
 <p>
-<script type="math/tex">\ln(\phi_i)P </script>. It is useful to calculate fugacity coefficients
+<script type="math/tex">\ln(\phi_i P)</script>. It is useful to calculate fugacity coefficients
 at negatives pressures.</p>
             </td>
         </tr>
@@ -4578,7 +4590,7 @@ at negatives pressures.</p>
             <td><strong>dPdV</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dP}}{dV}</script>
+<script type="math/tex">\frac{dP}{dV}</script>
 </p>
             </td>
         </tr>
@@ -4595,7 +4607,7 @@ at negatives pressures.</p>
             <td><strong>dPdT</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dP}}{dT}</script>
+<script type="math/tex">\frac{dP}{dT}</script>
 </p>
             </td>
         </tr>
@@ -4612,7 +4624,7 @@ at negatives pressures.</p>
             <td><strong>dPdn</strong>(:)</td>
             <td>
 <p>
-<script type="math/tex">\frac{dP}}{dn_i}</script>
+<script type="math/tex">\frac{dP}{dn_i}</script>
 </p>
             </td>
         </tr>
@@ -4628,7 +4640,7 @@ at negatives pressures.</p>
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-residual_helmholtz~2"></span>
+      <span class="anchor" id="boundprocedure-residual_helmholtz~3"></span>
       <h3>
           procedure(<a href='../interface/abs_residual_helmholtz.html'>abs_residual_helmholtz</a>), public, deferred ::
   <strong>residual_helmholtz</strong>
@@ -4641,9 +4653,11 @@ at negatives pressures.</p>
      subroutine abs_residual_helmholtz(self, n, v, t, Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2)  
 <small>Prototype</small></h3>
 
-  <p>Residual Helmholtz model generic interface.</p>
+  <h1 id="abs_residual_helmholtz">abs_residual_helmholtz</h1>
+<h1 id="description">Description</h1>
+<p>Residual Helmholtz model generic interface.</p>
 <p>This interface represents how an Ar model should be implemented.
-By our standard, a Resiudal Helmholtz model takes as input:</p>
+By our standard, a Residual Helmholtz model takes as input:</p>
 <ul>
 <li>The mixture&rsquo;s number of moles vector.</li>
 <li>Volume, by default in liters.</li>
@@ -4739,7 +4753,7 @@ inside the procedure.</p>
             <td>::</td>
             <td><strong>Ar</strong></td>
             <td>
-                <p>Residual Helmoltz energy</p>
+                <p>Residual Helmholtz energy [bar L]</p>
             </td>
         </tr>
         <tr>
@@ -4907,7 +4921,7 @@ inside the procedure.</p>
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-volume~3"></span>
+      <span class="anchor" id="boundprocedure-volume~2"></span>
       <h3>
           procedure, public ::
   <strong>volume</strong>
@@ -4917,11 +4931,11 @@ inside the procedure.</p>
       <ul class="list-group">
           <li class="list-group-item">
                     <h3>
-    public  subroutine <a href='../proc/volume~3.html'>volume</a>(eos, n, P, T, V, root_type)  
+    public  subroutine <a href='../proc/volume~2.html'>volume</a>(eos, n, P, T, V, root_type)  
 </h3>
     
 
-  <p>Volume solver routine for residual Helmholtz models.</p><a href="../proc/volume~3.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+  <p>Volume solver routine for residual Helmholtz models.</p><a href="../proc/volume~2.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -5178,14 +5192,14 @@ inside the procedure.</p>
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

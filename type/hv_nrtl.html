@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>HV_NRTL &ndash; yaeos </title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title="<p> 2.2% of total for derived types.</p>Including implementation: 77 statements,  0.8% of total for derived types.">14 statements</a>
+                 title="<p> 2.2% of total for derived types.</p>Including implementation: 90 statements,  0.8% of total for derived types.">14 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -135,12 +136,12 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../type/hv_nrtl.html#variable-bi~4">bi</a>
+            <a class="list-group-item" href="../type/hv_nrtl.html#variable-bi~3">bi</a>
             <a class="list-group-item" href="../type/hv_nrtl.html#variable-del1~2">del1</a>
             <a class="list-group-item" href="../type/hv_nrtl.html#variable-dn2~2">dn2</a>
             <a class="list-group-item" href="../type/hv_nrtl.html#variable-ge~3">ge</a>
             <a class="list-group-item" href="../type/hv_nrtl.html#variable-is_d_ddlc">is_D_ddlc</a>
-            <a class="list-group-item" href="../type/hv_nrtl.html#variable-kij~12">kij</a>
+            <a class="list-group-item" href="../type/hv_nrtl.html#variable-kij">kij</a>
             <a class="list-group-item" href="../type/hv_nrtl.html#variable-use_kij">use_kij</a>
         </div>
       </div>
@@ -179,9 +180,9 @@
       </a>
       <div id="boundprocs-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../type/hv_nrtl.html#boundprocedure-bmix~4">Bmix</a>
+            <a class="list-group-item" href="../type/hv_nrtl.html#boundprocedure-bmix~3">Bmix</a>
             <a class="list-group-item" href="../type/hv_nrtl.html#boundprocedure-d1mix~3">D1Mix</a>
-            <a class="list-group-item" href="../type/hv_nrtl.html#boundprocedure-dmix~4">Dmix</a>
+            <a class="list-group-item" href="../type/hv_nrtl.html#boundprocedure-dmix~3">Dmix</a>
         </div>
       </div>
     </div>
@@ -198,14 +199,11 @@
       <h2 id="type-def-statement">
         type, public, extends(<a href='cubicmixrule.html'>CubicMixRule</a>) :: HV_NRTL</h2>
     <h1 id="hv_nrtl">HV_NRTL</h1>
-<p>Huron-Vidal mixing rule including the NRTL model modified by Huron
-and Vidal.</p>
+<p>Huron-Vidal cubic mixing rule with an NRTL-HV excess-Gibbs model.</p>
 <h1 id="description">Description</h1>
-<p>This is the Huron-Vidal mixing rule that includes the NRTL model
-modified by Huron and Vidal. It is a mixing rule that allows to
-use the NRTL model as an excess Gibbs energy model and can. be
-simplified to the classic Quatratic mixing rules when the parameters
-are set to:</p>
+<p>This variant evaluates the Huron-Vidal relation using the modified
+NRTL expression. Under the limiting parameter choices below, its
+attractive mixing expression reduces to the quadratic form.</p>
 <p>
 <script type="math/tex; mode=display">
  \alpha_{ji} = 0
@@ -219,11 +217,13 @@ are set to:</p>
 <p>
 <script type="math/tex; mode=display">
  g_{ji} = -2\frac{\sqrt{b_i b_j}}{b_i + b_j} \sqrt{g_{ii}g_{jj}}
-          \left(1 - k_{ij})\right)
+          \left(1 - k_{ij}\right)
 </script>
 </p>
 <h1 id="examples">Examples</h1>
-<h1 id="references">References</h1>
+<div class="codehilite"><pre><span></span><code><span class="n">mixrule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HV_NRTL</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">del1</span><span class="p">,</span><span class="w"> </span><span class="n">alpha</span><span class="p">,</span><span class="w"> </span><span class="n">gji0</span><span class="p">,</span><span class="w"> </span><span class="n">gjiT</span><span class="p">,</span><span class="w"> </span><span class="n">use_kij</span><span class="p">,</span><span class="w"> </span><span class="n">kij</span><span class="p">)</span>
+<span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">set_mixrule</span><span class="p">(</span><span class="n">mixrule</span><span class="p">)</span>
+</code></pre></div>
 <br>      <div class="card">
         <div class="card-header">
           <h3 class="card-title">Inherits</h3>
@@ -232,96 +232,96 @@ are set to:</p>
           <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: type~~hv_nrtl~~InheritsGraph Pages: 1 -->
-<svg id="typehv_nrtlInheritsGraph" width="576pt" height="74pt"
- viewBox="0.00 0.00 576.00 74.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="type~~hv_nrtl~~InheritsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 70)">
+<svg id="typehv_nrtlInheritsGraph" width="569pt" height="74pt"
+ viewBox="0.00 0.00 569.00 74.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="type~~hv_nrtl~~InheritsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 70.27)">
 <title>type~~hv_nrtl~~InheritsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-70 572,-70 572,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-70.27 564.6,-70.27 564.6,4 -4,4"/>
 <!-- type~hv_nrtl -->
 <g id="type~~hv_nrtl~~InheritsGraph_node1" class="node">
 <title>type~hv_nrtl</title>
-<polygon fill="none" stroke="black" points="568,-45 507,-45 507,-21 568,-21 568,-45"/>
-<text text-anchor="middle" x="537.5" y="-30.6" font-family="Helvetica,sans-Serif" font-size="10.50">HV_NRTL</text>
+<polygon fill="none" stroke="black" points="560.6,-45.27 501.08,-45.27 501.08,-21 560.6,-21 560.6,-45.27"/>
+<text xml:space="preserve" text-anchor="middle" x="530.84" y="-29.53" font-family="Helvetica,sans-Serif" font-size="10.50">HV_NRTL</text>
 </g>
 <!-- type~cubicmixrule -->
 <g id="type~~hv_nrtl~~InheritsGraph_node2" class="node">
 <title>type~cubicmixrule</title>
 <g id="a_type~~hv_nrtl~~InheritsGraph_node2"><a xlink:href="../type/cubicmixrule.html" xlink:title="CubicMixRule">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="458,-66 374,-66 374,-42 458,-42 458,-66"/>
-<text text-anchor="middle" x="416" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CubicMixRule</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="453.08,-66.27 370.31,-66.27 370.31,-42 453.08,-42 453.08,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="411.69" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CubicMixRule</text>
 </a>
 </g>
 </g>
 <!-- type~hv_nrtl&#45;&gt;type~cubicmixrule -->
 <g id="type~~hv_nrtl~~InheritsGraph_edge2" class="edge">
 <title>type~hv_nrtl&#45;&gt;type~cubicmixrule</title>
-<path fill="none" stroke="#000000" d="M506.96,-38.19C495.28,-40.24 481.52,-42.66 468.32,-44.98"/>
-<polygon fill="#000000" stroke="#000000" points="467.61,-41.55 458.37,-46.73 468.83,-48.45 467.61,-41.55"/>
+<path fill="none" stroke="#000000" d="M500.58,-38.38C489.69,-40.33 476.97,-42.61 464.64,-44.82"/>
+<polygon fill="#000000" stroke="#000000" points="464.22,-41.34 454.99,-46.55 465.45,-48.23 464.22,-41.34"/>
 </g>
 <!-- type~nrtlhv -->
 <g id="type~~hv_nrtl~~InheritsGraph_node3" class="node">
 <title>type~nrtlhv</title>
 <g id="a_type~~hv_nrtl~~InheritsGraph_node3"><a xlink:href="../type/nrtlhv.html" xlink:title="NRTLHV">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="443.5,-24 388.5,-24 388.5,0 443.5,0 443.5,-24"/>
-<text text-anchor="middle" x="416" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">NRTLHV</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="438.83,-24.27 384.56,-24.27 384.56,0 438.83,0 438.83,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="411.69" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">NRTLHV</text>
 </a>
 </g>
 </g>
 <!-- type~hv_nrtl&#45;&gt;type~nrtlhv -->
 <g id="type~~hv_nrtl~~InheritsGraph_edge1" class="edge">
 <title>type~hv_nrtl&#45;&gt;type~nrtlhv</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M506.96,-27.81C490.93,-24.99 470.97,-21.48 453.93,-18.49"/>
-<polygon fill="#000000" stroke="#000000" points="454.21,-14.99 443.75,-16.7 453,-21.88 454.21,-14.99"/>
-<text text-anchor="middle" x="482.5" y="-26.4" font-family="Helvetica,sans-Serif" font-size="9.50">ge</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M500.58,-27.89C485.42,-25.17 466.73,-21.82 450.49,-18.91"/>
+<polygon fill="#000000" stroke="#000000" points="451.13,-15.47 440.67,-17.15 449.9,-22.36 451.13,-15.47"/>
+<text xml:space="preserve" text-anchor="middle" x="477.08" y="-26.74" font-family="Helvetica,sans-Serif" font-size="9.50">ge</text>
 </g>
 <!-- type~gemodel -->
 <g id="type~~hv_nrtl~~InheritsGraph_node4" class="node">
 <title>type~gemodel</title>
 <g id="a_type~~hv_nrtl~~InheritsGraph_node4"><a xlink:href="../type/gemodel.html" xlink:title="GeModel">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="337,-24 277,-24 277,0 337,0 337,-24"/>
-<text text-anchor="middle" x="307" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">GeModel</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="333.31,-24.27 274.54,-24.27 274.54,0 333.31,0 333.31,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.92" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">GeModel</text>
 </a>
 </g>
 </g>
 <!-- type~nrtlhv&#45;&gt;type~gemodel -->
 <g id="type~~hv_nrtl~~InheritsGraph_edge3" class="edge">
 <title>type~nrtlhv&#45;&gt;type~gemodel</title>
-<path fill="none" stroke="#000000" d="M388.28,-12C375.85,-12 360.82,-12 347.14,-12"/>
-<polygon fill="#000000" stroke="#000000" points="347.01,-8.5 337.01,-12 347.01,-15.5 347.01,-8.5"/>
+<path fill="none" stroke="#000000" d="M384.28,-12.13C372.35,-12.13 358.01,-12.13 344.81,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="345.12,-8.64 335.12,-12.14 345.12,-15.64 345.12,-8.64"/>
 </g>
 <!-- type~basemodel -->
 <g id="type~~hv_nrtl~~InheritsGraph_node5" class="node">
 <title>type~basemodel</title>
 <g id="a_type~~hv_nrtl~~InheritsGraph_node5"><a xlink:href="../type/basemodel.html" xlink:title="BaseModel">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="240,-24 169,-24 169,0 240,0 240,-24"/>
-<text text-anchor="middle" x="204.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">BaseModel</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="237.54,-24.27 167.52,-24.27 167.52,0 237.54,0 237.54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="202.53" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">BaseModel</text>
 </a>
 </g>
 </g>
 <!-- type~gemodel&#45;&gt;type~basemodel -->
 <g id="type~~hv_nrtl~~InheritsGraph_edge4" class="edge">
 <title>type~gemodel&#45;&gt;type~basemodel</title>
-<path fill="none" stroke="#000000" d="M276.93,-12C268.59,-12 259.3,-12 250.25,-12"/>
-<polygon fill="#000000" stroke="#000000" points="250.19,-8.5 240.19,-12 250.19,-15.5 250.19,-8.5"/>
+<path fill="none" stroke="#000000" d="M274.18,-12.13C266.37,-12.13 257.72,-12.13 249.23,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="249.36,-8.64 239.36,-12.14 249.36,-15.64 249.36,-8.64"/>
 </g>
 <!-- type~substances -->
 <g id="type~~hv_nrtl~~InheritsGraph_node6" class="node">
 <title>type~substances</title>
 <g id="a_type~~hv_nrtl~~InheritsGraph_node6"><a xlink:href="../type/substances.html" xlink:title="Substances">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="73,-24 0,-24 0,0 73,0 73,-24"/>
-<text text-anchor="middle" x="36.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Substances</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="72.27,-24.27 0,-24.27 0,0 72.27,0 72.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="36.13" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Substances</text>
 </a>
 </g>
 </g>
 <!-- type~basemodel&#45;&gt;type~substances -->
 <g id="type~~hv_nrtl~~InheritsGraph_edge5" class="edge">
 <title>type~basemodel&#45;&gt;type~substances</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M168.7,-12C143.94,-12 110.42,-12 83.47,-12"/>
-<polygon fill="#000000" stroke="#000000" points="83.11,-8.5 73.11,-12 83.11,-15.5 83.11,-8.5"/>
-<text text-anchor="middle" x="121" y="-14.4" font-family="Helvetica,sans-Serif" font-size="9.50">components</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M167.07,-12.13C142.95,-12.13 110.46,-12.13 83.99,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="84.2,-8.64 74.2,-12.14 84.2,-15.64 84.2,-8.64"/>
+<text xml:space="preserve" text-anchor="middle" x="119.89" y="-14.36" font-family="Helvetica,sans-Serif" font-size="9.50">components</text>
 </g>
 </g>
 </svg>
@@ -340,25 +340,25 @@ are set to:</p>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="186pt" height="32pt"
- viewBox="0.00 0.00 185.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="184pt" height="32pt"
+ viewBox="0.00 0.00 184.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 181.5,-28 181.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 179.88,-28.27 179.88,4 -4,4"/>
 <!-- Type -->
 <g id="node1" class="node">
 <title>Type</title>
-<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node2" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="177.5,-24 72.5,-24 72.5,0 177.5,0 177.5,-24"/>
-<text text-anchor="middle" x="125" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="175.88,-24.27 72.12,-24.27 72.12,0 175.88,0 175.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="124" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -390,7 +390,7 @@ said component(s).
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-bi~4"></span>
+              <span class="anchor" id="variable-bi~3"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -402,7 +402,7 @@ said component(s).
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Pure-component covolumes [L/mol].</p>
             </td>
         </tr>
         <tr>
@@ -419,7 +419,7 @@ said component(s).
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Pure-component cubic <script type="math/tex">\delta_1</script> parameters.</p>
             </td>
         </tr>
         <tr>
@@ -436,7 +436,7 @@ said component(s).
 <td> =</td>
                 <td>.false.</td>
             <td>
-                <p>Calculate second order derivatives</p>
+                <p>Calculate second-order mole-number derivatives</p>
             </td>
         </tr>
         <tr>
@@ -453,7 +453,7 @@ said component(s).
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>NRTL-HV excess-Gibbs model.</p>
             </td>
         </tr>
         <tr>
@@ -470,12 +470,12 @@ said component(s).
 <td> =</td>
                 <td>.false.</td>
             <td>
-                <p>Mixing rule D parameter dependant on density</p>
+                <p>Mixing rule D parameter depends on volume (density)</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kij~12"></span>
+              <span class="anchor" id="variable-kij"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -487,7 +487,7 @@ said component(s).
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Binary attractive interaction parameters.</p>
             </td>
         </tr>
         <tr>
@@ -504,7 +504,7 @@ said component(s).
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Pair mask: where true, the NRTL parameters are replaced so that the rule reduces to the quadratic one with <code>kij</code>.</p>
             </td>
         </tr>
     </tbody>
@@ -534,8 +534,8 @@ modified by Huron and Vidal.</p>
 <h1 id="description">Description</h1>
 <p>This is the Huron-Vidal mixing rule that includes the NRTL model
 modified by Huron and Vidal. It is a mixing rule that allows to
-use the NRTL model as an excess Gibbs energy model and can. be
-simplified to the classic Quatratic mixing rules when the parameters
+use the NRTL model as an excess Gibbs energy model and can be
+simplified to the classic quadratic mixing rules when the parameters
 are set to:
 <script type="math/tex; mode=display">
  \alpha_{ji} = 0
@@ -549,10 +549,12 @@ are set to:
 <p>
 <script type="math/tex; mode=display">
  g_{ji} = -2\frac{\sqrt{b_i b_j}}{b_i + b_j} \sqrt{g_{ii}g_{jj}}
-          \left(1 - k_{ij})\right)
+          \left(1 - k_{ij}\right)
 </script>
 </p>
 <h1 id="examples">Examples</h1>
+<div class="codehilite"><pre><span></span><code><span class="n">mixrule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HV_NRTL</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">del1</span><span class="p">,</span><span class="w"> </span><span class="n">alpha</span><span class="p">,</span><span class="w"> </span><span class="n">gji0</span><span class="p">,</span><span class="w"> </span><span class="n">gjiT</span><span class="p">,</span><span class="w"> </span><span class="n">use_kij</span><span class="p">,</span><span class="w"> </span><span class="n">kij</span><span class="p">)</span>
+</code></pre></div>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -567,7 +569,7 @@ are set to:
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~7"></span>
+              <span class="anchor" id="variable-b~6"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -577,7 +579,7 @@ are set to:
             <td>::</td>
             <td><strong>b</strong>(:)</td>
             <td>
-
+<p>Pure-component covolumes [L/mol]</p>
             </td>
         </tr>
         <tr>
@@ -592,12 +594,12 @@ are set to:
             <td>::</td>
             <td><strong>del1</strong>(:)</td>
             <td>
-
+<p>Pure-component <script type="math/tex">\delta_1</script> values</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-alpha~8"></span>
+              <span class="anchor" id="variable-alpha~17"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -607,7 +609,8 @@ are set to:
             <td>::</td>
             <td><strong>alpha</strong>(:,:)</td>
             <td>
-
+<p>NRTL non-randomness parameters <script type="math/tex">\alpha_{ji}</script>
+</p>
             </td>
         </tr>
         <tr>
@@ -622,7 +625,7 @@ are set to:
             <td>::</td>
             <td><strong>gji0</strong>(:,:)</td>
             <td>
-
+<p>Temperature-independent NRTL-HV energy parameters</p>
             </td>
         </tr>
         <tr>
@@ -637,7 +640,7 @@ are set to:
             <td>::</td>
             <td><strong>gjiT</strong>(:,:)</td>
             <td>
-
+<p>Temperature coefficients of the NRTL-HV energy parameters</p>
             </td>
         </tr>
         <tr>
@@ -652,12 +655,12 @@ are set to:
             <td>::</td>
             <td><strong>use_kij</strong>(:,:)</td>
             <td>
-
+<p>Pairs where the quadratic-limit parameters with <code>kij</code> are used</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kij~13"></span>
+              <span class="anchor" id="variable-kij~2"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -667,7 +670,7 @@ are set to:
             <td>::</td>
             <td><strong>kij</strong>(:,:)</td>
             <td>
-
+<p>Binary attractive interaction parameters</p>
             </td>
         </tr>
     </tbody>
@@ -692,10 +695,10 @@ are set to:
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-bmix~4"></span>
+      <span class="anchor" id="boundprocedure-bmix~3"></span>
       <h3>
           procedure, public ::
-  <strong>Bmix</strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/bmixhvnrtl.html'>BmixHVNRTL</a>
+  <strong>Bmix</strong> => <a href='../proc/bmixhvnrtl.html'>BmixHVNRTL</a>
         
       </h3>
     </div>
@@ -706,7 +709,7 @@ are set to:
 </h3>
     
 
-  <p>Quadratinc mixing rule for the repulsive parameter.</p><a href="../proc/bmixhvnrtl.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+  <p>Linear mixing rule for the repulsive parameter.</p><a href="../proc/bmixhvnrtl.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -731,7 +734,7 @@ are set to:
             <td>::</td>
             <td><strong>self</strong></td>
             <td>
-
+<p>Mixing rule object.</p>
             </td>
         </tr>
         <tr>
@@ -746,7 +749,7 @@ are set to:
             <td>::</td>
             <td><strong>n</strong>(:)</td>
             <td>
-
+<p>Component mole amounts [mol]</p>
             </td>
         </tr>
         <tr>
@@ -761,7 +764,7 @@ are set to:
             <td>::</td>
             <td><strong>bi</strong>(:)</td>
             <td>
-
+<p>Pure-component covolumes [L/mol]</p>
             </td>
         </tr>
         <tr>
@@ -776,7 +779,7 @@ are set to:
             <td>::</td>
             <td><strong>B</strong></td>
             <td>
-
+<p>Mixture covolume <script type="math/tex">B</script> [L]</p>
             </td>
         </tr>
         <tr>
@@ -791,7 +794,9 @@ are set to:
             <td>::</td>
             <td><strong>dBi</strong>(:)</td>
             <td>
-
+<p>
+<script type="math/tex">\partial B/\partial n_i</script>
+</p>
             </td>
         </tr>
         <tr>
@@ -806,7 +811,9 @@ are set to:
             <td>::</td>
             <td><strong>dBij</strong>(:,:)</td>
             <td>
-
+<p>
+<script type="math/tex">\partial^2 B/\partial n_i \partial n_j</script>
+</p>
             </td>
         </tr>
     </tbody>
@@ -824,7 +831,7 @@ are set to:
       <span class="anchor" id="boundprocedure-d1mix~3"></span>
       <h3>
           procedure, public ::
-  <strong>D1Mix</strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/d1mixhvnrtl.html'>D1MixHVNRTL</a>
+  <strong>D1Mix</strong> => <a href='../proc/d1mixhvnrtl.html'>D1MixHVNRTL</a>
         
       </h3>
     </div>
@@ -835,7 +842,7 @@ are set to:
 </h3>
     
 
-  
+  <p>Mole-fraction-weighted mixture <script type="math/tex">\delta_1</script> (see <code>d1mix_rkpr</code>).</p><a href="../proc/d1mixhvnrtl.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -860,7 +867,7 @@ are set to:
             <td>::</td>
             <td><strong>self</strong></td>
             <td>
-
+<p>Mixing rule object.</p>
             </td>
         </tr>
         <tr>
@@ -875,7 +882,7 @@ are set to:
             <td>::</td>
             <td><strong>n</strong>(:)</td>
             <td>
-
+<p>Component mole amounts [mol]</p>
             </td>
         </tr>
         <tr>
@@ -890,7 +897,7 @@ are set to:
             <td>::</td>
             <td><strong>d1i</strong>(:)</td>
             <td>
-
+<p>Pure-component <script type="math/tex">\delta_{1i}</script> values</p>
             </td>
         </tr>
         <tr>
@@ -905,7 +912,8 @@ are set to:
             <td>::</td>
             <td><strong>D1</strong></td>
             <td>
-
+<p>Mixture <script type="math/tex">\delta_1</script>
+</p>
             </td>
         </tr>
         <tr>
@@ -920,7 +928,9 @@ are set to:
             <td>::</td>
             <td><strong>dD1i</strong>(:)</td>
             <td>
-
+<p>
+<script type="math/tex">\partial \delta_1/\partial n_i</script>
+</p>
             </td>
         </tr>
         <tr>
@@ -935,7 +945,9 @@ are set to:
             <td>::</td>
             <td><strong>dD1ij</strong>(:,:)</td>
             <td>
-
+<p>
+<script type="math/tex">\partial^2 \delta_1/\partial n_i \partial n_j</script>
+</p>
             </td>
         </tr>
     </tbody>
@@ -950,10 +962,10 @@ are set to:
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-dmix~4"></span>
+      <span class="anchor" id="boundprocedure-dmix~3"></span>
       <h3>
           procedure, public ::
-  <strong>Dmix</strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/dmixhvnrtl.html'>DmixHVNRTL</a>
+  <strong>Dmix</strong> => <a href='../proc/dmixhvnrtl.html'>DmixHVNRTL</a>
         
       </h3>
     </div>
@@ -964,7 +976,7 @@ are set to:
 </h3>
     
 
-  
+  <p>Huron-Vidal attractive parameter with the NRTL-HV model.</p><a href="../proc/dmixhvnrtl.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -989,7 +1001,7 @@ are set to:
             <td>::</td>
             <td><strong>self</strong></td>
             <td>
-
+<p>Mixing rule object.</p>
             </td>
         </tr>
         <tr>
@@ -1116,8 +1128,7 @@ are set to:
             <td><strong>dDdV</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dD}{dT}</script>
-</p>
+<script type="math/tex">\frac{dD}{dV}</script> (not assigned)</p>
             </td>
         </tr>
         <tr>
@@ -1133,7 +1144,7 @@ are set to:
             <td><strong>dDdT</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{dD}{dV}</script>
+<script type="math/tex">\frac{dD}{dT}</script>
 </p>
             </td>
         </tr>
@@ -1201,7 +1212,7 @@ are set to:
             <td><strong>dDdTV</strong></td>
             <td>
 <p>
-<script type="math/tex">\frac{d^2D}{dTV</script>
+<script type="math/tex">\frac{d^2D}{dTV}</script>
 </p>
             </td>
         </tr>
@@ -1279,14 +1290,14 @@ are set to:
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>NearCritical &ndash; yaeos </title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -105,7 +106,7 @@
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/auxiliar.f90~3.html'>auxiliar.f90</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/auxiliar.f90.html'>auxiliar.f90</a></li>
                 <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_auxiliar.html'>yaeos__equilibria_boundaries_auxiliar</a></li>
             <li class="breadcrumb-item active" aria-current="page">NearCritical</li>
           </ol>
@@ -136,9 +137,9 @@
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
             <a class="list-group-item" href="../type/nearcritical.html#variable-entering">entering</a>
-            <a class="list-group-item" href="../type/nearcritical.html#variable-i~92">i</a>
-            <a class="list-group-item" href="../type/nearcritical.html#variable-j~53">j</a>
-            <a class="list-group-item" href="../type/nearcritical.html#variable-l~19">l</a>
+            <a class="list-group-item" href="../type/nearcritical.html#variable-i~22">i</a>
+            <a class="list-group-item" href="../type/nearcritical.html#variable-j~12">j</a>
+            <a class="list-group-item" href="../type/nearcritical.html#variable-l~7">l</a>
             <a class="list-group-item" href="../type/nearcritical.html#variable-near_critical">near_critical</a>
         </div>
       </div>
@@ -171,7 +172,13 @@
     <div class="col-md-9" id='text'>
       <h2 id="type-def-statement">
         type, public :: NearCritical</h2>
-    <p>Near critical point information.</p>
+    <h1 id="nearcritical">NearCritical</h1>
+<p>State used to track a critical region during continuation.</p>
+<h1 id="description">Description</h1>
+<p>Records whether the line is near or entering a critical point and
+which phase/component indices define the current critical direction.</p>
+<h1 id="examples">Examples</h1>
+<p>Used internally by the phase-boundary continuation callbacks.</p>
     <br>
 
     <section>
@@ -200,14 +207,12 @@
 <td> =</td>
                 <td>.false.</td>
             <td>
-                <p>Entering a critical region. This attribute is used to ensure that the
-correct indexes are used since they should not be updated while inside
-the region, just on the first point.</p>
+                <p>True at the first point entering the critical region.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-i~92"></span>
+              <span class="anchor" id="variable-i~22"></span>
               integer,
             </td>
               <td>public</td>
@@ -219,13 +224,12 @@ the region, just on the first point.</p>
                 <td></td>
                 <td></td>
             <td>
-                <p>Index of the component with the max <script type="math/tex">\ln K_i^l</script>
-</p>
+                <p>Component index with maximum <script type="math/tex">\ln K_i^l</script>.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-j~53"></span>
+              <span class="anchor" id="variable-j~12"></span>
               integer,
             </td>
               <td>public</td>
@@ -237,13 +241,12 @@ the region, just on the first point.</p>
                 <td></td>
                 <td></td>
             <td>
-                <p>Index of the component with the minimum <script type="math/tex">\ln K_j^l</script>
-</p>
+                <p>Component index with minimum <script type="math/tex">\ln K_j^l</script>.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-l~19"></span>
+              <span class="anchor" id="variable-l~7"></span>
               integer,
             </td>
               <td>public</td>
@@ -255,7 +258,7 @@ the region, just on the first point.</p>
                 <td></td>
                 <td></td>
             <td>
-                <p>Index of the phase that is becoming critical with the reference phase.</p>
+                <p>Phase index approaching the reference phase.</p>
             </td>
         </tr>
         <tr>
@@ -272,7 +275,7 @@ the region, just on the first point.</p>
 <td> =</td>
                 <td>.false.</td>
             <td>
-                <p>If we are satisfying the condition of being near a critical point.</p>
+                <p>True while the critical-proximity criterion is met.</p>
             </td>
         </tr>
     </tbody>
@@ -296,14 +299,14 @@ the region, just on the first point.</p>
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

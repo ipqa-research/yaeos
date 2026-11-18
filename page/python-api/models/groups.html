@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Groups module &mdash; yaeos 4.5.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+  <title>Groups module &mdash; yaeos 4.5.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=a284863f"></script>
+      <script src="../_static/documentation_options.js?v=06fc0226"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,9 +56,12 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="init.html">Models</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="residual_helmholtz/init.html">Residual Helmholtz Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="excess_gibbs/init.html">Excess Gibbs Models</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Groups module</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="init.html#choose-the-model-before-the-solver">Choose the model before the solver</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="residual_helmholtz/init.html">Residual Helmholtz Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="excess_gibbs/init.html">Excess Gibbs Models</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Groups module</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -94,13 +97,25 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-yaeos.models.groups">
-<span id="groups-module"></span><h1>Groups module<a class="headerlink" href="#module-yaeos.models.groups" title="Link to this heading"></a></h1>
-<p>Handling groups for Group Contribution Models.</p>
+  <section id="groups-module">
+<h1>Groups module<a class="headerlink" href="#groups-module" title="Link to this heading"></a></h1>
+<p>Group-contribution models (the UNIFAC family and PSRK) represent a molecule
+as counts of functional subgroups. Python constructors accept one dictionary
+per component: keys are integer subgroup IDs and values are counts within
+that molecule, <strong>not mixture mole fractions</strong>. The list order establishes the
+component order for later property calls.</p>
+<p><code class="docutils literal notranslate"><span class="pre">groups_from_dicts</span></code> converts these dictionaries to the low-level array
+layout; ordinary users can pass dictionaries directly to the model instead.
+Use the subgroup definitions and interaction tables for the selected UNIFAC
+variant. A chemically plausible decomposition with the wrong IDs can still
+describe the wrong molecule.</p>
+<p>See the <a class="reference internal" href="../tutorial/gibbs_excess/models/unifac_models.html"><span class="doc">UNIFAC tutorial</span></a>
+before preparing your own dictionaries.</p>
+<p id="module-yaeos.models.groups">Handling groups for Group Contribution Models.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="yaeos.models.groups.groups_from_dicts">
 <span class="sig-name descname"><span class="pre">groups_from_dicts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">molecules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yaeos/models/groups.html#groups_from_dicts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.models.groups.groups_from_dicts" title="Link to this definition"></a></dt>
-<dd><p>Convert list of dicts with groups and their to C-API format.</p>
+<dd><p>Convert list of dicts with groups and their amounts to C-API format.</p>
 <p>Convert list of dicts with groups and their amounts to the format required
 by the C-API.</p>
 <dl class="field-list simple">
@@ -111,7 +126,7 @@ by the C-API.</p>
 <dd class="field-even"><p><ul class="simple">
 <li><p><strong>number_of_groups</strong> (<em>list of int</em>) – Number of groups for each molecule.</p></li>
 <li><p><strong>groups_ids</strong> (<em>np.ndarray</em>) – Groups ids for each molecule.</p></li>
-<li><p><strong>groups_ammounts</strong> (<em>np.ndarray</em>) – Groups amounts for each molecule.</p></li>
+<li><p><strong>groups_amounts</strong> (<em>np.ndarray</em>) – Groups amounts for each molecule.</p></li>
 </ul>
 </p>
 </dd>

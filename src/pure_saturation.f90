@@ -1,4 +1,17 @@
 module yaeos__equilibria_boundaries_pure_saturation
+   !! # Pure-component saturation lines
+   !!
+   !! # Description
+   !! Calculation and interpolation of the saturation line of a pure
+   !! component. [[pure_saturation_line]] traces the line from the critical
+   !! point down to a specified pressure or temperature, and [[PurePsat]]
+   !! stores and interpolates the result.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! line = pure_saturation_line(model, component=1, minP=0.1_pr, minT=100.0_pr)
+   !! Tsat = line%get_T(P=1.0_pr)
+   !! ```
    use yaeos__constants, only: pr
    use yaeos__models_ar, only: ArModel, size
    use yaeos__math_linalg, only: solve_system
@@ -9,12 +22,28 @@ module yaeos__equilibria_boundaries_pure_saturation
 
 
    type :: PurePsat
+      !! # PurePsat
+      !!
+      !! Saturation line of a pure component. Contains the saturation
+      !! temperatures, pressures, and phase volumes, together with linear
+      !! interpolators for `get_T` and `get_P`.
+      !!
+      !! # Description
+      !! Each point array shares the same index along the saturation curve.
+      !! The interpolation methods should be used within the stored pressure
+      !! or temperature interval.
+      !!
+      !! # Examples
+      !! ```fortran
+      !! psat = pure_saturation_line(model, component=1, minP=0.1_pr, minT=100.0_pr)
+      !! tsat = psat%get_T(P=1.0_pr)
+      !! ```
       real(pr), allocatable :: T(:) !! Temperature [K]
-      real(pr), allocatable :: P(:) !! Pressure [Pa]
+      real(pr), allocatable :: P(:) !! Pressure [bar]
       real(pr), allocatable :: Vx(:) !! Molar volume [L/mol] in the liquid phase
       real(pr), allocatable :: Vy(:) !! Molar volume [L/mol] in the vapor phase
-      type(linear_interp_1d), private :: interpolator_get_T
-      type(linear_interp_1d), private :: interpolator_get_P
+      type(linear_interp_1d), private :: interpolator_get_T !! Interpolates temperature as a function of pressure.
+      type(linear_interp_1d), private :: interpolator_get_P !! Interpolates pressure as a function of temperature.
    contains
       procedure :: get_T => get_T
       procedure :: get_P => get_P
@@ -37,7 +66,7 @@ contains
       !!
       ! ========================================================================
       use yaeos__auxiliar, only: optval
-      class(ArModel), intent(in) :: model !! Thermodyanmic model
+      class(ArModel), intent(in) :: model !! Thermodynamic model
       integer, intent(in) :: component !! Component index to calculate the line
       real(pr), intent(in) :: minP !! Minimum pressure [bar]
       real(pr), intent(in) :: minT !! Minimum temperature [K]
@@ -45,20 +74,31 @@ contains
       ! ------------------------------------------------------------------------
 
       real(pr) :: X(4) !! Variables [lnVx, lnVy, lnP, lnT]
-      real(pr) :: z(size(model))
+      real(pr) :: z(size(model)) !! Feed or overall composition.
       real(pr) :: Vc
-      integer :: i
+      integer :: i !! Loop/index variable.
       integer :: ns
 
-      real(pr) :: Tc, Pc
-      real(pr) :: Vx, Vy, T, P
+      real(pr) :: Tc
+      real(pr) :: Pc
+      real(pr) :: Vx
+      real(pr) :: Vy
+      real(pr) :: T
+      real(pr) :: P
 
-      real(pr) :: dXdS(4), dS, S, dFdS(4)
-      real(pr) :: F(4), dF(4,4), dX(4)
-      integer :: its, nc
+      real(pr) :: dXdS(4)
+      real(pr) :: dS
+      real(pr) :: S
+      real(pr) :: dFdS(4)
+      real(pr) :: F(4)
+      real(pr) :: dF(4,4)
+      real(pr) :: dX(4)
+      integer :: its !! Iteration count.
+      integer :: nc !! Number of components.
       integer :: points
 
-      integer :: iT, iP
+      integer :: iT
+      integer :: iP
 
       iP = 3
       iT = 4
@@ -184,9 +224,9 @@ contains
       integer, intent(in) :: nc
       !! Total number of components
       real(pr), intent(in out) :: X(4)
-      !! Variables \([ln V_z, lnV_y, lnP, lnT]\)
+      !! Variables \([\ln V_z, \ln V_y, \ln P, \ln T]\)
       integer, intent(in) :: ns
-      !! Variable index to solve. If the
+      !! Index of the specified variable (see \(g(X, ns)\) above).
       real(pr), intent(in) :: S
       !! Variable value specified to solve
       real(pr), intent(out) :: F(4)
@@ -198,20 +238,28 @@ contains
       integer, intent(out) :: its
       !! Number of iterations
 
-      real(pr) :: z(nc)
-      real(pr) :: lnfug_z(nc), lnfug_y(nc)
-      real(pr) :: dlnfdv_z(nc), dlnfdv_y(nc)
-      real(pr) :: dlnfdt_z(nc), dlnfdt_y(nc)
-      real(pr) :: dPdTz, dPdTy
-      real(pr) :: dPdVz, dPdVy
-      real(pr) :: Vz, Vy
+      real(pr) :: z(nc) !! Feed or overall composition.
+      real(pr) :: lnfug_z(nc)
+      real(pr) :: lnfug_y(nc)
+      real(pr) :: dlnfdv_z(nc)
+      real(pr) :: dlnfdv_y(nc)
+      real(pr) :: dlnfdt_z(nc)
+      real(pr) :: dlnfdt_y(nc)
+      real(pr) :: dPdTz
+      real(pr) :: dPdTy
+      real(pr) :: dPdVz !! Pressure derivative with respect to the feed-phase volume.
+      real(pr) :: dPdVy !! Pressure derivative with respect to the incipient-phase volume.
+      real(pr) :: Vz
+      real(pr) :: Vy
 
       real(pr) :: T
-      real(pr) :: Pz, Py
-      real(pr) :: dX(4), B
+      real(pr) :: Pz
+      real(pr) :: Py
+      real(pr) :: dX(4)
+      real(pr) :: B
       real(pr) :: Xnew(4)
 
-      integer :: i
+      integer :: i !! Loop/index variable.
 
       i = ncomp
 
@@ -240,10 +288,17 @@ contains
 
    contains
       subroutine isofugacity(X, F, dF, dFdS)
-         real(pr), intent(inout) :: X(4)
-         real(pr), intent(out) :: F(4)
-         real(pr), intent(out) :: dF(4,4)
-         real(pr), intent(out) :: dFdS(4)
+         !! # isofugacity
+         !!
+         !! # Description
+         !! Evaluate the pure-fluid coexistence residuals and Jacobian for continuation.
+         !! Unknowns are \(X=[\ln V_z, \ln V_y, \ln P, \ln T]\); the residuals
+         !! are fugacity equality, pressure equality, \(\ln P_z - \ln P\) and
+         !! the specification \(g(X, ns)\) (see [[solve_point]]).
+         real(pr), intent(inout) :: X(4) !! Variables \([\ln V_z, \ln V_y, \ln P, \ln T]\).
+         real(pr), intent(out) :: F(4) !! Residuals \([f_1, f_2, f_3, f_4]\).
+         real(pr), intent(out) :: dF(4,4) !! Residual Jacobian with respect to `X`.
+         real(pr), intent(out) :: dFdS(4) !! Residual derivative with respect to the continuation variable.
 
          F = 0
          dF = 0
@@ -261,7 +316,7 @@ contains
          F(3) = X(3) - log(Pz)
 
          if (ns == 1 .or. ns == 2) then
-            F(4) = log(Vz/Vy) - S! X(ns) - S
+            F(4) = log(Vz/Vy) - S ! X(ns) - S
          else
             F(4) = X(ns) - S
          end if
@@ -294,38 +349,37 @@ contains
    end subroutine solve_point
 
    real(pr) function get_T(pt, P) result(T)
-      !! # Get temperature
+      !! # get_T
       !!
       !! Get the saturation temperature for a given pressure.
       !!
-      !! ## Description
-      !! This function returns the saturation temperature for a given pressure.
-      !! The function uses an interpolator to get the required value.
+      !! # Description
+      !! Interpolates the stored saturation line. The requested pressure should
+      !! lie within the tabulated range.
       !!
-      !! ## Examples
+      !! # Examples
       !! ```fortran
       !! T = pt%get_T(P)
       !! ```
-      class(PurePsat), intent(in out) :: pt
-      real(pr), intent(in) :: P
+      class(PurePsat), intent(in out) :: pt !! Stored saturation data and interpolator.
+      real(pr), intent(in) :: P !! Pressure [bar].
       call pt%interpolator_get_T%evaluate(P, T)
    end function get_T
 
    real(pr) function get_P(pt, T) result(P)
-      !! # Get pressure
+      !! # get_P
+      !! Interpolate the saturation pressure at a requested temperature.
       !!
-      !! Get the saturation pressure for a given temperature.
+      !! # Description
+      !! Interpolates the stored saturation line. The requested temperature
+      !! should lie within the tabulated range.
       !!
-      !! ## Description
-      !! This function returns the saturation pressure for a given temperature.
-      !! The function uses an interpolator to get the required value.
-      !!
-      !! ## Examples
+      !! # Examples
       !! ```fortran
       !! P = pt%get_P(T)
       !! ```
-      class(PurePsat), intent(in out) :: pt
-      real(pr), intent(in) :: T
+      class(PurePsat), intent(in out) :: pt !! Stored saturation data and interpolator.
+      real(pr), intent(in) :: T !! Temperature [K].
       call pt%interpolator_get_P%evaluate(T, P)
    end function get_P
 end module yaeos__equilibria_boundaries_pure_saturation

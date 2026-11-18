@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../../../../favicon.png">
 
     <title>Alpha functions &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../../../../css/local.css" rel="stylesheet">
     <link href="../../../../css/pygments.css" rel="stylesheet">
+      <link href="../../../../css/user.css" rel="stylesheet">
     <script src="../../../../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -92,7 +93,7 @@
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb justify-content-end mb-0">
                 <li class="breadcrumb-item"><a href='../../../index.html'>User documentation</a></li>
-                <li class="breadcrumb-item"><a href='../../index.html'>Using yaeos</a></li>
+                <li class="breadcrumb-item"><a href='../../index.html'>Getting started</a></li>
                 <li class="breadcrumb-item"><a href='../index.html'>Equations of State</a></li>
                 <li class="breadcrumb-item"><a href='index.html'>Cubics</a></li>
               <li class="breadcrumb-item active" aria-current="page">Alpha functions</li>
@@ -113,9 +114,10 @@
           </ul>
           <hr>
           <nav class="nav nav-pills flex-column">
-              <a class="nav-link" href="../../index.html">Using yaeos</a>
+              <a class="nav-link" href="../../index.html">Getting started</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../index.html">Equations of State</a>
+                                <a class="nav-link" href="../../fundamentals.html">Thermodynamics essentials</a>
+              <a class="nav-link" href="../index.html">Equations of State</a>
                 <nav class="nav nav-pills flex-column">
                                 <a class="nav-link" href="index.html">Cubics</a>
                 <nav class="nav nav-pills flex-column">
@@ -123,27 +125,33 @@
               <a class="nav-link" href="mixing.html">Mixing Rules</a>
 
                 </nav>
+              <a class="nav-link" href="../gerg2008.html">GERG2008</a>
+              <a class="nav-link" href="../gerg2008_parameters.html">GERG2008 parameters</a>
+              <a class="nav-link" href="../pc_saft.html">PC-SAFT</a>
 
                 </nav>
               <a class="nav-link" href="../../excessmodels/index.html">Gibbs Excess Models</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../../excessmodels/nrtl-hv.html">NRTL-HV</a>
-              <a class="nav-link" href="../../excessmodels/nrtl.html">NRTL</a>
+                                <a class="nav-link" href="../../excessmodels/nrtl.html">NRTL</a>
+              <a class="nav-link" href="../../excessmodels/nrtl-hv.html">NRTL-HV</a>
+              <a class="nav-link" href="../../excessmodels/uniquac.html">UNIQUAC</a>
               <a class="nav-link" href="../../excessmodels/unifac_models/index.html">UNIFAC Models</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../../excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
+                                <a class="nav-link" href="../../excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
+              <a class="nav-link" href="../../excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
               <a class="nav-link" href="../../excessmodels/unifac_models/psrk.html">UNIFAC-PSRK</a>
-              <a class="nav-link" href="../../excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
 
                 </nav>
-              <a class="nav-link" href="../../excessmodels/uniquac.html">UNIQUAC</a>
 
                 </nav>
               <a class="nav-link" href="../../phase_equilibrium/index.html">Phase Equilibrium</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../../phase_equilibrium/envelopes.html">Phase envelopes</a>
-              <a class="nav-link" href="../../phase_equilibrium/flash.html">Flash calculations</a>
+                                <a class="nav-link" href="../../phase_equilibrium/flash.html">Flash calculations</a>
               <a class="nav-link" href="../../phase_equilibrium/saturation_points.html">Saturation Points</a>
+              <a class="nav-link" href="../../phase_equilibrium/envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="../../phase_equilibrium/stability.html">Stability analysis</a>
+              <a class="nav-link" href="../../phase_equilibrium/critical.html">Critical points</a>
+              <a class="nav-link" href="../../phase_equilibrium/multiphase.html">Multiphase flash</a>
 
                 </nav>
               <a class="nav-link" href="../../newmodels/index.html">Adding your own models</a>
@@ -154,18 +162,247 @@
                 </nav>
 
                 </nav>
+              <a class="nav-link" href="../../../python-api/index.html">Python-API</a>
+              <a class="nav-link" href="../../../developer/index.html">Becoming a yaeos developer</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../../developer/architecture.html">Architecture and repository map</a>
+              <a class="nav-link" href="../../../developer/workflow.html">Developer workflow</a>
+              <a class="nav-link" href="../../../developer/fortran.html">Working in the Fortran core</a>
+              <a class="nav-link" href="../../../developer/numerics.html">Working on numerical algorithms</a>
+              <a class="nav-link" href="../../../developer/c_interface.html">C interface layer</a>
+              <a class="nav-link" href="../../../developer/python_interface.html">Python interface layer</a>
+              <a class="nav-link" href="../../../developer/testing.html">Tests and numerical validation</a>
+              <a class="nav-link" href="../../../developer/walkthrough.html">An end-to-end change</a>
+
+                </nav>
               <a class="nav-link" href="../../../contributing/index.html">Contributing</a>
                 <nav class="nav nav-pills flex-column">
                                 <a class="nav-link" href="../../../contributing/styleguide.html">Style guide</a>
 
                 </nav>
-              <a class="nav-link" href="../../../python-api/index.html">Python-API</a>
           </nav>
         </div>
       </div>
 
     <div class="col-9" id='text'>
-      
+      <div class="toc">
+<ul>
+<li><a href="#why-a-cubic-eos-needs-an-alpha-function">Why a cubic EOS needs an alpha function</a><ul>
+<li><a href="#implemented-choices">Implemented choices</a><ul>
+<li><a href="#soave">Soave</a></li>
+<li><a href="#rkpr">RKPR</a></li>
+<li><a href="#mathias-copeman">Mathias-Copeman</a></li>
+</ul>
+</li>
+<li><a href="#complete-example-install-and-inspect-an-alpha">Complete example: install and inspect an alpha</a></li>
+<li><a href="#custom-functions-and-derivative-checks">Custom functions and derivative checks</a></li>
+<li><a href="#next-reading">Next reading</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h1 id="why-a-cubic-eos-needs-an-alpha-function">Why a cubic EOS needs an alpha function</h1>
+<p>Molecular attractions do not have the same effect at every temperature. A cubic
+EOS represents that change by multiplying a reference attraction parameter by
+a dimensionless temperature correction. This is the <strong>pure-component</strong> part of
+the model: a <a href="mixing.html">mixing rule</a> subsequently combines components. Changing
+alpha is not a substitute for fitting binary interactions.</p>
+<p>For component <script type="math/tex">i</script>, let <script type="math/tex">T</script> be absolute temperature in K, <script type="math/tex">T_{c,i}</script> its
+critical temperature in K, and <script type="math/tex">T_{r,i}=T/T_{c,i}</script> reduced temperature.
+The critical attraction parameter <script type="math/tex">a_{c,i}</script> and the temperature-dependent
+parameter <script type="math/tex">a_i(T)</script> both have units bar L²/mol². Then</p>
+<p>
+<script type="math/tex; mode=display">
+a_i(T)=a_{c,i}\alpha_i(T_{r,i}).
+</script>
+</p>
+<p>Built-in cubic constructors already provide an alpha function. Keep that default
+unless you have pure-fluid vapor-pressure data or a compatible published fit
+that justifies a change. A more flexible alpha can improve a fit over its
+calibration interval without ensuring good extrapolation or mixture predictions.</p>
+<h2 id="implemented-choices">Implemented choices</h2>
+<p>Below, <script type="math/tex">k</script>, <script type="math/tex">c_1</script>, <script type="math/tex">c_2</script> and <script type="math/tex">c_3</script> are dimensionless <strong>pure-component</strong>
+coefficients. They are not the binary interaction <script type="math/tex">k_{ij}</script>, nor the NRTL
+non-randomness parameter also often called alpha. Each coefficient array has
+one entry per component in exactly the constructor&rsquo;s component order.</p>
+<h3 id="soave">Soave</h3>
+<p><a href="../../../../type/alphasoave.html">AlphaSoave</a> uses</p>
+<p>
+<script type="math/tex; mode=display">
+\alpha(T_r)=[1+k(1-\sqrt{T_r})]^2.
+</script>
+</p>
+<p>With <script type="math/tex">\omega</script> the dimensionless acentric factor, the constructors use:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Model</th>
+<th style="text-align: left;">
+<script type="math/tex">k(\omega)</script>
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Peng-Robinson 1976</td>
+<td style="text-align: left;">
+<script type="math/tex">0.37464+1.54226\omega-0.26993\omega^2</script>
+</td>
+</tr>
+<tr>
+<td style="text-align: left;">Peng-Robinson 1978, <script type="math/tex">\omega\leq0.491</script>
+</td>
+<td style="text-align: left;">
+<script type="math/tex">0.37464+1.54226\omega-0.26992\omega^2</script>
+</td>
+</tr>
+<tr>
+<td style="text-align: left;">Peng-Robinson 1978, <script type="math/tex">\omega>0.491</script>
+</td>
+<td style="text-align: left;">
+<script type="math/tex">0.379642+1.48503\omega-0.164423\omega^2+0.016666\omega^3</script>
+</td>
+</tr>
+<tr>
+<td style="text-align: left;">Soave-Redlich-Kwong</td>
+<td style="text-align: left;">
+<script type="math/tex">0.48+1.574\omega-0.175\omega^2</script>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Its reduced-temperature derivatives are</p>
+<p>
+<script type="math/tex; mode=display">
+\frac{d\alpha}{dT_r}=\frac{k[k(\sqrt{T_r}-1)-1]}{\sqrt{T_r}},\qquad
+\frac{d^2\alpha}{dT_r^2}=\frac{k(k+1)}{2T_r^{3/2}}.
+</script>
+</p>
+<h3 id="rkpr">RKPR</h3>
+<p><a href="../../../../type/alpharkpr.html">AlphaRKPR</a> uses its component-specific exponent <script type="math/tex">k</script>:</p>
+<p>
+<script type="math/tex; mode=display">
+\alpha(T_r)=\left(\frac{3}{2+T_r}\right)^k,\qquad
+\frac{d\alpha}{dT_r}=-\frac{k\alpha}{2+T_r},\qquad
+\frac{d^2\alpha}{dT_r^2}=-\frac{k+1}{2+T_r}\frac{d\alpha}{dT_r}.
+</script>
+</p>
+<p>The <a href="../../../../proc/rkpr.html">RKPR</a> constructor estimates and numerically refits unspecified exponents
+using the acentric factor and critical-compressibility information. See the
+<a href="index.html">cubic overview</a> for its additional inputs and initialization caveats.</p>
+<h3 id="mathias-copeman">Mathias-Copeman</h3>
+<p><a href="../../../../type/alphamathiascopeman.html">AlphaMathiasCopeman</a> adds flexibility below the critical temperature.
+Define <script type="math/tex">u=1-\sqrt{T_r}</script>. Then</p>
+<p>
+<script type="math/tex; mode=display">
+\alpha(T_r)=
+\begin{cases}
+(1+c_1u+c_2u^2+c_3u^3)^2,&T_r\leq1,\\
+(1+c_1u)^2,&T_r>1.
+\end{cases}
+</script>
+</p>
+<p>Thus <code>c2</code> and <code>c3</code> affect only the subcritical branch. <a href="../../../../proc/psrk.html">PSRK</a> uses this
+function when all three optional coefficient arrays are supplied; otherwise
+it uses Soave. The implementation supplies analytical derivatives in
+<code>src/models/residual_helmholtz/cubic/alphas/alphas.f90</code>.</p>
+<h2 id="complete-example-install-and-inspect-an-alpha">Complete example: install and inspect an alpha</h2>
+<p>This program installs the built-in Mathias-Copeman type rather than reimplementing
+it. The methane/n-butane critical data have the same order as the coefficient
+arrays. <strong>The coefficients are illustrative:</strong> setting <code>c2=c3=0</code> and using PR76&rsquo;s
+<code>k</code> as <code>c1</code> reproduces the Soave form, providing a useful consistency check,
+not a new fitted parameter set.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">program </span><span class="n">alpha_comparison</span>
+<span class="w">   </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">CubicEoS</span><span class="p">,</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">,</span><span class="w"> </span><span class="n">AlphaMathiasCopeman</span>
+<span class="w">   </span><span class="k">implicit none</span>
+<span class="k">   type</span><span class="p">(</span><span class="n">CubicEoS</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">AlphaMathiasCopeman</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">correction</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">tc</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">pc</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">w</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Tr</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="k">value</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">first</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="nb">second</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">V</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Pbefore</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Pafter</span>
+
+<span class="w">   </span><span class="n">tc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">19</span><span class="mf">0.564_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="mf">5.12_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">pc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">4</span><span class="mf">5.99_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="mf">7.96_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.0115478_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.200164_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span><span class="w"> </span><span class="n">pc</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">)</span>
+<span class="w">   </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.3_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7_pr</span><span class="p">]</span><span class="w"> </span><span class="c">! mol</span>
+<span class="w">   </span><span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span><span class="w"> </span><span class="c">! K</span>
+<span class="w">   </span><span class="n">V</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="mf">0.0_pr</span><span class="w"> </span><span class="c">! total L</span>
+<span class="w">   </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">Pbefore</span><span class="p">)</span>
+
+<span class="w">   </span><span class="n">correction</span><span class="p">%</span><span class="n">c1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.37464_pr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1.54226_pr</span><span class="o">*</span><span class="n">w</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">0.26993_pr</span><span class="o">*</span><span class="n">w</span><span class="o">**</span><span class="mi">2</span>
+<span class="w">   </span><span class="n">correction</span><span class="p">%</span><span class="n">c2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">correction</span><span class="p">%</span><span class="n">c3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">set_alpha</span><span class="p">(</span><span class="n">correction</span><span class="p">)</span>
+<span class="w">   </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">Pafter</span><span class="p">)</span>
+<span class="w">   </span><span class="n">Tr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">T</span><span class="o">/</span><span class="n">tc</span>
+<span class="w">   </span><span class="k">call </span><span class="n">correction</span><span class="p">%</span><span class="n">alpha</span><span class="p">(</span><span class="n">Tr</span><span class="p">,</span><span class="w"> </span><span class="k">value</span><span class="p">,</span><span class="w"> </span><span class="n">first</span><span class="p">,</span><span class="w"> </span><span class="nb">second</span><span class="p">)</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Alpha values [-]: &quot;</span><span class="p">,</span><span class="w"> </span><span class="k">value</span>
+<span class="k">   print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;d(alpha)/d(Tr): &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">first</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;d2(alpha)/d(Tr)2: &quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">second</span>
+<span class="nb">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Pressure difference [bar]: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Pafter</span><span class="o">-</span><span class="n">Pbefore</span>
+<span class="k">end program </span><span class="n">alpha_comparison</span>
+</code></pre></div>
+
+<p>The pressure difference should be zero to floating-point roundoff. Check each
+component&rsquo;s alpha at <code>Tr=1</code>: these built-in forms give one there. At 300 K the
+two components in this example are on different sides of their critical
+temperatures, so both Mathias-Copeman branches are exercised.</p>
+<p><code>set_alpha</code> deallocates the previous polymorphic component before assigning the
+new one. It is the preferred replacement method. To investigate a real fit,
+replace the illustrative coefficients with documented values fitted to this
+EOS, then compare calculated pure-fluid saturation pressures with data.</p>
+<h2 id="custom-functions-and-derivative-checks">Custom functions and derivative checks</h2>
+<p><a href="../../../../type/alphafunction.html">AlphaFunction</a> is the abstract parent. A new type extends it and overrides
+<code>alpha</code>. This <strong>interface sketch</strong>, not a standalone program, shows the
+required arguments:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">subroutine </span><span class="n">alpha</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">Tr</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">dadt</span><span class="p">,</span><span class="w"> </span><span class="n">dadt2</span><span class="p">)</span>
+<span class="w">   </span><span class="k">class</span><span class="p">(</span><span class="n">MyAlpha</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">self</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Tr</span><span class="p">(:)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">a</span><span class="p">(:)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">dadt</span><span class="p">(:)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">dadt2</span><span class="p">(:)</span>
+<span class="w">   </span><span class="c">! Supply alpha and its first two derivatives with respect to Tr.</span>
+<span class="k">end subroutine </span><span class="n">alpha</span>
+</code></pre></div>
+
+<p>All arrays have one entry per component. Despite the argument name <code>a</code>, this
+procedure returns dimensionless alpha, <strong>not</strong> the attraction parameter.
+Despite the names <code>dadt</code> and <code>dadt2</code>, these are derivatives with respect to
+<strong>reduced</strong> temperature. The cubic model performs the chain-rule conversion:</p>
+<p>
+<script type="math/tex; mode=display">
+\frac{da_i}{dT}=\frac{a_{c,i}}{T_{c,i}}\frac{d\alpha_i}{dT_{r,i}},\qquad
+\frac{d^2a_i}{dT^2}=\frac{a_{c,i}}{T_{c,i}^2}
+\frac{d^2\alpha_i}{dT_{r,i}^2}.
+</script>
+</p>
+<p>Returning absolute-temperature derivatives here would apply the conversion
+twice. Pressure alone may not reveal the error; residual energy properties and
+solver derivatives can be wrong. Compare analytical derivatives with finite
+differences away from branch boundaries, and inspect continuity at boundaries
+separately. Use positive <code>Tr</code>; square roots and inverse powers are undefined
+or singular at nonpositive values.</p>
+<p>Squared expressions ensure nonnegative alpha, but do not guarantee physically
+reasonable high-temperature trends. Check the fitted range, critical-point
+normalization and derivative behavior before extrapolating. Numerical
+convergence of a saturation calculation is distinct from accuracy of the fit.</p>
+<h2 id="next-reading">Next reading</h2>
+<p><code>example/advanced/new_alpha_function.f90</code> contains a complete custom-type
+implementation. Continue with <a href="mixing.html">mixing rules</a>, the
+<a href="../index.html">EOS property guide</a>,
+<a href="../../fundamentals.html">thermodynamic fundamentals</a>, and
+<a href="../../phase_equilibrium/saturation_points.html">saturation calculations</a>.
+Model references are collected on the <a href="index.html">cubic overview</a>.</p>
     </div>
   </div>
       <hr>
@@ -176,14 +413,14 @@
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

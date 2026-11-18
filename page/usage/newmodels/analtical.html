@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../../../favicon.png">
 
     <title>Analytical derivatives &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../../../css/local.css" rel="stylesheet">
     <link href="../../../css/pygments.css" rel="stylesheet">
+      <link href="../../../css/user.css" rel="stylesheet">
     <script src="../../../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -92,7 +93,7 @@
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb justify-content-end mb-0">
                 <li class="breadcrumb-item"><a href='../../index.html'>User documentation</a></li>
-                <li class="breadcrumb-item"><a href='../index.html'>Using yaeos</a></li>
+                <li class="breadcrumb-item"><a href='../index.html'>Getting started</a></li>
                 <li class="breadcrumb-item"><a href='index.html'>Adding your own models</a></li>
               <li class="breadcrumb-item active" aria-current="page">Analytical derivatives</li>
             </ol>
@@ -112,9 +113,10 @@
           </ul>
           <hr>
           <nav class="nav nav-pills flex-column">
-              <a class="nav-link" href="../index.html">Using yaeos</a>
+              <a class="nav-link" href="../index.html">Getting started</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../eos/index.html">Equations of State</a>
+                                <a class="nav-link" href="../fundamentals.html">Thermodynamics essentials</a>
+              <a class="nav-link" href="../eos/index.html">Equations of State</a>
                 <nav class="nav nav-pills flex-column">
                                 <a class="nav-link" href="../eos/cubics/index.html">Cubics</a>
                 <nav class="nav nav-pills flex-column">
@@ -122,27 +124,33 @@
               <a class="nav-link" href="../eos/cubics/mixing.html">Mixing Rules</a>
 
                 </nav>
+              <a class="nav-link" href="../eos/gerg2008.html">GERG2008</a>
+              <a class="nav-link" href="../eos/gerg2008_parameters.html">GERG2008 parameters</a>
+              <a class="nav-link" href="../eos/pc_saft.html">PC-SAFT</a>
 
                 </nav>
               <a class="nav-link" href="../excessmodels/index.html">Gibbs Excess Models</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../excessmodels/nrtl-hv.html">NRTL-HV</a>
-              <a class="nav-link" href="../excessmodels/nrtl.html">NRTL</a>
+                                <a class="nav-link" href="../excessmodels/nrtl.html">NRTL</a>
+              <a class="nav-link" href="../excessmodels/nrtl-hv.html">NRTL-HV</a>
+              <a class="nav-link" href="../excessmodels/uniquac.html">UNIQUAC</a>
               <a class="nav-link" href="../excessmodels/unifac_models/index.html">UNIFAC Models</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
+                                <a class="nav-link" href="../excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
+              <a class="nav-link" href="../excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
               <a class="nav-link" href="../excessmodels/unifac_models/psrk.html">UNIFAC-PSRK</a>
-              <a class="nav-link" href="../excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
 
                 </nav>
-              <a class="nav-link" href="../excessmodels/uniquac.html">UNIQUAC</a>
 
                 </nav>
               <a class="nav-link" href="../phase_equilibrium/index.html">Phase Equilibrium</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../phase_equilibrium/envelopes.html">Phase envelopes</a>
-              <a class="nav-link" href="../phase_equilibrium/flash.html">Flash calculations</a>
+                                <a class="nav-link" href="../phase_equilibrium/flash.html">Flash calculations</a>
               <a class="nav-link" href="../phase_equilibrium/saturation_points.html">Saturation Points</a>
+              <a class="nav-link" href="../phase_equilibrium/envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="../phase_equilibrium/stability.html">Stability analysis</a>
+              <a class="nav-link" href="../phase_equilibrium/critical.html">Critical points</a>
+              <a class="nav-link" href="../phase_equilibrium/multiphase.html">Multiphase flash</a>
 
                 </nav>
               <a class="nav-link" href="index.html">Adding your own models</a>
@@ -153,18 +161,530 @@
                 </nav>
 
                 </nav>
+              <a class="nav-link" href="../../python-api/index.html">Python-API</a>
+              <a class="nav-link" href="../../developer/index.html">Becoming a yaeos developer</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../developer/architecture.html">Architecture and repository map</a>
+              <a class="nav-link" href="../../developer/workflow.html">Developer workflow</a>
+              <a class="nav-link" href="../../developer/fortran.html">Working in the Fortran core</a>
+              <a class="nav-link" href="../../developer/numerics.html">Working on numerical algorithms</a>
+              <a class="nav-link" href="../../developer/c_interface.html">C interface layer</a>
+              <a class="nav-link" href="../../developer/python_interface.html">Python interface layer</a>
+              <a class="nav-link" href="../../developer/testing.html">Tests and numerical validation</a>
+              <a class="nav-link" href="../../developer/walkthrough.html">An end-to-end change</a>
+
+                </nav>
               <a class="nav-link" href="../../contributing/index.html">Contributing</a>
                 <nav class="nav nav-pills flex-column">
                                 <a class="nav-link" href="../../contributing/styleguide.html">Style guide</a>
 
                 </nav>
-              <a class="nav-link" href="../../python-api/index.html">Python-API</a>
           </nav>
         </div>
       </div>
 
     <div class="col-9" id='text'>
-      
+      <div class="toc">
+<ul>
+<li><a href="#adding-a-model-with-analytical-derivatives">Adding a model with analytical derivatives</a></li>
+<li><a href="#the-armodel-contract">The ArModel contract</a><ul>
+<li><a href="#units-and-differentiation-variables">Units and differentiation variables</a></li>
+<li><a href="#implementation-sequence">Implementation sequence</a></li>
+</ul>
+</li>
+<li><a href="#example-van-der-waals-equation">Example: van der Waals equation</a></li>
+<li><a href="#validating-a-new-model">Validating a new model</a><ul>
+<li><a href="#diagnosing-failures">Diagnosing failures</a></li>
+</ul>
+</li>
+<li><a href="#notes-and-recommendations">Notes and recommendations</a></li>
+</ul>
+</div>
+<h1 id="adding-a-model-with-analytical-derivatives">Adding a model with analytical derivatives</h1>
+<p>The thermodynamic properties in <code>yaeos</code> are calculated from the residual
+Helmholtz energy <script type="math/tex">A^r(\mathbf{n}, V, T)</script> and its derivatives. The most
+direct way to add a new residual Helmholtz model is to implement those
+derivatives analytically. This gives control over shared intermediates and
+performance, but requires checking every derivative, including mixed ones.</p>
+<p>The other available options are:</p>
+<ul>
+<li>Automatic differentiation with hyperdual numbers, described in
+  <a href="autodiff.html">Automatic differentiation</a>.</li>
+<li>Source-to-source differentiation with Tapenade, also described in
+  <a href="autodiff.html">Automatic differentiation</a>.</li>
+</ul>
+<h1 id="the-armodel-contract">The <code>ArModel</code> contract</h1>
+<p>A residual Helmholtz model extends the abstract type <a href="../../../type/armodel.html">ArModel</a> and must
+implement two deferred procedures:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Procedure</th>
+<th style="text-align: left;">Interface</th>
+<th style="text-align: left;">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>residual_helmholtz</code></td>
+<td style="text-align: left;"><a href="../../../interface/abs_residual_helmholtz.html">abs_residual_helmholtz</a></td>
+<td style="text-align: left;">Calculate <script type="math/tex">A^r</script> and its derivatives</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>get_v0</code></td>
+<td style="text-align: left;"><a href="../../../interface/abs_volume_initializer.html">abs_volume_initializer</a></td>
+<td style="text-align: left;">Provide an initial liquid volume for the volume solver</td>
+</tr>
+</tbody>
+</table>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">ArModel</span><span class="p">,</span><span class="w"> </span><span class="n">pr</span>
+
+<span class="k">type</span><span class="p">,</span><span class="w"> </span><span class="k">extends</span><span class="p">(</span><span class="n">ArModel</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">MyModel</span>
+<span class="k">contains</span>
+<span class="k">   procedure</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">residual_helmholtz</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">my_ar</span>
+<span class="w">   </span><span class="k">procedure</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">get_v0</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">my_v0</span>
+<span class="k">end type </span><span class="n">MyModel</span>
+</code></pre></div>
+
+<p>The <code>residual_helmholtz</code> procedure receives the mole numbers <code>n</code>, the total
+volume <code>V</code>, and the temperature <code>T</code>. All the outputs are optional. The following
+derivatives can be requested:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Output</th>
+<th style="text-align: left;">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>Ar</code></td>
+<td style="text-align: left;">
+<script type="math/tex">A^r(\mathbf{n}, V, T)</script>
+</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ArV</code></td>
+<td style="text-align: left;">
+<script type="math/tex">\left(\partial A^r/\partial V\right)_{T,\mathbf{n}}</script>
+</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ArT</code></td>
+<td style="text-align: left;">
+<script type="math/tex">\left(\partial A^r/\partial T\right)_{V,\mathbf{n}}</script>
+</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ArV2</code></td>
+<td style="text-align: left;">
+<script type="math/tex">\left(\partial^2 A^r/\partial V^2\right)_{T,\mathbf{n}}</script>
+</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ArT2</code></td>
+<td style="text-align: left;">
+<script type="math/tex">\left(\partial^2 A^r/\partial T^2\right)_{V,\mathbf{n}}</script>
+</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ArTV</code></td>
+<td style="text-align: left;">
+<script type="math/tex">\partial^2 A^r/\partial T \partial V</script>
+</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Arn(i)</code></td>
+<td style="text-align: left;">
+<script type="math/tex">\left(\partial A^r/\partial n_i\right)_{V,T}</script>
+</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ArVn(i)</code></td>
+<td style="text-align: left;">
+<script type="math/tex">\left(\partial^2 A^r/\partial V \partial n_i\right)_{T}</script>
+</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ArTn(i)</code></td>
+<td style="text-align: left;">
+<script type="math/tex">\left(\partial^2 A^r/\partial T \partial n_i\right)_{V}</script>
+</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Arn2(i,j)</code></td>
+<td style="text-align: left;">
+<script type="math/tex">\left(\partial^2 A^r/\partial n_i \partial n_j\right)_{V,T}</script>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The implementation should calculate only the requested outputs. A common
+pattern is:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">Ar</span><span class="p">))</span><span class="w"> </span><span class="n">Ar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">ArV</span><span class="p">))</span><span class="w"> </span><span class="n">ArV</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">...</span>
+<span class="c">! ...</span>
+</code></pre></div>
+
+<p>The <code>get_v0</code> function supplies a volume scale that the library&rsquo;s solvers use
+to find the liquid root. Read <code>src/models/solvers/volume.f90</code> and
+<code>src/models/residual_helmholtz/ar_models.f90</code> before choosing a value,
+because the two solver families use it differently:</p>
+<ul>
+<li>The generic <code>ArModel%volume</code> routine uses <code>get_v0</code> as the <strong>initial guess</strong>
+  for a Newton solve on volume, multiplied by a small factor. A value near the
+  dense-liquid volume works well.</li>
+<li><code>volume_michelsen</code> uses the returned value as a <strong>covolume</strong> <code>B</code> in the
+  reduced coordinate <code>zeta = B/V</code>, requires <code>0 &lt; B &lt; V</code>, and uses <code>B</code> to bound
+  the search interval.</li>
+</ul>
+<p>In both cases the value must be an <strong>extensive</strong> volume in liters: it has to
+grow with the amount of material, because the solver&rsquo;s volume is a total
+volume. The cubic models return the mixture covolume computed by their mixing
+rule, and PC-SAFT returns the close-packed segment volume
+(<code>src/models/residual_helmholtz/saft/pc_saft.f90</code>). A model whose parameters
+are defined per mole must convert them to a total quantity before returning.</p>
+<p>For a model with a per-component covolume <code>b</code>, the total covolume is the
+natural choice:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">function </span><span class="n">my_v0</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">)</span><span class="w"> </span><span class="k">result</span><span class="p">(</span><span class="n">v0</span><span class="p">)</span>
+<span class="w">   </span><span class="k">class</span><span class="p">(</span><span class="n">MyModel</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">self</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(:)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">P</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">v0</span>
+<span class="w">   </span><span class="n">v0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">b</span><span class="p">)</span>
+<span class="k">end function </span><span class="n">my_v0</span>
+</code></pre></div>
+
+<p>Returning zero, a negative value, or a quantity that does not scale with <code>n</code>
+does not fulfill the contract. A molar value is the classic mistake: it looks
+right on a one-mole basis and then misleads the solver for any other amount.
+A wrong <code>get_v0</code> shows up as a solver that fails to converge or that converges
+to the wrong branch, not as a wrong pressure, so test it directly: the volume
+found for a doubled amount at the same density should also double, and both a
+liquid and a vapor root should be reachable at the same state.</p>
+<h2 id="units-and-differentiation-variables">Units and differentiation variables</h2>
+<p><code>n</code> contains mole amounts [mol], <code>V</code> is total volume [L], and <code>T</code> is in K.
+<code>Ar</code> is in bar L; its derivatives carry those units divided by the units of
+the differentiated variables. Thus <code>ArV</code> is in bar, <code>ArT</code> in bar L/K,
+<code>Arn</code> in bar L/mol, <code>ArV2</code> in bar/L, and <code>Arn2</code> in bar L/mol².
+The array extents are <code>size(n)</code> or <code>size(n), size(n)</code> as appropriate.</p>
+<p>All mole derivatives hold the other mole amounts fixed. If you write the
+equation using mole fractions, differentiate <code>x = n/sum(n)</code> too. Likewise,
+using molar volume internally requires differentiating <code>v = V/sum(n)</code>.
+Never normalize the input amounts and silently change the meaning of the
+derivatives.</p>
+<h2 id="implementation-sequence">Implementation sequence</h2>
+<ol>
+<li>Derive the extensive energy from the intended EOS and confirm the ideal-gas
+   reference. List all composition and temperature dependencies of parameters.</li>
+<li>Create the concrete type and constructor. Allocate parameter arrays, populate
+   the inherited <code>components</code> object, and check input sizes and physical ranges.</li>
+<li>Implement <code>Ar</code> first, then first derivatives, then second/mixed derivatives.
+   Use local intermediates rather than optional outputs as scratch storage.</li>
+<li>Implement the independent <code>get_v0</code> function and test its scaling with <code>n</code>.</li>
+<li>Run the checks below before testing a phase-equilibrium calculation.</li>
+</ol>
+<h1 id="example-van-der-waals-equation">Example: van der Waals equation</h1>
+<p>The van der Waals equation can be written as:</p>
+<p>
+<script type="math/tex; mode=display">
+    P = \frac{nRT}{V - B} - \frac{D}{V^2}
+</script>
+</p>
+<p>with the residual Helmholtz energy:</p>
+<p>
+<script type="math/tex; mode=display">
+    A^r = -nRT \ln\left(1 - \frac{B}{V}\right) - \frac{D}{V}
+</script>
+</p>
+<p>where:</p>
+<p>
+<script type="math/tex; mode=display">
+    n = \sum_i n_i, \qquad
+    B = \sum_i n_i b_i, \qquad
+    D = \sum_i \sum_j n_i n_j a_{ij}
+</script>
+</p>
+<p>and the pure-component parameters are:</p>
+<p>
+<script type="math/tex; mode=display">
+    a_i = \frac{27}{64}\frac{R^2 T_{c,i}^2}{P_{c,i}}, \qquad
+    b_i = \frac{R T_{c,i}}{8 P_{c,i}}
+</script>
+</p>
+<p>The cross parameter is <script type="math/tex">a_{ij} = \sqrt{a_i a_j}(1 - k_{ij})</script>.
+This example assumes <strong>symmetric</strong> <code>kij</code>, temperature-independent <code>aij</code> and <code>b</code>,
+positive critical constants, and matching array sizes. The constructor is kept
+short for teaching; validate those assumptions in production code. In
+particular, <code>Di = 2*matmul(aij,n)</code> uses symmetry. The parameters <code>a</code> and <code>aij</code>
+have units bar L²/mol², <code>b</code> has units L/mol, <code>B</code> is in L, and <code>D</code> is in bar L².</p>
+<p>The following module implements this model analytically:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">module </span><span class="n">vdw_model</span>
+<span class="w">   </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">R</span><span class="p">,</span><span class="w"> </span><span class="n">ArModel</span><span class="p">,</span><span class="w"> </span><span class="n">Substances</span>
+<span class="w">   </span><span class="k">implicit none</span>
+
+<span class="k">   type</span><span class="p">,</span><span class="w"> </span><span class="k">extends</span><span class="p">(</span><span class="n">ArModel</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">VdW</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">a</span><span class="p">(:)</span><span class="w">      </span><span class="c">!! Pure attractive parameters</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">b</span><span class="p">(:)</span><span class="w">      </span><span class="c">!! Pure covolumes</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">aij</span><span class="p">(:,</span><span class="w"> </span><span class="p">:)</span><span class="w"> </span><span class="c">!! Cross attractive parameters</span>
+<span class="w">   </span><span class="k">contains</span>
+<span class="k">      procedure</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">residual_helmholtz</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">vdw_ar</span>
+<span class="w">      </span><span class="k">procedure</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">get_v0</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">vdw_v0</span>
+<span class="w">   </span><span class="k">end type </span><span class="n">VdW</span>
+
+<span class="k">contains</span>
+
+<span class="k">   type</span><span class="p">(</span><span class="n">VdW</span><span class="p">)</span><span class="w"> </span><span class="k">function </span><span class="n">setup_vdw</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span><span class="w"> </span><span class="n">pc</span><span class="p">,</span><span class="w"> </span><span class="n">kij</span><span class="p">)</span><span class="w"> </span><span class="k">result</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">tc</span><span class="p">(:)</span><span class="w"> </span><span class="c">!! Critical temperatures [K]</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">pc</span><span class="p">(:)</span><span class="w"> </span><span class="c">!! Critical pressures [bar]</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">kij</span><span class="p">(:,</span><span class="w"> </span><span class="p">:)</span><span class="w"> </span><span class="c">!! Binary interaction parameters</span>
+
+<span class="w">      </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">i</span>
+<span class="w">      </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">j</span>
+<span class="w">      </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">nc</span>
+
+<span class="w">      </span><span class="n">nc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="n">tc</span><span class="p">)</span>
+
+<span class="w">      </span><span class="n">model</span><span class="p">%</span><span class="n">components</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Substances</span><span class="p">(</span><span class="n">tc</span><span class="o">=</span><span class="n">tc</span><span class="p">,</span><span class="w"> </span><span class="n">pc</span><span class="o">=</span><span class="n">pc</span><span class="p">)</span>
+<span class="w">      </span><span class="n">model</span><span class="p">%</span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="mf">7.0_pr</span><span class="o">/</span><span class="mi">6</span><span class="mf">4.0_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">R</span><span class="o">**</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">tc</span><span class="o">**</span><span class="mi">2</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">pc</span>
+<span class="w">      </span><span class="n">model</span><span class="p">%</span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">R</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">tc</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="mf">8.0_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">pc</span><span class="p">)</span>
+
+<span class="w">      </span><span class="k">allocate</span><span class="p">(</span><span class="n">model</span><span class="p">%</span><span class="n">aij</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span><span class="w"> </span><span class="n">nc</span><span class="p">))</span>
+<span class="w">      </span><span class="k">do </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">nc</span>
+<span class="w">         </span><span class="k">do </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">nc</span>
+<span class="w">            </span><span class="n">model</span><span class="p">%</span><span class="n">aij</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">sqrt</span><span class="p">(</span><span class="n">model</span><span class="p">%</span><span class="n">a</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">model</span><span class="p">%</span><span class="n">a</span><span class="p">(</span><span class="n">j</span><span class="p">))</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">kij</span><span class="p">))</span><span class="w"> </span><span class="k">then</span>
+<span class="k">               </span><span class="n">model</span><span class="p">%</span><span class="n">aij</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">model</span><span class="p">%</span><span class="n">aij</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">kij</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">))</span>
+<span class="w">            </span><span class="k">end if</span>
+<span class="k">         end do</span>
+<span class="k">      end do</span>
+<span class="k">   end function </span><span class="n">setup_vdw</span>
+
+<span class="w">   </span><span class="k">subroutine </span><span class="n">vdw_ar</span><span class="p">(&amp;</span>
+<span class="w">      </span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">Ar</span><span class="p">,</span><span class="w"> </span><span class="n">ArV</span><span class="p">,</span><span class="w"> </span><span class="n">ArT</span><span class="p">,</span><span class="w"> </span><span class="n">ArTV</span><span class="p">,</span><span class="w"> </span><span class="n">ArV2</span><span class="p">,</span><span class="w"> </span><span class="n">ArT2</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="n">Arn</span><span class="p">,</span><span class="w"> </span><span class="n">ArVn</span><span class="p">,</span><span class="w"> </span><span class="n">ArTn</span><span class="p">,</span><span class="w"> </span><span class="n">Arn2</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="p">)</span>
+<span class="w">      </span><span class="k">class</span><span class="p">(</span><span class="n">VdW</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">self</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(:)</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">V</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span>
+
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Ar</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ArV</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ArT</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ArTV</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ArV2</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ArT2</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Arn</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ArVn</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ArTn</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Arn2</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">nt</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">B</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">D</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">L</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Di</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+
+<span class="w">      </span><span class="n">nt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="w">      </span><span class="n">B</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">b</span><span class="p">)</span>
+<span class="w">      </span><span class="n">D</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">dot_product</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="nb">matmul</span><span class="p">(</span><span class="n">self</span><span class="p">%</span><span class="n">aij</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">))</span>
+<span class="w">      </span><span class="n">L</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">log</span><span class="p">(</span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">B</span><span class="o">/</span><span class="n">V</span><span class="p">)</span>
+<span class="w">      </span><span class="n">Di</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">2.0_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">matmul</span><span class="p">(</span><span class="n">self</span><span class="p">%</span><span class="n">aij</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">Ar</span><span class="p">))</span><span class="w"> </span><span class="n">Ar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">nt</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="o">*</span><span class="n">L</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">D</span><span class="o">/</span><span class="n">V</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">ArV</span><span class="p">))</span><span class="w"> </span><span class="n">ArV</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">nt</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="o">*</span><span class="n">B</span><span class="o">/</span><span class="p">(</span><span class="n">V</span><span class="o">*</span><span class="p">(</span><span class="n">V</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">B</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">D</span><span class="o">/</span><span class="n">V</span><span class="o">**</span><span class="mi">2</span>
+
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">ArT</span><span class="p">))</span><span class="w"> </span><span class="n">ArT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">nt</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">L</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">ArTV</span><span class="p">))</span><span class="w"> </span><span class="n">ArTV</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">nt</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">B</span><span class="o">/</span><span class="p">(</span><span class="n">V</span><span class="o">*</span><span class="p">(</span><span class="n">V</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">B</span><span class="p">))</span>
+
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">ArV2</span><span class="p">))</span><span class="w"> </span><span class="k">then</span>
+<span class="k">         </span><span class="n">ArV2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nt</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="o">*</span><span class="n">B</span><span class="o">*</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">V</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">B</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">V</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">V</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">B</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">2</span><span class="o">*</span><span class="n">D</span><span class="o">/</span><span class="n">V</span><span class="o">**</span><span class="mi">3</span>
+<span class="w">      </span><span class="k">end if</span>
+
+<span class="k">      if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">ArT2</span><span class="p">))</span><span class="w"> </span><span class="n">ArT2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">Arn</span><span class="p">))</span><span class="w"> </span><span class="k">then</span>
+<span class="k">         </span><span class="n">Arn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="o">*</span><span class="n">L</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">nt</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="o">*</span><span class="n">self</span><span class="p">%</span><span class="n">b</span><span class="o">/</span><span class="p">(</span><span class="n">V</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">B</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Di</span><span class="o">/</span><span class="n">V</span>
+<span class="w">      </span><span class="k">end if</span>
+
+<span class="k">      if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">ArVn</span><span class="p">))</span><span class="w"> </span><span class="k">then</span>
+<span class="k">         </span><span class="n">ArVn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="o">*</span><span class="n">B</span><span class="o">/</span><span class="p">(</span><span class="n">V</span><span class="o">*</span><span class="p">(</span><span class="n">V</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">B</span><span class="p">))</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">            </span><span class="o">-</span><span class="w"> </span><span class="n">nt</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="o">*</span><span class="n">self</span><span class="p">%</span><span class="n">b</span><span class="o">/</span><span class="p">(</span><span class="n">V</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">B</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Di</span><span class="o">/</span><span class="n">V</span><span class="o">**</span><span class="mi">2</span>
+<span class="w">      </span><span class="k">end if</span>
+
+<span class="k">      if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">ArTn</span><span class="p">))</span><span class="w"> </span><span class="n">ArTn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">R</span><span class="o">*</span><span class="n">L</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">nt</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">self</span><span class="p">%</span><span class="n">b</span><span class="o">/</span><span class="p">(</span><span class="n">V</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">B</span><span class="p">)</span>
+
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">present</span><span class="p">(</span><span class="n">Arn2</span><span class="p">))</span><span class="w"> </span><span class="k">then</span>
+<span class="k">         </span><span class="n">Arn2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="o">*</span><span class="p">(</span><span class="nb">spread</span><span class="p">(</span><span class="n">self</span><span class="p">%</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">))</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">            </span><span class="o">+</span><span class="w"> </span><span class="nb">spread</span><span class="p">(</span><span class="n">self</span><span class="p">%</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">)))</span><span class="o">/</span><span class="p">(</span><span class="n">V</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">B</span><span class="p">)</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">            </span><span class="o">+</span><span class="w"> </span><span class="n">nt</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="o">*</span><span class="nb">spread</span><span class="p">(</span><span class="n">self</span><span class="p">%</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">))</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">            </span><span class="o">*</span><span class="w"> </span><span class="nb">spread</span><span class="p">(</span><span class="n">self</span><span class="p">%</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="n">V</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">B</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">            </span><span class="o">-</span><span class="w"> </span><span class="mf">2.0_pr</span><span class="o">*</span><span class="n">self</span><span class="p">%</span><span class="n">aij</span><span class="o">/</span><span class="n">V</span>
+<span class="w">      </span><span class="k">end if</span>
+<span class="k">   end subroutine </span><span class="n">vdw_ar</span>
+
+<span class="w">   </span><span class="k">function </span><span class="n">vdw_v0</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">)</span><span class="w"> </span><span class="k">result</span><span class="p">(</span><span class="n">v0</span><span class="p">)</span>
+<span class="w">      </span><span class="k">class</span><span class="p">(</span><span class="n">VdW</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">self</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(:)</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">P</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">v0</span>
+
+<span class="w">      </span><span class="n">v0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">b</span><span class="p">)</span>
+<span class="w">   </span><span class="k">end function </span><span class="n">vdw_v0</span>
+
+<span class="k">end module </span><span class="n">vdw_model</span>
+</code></pre></div>
+
+<p>With the model defined, all the inherited <code>ArModel</code> methods are available:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">program </span><span class="n">main</span>
+<span class="w">   </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span>
+<span class="w">   </span><span class="k">use </span><span class="n">vdw_model</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">VdW</span><span class="p">,</span><span class="w"> </span><span class="n">setup_vdw</span>
+<span class="w">   </span><span class="k">implicit none</span>
+
+<span class="k">   type</span><span class="p">(</span><span class="n">VdW</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">tc</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">pc</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">V</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">P</span>
+
+<span class="w">   </span><span class="n">tc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">19</span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="mf">5.0_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">pc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">4</span><span class="mf">6.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="mf">8.0_pr</span><span class="p">]</span>
+
+<span class="w">   </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">setup_vdw</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span><span class="w"> </span><span class="n">pc</span><span class="p">)</span>
+
+<span class="w">   </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.4_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.6_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">V</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_pr</span>
+<span class="w">   </span><span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span>
+
+<span class="w">   </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">)</span>
+<span class="k">end program </span><span class="n">main</span>
+</code></pre></div>
+
+<h1 id="validating-a-new-model">Validating a new model</h1>
+<p>Analytical derivatives are easy to get wrong. The consistency module contains
+<strong>different</strong> tools for numerical comparisons, independent optional-output
+calls, and thermodynamic identities. Add these imports and declarations to the
+example program above, before its executable statements:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos__consistency_armodel</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">ar_consistency</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">   </span><span class="n">numeric_ar_derivatives</span><span class="p">,</span><span class="w"> </span><span class="n">individual_ar_calls</span>
+
+<span class="c">! Declarations (after implicit none and the other declarations):</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Ar_num</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ArV_num</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ArV_exact</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">eq31</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">eq33</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">eq34</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">eq36</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">eq37</span>
+<span class="kt">logical</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">passed</span>
+</code></pre></div>
+
+<p>Then, after initializing <code>model, n, V, T</code>, run:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">residual_helmholtz</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">ArV</span><span class="o">=</span><span class="n">ArV_exact</span><span class="p">)</span>
+<span class="k">call </span><span class="n">numeric_ar_derivatives</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">   </span><span class="n">d_n</span><span class="o">=</span><span class="mf">1.e-5_pr</span><span class="p">,</span><span class="w"> </span><span class="n">d_v</span><span class="o">=</span><span class="mf">1.e-5_pr</span><span class="p">,</span><span class="w"> </span><span class="n">d_t</span><span class="o">=</span><span class="mf">1.e-2_pr</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">   </span><span class="n">Ar</span><span class="o">=</span><span class="n">Ar_num</span><span class="p">,</span><span class="w"> </span><span class="n">ArV</span><span class="o">=</span><span class="n">ArV_num</span><span class="p">)</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ArV: implemented, numerical&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ArV_exact</span><span class="p">,</span><span class="w"> </span><span class="n">ArV_num</span>
+
+<span class="k">call </span><span class="n">individual_ar_calls</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">passed</span><span class="p">)</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Independent optional outputs agree:&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">passed</span>
+
+<span class="k">call </span><span class="n">ar_consistency</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">   </span><span class="n">eq31</span><span class="o">=</span><span class="n">eq31</span><span class="p">,</span><span class="w"> </span><span class="n">eq33</span><span class="o">=</span><span class="n">eq33</span><span class="p">,</span><span class="w"> </span><span class="n">eq34</span><span class="o">=</span><span class="n">eq34</span><span class="p">,</span><span class="w"> </span><span class="n">eq36</span><span class="o">=</span><span class="n">eq36</span><span class="p">,</span><span class="w"> </span><span class="n">eq37</span><span class="o">=</span><span class="n">eq37</span><span class="p">)</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Identity residuals:&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">eq31</span><span class="p">,</span><span class="w"> </span><span class="nb">maxval</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">eq33</span><span class="p">)),</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">   </span><span class="nb">maxval</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">eq34</span><span class="p">)),</span><span class="w"> </span><span class="n">eq36</span><span class="p">,</span><span class="w"> </span><span class="n">eq37</span>
+</code></pre></div>
+
+<p><code>numeric_ar_derivatives</code> uses central differences of the primal energy. <code>Ar</code>
+is a required output, even when only a derivative is of interest. Request the
+other derivatives by keyword and compare each in turn. The example step sizes
+are starting choices in mol, L, and K, not universal tolerances. Try several
+steps: truncation error dominates for large steps and cancellation for very
+small ones. All perturbed states must remain in the equation&rsquo;s domain; do not
+let a central mole perturbation produce negative amounts.</p>
+<p><code>individual_ar_calls</code> checks whether each output agrees with the same output
+requested alongside all the others. It does not check correctness against an
+independent equation, and its comparisons use a strict absolute machine-epsilon
+threshold. If it fails, inspect actual differences and optional-output handling
+before deciding whether this is roundoff or a defect.</p>
+<p><code>ar_consistency</code> returns identity residuals that should approach zero; it does
+<strong>not</strong> print diagnostics or compare against finite differences. Calling it
+without <code>eqXX</code> outputs produces no visible report. The outputs test the
+fugacity/Gibbs relation (<code>eq31</code>), composition-derivative symmetry (<code>eq33</code>), a
+Gibbs-Duhem sum (<code>eq34</code>), and pressure (<code>eq36</code>) and temperature (<code>eq37</code>)
+identities. Their units and scales differ, so use scale-aware tolerances rather
+than a single raw threshold. Start at positive pressure away from spinodals:
+the helper evaluates fugacity expressions involving <code>log(Z)</code> and pressure-based
+sensitivities, which can be undefined or ill-conditioned elsewhere.</p>
+<p>Finally, verify <code>Ar(lambda*n, lambda*V, T) = lambda*Ar(n,V,T)</code> and unchanged
+pressure for several positive <code>lambda</code>. A one-mole test alone cannot reveal
+all missing total-amount factors. Run across compositions and densities; only
+then test liquid/vapor volume roots and equilibrium calculations.</p>
+<h2 id="diagnosing-failures">Diagnosing failures</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Symptom</th>
+<th style="text-align: left;">First things to check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Pressure differs by a constant factor</td>
+<td style="text-align: left;">bar versus Pa, L versus m³, and molar versus total energy</td>
+</tr>
+<tr>
+<td style="text-align: left;">Pressure is correct but composition derivatives fail</td>
+<td style="text-align: left;">Differentiation of <code>sum(n)</code>, mole fractions, and mixing rules</td>
+</tr>
+<tr>
+<td style="text-align: left;">Temperature derivatives fail</td>
+<td style="text-align: left;">Missing temperature dependence of parameters, or differentiating a reduced energy without its <code>RT</code> factor</td>
+</tr>
+<tr>
+<td style="text-align: left;">Hessian is asymmetric</td>
+<td style="text-align: left;">Index order, asymmetric interaction inputs, and missing mixed terms</td>
+</tr>
+<tr>
+<td style="text-align: left;">Outputs fail only when requested alone</td>
+<td style="text-align: left;">Reading absent optional arguments or relying on another output being present</td>
+</tr>
+<tr>
+<td style="text-align: left;">NaN near high density</td>
+<td style="text-align: left;"><code>V &lt;= B</code>, invalid logarithms, or an unsuitable volume initializer</td>
+</tr>
+<tr>
+<td style="text-align: left;">Flash fails after local checks pass</td>
+<td style="text-align: left;">Root selection, initial states, model validity, and conditioning near critical points</td>
+</tr>
+</tbody>
+</table>
+<p>Consistency is necessary but not sufficient: a consistently differentiated
+wrong equation can pass identities. Retain independent equation/parameter
+checks and comparisons to justified reference data.</p>
+<h1 id="notes-and-recommendations">Notes and recommendations</h1>
+<ul>
+<li>Follow the derivative naming convention from the
+  <a href="../../contributing/styleguide.html">style guide</a>: <code>ArV</code>, <code>ArT</code>, <code>ArV2</code>,
+  <code>ArTV</code>, <code>Arn</code>, <code>ArVn</code>, <code>ArTn</code>, and <code>Arn2</code>.</li>
+<li>Use the <code>R</code> constant from <code>yaeos__constants</code>; it is consistent with the
+  library units (bar, L, K, mol).</li>
+<li>Every model must carry a <code>Substances</code> object in <code>components</code>. This object
+  stores the critical constants, acentric factors, and critical volumes of the
+  components.</li>
+<li>If the model has an analytical covolume, implementing <code>get_v0</code> as the total
+  covolume usually improves the liquid-root volume calculation.</li>
+<li>The optional outputs are independent. Avoid computing derivatives that were
+  not requested when the calculation is expensive.</li>
+<li>If the model is intended for phase-equilibrium calculations, all the second
+  derivatives listed above are required.</li>
+</ul>
     </div>
   </div>
       <hr>
@@ -175,14 +695,14 @@
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

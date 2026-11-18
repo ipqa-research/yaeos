@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../../../favicon.png">
 
     <title>Flash calculations &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../../../css/local.css" rel="stylesheet">
     <link href="../../../css/pygments.css" rel="stylesheet">
+      <link href="../../../css/user.css" rel="stylesheet">
     <script src="../../../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -92,7 +93,7 @@
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb justify-content-end mb-0">
                 <li class="breadcrumb-item"><a href='../../index.html'>User documentation</a></li>
-                <li class="breadcrumb-item"><a href='../index.html'>Using yaeos</a></li>
+                <li class="breadcrumb-item"><a href='../index.html'>Getting started</a></li>
                 <li class="breadcrumb-item"><a href='index.html'>Phase Equilibrium</a></li>
               <li class="breadcrumb-item active" aria-current="page">Flash calculations</li>
             </ol>
@@ -112,9 +113,10 @@
           </ul>
           <hr>
           <nav class="nav nav-pills flex-column">
-              <a class="nav-link" href="../index.html">Using yaeos</a>
+              <a class="nav-link" href="../index.html">Getting started</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../eos/index.html">Equations of State</a>
+                                <a class="nav-link" href="../fundamentals.html">Thermodynamics essentials</a>
+              <a class="nav-link" href="../eos/index.html">Equations of State</a>
                 <nav class="nav nav-pills flex-column">
                                 <a class="nav-link" href="../eos/cubics/index.html">Cubics</a>
                 <nav class="nav nav-pills flex-column">
@@ -122,27 +124,33 @@
               <a class="nav-link" href="../eos/cubics/mixing.html">Mixing Rules</a>
 
                 </nav>
+              <a class="nav-link" href="../eos/gerg2008.html">GERG2008</a>
+              <a class="nav-link" href="../eos/gerg2008_parameters.html">GERG2008 parameters</a>
+              <a class="nav-link" href="../eos/pc_saft.html">PC-SAFT</a>
 
                 </nav>
               <a class="nav-link" href="../excessmodels/index.html">Gibbs Excess Models</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../excessmodels/nrtl-hv.html">NRTL-HV</a>
-              <a class="nav-link" href="../excessmodels/nrtl.html">NRTL</a>
+                                <a class="nav-link" href="../excessmodels/nrtl.html">NRTL</a>
+              <a class="nav-link" href="../excessmodels/nrtl-hv.html">NRTL-HV</a>
+              <a class="nav-link" href="../excessmodels/uniquac.html">UNIQUAC</a>
               <a class="nav-link" href="../excessmodels/unifac_models/index.html">UNIFAC Models</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
+                                <a class="nav-link" href="../excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
+              <a class="nav-link" href="../excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
               <a class="nav-link" href="../excessmodels/unifac_models/psrk.html">UNIFAC-PSRK</a>
-              <a class="nav-link" href="../excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
 
                 </nav>
-              <a class="nav-link" href="../excessmodels/uniquac.html">UNIQUAC</a>
 
                 </nav>
               <a class="nav-link" href="index.html">Phase Equilibrium</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="envelopes.html">Phase envelopes</a>
-              <a class="nav-link active disabled" href="flash.html">Flash calculations</a>
+                                <a class="nav-link active disabled" href="flash.html">Flash calculations</a>
               <a class="nav-link" href="saturation_points.html">Saturation Points</a>
+              <a class="nav-link" href="envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="stability.html">Stability analysis</a>
+              <a class="nav-link" href="critical.html">Critical points</a>
+              <a class="nav-link" href="multiphase.html">Multiphase flash</a>
 
                 </nav>
               <a class="nav-link" href="../newmodels/index.html">Adding your own models</a>
@@ -153,18 +161,415 @@
                 </nav>
 
                 </nav>
+              <a class="nav-link" href="../../python-api/index.html">Python-API</a>
+              <a class="nav-link" href="../../developer/index.html">Becoming a yaeos developer</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../developer/architecture.html">Architecture and repository map</a>
+              <a class="nav-link" href="../../developer/workflow.html">Developer workflow</a>
+              <a class="nav-link" href="../../developer/fortran.html">Working in the Fortran core</a>
+              <a class="nav-link" href="../../developer/numerics.html">Working on numerical algorithms</a>
+              <a class="nav-link" href="../../developer/c_interface.html">C interface layer</a>
+              <a class="nav-link" href="../../developer/python_interface.html">Python interface layer</a>
+              <a class="nav-link" href="../../developer/testing.html">Tests and numerical validation</a>
+              <a class="nav-link" href="../../developer/walkthrough.html">An end-to-end change</a>
+
+                </nav>
               <a class="nav-link" href="../../contributing/index.html">Contributing</a>
                 <nav class="nav nav-pills flex-column">
                                 <a class="nav-link" href="../../contributing/styleguide.html">Style guide</a>
 
                 </nav>
-              <a class="nav-link" href="../../python-api/index.html">Python-API</a>
           </nav>
         </div>
       </div>
 
     <div class="col-9" id='text'>
-      
+      <div class="toc">
+<ul>
+<li><a href="#flash-calculations">Flash calculations</a></li>
+<li><a href="#theory">Theory</a></li>
+<li><a href="#flash">flash</a><ul>
+<li><a href="#pt-flash">PT flash</a></li>
+<li><a href="#vt-flash">VT flash</a></li>
+<li><a href="#initial-k-factors">Initial K-factors</a></li>
+<li><a href="#flash_no_beta_limits">flash_no_beta_limits</a></li>
+</ul>
+</li>
+<li><a href="#second-order-flash">Second-order flash</a></li>
+<li><a href="#flash-with-activity-coefficient-models">Flash with activity-coefficient models</a></li>
+<li><a href="#multiphase-flash">Multiphase flash</a></li>
+<li><a href="#practical-notes">Practical notes</a></li>
+</ul>
+</div>
+<h1 id="flash-calculations">Flash calculations</h1>
+<p>Flash calculations determine how a feed of known composition splits into two or
+more equilibrium phases at specified conditions. They are one of the most common
+phase-equilibrium calculations in process and reservoir modelling.</p>
+<p>In <code>yaeos</code>, flash routines return the <a href="../../../type/equilibriumstate.html">EquilibriumState</a> derived type, which
+contains the phase compositions, molar volumes, pressure, temperature, phase
+fraction, and the number of iterations used.</p>
+<p>The two main specifications are:</p>
+<ul>
+<li>
+<script type="math/tex">zPT \rightarrow x, y, \beta</script>: <code>flash</code> with <code>p_spec</code> and <code>T</code>.</li>
+<li>
+<script type="math/tex">zVT \rightarrow x, y, \beta, P</script>: <code>flash</code> with <code>v_spec</code> and <code>T</code>.</li>
+</ul>
+<h1 id="theory">Theory</h1>
+<p>A two-phase flash solves the isofugacity condition and the mass balance
+simultaneously. With K-factors <script type="math/tex">K_i = y_i/x_i</script>, the mass balance gives the
+Rachford-Rice equation:</p>
+<p>
+<script type="math/tex; mode=display">
+   \sum_{i=1}^{N_c} \frac{z_i\,(K_i-1)}{1+\beta\,(K_i-1)} = 0
+</script>
+</p>
+<p>which is solved for the light-phase fraction <script type="math/tex">\beta</script>. The K-factors are updated
+from the fugacity coefficients:</p>
+<p>
+<script type="math/tex; mode=display">
+   K_i = \frac{\hat{\phi}_i^L}{\hat{\phi}_i^V}
+</script>
+</p>
+<p>Here <code>z</code> is the normalized feed composition, <code>x</code> and <code>y</code> are the heavy- and
+light-phase compositions, and <code>beta</code> is the mole fraction of feed in the <code>y</code>
+phase. Once <code>K</code> and <code>beta</code> are known,</p>
+<p>
+<script type="math/tex; mode=display">
+ x_i=\frac{z_i}{1+\beta(K_i-1)}, \qquad y_i=K_i x_i.
+</script>
+</p>
+<p>Both phase compositions must sum to one. The balance
+<code>z = (1-beta)*x + beta*y</code> must hold component by component, not just in total.</p>
+<p>For an <code>ArModel</code>, fugacity coefficients are evaluated from the equation of
+state. For a <code>GeModel</code>, these flash routines use activity coefficients in
+both phases: this is a liquid-liquid calculation, not a vapor-liquid flash
+with automatically supplied pure-component vapor pressures.</p>
+<h1 id="flash"><code>flash</code></h1>
+<p>The <a href="../../../proc/flash.html">flash</a> function uses successive substitution. Its interface is:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">type</span><span class="p">(</span><span class="n">EquilibriumState</span><span class="p">)</span><span class="w"> </span><span class="k">function </span><span class="n">flash</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">v_spec</span><span class="p">,</span><span class="w"> </span><span class="n">p_spec</span><span class="p">,</span><span class="w"> </span><span class="n">k0</span><span class="p">,</span><span class="w"> </span><span class="n">iters</span><span class="p">)</span>
+<span class="w">   </span><span class="k">class</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">z</span><span class="p">(:)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">v_spec</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">p_spec</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">k0</span><span class="p">(:)</span>
+<span class="w">   </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">optional</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">iters</span>
+<span class="k">end function </span><span class="n">flash</span>
+</code></pre></div>
+
+<p>For an <code>ArModel</code>, provide <strong>exactly one</strong> of <code>p_spec</code> and <code>v_spec</code>. Pass
+normalized mole fractions <code>z</code>; unlike saturation routines, this routine does
+not normalize the feed for you. For a <code>GeModel</code>, omit both specifications and
+provide <code>k0</code>. The result is a
+<code>type(EquilibriumState)</code> with:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>kind</code></td>
+<td style="text-align: left;"><code>"split"</code> for an accepted split, <code>"failed"</code> for a trivial solution or iteration failure</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>x</code></td>
+<td style="text-align: left;">Heavy-phase mole fractions</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>y</code></td>
+<td style="text-align: left;">Light-phase mole fractions</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Vx</code></td>
+<td style="text-align: left;">Heavy-phase molar volume [L/mol]</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Vy</code></td>
+<td style="text-align: left;">Light-phase molar volume [L/mol]</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>T</code></td>
+<td style="text-align: left;">Temperature [K]</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>P</code></td>
+<td style="text-align: left;">Pressure [bar]</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>beta</code></td>
+<td style="text-align: left;">Mole fraction of the light phase</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>iters</code></td>
+<td style="text-align: left;">Iterations used</td>
+</tr>
+</tbody>
+</table>
+<h2 id="pt-flash">PT flash</h2>
+<div class="codehilite"><pre><span></span><code><span class="k">program </span><span class="n">pt_flash</span>
+<span class="w">   </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">ArModel</span><span class="p">,</span><span class="w"> </span><span class="n">EquilibriumState</span><span class="p">,</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">,</span><span class="w"> </span><span class="n">flash</span>
+<span class="w">   </span><span class="k">use</span><span class="p">,</span><span class="w"> </span><span class="k">intrinsic</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ieee_arithmetic</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">ieee_is_finite</span>
+<span class="w">   </span><span class="k">implicit none</span>
+
+<span class="k">   class</span><span class="p">(</span><span class="n">ArModel</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">EquilibriumState</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="k">result</span>
+<span class="k">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">tc</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">pc</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">w</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">z</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">P</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">balance</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">lnphi_x</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">lnphi_y</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">iters</span>
+
+<span class="w">   </span><span class="n">tc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">19</span><span class="mf">0.564_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="mf">5.12_pr</span><span class="p">]</span><span class="w">  </span><span class="c">! Methane / n-butane</span>
+<span class="w">   </span><span class="n">pc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">4</span><span class="mf">5.99_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="mf">7.96_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.0115478_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.200164_pr</span><span class="p">]</span>
+
+<span class="w">   </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span><span class="w"> </span><span class="n">pc</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">)</span>
+
+<span class="w">   </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.4_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.6_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">29</span><span class="mf">4.0_pr</span>
+<span class="w">   </span><span class="n">P</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">6</span><span class="mf">0.0_pr</span>
+
+<span class="w">   </span><span class="c">! Supply iters explicitly; see the implementation note below.</span>
+<span class="w">   </span><span class="k">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flash</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">p_spec</span><span class="o">=</span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">iters</span><span class="o">=</span><span class="n">iters</span><span class="p">)</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">result</span><span class="p">%</span><span class="nb">kind</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="s2">&quot;split&quot;</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">      print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;No accepted split; check stability and initialization.&quot;</span>
+<span class="w">      </span><span class="k">stop</span>
+<span class="k">   end if</span>
+<span class="k">   if</span><span class="w"> </span><span class="p">(.</span><span class="nb">not</span><span class="p">.</span><span class="w"> </span><span class="k">all</span><span class="p">(</span><span class="n">ieee_is_finite</span><span class="p">(</span><span class="k">result</span><span class="p">%</span><span class="n">x</span><span class="p">)))</span><span class="w"> </span><span class="k">error stop</span><span class="w"> </span><span class="s2">&quot;Nonfinite x&quot;</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(.</span><span class="nb">not</span><span class="p">.</span><span class="w"> </span><span class="k">all</span><span class="p">(</span><span class="n">ieee_is_finite</span><span class="p">(</span><span class="k">result</span><span class="p">%</span><span class="n">y</span><span class="p">)))</span><span class="w"> </span><span class="k">error stop</span><span class="w"> </span><span class="s2">&quot;Nonfinite y&quot;</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(.</span><span class="nb">not</span><span class="p">.</span><span class="w"> </span><span class="n">ieee_is_finite</span><span class="p">(</span><span class="k">result</span><span class="p">%</span><span class="n">beta</span><span class="p">))</span><span class="w"> </span><span class="k">error stop</span><span class="w"> </span><span class="s2">&quot;Nonfinite beta&quot;</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">any</span><span class="p">(</span><span class="k">result</span><span class="p">%</span><span class="n">x</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mf">0.0_pr</span><span class="p">))</span><span class="w"> </span><span class="k">error stop</span><span class="w"> </span><span class="s2">&quot;Nonpositive x&quot;</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">any</span><span class="p">(</span><span class="k">result</span><span class="p">%</span><span class="n">y</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mf">0.0_pr</span><span class="p">))</span><span class="w"> </span><span class="k">error stop</span><span class="w"> </span><span class="s2">&quot;Nonpositive y&quot;</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">result</span><span class="p">%</span><span class="n">beta</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0.0_pr</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="k">result</span><span class="p">%</span><span class="n">beta</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="p">)</span><span class="w"> </span><span class="k">error stop</span><span class="w"> </span><span class="s2">&quot;Invalid beta&quot;</span>
+
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;beta = &quot;</span><span class="p">,</span><span class="w"> </span><span class="k">result</span><span class="p">%</span><span class="n">beta</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;x = &quot;</span><span class="p">,</span><span class="w"> </span><span class="k">result</span><span class="p">%</span><span class="n">x</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;y = &quot;</span><span class="p">,</span><span class="w"> </span><span class="k">result</span><span class="p">%</span><span class="n">y</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Composition sums: &quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="k">result</span><span class="p">%</span><span class="n">x</span><span class="p">),</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="k">result</span><span class="p">%</span><span class="n">y</span><span class="p">)</span>
+<span class="w">   </span><span class="n">balance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="mf">1.0_pr</span><span class="o">-</span><span class="k">result</span><span class="p">%</span><span class="n">beta</span><span class="p">)</span><span class="o">*</span><span class="k">result</span><span class="p">%</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="k">result</span><span class="p">%</span><span class="n">beta</span><span class="o">*</span><span class="k">result</span><span class="p">%</span><span class="n">y</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">z</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Maximum component-balance error: &quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">maxval</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">balance</span><span class="p">))</span>
+<span class="w">   </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">lnphi_pt</span><span class="p">(</span><span class="k">result</span><span class="p">%</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">root_type</span><span class="o">=</span><span class="s2">&quot;liquid&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">lnPhi</span><span class="o">=</span><span class="n">lnphi_x</span><span class="p">)</span>
+<span class="w">   </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">lnphi_pt</span><span class="p">(</span><span class="k">result</span><span class="p">%</span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">root_type</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">lnPhi</span><span class="o">=</span><span class="n">lnphi_y</span><span class="p">)</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Maximum log-fugacity mismatch: &quot;</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="nb">maxval</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="nb">log</span><span class="p">(</span><span class="k">result</span><span class="p">%</span><span class="n">x</span><span class="p">)</span><span class="o">+</span><span class="n">lnphi_x</span><span class="o">-</span><span class="nb">log</span><span class="p">(</span><span class="k">result</span><span class="p">%</span><span class="n">y</span><span class="p">)</span><span class="o">-</span><span class="n">lnphi_y</span><span class="p">))</span>
+<span class="k">end program </span><span class="n">pt_flash</span>
+</code></pre></div>
+
+<p>The last two diagnostics should be small relative to your required numerical
+accuracy. They test balance and phase equilibrium, not global stability. The
+parameters here illustrate the API; they are not a fitted mixture data set.</p>
+<p><strong>Current implementation note:</strong> <code>flash</code> declares <code>iters</code> optional but uses it
+as its working iteration counter without a presence check. Pass a declared
+integer with <code>iters=iters</code> in calls to this routine. Invalid combinations of
+specifications can return early without a usable result; validate inputs before
+calling rather than relying on <code>kind</code> to catch API misuse.</p>
+<h2 id="vt-flash">VT flash</h2>
+<p>Fragment replacing the call in the PT program above:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flash</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">v_spec</span><span class="o">=</span><span class="mf">1.0_pr</span><span class="p">,</span><span class="w"> </span><span class="n">iters</span><span class="o">=</span><span class="n">iters</span><span class="p">)</span>
+</code></pre></div>
+
+<p>The specified volume is <strong>feed molar volume</strong>, not vessel volume. Divide vessel
+volume by total feed moles first. The calculated pressure also satisfies
+<code>v_spec = (1-beta)*Vx + beta*Vy</code>. As in the PT case, the routine seeks a
+two-phase split and is not a general single-phase state classifier.</p>
+<h2 id="initial-k-factors">Initial K-factors</h2>
+<p>By default, the flash initializes the K-factors with the Wilson correlation for
+<code>ArModel</code> models. A better initial estimate can be supplied with <code>k0 = y/x</code>:</p>
+<p>Fragment (add the import and declaration before executable statements):</p>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">k_wilson</span>
+
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">k0</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">k0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">k_wilson</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="o">=</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="o">=</span><span class="n">P</span><span class="p">)</span>
+<span class="k">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flash</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">p_spec</span><span class="o">=</span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">k0</span><span class="o">=</span><span class="n">k0</span><span class="p">,</span><span class="w"> </span><span class="n">iters</span><span class="o">=</span><span class="n">iters</span><span class="p">)</span>
+</code></pre></div>
+
+<p>K-factor initialization is especially important near phase boundaries, for
+liquid-liquid splits, and for strongly non-ideal systems.</p>
+<p>Note that the flash does not use <code>k0</code> unchanged: before the iteration starts it
+adjusts the K-factors (scaling them by 1.1 or 0.9) until the Rachford-Rice
+equation has a solution with <script type="math/tex">0<\beta<1</script>. This modifies an internal copy,
+not the caller&rsquo;s <code>k0</code> array. It helps initialize the split equations but does
+not establish that the feed is actually two-phase. A genuinely single-phase
+feed can be pushed toward a trial split; use stability analysis rather than
+treating this adjustment as a phase-classification test.</p>
+<h2 id="flash_no_beta_limits"><code>flash_no_beta_limits</code></h2>
+<p><a href="../../../proc/flash_no_beta_limits.html">flash_no_beta_limits</a> is an advanced variant intended for unconstrained
+phase fractions. Two caveats apply to the current implementation: the required
+<code>beta0</code> argument is accepted but never used to initialize the working phase
+fraction, so the first Rachford-Rice solve starts from an undefined value; and
+the routine prints its iteration history to standard output. Do not rely on
+recovery from an uninitialized starting value; the behavior is not defined by
+the interface. Signature illustration only (not a
+recommended runnable example):</p>
+<div class="codehilite"><pre><span></span><code><span class="k">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flash_no_beta_limits</span><span class="p">(</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">   </span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">beta0</span><span class="o">=</span><span class="mf">0.5_pr</span><span class="p">,</span><span class="w"> </span><span class="n">p_spec</span><span class="o">=</span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">k0</span><span class="o">=</span><span class="n">k0</span><span class="p">,</span><span class="w"> </span><span class="n">iters</span><span class="o">=</span><span class="n">iters</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">   </span><span class="p">)</span>
+</code></pre></div>
+
+<p>Even in an unconstrained formulation, a fraction outside <code>[0,1]</code> is not a
+physical phase amount for the specified feed.</p>
+<h1 id="second-order-flash">Second-order flash</h1>
+<p><a href="../../../proc/flash_second_order.html">flash_second_order</a> calculates a two-phase split at fixed temperature and
+pressure by directly minimizing the reduced Gibbs energy with a second-order
+Newton method:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">type</span><span class="p">(</span><span class="n">EquilibriumState</span><span class="p">)</span><span class="w"> </span><span class="k">function </span><span class="n">flash_second_order</span><span class="p">(</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">   </span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">P_spec</span><span class="p">,</span><span class="w"> </span><span class="n">k0</span><span class="p">,</span><span class="w"> </span><span class="n">light_root</span><span class="p">,</span><span class="w"> </span><span class="n">iters</span><span class="p">,</span><span class="w"> </span><span class="n">tol</span><span class="p">,</span><span class="w"> </span><span class="n">max_iters</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">   </span><span class="p">)</span><span class="w"> </span><span class="k">result</span><span class="p">(</span><span class="n">flash</span><span class="p">)</span>
+</code></pre></div>
+
+<p>The main arguments are:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Argument</th>
+<th style="text-align: left;">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>model</code></td>
+<td style="text-align: left;"><code>ArModel</code> or <code>GeModel</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>z</code></td>
+<td style="text-align: left;">Global mole fractions</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>T</code></td>
+<td style="text-align: left;">Temperature [K]</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>P_spec</code></td>
+<td style="text-align: left;">Pressure [bar]</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>k0</code></td>
+<td style="text-align: left;">Optional initial K-factors</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>light_root</code></td>
+<td style="text-align: left;"><code>"stable"</code> (default) or <code>"liquid"</code> for <code>ArModel</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>iters</code></td>
+<td style="text-align: left;">Iterations used</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>tol</code></td>
+<td style="text-align: left;">Gradient-norm tolerance, default <code>1e-8</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>max_iters</code></td>
+<td style="text-align: left;">Maximum iterations, default <code>200</code></td>
+</tr>
+</tbody>
+</table>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">flash_second_order</span>
+
+<span class="k">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flash_second_order</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">)</span>
+</code></pre></div>
+
+<p>For an <code>ArModel</code>, the heavy phase is always evaluated with the liquid root and
+the light phase with the stable root. Use <code>light_root="liquid"</code> for a
+liquid-liquid split. For a <code>GeModel</code>, both phases are described by activity
+coefficients.</p>
+<p>The second-order method is an alternative when successive substitution stalls,
+not a guarantee of convergence or of the globally stable split. Check <code>kind</code>,
+balances, and stability again. It rejects an excessive final gradient or
+identical compositions; failure is reported with <code>kind="failed"</code> and <code>P=-1</code>.
+Use strictly positive normalized feeds: the scaled variables and logarithms
+in this implementation divide by each <code>z(i)</code>.</p>
+<h1 id="flash-with-activity-coefficient-models">Flash with activity-coefficient models</h1>
+<p><code>flash</code> accepts <a href="../../../type/gemodel.html">GeModel</a> objects such as <a href="../../../type/nrtl.html">NRTL</a>, <a href="../../../type/uniquac.html">UNIQUAC</a>, or
+<a href="../../../type/unifac.html">UNIFAC</a>. In that case the pressure and volume cannot be specified, and an
+initial guess for the K-factors is mandatory:</p>
+<p>Complete liquid-liquid example:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">program </span><span class="n">activity_flash</span>
+<span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">UNIFAC</span><span class="p">,</span><span class="w"> </span><span class="n">Groups</span><span class="p">,</span><span class="w"> </span><span class="n">setup_unifac</span><span class="p">,</span><span class="w"> </span><span class="n">EquilibriumState</span>
+<span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">flash</span><span class="p">,</span><span class="w"> </span><span class="n">min_tpd</span>
+<span class="k">implicit none</span>
+
+<span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">nc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span>
+
+<span class="k">type</span><span class="p">(</span><span class="n">UNIFAC</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="k">type</span><span class="p">(</span><span class="n">Groups</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">molecules</span><span class="p">(</span><span class="n">nc</span><span class="p">)</span>
+<span class="k">type</span><span class="p">(</span><span class="n">EquilibriumState</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="k">result</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="n">nc</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">w</span><span class="p">(</span><span class="n">nc</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">P</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">mintpd</span>
+<span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">iters</span>
+
+<span class="c">! Define the groups of each molecule</span>
+<span class="n">molecules</span><span class="p">(</span><span class="mi">1</span><span class="p">)%</span><span class="n">groups_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="p">]</span>
+<span class="n">molecules</span><span class="p">(</span><span class="mi">1</span><span class="p">)%</span><span class="n">number_of_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">molecules</span><span class="p">(</span><span class="mi">2</span><span class="p">)%</span><span class="n">groups_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">]</span>
+<span class="n">molecules</span><span class="p">(</span><span class="mi">2</span><span class="p">)%</span><span class="n">number_of_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">]</span>
+
+<span class="n">molecules</span><span class="p">(</span><span class="mi">3</span><span class="p">)%</span><span class="n">groups_ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">16</span><span class="p">]</span>
+<span class="n">molecules</span><span class="p">(</span><span class="mi">3</span><span class="p">)%</span><span class="n">number_of_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">setup_unifac</span><span class="p">(</span><span class="n">molecules</span><span class="p">)</span>
+
+<span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.2_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.1_pr</span><span class="p">]</span>
+<span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">25</span><span class="mf">0.0_pr</span>
+<span class="n">P</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_pr</span>
+
+<span class="c">! Find the composition with the minimum tangent-plane distance</span>
+<span class="k">call </span><span class="n">min_tpd</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="o">=</span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="o">=</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">mintpd</span><span class="o">=</span><span class="n">mintpd</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">)</span>
+
+<span class="c">! Use the incipient-phase composition as the initial K-factors</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">mintpd</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="o">-</span><span class="mf">1.0e-6_pr</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="k">   result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flash</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">k0</span><span class="o">=</span><span class="n">w</span><span class="o">/</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">iters</span><span class="o">=</span><span class="n">iters</span><span class="p">)</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">result</span><span class="p">%</span><span class="nb">kind</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;split&quot;</span><span class="p">)</span><span class="w"> </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="k">result</span><span class="p">%</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="k">result</span><span class="p">%</span><span class="n">y</span><span class="p">,</span><span class="w"> </span><span class="k">result</span><span class="p">%</span><span class="n">beta</span>
+<span class="k">else</span>
+<span class="k">   print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;No negative TPD found in this search.&quot;</span>
+<span class="k">end if</span>
+<span class="k">end program </span><span class="n">activity_flash</span>
+</code></pre></div>
+
+<p>For <code>GeModel</code>, <code>flash</code> uses the activity coefficients directly and solves only
+the isofugacity and mass-balance equations. A stability analysis with
+<a href="../../../proc/min_tpd.html">min_tpd</a> is the recommended initialization strategy. The composition and
+phase fraction of the result are meaningful; the pressure and the two phase
+volumes are <strong>not</strong> set by the routine and contain undefined values, so do not
+read them. Omitting <code>k0</code> for a <code>GeModel</code> stops the program with an error
+message rather than returning a failed result.</p>
+<h1 id="multiphase-flash">Multiphase flash</h1>
+<p><a href="../../../proc/pt_mp_flash.html">pt_mp_flash</a> is a limited automatic wrapper for <code>ArModel</code> systems. Its
+<code>np</code> counts main phases <strong>excluding</strong> a reference phase; <code>np=1</code> represents
+two phases, not one. Read <a href="multiphase.html">Multiphase flash</a> before using it:
+the current implementation has incomplete single-phase handling and does not
+repeat phase addition until global stability is established.</p>
+<h1 id="practical-notes">Practical notes</h1>
+<ul>
+<li>A failed flash means no accepted two-phase result was obtained. It may reflect
+  a single-phase feed, poor initialization, a trivial solution, or numerical
+  failure. It does <strong>not</strong> establish that the feed is stable.</li>
+<li>Always check <code>result%kind</code> before using the compositions.</li>
+<li>Use <code>k0</code> from a previous, nearby calculation when building tables or phase
+  envelopes. This reduces iterations and avoids convergence to a trivial
+  solution.</li>
+<li>For liquid-liquid equilibria, initialize with a stability analysis and
+  consider <code>flash_second_order(..., light_root="liquid")</code>.</li>
+<li>Never use compositions or volumes from a failed state; fields may be unset
+  or contain placeholders. For a <code>GeModel</code> the pressure and phase volumes are
+  undefined even in a successful result.</li>
+<li>See the runnable examples in <code>example/basics/3_phase_split.f90</code> and
+  <code>example/extra/flash.f90</code>.</li>
+</ul>
     </div>
   </div>
       <hr>
@@ -175,14 +580,14 @@
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

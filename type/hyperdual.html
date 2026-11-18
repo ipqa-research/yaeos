@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>hyperdual &ndash; yaeos </title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -136,9 +137,9 @@
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
             <a class="list-group-item" href="../type/hyperdual.html#variable-f0">f0</a>
-            <a class="list-group-item" href="../type/hyperdual.html#variable-f1~5">f1</a>
+            <a class="list-group-item" href="../type/hyperdual.html#variable-f1">f1</a>
             <a class="list-group-item" href="../type/hyperdual.html#variable-f12">f12</a>
-            <a class="list-group-item" href="../type/hyperdual.html#variable-f2~5">f2</a>
+            <a class="list-group-item" href="../type/hyperdual.html#variable-f2">f2</a>
         </div>
       </div>
     </div>
@@ -170,7 +171,17 @@
     <div class="col-md-9" id='text'>
       <h2 id="type-def-statement">
         type, public, bind(c) :: hyperdual</h2>
-    
+    <h1 id="hyperdual">hyperdual</h1>
+<p>Scalar number carrying a primal value and two derivative seeds.</p>
+<h1 id="description">Description</h1>
+<p>The fields store coefficients of 1, epsilon1, epsilon2, and their
+product. When <code>f1</code> and <code>f2</code> are seeded with unit directions, <code>f12</code>
+stores the corresponding mixed second derivative.</p>
+<h1 id="examples">Examples</h1>
+<div class="codehilite"><pre><span></span><code><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">hyperdual</span><span class="p">(</span><span class="n">f0</span><span class="o">=</span><span class="n">x0</span><span class="p">,</span><span class="w"> </span><span class="n">f1</span><span class="o">=</span><span class="mf">1.0_pr</span><span class="p">,</span><span class="w"> </span><span class="n">f2</span><span class="o">=</span><span class="mf">1.0_pr</span><span class="p">)</span>
+<span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">%</span><span class="n">f12</span>
+</code></pre></div>
     <br>
 
     <section>
@@ -199,12 +210,12 @@
 <td> =</td>
                 <td>0</td>
             <td>
-                <p>real part of the hyperdual number</p>
+                <p>Primal value.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-f1~5"></span>
+              <span class="anchor" id="variable-f1"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -216,7 +227,7 @@
 <td> =</td>
                 <td>0</td>
             <td>
-                <p>\f$\varepsilon_1\f$-part of  the hyperdual number</p>
+                <p>Coefficient of the first tangent direction.</p>
             </td>
         </tr>
         <tr>
@@ -233,12 +244,12 @@
 <td> =</td>
                 <td>0</td>
             <td>
-                <p>\f$\varepsilon_1\varepsilon_2\f$-part of the</p>
+                <p>Coefficient of the mixed second derivative.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-f2~5"></span>
+              <span class="anchor" id="variable-f2"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -250,7 +261,7 @@
 <td> =</td>
                 <td>0</td>
             <td>
-                <p>\f$\varepsilon_2\f$-part of  the hyperdual number</p>
+                <p>Coefficient of the second tangent direction.</p>
             </td>
         </tr>
     </tbody>
@@ -274,14 +285,14 @@
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

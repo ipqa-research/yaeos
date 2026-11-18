@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Models &mdash; yaeos 4.5.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+  <title>Models &mdash; yaeos 4.5.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=a284863f"></script>
+      <script src="../_static/documentation_options.js?v=06fc0226"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,9 +56,12 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Models</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="residual_helmholtz/init.html">Residual Helmholtz Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="excess_gibbs/init.html">Excess Gibbs Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="groups.html">Groups module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#choose-the-model-before-the-solver">Choose the model before the solver</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="residual_helmholtz/init.html">Residual Helmholtz Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="excess_gibbs/init.html">Excess Gibbs Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="groups.html">Groups module</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -93,15 +96,34 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-yaeos.models">
-<span id="models"></span><h1>Models<a class="headerlink" href="#module-yaeos.models" title="Link to this heading"></a></h1>
-<p>Models module.</p>
+  <section id="models">
+<h1>Models<a class="headerlink" href="#models" title="Link to this heading"></a></h1>
+<section id="choose-the-model-before-the-solver">
+<h2>Choose the model before the solver<a class="headerlink" href="#choose-the-model-before-the-solver" title="Link to this heading"></a></h2>
+<p>A model describes the fluid’s nonideal behavior; an equilibrium solver asks
+whether that description predicts one phase or several at specified
+conditions. Solver convergence cannot compensate for unsuitable parameters.</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="residual_helmholtz/init.html"><span class="doc">Residual Helmholtz models</span></a> are equations of
+state: use them when pressure, volume, or vapor-liquid equilibrium matters.</p></li>
+<li><p><a class="reference internal" href="excess_gibbs/init.html"><span class="doc">Excess Gibbs models</span></a> describe departures from
+ideal liquid mixing: use them for activity coefficients and liquid-liquid
+separation, or as part of an EoS mixing rule.</p></li>
+<li><p><a class="reference internal" href="groups.html"><span class="doc">Groups module</span></a> explains the group dictionaries used by UNIFAC models.</p></li>
+</ul>
+<p>Choose parameters for the actual components and temperature range, keep
+their order fixed, and compare predictions with data relevant to your task.
+The common property and phase-equilibrium methods are documented in
+<a class="reference internal" href="../core.html"><span class="doc">Core Module</span></a>; the pages below document model construction.</p>
+<p id="module-yaeos.models">Models module.</p>
 <p>Yaeos models module. This module provides the following submodules:</p>
 <ul class="simple">
 <li><dl class="simple">
 <dt>excess_gibbs: Excess Gibbs energy models</dt><dd><ul>
 <li><p>NRTL: non-random two-liquid model</p></li>
 <li><p>UNIFACVLE: Original UNIFAC VLE model</p></li>
+<li><p>UNIFACPSRK: PSRK-UNIFAC model</p></li>
+<li><p>UNIFACDortmund: UNIFAC Dortmund model</p></li>
 <li><p>UNIQUAC: UNIversal QUAsiChemical Excess Gibbs free energy model</p></li>
 </ul>
 </dd>
@@ -115,13 +137,19 @@
 <li><p>PengRobinson78: Peng-Robinson model (1978)</p></li>
 <li><p>SoaveRedlichKwong: Soave-Redlich-Kwong model</p></li>
 <li><p>RKPR: RKPR model</p></li>
+<li><p>PSRK: Predictive Soave-Redlich-Kwong model</p></li>
 </ul>
 </dd>
 </dl>
 </li>
+<li><p>Alpha functions: AlphaSoave, AlphaRKPR, AlphaMathiasCopeman</p></li>
 <li><dl class="simple">
 <dt>Mixing rules: mixing rules for cubic EoS</dt><dd><ul>
-<li><p>QMR: cuadratic mixing rule</p></li>
+<li><p>QMR: quadratic mixing rule</p></li>
+<li><p>QMRTD: quadratic mixing rule with temperature dependence</p></li>
+<li><p>CMR: cubic mixing rule</p></li>
+<li><p>CMRTD: cubic mixing rule with temperature dependence</p></li>
+<li><p>sDDLC: segmented density dependent local composition mixing rule</p></li>
 <li><p>MHV: modified Huron-Vidal mixing rule</p></li>
 <li><p>HV: Huron-Vidal mixing rule</p></li>
 <li><p>HVNRTL: Huron-Vidal NRTL mixing rule</p></li>
@@ -155,6 +183,7 @@
 <li class="toctree-l1"><a class="reference internal" href="groups.html">Groups module</a></li>
 </ul>
 </div>
+</section>
 </section>
 
 

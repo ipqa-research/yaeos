@@ -1,4 +1,17 @@
 module yaeos__models_ge_group_contribution_dortmund
+   !! # Dortmund UNIFAC model
+   !!
+   !! # Description
+   !! Modified UNIFAC (Dortmund) group-contribution model. Use
+   !! [[setup_dortmund]] to build the model from the groups of each molecule.
+   !! The constructor loads the Dortmund parameter tables and installs the
+   !! Dortmund temperature dependence on the shared UNIFAC implementation.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! model = setup_dortmund(molecules)
+   !! call model%ln_activity_coefficient(n, T, ln_gamma)
+   !! ```
    use yaeos__constants, only: pr
    use yaeos__models_ge_gc_td, only: QuadraticPsi
    use yaeos__models_ge_group_contribution_groups, only: Groups
@@ -11,16 +24,25 @@ module yaeos__models_ge_group_contribution_dortmund
 contains
 
    type(UNIFAC) function setup_dortmund(molecules, parameters)
+      !! Create a Dortmund UNIFAC model.
+      !!
+      !! Uses the Dortmund parameter set by default. An alternative parameter
+      !! object can be supplied with `parameters`.
       use yaeos__models_ge_group_contribution_unifac_parameters, only: UNIFACParameters
-      type(Groups), intent(in) :: molecules(:)
+      type(Groups), intent(in) :: molecules(:) !! Groups of each molecule
       type(GeGCModelParameters), optional, intent(in) :: parameters
+      !! Optional parameter set
       
       type(GeGCModelParameters) :: params
       type(QuadraticPsi) :: psi_function
 
-      real(pr), allocatable :: Aij(:, :), Bij(:, :), Cij(:, :)
+      real(pr), allocatable :: Aij(:, :)
+      real(pr), allocatable :: Bij(:, :)
+      real(pr), allocatable :: Cij(:, :)
       type(Groups) :: soup
-      integer :: i, j, ng
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: ng
 
       if (present(parameters)) then
          params = parameters

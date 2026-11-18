@@ -5,15 +5,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.gpec &mdash; yaeos 4.5.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+  <title>yaeos.gpec &mdash; yaeos 4.5.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=a284863f"></script>
+      <script src="../../_static/documentation_options.js?v=06fc0226"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -92,18 +92,18 @@
 <span class="sd">derivatives to obtain isopleths, isotherms and isobars.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">yaeos.core</span> <span class="kn">import</span> <span class="n">ArModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArModel</span>
 
 <span class="n">MAX_POINTS</span> <span class="o">=</span> <span class="mi">1000</span>
 
 
 <div class="viewcode-block" id="GPEC">
 <a class="viewcode-back" href="../../gpec.html#yaeos.gpec.GPEC">[docs]</a>
-<span class="k">class</span> <span class="nc">GPEC</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GPEC</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Global Phase Equilibria Calculation.</span>
 
 <span class="sd">    This class implements the GPEC algorithm for calculation of global phase</span>
@@ -116,7 +116,7 @@
 <span class="sd">    model : ArModel</span>
 <span class="sd">        The thermodynamic model to be used for phase equilibria calculations.</span>
 <span class="sd">    max_pressure : float, optional</span>
-<span class="sd">        The maximum pressure for the calculations (default is 2500).</span>
+<span class="sd">        The maximum pressure for the calculations [bar] (default is 2500).</span>
 <span class="sd">    max_points : int, optional</span>
 <span class="sd">        The maximum number of points to be calculated in the critical line</span>
 <span class="sd">        (default is 10000).</span>
@@ -133,7 +133,7 @@
 <span class="sd">        starting from the almost pure second component (default is 0.9999).</span>
 <span class="sd">    x10 : float, optional</span>
 <span class="sd">        Initial mole fraction of the first component for the critical line</span>
-<span class="sd">        starting from the almost pure first component (default is 0.99999).</span>
+<span class="sd">        starting from the almost pure first component (default is 1 - 1e-9).</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -163,7 +163,7 @@
 <span class="sd">        Critical endpoint data for liquid-liquid critical line.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">model</span><span class="p">:</span> <span class="n">ArModel</span><span class="p">,</span>
         <span class="n">max_pressure</span><span class="o">=</span><span class="mi">2500</span><span class="p">,</span>
@@ -296,7 +296,7 @@
 
 <div class="viewcode-block" id="GPEC.plot_gped">
 <a class="viewcode-back" href="../../gpec.html#yaeos.gpec.GPEC.plot_gped">[docs]</a>
-    <span class="k">def</span> <span class="nf">plot_gped</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_gped</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot the global phase equilibria diagram (GPED).</span>
 
 <span class="sd">        This method plots the critical lines and pure saturation pressures</span>
@@ -345,7 +345,7 @@
 
 <div class="viewcode-block" id="GPEC.calc_pxy">
 <a class="viewcode-back" href="../../gpec.html#yaeos.gpec.GPEC.calc_pxy">[docs]</a>
-    <span class="k">def</span> <span class="nf">calc_pxy</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_pxy</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">temperature</span><span class="p">,</span>
         <span class="n">x10</span><span class="o">=</span><span class="mf">0.9999</span><span class="p">,</span>
@@ -363,13 +363,13 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        temperature : float</span>
-<span class="sd">            The temperature at which to calculate the Pxy phase diagram.</span>
+<span class="sd">            The temperature at which to calculate the Pxy phase diagram [K].</span>
 <span class="sd">        x10 : float, optional</span>
 <span class="sd">            Initial molar fraction of the first component for the line that</span>
-<span class="sd">            starts from the almost pure first component (default is 1e-5).</span>
+<span class="sd">            starts from the almost pure first component (default is 0.9999).</span>
 <span class="sd">        x20 : float, optional</span>
 <span class="sd">            Initial molar fraction of the second component for the line that</span>
-<span class="sd">            starts from the almost pure second component (default is 1e-5).</span>
+<span class="sd">            starts from the almost pure second component (default is 0.9999).</span>
 <span class="sd">        dx10 : float, optional</span>
 <span class="sd">            Step size for the line that starts from the almost pure first</span>
 <span class="sd">            component (default is 1e-3).</span>
@@ -463,7 +463,7 @@
 
 <div class="viewcode-block" id="GPEC.plot_pxy">
 <a class="viewcode-back" href="../../gpec.html#yaeos.gpec.GPEC.plot_pxy">[docs]</a>
-    <span class="k">def</span> <span class="nf">plot_pxy</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_pxy</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">temperature</span><span class="p">,</span>
         <span class="n">x10</span><span class="o">=</span><span class="mf">0.9999</span><span class="p">,</span>
@@ -482,13 +482,13 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        temperature : float</span>
-<span class="sd">            The temperature at which to plot the Pxy phase diagram.</span>
+<span class="sd">            The temperature at which to plot the Pxy phase diagram [K].</span>
 <span class="sd">        x10 : float, optional</span>
 <span class="sd">            Initial molar fraction of the first component for the line that</span>
-<span class="sd">            starts from the almost pure first component (default is 1e-5).</span>
+<span class="sd">            starts from the almost pure first component (default is 0.9999).</span>
 <span class="sd">        x20 : float, optional</span>
 <span class="sd">            Initial molar fraction of the second component for the line that</span>
-<span class="sd">            starts from the almost pure second component (default is 1e-5).</span>
+<span class="sd">            starts from the almost pure second component (default is 0.9999).</span>
 <span class="sd">        dx10 : float, optional</span>
 <span class="sd">            Step size for the line that starts from the almost pure first</span>
 <span class="sd">            component (default is 1e-3).</span>
@@ -524,7 +524,7 @@
 
 <div class="viewcode-block" id="GPEC.calc_txy">
 <a class="viewcode-back" href="../../gpec.html#yaeos.gpec.GPEC.calc_txy">[docs]</a>
-    <span class="k">def</span> <span class="nf">calc_txy</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_txy</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">pressure</span><span class="p">,</span>
         <span class="n">y10</span><span class="o">=</span><span class="mf">0.9999</span><span class="p">,</span>
@@ -542,16 +542,16 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        pressure : float</span>
-<span class="sd">            The pressure at which to calculate the Txy phase diagram.</span>
+<span class="sd">            The pressure at which to calculate the Txy phase diagram [bar].</span>
 <span class="sd">        y10 : float, optional</span>
 <span class="sd">            Initial molar fraction of the first component for the line that</span>
-<span class="sd">            starts from the almost pure first component (default is 1e-5).</span>
+<span class="sd">            starts from the almost pure first component (default is 0.9999).</span>
 <span class="sd">        y20 : float, optional</span>
 <span class="sd">            Initial molar fraction of the second component for the line that</span>
-<span class="sd">            starts from the almost pure second component (default is 1e-5).</span>
+<span class="sd">            starts from the almost pure second component (default is 0.9999).</span>
 <span class="sd">        dy10 : float, optional</span>
 <span class="sd">            Step size for the line that starts from the almost pure first</span>
-<span class="sd">            component (default is -1e-3).</span>
+<span class="sd">            component (default is 1e-3).</span>
 <span class="sd">        dy20 : float, optional</span>
 <span class="sd">            Step size for the line that starts from the almost pure second</span>
 <span class="sd">            component (default is 1e-3).</span>
@@ -646,7 +646,7 @@
 
 <div class="viewcode-block" id="GPEC.plot_txy">
 <a class="viewcode-back" href="../../gpec.html#yaeos.gpec.GPEC.plot_txy">[docs]</a>
-    <span class="k">def</span> <span class="nf">plot_txy</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_txy</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">pressure</span><span class="p">,</span>
         <span class="n">y10</span><span class="o">=</span><span class="mf">0.9999</span><span class="p">,</span>
@@ -664,7 +664,7 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        pressure : float</span>
-<span class="sd">            The pressure at which to plot the Txy phase diagram.</span>
+<span class="sd">            The pressure at which to plot the Txy phase diagram [bar].</span>
 <span class="sd">        y10 : float, optional</span>
 <span class="sd">            Initial molar fraction of the first component for the line that</span>
 <span class="sd">            starts from the almost pure first component (default is 0.9999).</span>
@@ -673,7 +673,7 @@
 <span class="sd">            starts from the almost pure second component (default is 0.9999).</span>
 <span class="sd">        dy10 : float, optional</span>
 <span class="sd">            Step size for the line that starts from the almost pure first</span>
-<span class="sd">            component (default is -1e-3).</span>
+<span class="sd">            component (default is 1e-3).</span>
 <span class="sd">        dy20 : float, optional</span>
 <span class="sd">            Step size for the line that starts from the almost pure second</span>
 <span class="sd">            component (default is 1e-3).</span>

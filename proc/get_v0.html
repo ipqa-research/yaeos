@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>get_v0 &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -135,7 +136,7 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/get_v0.html#variable-i~42">i</a>
+            <a class="list-group-item" href="../proc/get_v0.html#variable-i~156">i</a>
             <a class="list-group-item" href="../proc/get_v0.html#variable-sum_seg_vol">sum_seg_vol</a>
         </div>
       </div>
@@ -170,6 +171,16 @@
 </h2>
     
 
+    <h1 id="get_v0">get_v0</h1>
+<p>Return the close-packed segment volume used to initialize a volume solve.</p>
+<h1 id="description">Description</h1>
+<p>Computes the volume at which the segment packing fraction would reach
+unity, <script type="math/tex">V_0=(\pi/6)N_A 10^{-27}\sum_i n_i m_i\sigma_i^3</script>. This
+provides a composition-dependent lower-volume estimate for the liquid
+root; <code>P</code> and <code>T</code> are accepted to satisfy the <code>ArModel</code> initializer
+interface but are not used in this expression.</p>
+<h1 id="examples">Examples</h1>
+<p>The initializer is called internally by the inherited volume solver.</p>
 
     <h3>Type Bound</h3>
     <p><a href='../type/pcsaft.html'>PCSAFT</a></p>
@@ -187,7 +198,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~7"></span>
+              <span class="anchor" id="variable-self~71"></span>
               class(<a href='../type/pcsaft.html'>PCSAFT</a>),
             </td>
 <td>intent(in)</td>
@@ -197,12 +208,12 @@
             <td>::</td>
             <td><strong>self</strong></td>
             <td>
-                
+                <p>PC-SAFT model and segment data.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~36"></span>
+              <span class="anchor" id="variable-n~127"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -212,12 +223,12 @@
             <td>::</td>
             <td><strong>n</strong>(:)</td>
             <td>
-                
+                <p>Component mole amounts [mol].</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~21"></span>
+              <span class="anchor" id="variable-p~91"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -227,12 +238,12 @@
             <td>::</td>
             <td><strong>P</strong></td>
             <td>
-                
+                <p>Pressure [bar]; unused in the close-packed initializer.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~25"></span>
+              <span class="anchor" id="variable-t~142"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -242,7 +253,7 @@
             <td>::</td>
             <td><strong>T</strong></td>
             <td>
-                
+                <p>Temperature [K]; unused in the close-packed initializer.</p>
             </td>
         </tr>
     </tbody>
@@ -250,7 +261,7 @@
 
       <h3>Return Value
         <small>
-          <span class="anchor" id="variable-v0~2"></span>
+          <span class="anchor" id="variable-v0~4"></span>
           real(kind=pr)
         </small>
       </h3>
@@ -272,7 +283,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-i~42"></span>
+              <span class="anchor" id="variable-i~156"></span>
               integer,
             </td>
               <td>public</td>
@@ -284,7 +295,7 @@
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Loop/index variable.</p>
             </td>
         </tr>
         <tr>
@@ -330,14 +341,14 @@
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

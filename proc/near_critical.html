@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>near_critical &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.1% of total for procedures.">25 statements</a>
+                 title=" 0.1% of total for procedures.">27 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -105,7 +106,7 @@
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/auxiliar.f90~3.html'>auxiliar.f90</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/auxiliar.f90.html'>auxiliar.f90</a></li>
                 <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_auxiliar.html'>yaeos__equilibria_boundaries_auxiliar</a></li>
             <li class="breadcrumb-item active" aria-current="page">near_critical</li>
           </ol>
@@ -135,10 +136,10 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/near_critical.html#variable-cf~2">cf</a>
-            <a class="list-group-item" href="../proc/near_critical.html#variable-lb~12">lb</a>
+            <a class="list-group-item" href="../proc/near_critical.html#variable-cf">cf</a>
+            <a class="list-group-item" href="../proc/near_critical.html#variable-lb~11">lb</a>
             <a class="list-group-item" href="../proc/near_critical.html#variable-lnk~4">lnK</a>
-            <a class="list-group-item" href="../proc/near_critical.html#variable-ub~12">ub</a>
+            <a class="list-group-item" href="../proc/near_critical.html#variable-ub~11">ub</a>
         </div>
       </div>
     </div>
@@ -172,6 +173,11 @@
 </h2>
     
 
+    <h1 id="near_critical">near_critical</h1>
+<p>Identify whether a multiphase continuation state is near criticality.</p>
+<h1 id="description">Description</h1>
+<p>Inspects logarithmic equilibrium ratios in the packed unknown vector
+and returns phase/component indices used by critical-continuation logic.</p>
 
 
     <h3>Arguments</h3>
@@ -187,7 +193,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~84"></span>
+              <span class="anchor" id="variable-nc~18"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -202,7 +208,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-np~20"></span>
+              <span class="anchor" id="variable-np~17"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -217,7 +223,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~55"></span>
+              <span class="anchor" id="variable-x~20"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -232,7 +238,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-near_crit~3"></span>
+              <span class="anchor" id="variable-near_crit"></span>
               logical,
             </td>
 <td>intent(out)</td>
@@ -247,7 +253,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-l~21"></span>
+              <span class="anchor" id="variable-l~9"></span>
               integer,
             </td>
 <td>intent(out)</td>
@@ -262,7 +268,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-i~94"></span>
+              <span class="anchor" id="variable-i~24"></span>
               integer,
             </td>
 <td>intent(out)</td>
@@ -277,7 +283,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-j~54"></span>
+              <span class="anchor" id="variable-j~13"></span>
               integer,
             </td>
 <td>intent(out)</td>
@@ -302,79 +308,79 @@
   <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: proc~~near_critical~~CalledByGraph Pages: 1 -->
-<svg id="procnear_criticalCalledByGraph" width="590pt" height="32pt"
- viewBox="0.00 0.00 590.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~near_critical~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg id="procnear_criticalCalledByGraph" width="584pt" height="32pt"
+ viewBox="0.00 0.00 584.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~near_critical~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>proc~~near_critical~~CalledByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 586,-28 586,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 580.33,-28.27 580.33,4 -4,4"/>
 <!-- proc~near_critical -->
 <g id="proc~~near_critical~~CalledByGraph_node1" class="node">
 <title>proc~near_critical</title>
-<polygon fill="none" stroke="black" points="582,-24 503,-24 503,0 582,0 582,-24"/>
-<text text-anchor="middle" x="542.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">near_critical</text>
+<polygon fill="none" stroke="black" points="576.33,-24.27 498.81,-24.27 498.81,0 576.33,0 576.33,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="537.57" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">near_critical</text>
 </g>
-<!-- proc~update_specification -->
+<!-- proc~update_specification~3 -->
 <g id="proc~~near_critical~~CalledByGraph_node2" class="node">
-<title>proc~update_specification</title>
-<g id="a_proc~~near_critical~~CalledByGraph_node2"><a xlink:href="../proc/update_specification.html" xlink:title="update_specification">
-<polygon fill="#d9534f" stroke="#d9534f" points="467,-24 344,-24 344,0 467,0 467,-24"/>
-<text text-anchor="middle" x="405.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">update_specification</text>
+<title>proc~update_specification~3</title>
+<g id="a_proc~~near_critical~~CalledByGraph_node2"><a xlink:href="../proc/update_specification~3.html" xlink:title="update_specification">
+<polygon fill="#d9534f" stroke="#d9534f" points="462.81,-24.27 341.04,-24.27 341.04,0 462.81,0 462.81,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="401.92" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">update_specification</text>
 </a>
 </g>
 </g>
-<!-- proc~update_specification&#45;&gt;proc~near_critical -->
+<!-- proc~update_specification~3&#45;&gt;proc~near_critical -->
 <g id="proc~~near_critical~~CalledByGraph_edge1" class="edge">
-<title>proc~update_specification&#45;&gt;proc~near_critical</title>
-<path fill="none" stroke="#000000" d="M467.29,-12C475.75,-12 484.36,-12 492.57,-12"/>
-<polygon fill="#000000" stroke="#000000" points="492.71,-15.5 502.71,-12 492.71,-8.5 492.71,-15.5"/>
+<title>proc~update_specification~3&#45;&gt;proc~near_critical</title>
+<path fill="none" stroke="#000000" d="M463.1,-12.13C471.11,-12.13 479.24,-12.13 487.04,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="487.04,-15.64 497.04,-12.14 487.04,-8.64 487.04,-15.64"/>
 </g>
 <!-- proc~pt_envelope -->
 <g id="proc~~near_critical~~CalledByGraph_node3" class="node">
 <title>proc~pt_envelope</title>
 <g id="a_proc~~near_critical~~CalledByGraph_node3"><a xlink:href="../proc/pt_envelope.html" xlink:title="pt_envelope">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="308,-24 230,-24 230,0 308,0 308,-24"/>
-<text text-anchor="middle" x="269" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">pt_envelope</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="305.04,-24.27 228.27,-24.27 228.27,0 305.04,0 305.04,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="266.65" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">pt_envelope</text>
 </a>
 </g>
 </g>
-<!-- proc~pt_envelope&#45;&gt;proc~update_specification -->
+<!-- proc~pt_envelope&#45;&gt;proc~update_specification~3 -->
 <g id="proc~~near_critical~~CalledByGraph_edge2" class="edge">
-<title>proc~pt_envelope&#45;&gt;proc~update_specification</title>
-<path fill="none" stroke="#000000" d="M308.18,-12C316.16,-12 324.82,-12 333.57,-12"/>
-<polygon fill="#000000" stroke="#000000" points="333.83,-15.5 343.83,-12 333.83,-8.5 333.83,-15.5"/>
+<title>proc~pt_envelope&#45;&gt;proc~update_specification~3</title>
+<path fill="none" stroke="#000000" d="M305.49,-12.13C312.92,-12.13 320.93,-12.13 329.06,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="329.05,-15.64 339.05,-12.14 329.05,-8.64 329.05,-15.64"/>
 </g>
 <!-- proc~pt_envelope_2ph -->
 <g id="proc~~near_critical~~CalledByGraph_node4" class="node">
 <title>proc~pt_envelope_2ph</title>
 <g id="a_proc~~near_critical~~CalledByGraph_node4"><a xlink:href="../proc/pt_envelope_2ph.html" xlink:title="pt_envelope_2ph">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="194,-24 91,-24 91,0 194,0 194,-24"/>
-<text text-anchor="middle" x="142.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">pt_envelope_2ph</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="192.27,-24.27 90,-24.27 90,0 192.27,0 192.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="141.13" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">pt_envelope_2ph</text>
 </a>
 </g>
 </g>
 <!-- proc~pt_envelope_2ph&#45;&gt;proc~pt_envelope -->
 <g id="proc~~near_critical~~CalledByGraph_edge3" class="edge">
 <title>proc~pt_envelope_2ph&#45;&gt;proc~pt_envelope</title>
-<path fill="none" stroke="#000000" d="M194.14,-12C202.47,-12 211.09,-12 219.37,-12"/>
-<polygon fill="#000000" stroke="#000000" points="219.63,-15.5 229.63,-12 219.63,-8.5 219.63,-15.5"/>
+<path fill="none" stroke="#000000" d="M192.73,-12.13C200.52,-12.13 208.55,-12.13 216.31,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="216.29,-15.64 226.29,-12.14 216.29,-8.64 216.29,-15.64"/>
 </g>
 <!-- proc~find_hpl -->
 <g id="proc~~near_critical~~CalledByGraph_node5" class="node">
 <title>proc~find_hpl</title>
 <g id="a_proc~~near_critical~~CalledByGraph_node5"><a xlink:href="../proc/find_hpl.html" xlink:title="find_hpl">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="55,-24 0,-24 0,0 55,0 55,-24"/>
-<text text-anchor="middle" x="27.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">find_hpl</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">find_hpl</text>
 </a>
 </g>
 </g>
 <!-- proc~find_hpl&#45;&gt;proc~pt_envelope_2ph -->
 <g id="proc~~near_critical~~CalledByGraph_edge4" class="edge">
 <title>proc~find_hpl&#45;&gt;proc~pt_envelope_2ph</title>
-<path fill="none" stroke="#000000" d="M55.28,-12C63.06,-12 71.88,-12 80.85,-12"/>
-<polygon fill="#000000" stroke="#000000" points="80.99,-15.5 90.99,-12 80.99,-8.5 80.99,-15.5"/>
+<path fill="none" stroke="#000000" d="M54.29,-12.13C61.67,-12.13 70.02,-12.13 78.55,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="78.27,-15.64 88.27,-12.14 78.27,-8.64 78.27,-15.64"/>
 </g>
 </g>
 </svg>
@@ -393,55 +399,55 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
 <svg width="641pt" height="28pt"
- viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
 <!-- Subroutine -->
 <g id="node1" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node2" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Interface -->
 <g id="node3" class="node">
 <title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
 </g>
 <!-- Type Bound Procedure -->
 <g id="node4" class="node">
 <title>Type Bound Procedure</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
-<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
 </g>
 <!-- Unknown Procedure Type -->
 <g id="node5" class="node">
 <title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
-<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
 </g>
 <!-- Program -->
 <g id="node6" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node7" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
-<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -474,7 +480,7 @@ implementation in a submodule of an interface in a parent module.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-cf~2"></span>
+              <span class="anchor" id="variable-cf"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -491,7 +497,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lb~12"></span>
+              <span class="anchor" id="variable-lb~11"></span>
               integer,
             </td>
               <td>public</td>
@@ -525,7 +531,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ub~12"></span>
+              <span class="anchor" id="variable-ub~11"></span>
               integer,
             </td>
               <td>public</td>
@@ -566,14 +572,14 @@ implementation in a submodule of an interface in a parent module.
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

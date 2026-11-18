@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>solve_critical_point &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.3% of total for procedures.">54 statements</a>
+                 title=" 0.3% of total for procedures.">65 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -137,14 +138,14 @@
         <div class="list-group list-group-flush">
             <a class="list-group-item" href="../proc/solve_critical_point.html#variable-j~11">J</a>
             <a class="list-group-item" href="../proc/solve_critical_point.html#variable-j_inv">J_inv</a>
-            <a class="list-group-item" href="../proc/solve_critical_point.html#variable-p~76">P</a>
-            <a class="list-group-item" href="../proc/solve_critical_point.html#variable-t~117">T</a>
-            <a class="list-group-item" href="../proc/solve_critical_point.html#variable-v~46">V</a>
-            <a class="list-group-item" href="../proc/solve_critical_point.html#variable-dx~22">dX</a>
+            <a class="list-group-item" href="../proc/solve_critical_point.html#variable-p~85">P</a>
+            <a class="list-group-item" href="../proc/solve_critical_point.html#variable-t~135">T</a>
+            <a class="list-group-item" href="../proc/solve_critical_point.html#variable-v~50">V</a>
+            <a class="list-group-item" href="../proc/solve_critical_point.html#variable-dx~26">dX</a>
             <a class="list-group-item" href="../proc/solve_critical_point.html#variable-det">det</a>
-            <a class="list-group-item" href="../proc/solve_critical_point.html#variable-f1~3">f1</a>
-            <a class="list-group-item" href="../proc/solve_critical_point.html#variable-f2~3">f2</a>
-            <a class="list-group-item" href="../proc/solve_critical_point.html#variable-iter~4">iter</a>
+            <a class="list-group-item" href="../proc/solve_critical_point.html#variable-f1~4">f1</a>
+            <a class="list-group-item" href="../proc/solve_critical_point.html#variable-f2~4">f2</a>
+            <a class="list-group-item" href="../proc/solve_critical_point.html#variable-iter~6">iter</a>
             <a class="list-group-item" href="../proc/solve_critical_point.html#variable-norm_f">norm_f</a>
         </div>
       </div>
@@ -179,6 +180,13 @@
 </h2>
     
 
+    <h1 id="solve_critical_point">solve_critical_point</h1>
+<p>Solve the pure-component criticality equations from an initial guess.</p>
+<h1 id="description">Description</h1>
+<p>The residual vector is <script type="math/tex">(P_V,P_{VV})</script>. Its Jacobian with respect to
+<script type="math/tex">(V,T)</script> is approximated by centered finite differences, and a direct
+2-by-2 Newton step is applied. Non-positive trial volume or temperature
+is reset to half the corresponding initial value.</p>
 
 
     <h3>Arguments</h3>
@@ -194,7 +202,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~74"></span>
+              <span class="anchor" id="variable-model~75"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -204,12 +212,12 @@
             <td>::</td>
             <td><strong>model</strong></td>
             <td>
-                
+                <p>Equation of state used for pressure derivatives.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~115"></span>
+              <span class="anchor" id="variable-nc~123"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -219,7 +227,7 @@
             <td>::</td>
             <td><strong>nc</strong></td>
             <td>
-                
+                <p>Number of components.</p>
             </td>
         </tr>
         <tr>
@@ -234,7 +242,7 @@
             <td>::</td>
             <td><strong>i_comp</strong></td>
             <td>
-                
+                <p>One-based index of the pure component.</p>
             </td>
         </tr>
         <tr>
@@ -249,7 +257,7 @@
             <td>::</td>
             <td><strong>V_init</strong></td>
             <td>
-                
+                <p>Initial molar volume [L/mol].</p>
             </td>
         </tr>
         <tr>
@@ -264,12 +272,12 @@
             <td>::</td>
             <td><strong>T_init</strong></td>
             <td>
-                
+                <p>Initial temperature [K].</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vc~9"></span>
+              <span class="anchor" id="variable-vc~8"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -279,12 +287,12 @@
             <td>::</td>
             <td><strong>Vc</strong></td>
             <td>
-                
+                <p>Critical molar volume [L/mol].</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tc~15"></span>
+              <span class="anchor" id="variable-tc~14"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -294,12 +302,12 @@
             <td>::</td>
             <td><strong>Tc</strong></td>
             <td>
-                
+                <p>Critical temperature [K].</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-pc~13"></span>
+              <span class="anchor" id="variable-pc~14"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -309,12 +317,12 @@
             <td>::</td>
             <td><strong>Pc</strong></td>
             <td>
-                
+                <p>Critical pressure [bar].</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-converged~5"></span>
+              <span class="anchor" id="variable-converged~4"></span>
               logical,
             </td>
 <td>intent(out)</td>
@@ -324,7 +332,7 @@
             <td>::</td>
             <td><strong>converged</strong></td>
             <td>
-                
+                <p>Whether either convergence test succeeded.</p>
             </td>
         </tr>
     </tbody>
@@ -339,82 +347,82 @@
   <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: proc~~solve_critical_point~~CallsGraph Pages: 1 -->
-<svg id="procsolve_critical_pointCallsGraph" width="641pt" height="45pt"
- viewBox="0.00 0.00 641.00 45.41" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~solve_critical_point~~CallsGraph" class="graph" transform="scale(0.87 0.87) rotate(0) translate(4 48)">
+<svg id="procsolve_critical_pointCallsGraph" width="641pt" height="46pt"
+ viewBox="0.00 0.00 641.00 46.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~solve_critical_point~~CallsGraph" class="graph" transform="scale(0.880676 0.880676) rotate(0) translate(4 48.27)">
 <title>proc~~solve_critical_point~~CallsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-48 730,-48 730,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-48.27 723.85,-48.27 723.85,4 -4,4"/>
 <!-- proc~solve_critical_point -->
 <g id="proc~~solve_critical_point~~CallsGraph_node1" class="node">
 <title>proc~solve_critical_point</title>
-<polygon fill="none" stroke="black" points="114,-24 0,-24 0,0 114,0 114,-24"/>
-<text text-anchor="middle" x="57" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">solve_critical_point</text>
+<polygon fill="none" stroke="black" points="112.77,-24.27 0,-24.27 0,0 112.77,0 112.77,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="56.38" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">solve_critical_point</text>
 </g>
 <!-- proc~jacobian_critical_eqs -->
 <g id="proc~~solve_critical_point~~CallsGraph_node2" class="node">
 <title>proc~jacobian_critical_eqs</title>
 <g id="a_proc~~solve_critical_point~~CallsGraph_node2"><a xlink:href="../proc/jacobian_critical_eqs.html" xlink:title="jacobian_critical_eqs">
-<polygon fill="#d9534f" stroke="#d9534f" points="274,-44 150,-44 150,-20 274,-20 274,-44"/>
-<text text-anchor="middle" x="212" y="-29.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">jacobian_critical_eqs</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="271.29,-44.27 148.77,-44.27 148.77,-20 271.29,-20 271.29,-44.27"/>
+<text xml:space="preserve" text-anchor="middle" x="210.03" y="-28.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">jacobian_critical_eqs</text>
 </a>
 </g>
 </g>
 <!-- proc~solve_critical_point&#45;&gt;proc~jacobian_critical_eqs -->
 <g id="proc~~solve_critical_point~~CallsGraph_edge1" class="edge">
 <title>proc~solve_critical_point&#45;&gt;proc~jacobian_critical_eqs</title>
-<path fill="none" stroke="#000000" d="M114.1,-19.33C122.44,-20.42 131.12,-21.56 139.72,-22.68"/>
-<polygon fill="#000000" stroke="#000000" points="139.38,-26.17 149.75,-23.99 140.28,-19.23 139.38,-26.17"/>
+<path fill="none" stroke="#000000" d="M112.99,-19.47C120.8,-20.5 128.93,-21.57 136.99,-22.63"/>
+<polygon fill="#000000" stroke="#000000" points="136.45,-26.09 146.82,-23.93 137.36,-19.15 136.45,-26.09"/>
 </g>
 <!-- proc~residual_critical_eqs -->
 <g id="proc~~solve_critical_point~~CallsGraph_node3" class="node">
 <title>proc~residual_critical_eqs</title>
 <g id="a_proc~~solve_critical_point~~CallsGraph_node3"><a xlink:href="../proc/residual_critical_eqs.html" xlink:title="residual_critical_eqs">
-<polygon fill="#d9534f" stroke="#d9534f" points="430,-24 310,-24 310,0 430,0 430,-24"/>
-<text text-anchor="middle" x="370" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">residual_critical_eqs</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="426.06,-24.27 307.29,-24.27 307.29,0 426.06,0 426.06,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="366.67" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">residual_critical_eqs</text>
 </a>
 </g>
 </g>
 <!-- proc~solve_critical_point&#45;&gt;proc~residual_critical_eqs -->
 <g id="proc~~solve_critical_point~~CallsGraph_edge2" class="edge">
 <title>proc~solve_critical_point&#45;&gt;proc~residual_critical_eqs</title>
-<path fill="none" stroke="#000000" d="M114.44,-11.29C126.19,-11.17 138.5,-11.06 150,-11 205.11,-10.7 218.89,-10.71 274,-11 282.36,-11.04 291.13,-11.11 299.82,-11.19"/>
-<polygon fill="#000000" stroke="#000000" points="299.93,-14.69 309.96,-11.28 300,-7.69 299.93,-14.69"/>
+<path fill="none" stroke="#000000" d="M112.96,-11.43C124.78,-11.31 137.19,-11.2 148.77,-11.13 203.22,-10.84 216.84,-10.85 271.29,-11.13 279.14,-11.18 287.36,-11.24 295.54,-11.31"/>
+<polygon fill="#000000" stroke="#000000" points="295.47,-14.81 305.51,-11.4 295.54,-7.81 295.47,-14.81"/>
 </g>
 <!-- proc~jacobian_critical_eqs&#45;&gt;proc~residual_critical_eqs -->
 <g id="proc~~solve_critical_point~~CallsGraph_edge3" class="edge">
 <title>proc~jacobian_critical_eqs&#45;&gt;proc~residual_critical_eqs</title>
-<path fill="none" stroke="#000000" d="M274.21,-24.15C282.61,-23.08 291.29,-21.96 299.83,-20.87"/>
-<polygon fill="#000000" stroke="#000000" points="300.28,-24.34 309.76,-19.6 299.39,-17.4 300.28,-24.34"/>
+<path fill="none" stroke="#000000" d="M271.71,-24.29C279.59,-23.27 287.71,-22.22 295.72,-21.18"/>
+<polygon fill="#000000" stroke="#000000" points="295.98,-24.68 305.44,-19.92 295.08,-17.74 295.98,-24.68"/>
 </g>
 <!-- proc~pressure -->
 <g id="proc~~solve_critical_point~~CallsGraph_node4" class="node">
 <title>proc~pressure</title>
 <g id="a_proc~~solve_critical_point~~CallsGraph_node4"><a xlink:href="../proc/pressure.html" xlink:title="ArModel%pressure">
-<polygon fill="#d9534f" stroke="#d9534f" points="578,-24 466,-24 466,0 578,0 578,-24"/>
-<text text-anchor="middle" x="522" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%pressure</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="572.58,-24.27 462.06,-24.27 462.06,0 572.58,0 572.58,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="517.32" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%pressure</text>
 </a>
 </g>
 </g>
 <!-- proc~residual_critical_eqs&#45;&gt;proc~pressure -->
 <g id="proc~~solve_critical_point~~CallsGraph_edge4" class="edge">
 <title>proc~residual_critical_eqs&#45;&gt;proc~pressure</title>
-<path fill="none" stroke="#000000" d="M430.28,-12C438.55,-12 447.08,-12 455.46,-12"/>
-<polygon fill="#000000" stroke="#000000" points="455.57,-15.5 465.57,-12 455.57,-8.5 455.57,-15.5"/>
+<path fill="none" stroke="#000000" d="M426.42,-12.13C434.37,-12.13 442.56,-12.13 450.61,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="450.35,-15.64 460.35,-12.14 450.35,-8.64 450.35,-15.64"/>
 </g>
 <!-- residual_helmholtz -->
 <g id="proc~~solve_critical_point~~CallsGraph_node5" class="node">
 <title>residual_helmholtz</title>
-<polygon fill="#777777" stroke="#777777" points="726,-24 614,-24 614,0 726,0 726,-24"/>
-<text text-anchor="middle" x="670" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">residual_helmholtz</text>
+<polygon fill="#777777" stroke="#777777" points="719.85,-24.27 608.58,-24.27 608.58,0 719.85,0 719.85,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="664.21" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">residual_helmholtz</text>
 </g>
 <!-- proc~pressure&#45;&gt;residual_helmholtz -->
 <g id="proc~~solve_critical_point~~CallsGraph_edge5" class="edge">
 <title>proc~pressure&#45;&gt;residual_helmholtz</title>
-<path fill="none" stroke="#000000" d="M578.2,-12C586.46,-12 595.05,-12 603.51,-12"/>
-<polygon fill="#000000" stroke="#000000" points="603.73,-15.5 613.73,-12 603.73,-8.5 603.73,-15.5"/>
+<path fill="none" stroke="#000000" d="M572.69,-12.13C580.65,-12.13 588.93,-12.13 597.11,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="597.03,-15.64 607.03,-12.14 597.03,-8.64 597.03,-15.64"/>
 </g>
 </g>
 </svg>
@@ -437,55 +445,55 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
 <svg width="641pt" height="28pt"
- viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
 <!-- Subroutine -->
 <g id="node1" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node2" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Interface -->
 <g id="node3" class="node">
 <title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
 </g>
 <!-- Type Bound Procedure -->
 <g id="node4" class="node">
 <title>Type Bound Procedure</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
-<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
 </g>
 <!-- Unknown Procedure Type -->
 <g id="node5" class="node">
 <title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
-<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
 </g>
 <!-- Program -->
 <g id="node6" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node7" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
-<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -509,49 +517,49 @@ implementation in a submodule of an interface in a parent module.
   <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: proc~~solve_critical_point~~CalledByGraph Pages: 1 -->
-<svg id="procsolve_critical_pointCalledByGraph" width="462pt" height="32pt"
- viewBox="0.00 0.00 462.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~solve_critical_point~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg id="procsolve_critical_pointCalledByGraph" width="458pt" height="32pt"
+ viewBox="0.00 0.00 458.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~solve_critical_point~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>proc~~solve_critical_point~~CalledByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 458,-28 458,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 454.06,-28.27 454.06,4 -4,4"/>
 <!-- proc~solve_critical_point -->
 <g id="proc~~solve_critical_point~~CalledByGraph_node1" class="node">
 <title>proc~solve_critical_point</title>
-<polygon fill="none" stroke="black" points="454,-24 340,-24 340,0 454,0 454,-24"/>
-<text text-anchor="middle" x="397" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">solve_critical_point</text>
+<polygon fill="none" stroke="black" points="450.06,-24.27 337.29,-24.27 337.29,0 450.06,0 450.06,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="393.68" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">solve_critical_point</text>
 </g>
 <!-- proc~find_critical_points_all_components -->
 <g id="proc~~solve_critical_point~~CalledByGraph_node2" class="node">
 <title>proc~find_critical_points_all_components</title>
 <g id="a_proc~~solve_critical_point~~CalledByGraph_node2"><a xlink:href="../proc/find_critical_points_all_components.html" xlink:title="find_critical_points_all_components">
-<polygon fill="#d9534f" stroke="#d9534f" points="304,-24 103,-24 103,0 304,0 304,-24"/>
-<text text-anchor="middle" x="203.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">find_critical_points_all_components</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="301.29,-24.27 101.52,-24.27 101.52,0 301.29,0 301.29,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="201.41" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">find_critical_points_all_components</text>
 </a>
 </g>
 </g>
 <!-- proc~find_critical_points_all_components&#45;&gt;proc~solve_critical_point -->
 <g id="proc~~solve_critical_point~~CalledByGraph_edge1" class="edge">
 <title>proc~find_critical_points_all_components&#45;&gt;proc~solve_critical_point</title>
-<path fill="none" stroke="#000000" d="M304.18,-12C312.8,-12 321.39,-12 329.65,-12"/>
-<polygon fill="#000000" stroke="#000000" points="329.92,-15.5 339.92,-12 329.92,-8.5 329.92,-15.5"/>
+<path fill="none" stroke="#000000" d="M301.72,-12.13C309.74,-12.13 317.72,-12.13 325.43,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="325.38,-15.64 335.38,-12.14 325.38,-8.64 325.38,-15.64"/>
 </g>
 <!-- proc~init_pcsaft -->
 <g id="proc~~solve_critical_point~~CalledByGraph_node3" class="node">
 <title>proc~init_pcsaft</title>
 <g id="a_proc~~solve_critical_point~~CalledByGraph_node3"><a xlink:href="../proc/init_pcsaft.html" xlink:title="init_pcsaft">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="67,-24 0,-24 0,0 67,0 67,-24"/>
-<text text-anchor="middle" x="33.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">init_pcsaft</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="65.52,-24.27 0,-24.27 0,0 65.52,0 65.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="32.76" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">init_pcsaft</text>
 </a>
 </g>
 </g>
 <!-- proc~init_pcsaft&#45;&gt;proc~find_critical_points_all_components -->
 <g id="proc~~solve_critical_point~~CalledByGraph_edge2" class="edge">
 <title>proc~init_pcsaft&#45;&gt;proc~find_critical_points_all_components</title>
-<path fill="none" stroke="#000000" d="M67.29,-12C75,-12 83.65,-12 92.74,-12"/>
-<polygon fill="#000000" stroke="#000000" points="92.76,-15.5 102.76,-12 92.76,-8.5 92.76,-15.5"/>
+<path fill="none" stroke="#000000" d="M65.89,-12.13C73.12,-12.13 81.2,-12.13 89.7,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="89.58,-15.64 99.58,-12.14 89.58,-8.64 89.58,-15.64"/>
 </g>
 </g>
 </svg>
@@ -570,55 +578,55 @@ implementation in a submodule of an interface in a parent module.
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
 <svg width="641pt" height="28pt"
- viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
 <!-- Subroutine -->
 <g id="node1" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node2" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Interface -->
 <g id="node3" class="node">
 <title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
 </g>
 <!-- Type Bound Procedure -->
 <g id="node4" class="node">
 <title>Type Bound Procedure</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
-<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
 </g>
 <!-- Unknown Procedure Type -->
 <g id="node5" class="node">
 <title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
-<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
 </g>
 <!-- Program -->
 <g id="node6" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node7" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
-<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -663,7 +671,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Jacobian matrix.</p>
             </td>
         </tr>
         <tr>
@@ -685,7 +693,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~76"></span>
+              <span class="anchor" id="variable-p~85"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -702,7 +710,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~117"></span>
+              <span class="anchor" id="variable-t~135"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -719,7 +727,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~46"></span>
+              <span class="anchor" id="variable-v~50"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -736,7 +744,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dx~22"></span>
+              <span class="anchor" id="variable-dx~26"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -770,7 +778,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-f1~3"></span>
+              <span class="anchor" id="variable-f1~4"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -787,7 +795,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-f2~3"></span>
+              <span class="anchor" id="variable-f2~4"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -804,7 +812,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iter~4"></span>
+              <span class="anchor" id="variable-iter~6"></span>
               integer,
             </td>
               <td>private</td>
@@ -816,7 +824,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Iteration count.</p>
             </td>
         </tr>
         <tr>
@@ -862,14 +870,14 @@ implementation in a submodule of an interface in a parent module.
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

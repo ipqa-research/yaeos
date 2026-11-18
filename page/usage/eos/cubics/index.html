@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../../../../favicon.png">
 
     <title>Cubics &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../../../../css/local.css" rel="stylesheet">
     <link href="../../../../css/pygments.css" rel="stylesheet">
+      <link href="../../../../css/user.css" rel="stylesheet">
     <script src="../../../../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -92,7 +93,7 @@
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb justify-content-end mb-0">
                 <li class="breadcrumb-item"><a href='../../../index.html'>User documentation</a></li>
-                <li class="breadcrumb-item"><a href='../../index.html'>Using yaeos</a></li>
+                <li class="breadcrumb-item"><a href='../../index.html'>Getting started</a></li>
                 <li class="breadcrumb-item"><a href='../index.html'>Equations of State</a></li>
               <li class="breadcrumb-item active" aria-current="page">Cubics</li>
             </ol>
@@ -112,9 +113,10 @@
           </ul>
           <hr>
           <nav class="nav nav-pills flex-column">
-              <a class="nav-link" href="../../index.html">Using yaeos</a>
+              <a class="nav-link" href="../../index.html">Getting started</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../index.html">Equations of State</a>
+                                <a class="nav-link" href="../../fundamentals.html">Thermodynamics essentials</a>
+              <a class="nav-link" href="../index.html">Equations of State</a>
                 <nav class="nav nav-pills flex-column">
                                 <a class="nav-link active disabled" href="index.html">Cubics</a>
                 <nav class="nav nav-pills flex-column">
@@ -122,27 +124,33 @@
               <a class="nav-link" href="mixing.html">Mixing Rules</a>
 
                 </nav>
+              <a class="nav-link" href="../gerg2008.html">GERG2008</a>
+              <a class="nav-link" href="../gerg2008_parameters.html">GERG2008 parameters</a>
+              <a class="nav-link" href="../pc_saft.html">PC-SAFT</a>
 
                 </nav>
               <a class="nav-link" href="../../excessmodels/index.html">Gibbs Excess Models</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../../excessmodels/nrtl-hv.html">NRTL-HV</a>
-              <a class="nav-link" href="../../excessmodels/nrtl.html">NRTL</a>
+                                <a class="nav-link" href="../../excessmodels/nrtl.html">NRTL</a>
+              <a class="nav-link" href="../../excessmodels/nrtl-hv.html">NRTL-HV</a>
+              <a class="nav-link" href="../../excessmodels/uniquac.html">UNIQUAC</a>
               <a class="nav-link" href="../../excessmodels/unifac_models/index.html">UNIFAC Models</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../../excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
+                                <a class="nav-link" href="../../excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
+              <a class="nav-link" href="../../excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
               <a class="nav-link" href="../../excessmodels/unifac_models/psrk.html">UNIFAC-PSRK</a>
-              <a class="nav-link" href="../../excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
 
                 </nav>
-              <a class="nav-link" href="../../excessmodels/uniquac.html">UNIQUAC</a>
 
                 </nav>
               <a class="nav-link" href="../../phase_equilibrium/index.html">Phase Equilibrium</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../../phase_equilibrium/envelopes.html">Phase envelopes</a>
-              <a class="nav-link" href="../../phase_equilibrium/flash.html">Flash calculations</a>
+                                <a class="nav-link" href="../../phase_equilibrium/flash.html">Flash calculations</a>
               <a class="nav-link" href="../../phase_equilibrium/saturation_points.html">Saturation Points</a>
+              <a class="nav-link" href="../../phase_equilibrium/envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="../../phase_equilibrium/stability.html">Stability analysis</a>
+              <a class="nav-link" href="../../phase_equilibrium/critical.html">Critical points</a>
+              <a class="nav-link" href="../../phase_equilibrium/multiphase.html">Multiphase flash</a>
 
                 </nav>
               <a class="nav-link" href="../../newmodels/index.html">Adding your own models</a>
@@ -153,12 +161,24 @@
                 </nav>
 
                 </nav>
+              <a class="nav-link" href="../../../python-api/index.html">Python-API</a>
+              <a class="nav-link" href="../../../developer/index.html">Becoming a yaeos developer</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../../developer/architecture.html">Architecture and repository map</a>
+              <a class="nav-link" href="../../../developer/workflow.html">Developer workflow</a>
+              <a class="nav-link" href="../../../developer/fortran.html">Working in the Fortran core</a>
+              <a class="nav-link" href="../../../developer/numerics.html">Working on numerical algorithms</a>
+              <a class="nav-link" href="../../../developer/c_interface.html">C interface layer</a>
+              <a class="nav-link" href="../../../developer/python_interface.html">Python interface layer</a>
+              <a class="nav-link" href="../../../developer/testing.html">Tests and numerical validation</a>
+              <a class="nav-link" href="../../../developer/walkthrough.html">An end-to-end change</a>
+
+                </nav>
               <a class="nav-link" href="../../../contributing/index.html">Contributing</a>
                 <nav class="nav nav-pills flex-column">
                                 <a class="nav-link" href="../../../contributing/styleguide.html">Style guide</a>
 
                 </nav>
-              <a class="nav-link" href="../../../python-api/index.html">Python-API</a>
           </nav>
         </div>
       </div>
@@ -166,27 +186,98 @@
     <div class="col-9" id='text'>
       <div class="toc">
 <ul>
+<li><a href="#cubics">Cubics</a><ul>
+<li><a href="#what-a-cubic-model-does">What a cubic model does</a></li>
+<li><a href="#required-data-and-a-first-calculation">Required data and a first calculation</a></li>
+<li><a href="#model-variants-and-their-parameters">Model variants and their parameters</a></li>
 <li><a href="#soaveredlichkwong">SoaveRedlichKwong</a></li>
 <li><a href="#pengrobinson76">PengRobinson76</a></li>
 <li><a href="#pengrobinson78">PengRobinson78</a></li>
 <li><a href="#rkpr">RKPR</a></li>
 <li><a href="#psrk">PSRK</a></li>
+<li><a href="#interpreting-results-and-avoiding-false-confidence">Interpreting results and avoiding false confidence</a></li>
+<li><a href="#next-reading">Next reading</a></li>
+</ul>
+</li>
 <li><a href="#references">References</a></li>
 </ul>
 </div>
-<p>Our Cubic Equations of State are implemented based on the generic Cubic
-Equation [1]:</p>
+<h1 id="cubics">Cubics</h1>
+<h2 id="what-a-cubic-model-does">What a cubic model does</h2>
+<p>A cubic equation of state is a compact way to estimate fluid pressure, density
+and phase behavior from a small set of pure-component data. PR and SRK are
+useful starting points for hydrocarbon mixtures; choosing one does not guarantee
+accurate liquid densities or strongly polar-mixture behavior. Compare with
+measurements in your temperature, pressure and composition range.</p>
+<p>Think of the model as a balance between molecules taking up space and molecules
+attracting one another. The first term below accounts for excluded volume; the
+second reduces pressure because of attraction. Here <script type="math/tex">P</script> is pressure, <script type="math/tex">T</script>
+is absolute temperature, <script type="math/tex">R</script> is the gas constant, and <script type="math/tex">v</script> is <strong>molar</strong> volume.
+The covolume <script type="math/tex">b</script> has units L/mol, the critical attraction parameter <script type="math/tex">a_c</script>
+has units bar L²/mol², and <script type="math/tex">\delta_1</script>, <script type="math/tex">\delta_2</script> and the temperature
+correction <script type="math/tex">\alpha</script> are dimensionless. Reduced temperature is
+<script type="math/tex">T_r=T/T_c</script>, where <script type="math/tex">T_c</script> is the pure-component critical temperature.
+The generic pure-fluid equation [1] is</p>
 <p>
 <script type="math/tex; mode=display">
-    P = \frac{RT}{V-b} - \frac{a_c\alpha(T_r)}{(V + \delta_1 b)(V + \delta_2 b)}
+    P = \frac{RT}{v-b} - \frac{a_c\alpha(T_r)}{(v + \delta_1 b)(v + \delta_2 b)}
 </script>
 </p>
-<p>Cubic equation of state allows to include the <script type="math/tex">k_{ij}</script> and <script type="math/tex">l_{ij}</script>
-matrices. 
-Using by default Classic Van der Waals mixing rules.
-For more information about mixing rules look at <a href="mixing.md">Mixing Rules</a>.
-Moreover, cubic equations of state allows to modify their default 
-<script type="math/tex">\alpha</script> function, look at <a href="alpha.md">Alpha functions</a>.</p>
+<p>For a mixture, the <a href="mixing.html">mixing rule</a> combines pure-component parameters.
+The <a href="alpha.html">alpha function</a> first adjusts each pure component&rsquo;s attraction
+with temperature: these are different jobs. PR, SRK and RKPR default to quadratic
+mixing with zero binary corrections unless supplied; PSRK uses an excess-Gibbs
+mixing rule instead.</p>
+<h2 id="required-data-and-a-first-calculation">Required data and a first calculation</h2>
+<p>For PR and SRK, supply arrays <code>tc</code> (K), <code>pc</code> (bar), and <code>w</code> (dimensionless
+acentric factor). The acentric factor summarizes pure-fluid vapor-pressure
+behavior; it is not a composition. Every array must use the same component
+order. Optional <code>kij</code> and <code>lij</code> are dimensionless square matrices in that order,
+normally symmetric with zero diagonals. They require a suitable parameter source
+or fitting; zero is a baseline, not a universal fit.</p>
+<p>This complete program uses methane then n-butane. It evaluates a specified
+homogeneous state without asking an equilibrium solver to find a state.
+The API takes mole <strong>amounts</strong> <code>n</code> (mol) and <strong>total</strong> <code>V</code> (L), not molar volume.
+Here the one-mole basis makes their numerical values coincide.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">program </span><span class="n">cubic_pressure</span>
+<span class="w">   </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">R</span><span class="p">,</span><span class="w"> </span><span class="n">CubicEoS</span><span class="p">,</span><span class="w"> </span><span class="n">PengRobinson76</span>
+<span class="w">   </span><span class="k">implicit none</span>
+<span class="k">   type</span><span class="p">(</span><span class="n">CubicEoS</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">tc</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">pc</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">w</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">V</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">P</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Pideal</span>
+
+<span class="w">   </span><span class="n">tc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">19</span><span class="mf">0.564_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="mf">5.12_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">pc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">4</span><span class="mf">5.99_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="mf">7.96_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.0115478_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.200164_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span><span class="w"> </span><span class="n">pc</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">)</span>
+<span class="w">   </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.3_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span>
+<span class="w">   </span><span class="n">V</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="mf">0.0_pr</span>
+<span class="w">   </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">)</span>
+<span class="w">   </span><span class="n">Pideal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">*</span><span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="o">/</span><span class="n">V</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Pressure [bar]: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">P</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Ideal-gas pressure [bar]: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Pideal</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Compressibility Z [-]: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="o">/</span><span class="n">Pideal</span>
+<span class="k">end program </span><span class="n">cubic_pressure</span>
+</code></pre></div>
+
+<p>Link this program with <code>yaeos</code> and its dependencies in your configured Fortran/fpm
+environment. <code>pr</code> is the library&rsquo;s real kind; <code>_pr</code> literals avoid rounding inputs
+to default real precision. The dimensionless compressibility factor
+<script type="math/tex">Z=Pv/(RT)</script> should approach one at small density. Scaling both <code>n</code> and <code>V</code>
+by the same positive factor should leave pressure unchanged.</p>
+<h2 id="model-variants-and-their-parameters">Model variants and their parameters</h2>
+<p>Below, <script type="math/tex">P_c</script> is critical pressure and <script type="math/tex">\omega</script> is acentric factor.
+The dimensionless alpha coefficient <script type="math/tex">k</script> is a pure-component quantity,
+<strong>not</strong> a binary interaction <script type="math/tex">k_{ij}</script>. The <code>b</code> listed for each model is the
+pure-component covolume; for PR and SRK it is also what the quadratic mixing
+rule combines.</p>
 <h2 id="soaveredlichkwong">SoaveRedlichKwong</h2>
 <p>Fortran definition: <a href="../../../../proc/soaveredlichkwong.html">SoaveRedlichKwong</a>. The SoaveRedlichKwong EoS uses the
 following <script type="math/tex">\alpha</script> function and its respective correlation for <script type="math/tex">k</script>.</p>
@@ -194,7 +285,7 @@ following <script type="math/tex">\alpha</script> function and its respective co
 <script type="math/tex; mode=display"> \alpha(T_r) = (1 + k (1 - \sqrt{T_r}))^2 </script>
 <script type="math/tex; mode=display"> k = 0.48 + 1.574 \omega - 0.175 \omega^2  </script>
 <script type="math/tex; mode=display"> a_c = 0.427480  \frac{R^2 T_c^2}{P_c} </script>
-<script type="math/tex; mode=display"> b_c = 0.086640  \frac{R T_c}{P_c} </script>
+<script type="math/tex; mode=display"> b = 0.086640  \frac{R T_c}{P_c} </script>
 <script type="math/tex; mode=display"> \delta_1 = 1 </script>
 <script type="math/tex; mode=display"> \delta_2 = 0 </script>
 </p>
@@ -211,9 +302,8 @@ the following <script type="math/tex">\alpha</script> function and correlation f
 </p>
 <h2 id="pengrobinson78">PengRobinson78</h2>
 <p>Fortran definition: <a href="../../../../proc/pengrobinson78.html">PengRobinson78</a>. The Peng-Robinson (1978) EoS is an
-improved version of the original Peng-Robinson (1976) equation for heavier
-components. This equation ensures a monotonically increasing <script type="math/tex">k</script> as the
-values of <script type="math/tex">\omega</script> increases. It uses the following <script type="math/tex">\alpha</script> function and
+variant of the original Peng-Robinson (1976) equation with a different
+high-acentric-factor correlation. It uses the following <script type="math/tex">\alpha</script> function and
 correlation for k.</p>
 <p>
 <script type="math/tex; mode=display"> \alpha(T_r) = (1 + k (1 - \sqrt{T_r}))^2 </script>
@@ -223,7 +313,7 @@ correlation for k.</p>
 k =
 \begin{cases} 
 0.37464 + 1.54226 \omega - 0.26992 \omega^2 & \text{if} \quad \omega \leq 0.491 \\
-0.37464 + 1.48503 \omega - 0.16442 \omega^2 + 0.016666 \omega^3 & \text{if} \quad \omega > 0.491
+0.379642 + 1.48503 \omega - 0.164423 \omega^2 + 0.016666 \omega^3 & \text{if} \quad \omega > 0.491
 \end{cases}
 </script>
 </p>
@@ -253,23 +343,53 @@ function:</p>
  \alpha(T_r) = \left(\frac{3}{2+T_r}\right)^k
 </script>
 </p>
-<p>These two extra parameters can be provided as arguments. But, if they are
-not provided they will be calculated by the following correlations:</p>
-<p>
-<script type="math/tex; mode=display"> \delta_1 = d_1 + d_2 (d_3 - Z_c)^d_4 + d_5 (d_3 - Z_c) ^ {d_6} </script>
-<script type="math/tex; mode=display"> k = (A_1  Z_c + A_0)\omega^2 + (B_1 Z_c + B_0)\omega + (C_1 Z_c + C_0) </script>
-</p>
-<p>In this implementation, the <script type="math/tex">k</script> constants (if not provided) will also 
-be readjusted to assure that <script type="math/tex">\omega = -log_{10}\left(P_r^{sat}\right) - 1</script> 
-at <script type="math/tex">T_r = 0.7</script>.</p>
-<p>It is also possible to include the parameters as optional arguments.</p>
+<p>Its constructor is <code>RKPR(tc, pc, w, zc, kij, lij, delta_1, k)</code>; arguments after
+<code>zc</code> are optional. Here <code>zc</code> is the experimental critical compressibility
+<script type="math/tex">Z_c=P_c v_c/(RT_c)</script>, with <script type="math/tex">v_c</script> the critical molar volume. RKPR needs
+this additional pure-component information. Optional <code>delta_1</code> and <code>k</code> arrays
+each have one entry per component.</p>
+<p>The implementation uses an effective critical compressibility <code>1.168*zc</code> in
+its default shape correlation and numerically readjusts unspecified <code>k</code> values
+to match the acentric-factor definition at <script type="math/tex">T_r=0.7</script>. This numerical fit is
+not an unconditional convergence guarantee. The implemented correlations are
+documented with <a href="../../../../proc/rkpr.html">RKPR</a>; do not substitute experimental <code>zc</code> directly into an
+unrelated published correlation. Check that correlated parameters are finite,
+particularly near the fractional-power correlation&rsquo;s domain boundary.</p>
+<p>Because the <script type="math/tex">k</script> refit solves a saturation condition per component, building
+an RKPR model is noticeably more expensive than building PR or SRK, and it can
+be sensitive to the input <code>zc</code> values.</p>
 <h2 id="psrk">PSRK</h2>
 <p><a href="../../../../proc/psrk.html">PSRK</a></p>
 <p>The PSRK EoS [3,4] (Predictive Soave-Redlich-Kwong) is a Soave-Redlich-Kwong
-cubic equation of state that uses the <a href="../../../../type/mhv.html">MHV</a> mixrule and the
-<a href="../../../../type/alphamathiascopeman.html">AlphaMathiasCopeman</a> <script type="math/tex">\alpha</script> function. With the MHV mixrule, a Gibbs
-excess energy model is required, in the case of PSRK, the PSRK-UNIFAC model is
-used.</p>
+cubic equation of state that uses the <a href="../../../../type/mhv.html">MHV</a> mixrule and a PSRK-UNIFAC model.
+The alpha function is Soave by default, or <a href="../../../../type/alphamathiascopeman.html">AlphaMathiasCopeman</a> when the
+optional <code>c1</code>, <code>c2</code>, and <code>c3</code> parameters are provided.</p>
+<p>PSRK additionally needs one group decomposition per component, using the
+PSRK-UNIFAC group definitions and available interaction parameters. It does not
+infer molecular structure from critical constants. Supply all three alpha
+coefficient arrays together if overriding its default. See the
+<a href="../../excessmodels/unifac_models/index.html">group-contribution guide</a>.</p>
+<h2 id="interpreting-results-and-avoiding-false-confidence">Interpreting results and avoiding false confidence</h2>
+<ul>
+<li>Use positive temperatures and volumes, nonnegative amounts and a positive
+  total amount. Volume must exceed the mixture covolume; approaching that
+  boundary makes pressure diverge.</li>
+<li><code>pressure</code> evaluates a mathematical homogeneous state. It does not decide
+  whether that state will separate into liquid and vapor.</li>
+<li>At fixed pressure and temperature there can be several volume roots.
+  Requesting a liquid or vapor root is a branch choice, not proof that this
+  phase is globally stable. Negative pressures on stretched branches are not
+  a predicted operating pressure for an equilibrium vessel.</li>
+<li>A converged flash cannot repair unsuitable parameters. Conversely, a failed
+  flash is not proof the EOS is invalid. Check units, root selection, initial
+  guesses and material balances separately.</li>
+</ul>
+<h2 id="next-reading">Next reading</h2>
+<p>Continue with <a href="mixing.html">mixing rules</a>, <a href="alpha.html">alpha functions</a>, and
+<a href="../../phase_equilibrium/index.html">phase equilibrium</a>. The
+<a href="../index.html">EOS property guide</a> explains the shared API, and
+<a href="../../fundamentals.html">thermodynamic fundamentals</a> covers amounts,
+compositions, units and the difference between a model and a solver.</p>
 <h1 id="references">References</h1>
 <p>[1] Michelsen, M. L., &amp; Mollerup, J. M. (2007). Thermodynamic models:
 Fundamentals &amp; computational aspects (2. ed). Tie-Line Publications.</p>
@@ -294,14 +414,14 @@ https://doi.org/10.1016/j.fluid.2004.11.002</p>
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

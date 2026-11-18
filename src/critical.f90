@@ -1,4 +1,17 @@
 module yaeos__equilibria_critical
+   !! # Critical points and critical lines
+   !!
+   !! # Description
+   !! Calculation of mixture critical points with [[critical_point]] and
+   !! critical lines with [[critical_line]]. The criticality conditions are
+   !! solved with Newton's method, and the critical line is traced with the
+   !! same numerical continuation method used for phase envelopes.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! cp = critical_point(model, z0, zi, spec_CP%a, S=alpha, max_iters=1000)
+   !! line = critical_line(model, alpha, z0, zi, ns0, S0, dS0)
+   !! ```
    use yaeos__constants, only: pr
    use yaeos__models_ar, only: ArModel
    use yaeos__equilibria_equilibrium_state, only: EquilibriumState
@@ -19,12 +32,12 @@ module yaeos__equilibria_critical
    type :: CriticalLine
       !! # CriticalLine
       !!
-      !! ## Description
+      !! # Description
       !! This derived type is used to store a critical line between two fluids.
       !! The critical line is calculated using the `critical_line` function. It
       !! uses the continuation method.
       !!
-      !! ## Examples
+      !! # Examples
       !! A critical line can be calculated between two fluids using the
       !! `critical_line` function.
       !! In this example we calculate the critical of a binary mixture of
@@ -36,6 +49,7 @@ module yaeos__equilibria_critical
       !! type(CubicEoS) :: model
       !! type(CriticalLine) :: cl
       !! real(pr) :: z0(2), zi(2)
+      !! real(pr) :: tc(2), pc(2), w(2)
       !!
       !! z0 = [1, 0] ! Pure carbon dioxide
       !! zi = [0, 1] ! Pure bicyclohexyl
@@ -46,7 +60,8 @@ module yaeos__equilibria_critical
       !! w = [0.223621_pr, 0.427556_pr]
       !! model = PengRobinson76(tc, pc, w)
       !! ! Calculate the critical line
-      !! cl = critical_line(model, a0=0.99_pr, z0=z0, zi=zi, dS0=-0.01_pr)
+      !! cl = critical_line(model, a0=0.99_pr, z0=z0, zi=zi, &
+      !!                  ns0=spec_CP%a, S0=0.99_pr, dS0=-0.01_pr)
       !! ```
       real(pr), allocatable :: a(:) !! Molar fraction of the second fluid
       real(pr), allocatable :: z0(:) !! Molar fractions of the first fluid
@@ -60,7 +75,15 @@ module yaeos__equilibria_critical
    end type CriticalLine
 
    type, private :: CPSpecs
-      !! Enumerator to handle the possible specifications for a critical point.
+      !! # CPSpecs
+      !! Internal selector values for critical-point specifications.
+      !!
+      !! # Description
+      !! Maps the fields in the public `spec_CP` object to the internal
+      !! unknown-vector slots representing \(\alpha\), \(V\), \(T\), and \(P\).
+      !!
+      !! # Examples
+      !! Select a constraint with `spec_CP%a`, `spec_CP%V`, `spec_CP%T`, or `spec_CP%P`.
       integer :: a=1 !! Specify \( \alpha \)
       integer :: V=2 !! Specify \( V \)
       integer :: T=3 !! Specify \( T \)
@@ -94,29 +117,37 @@ contains
       real(pr), intent(in) :: a0 !! Initial \(\alpha\) value
       real(pr), intent(in) :: z0(:) !! Molar fractions of the first fluid
       real(pr), intent(in) :: zi(:) !! Molar fractions of the second fluid
-      integer, intent(in) :: ns0 !! Position of the specification variable
-      real(pr), intent(in) :: S0 !! Specified value
+      integer, intent(in) :: ns0 !! Position of the specification variable in \(X=[a, \ln V, \ln T, \ln P]\) (use `spec_CP`)
+      real(pr), intent(in) :: S0 !! Specified value: \(\alpha\) itself for `spec_CP%a`, otherwise the logarithm of \(V\), \(T\) or \(P\)
       real(pr), intent(in) :: dS0 !! Initial step size
-      real(pr), optional, intent(in) :: v0 !! Initial volume [L/mol]
-      real(pr), optional, intent(in) :: t0 !! Initial temperature [K]
-      real(pr), optional, intent(in) :: p0 !! Initial pressure [bar]
-      integer, optional, intent(in) :: max_points !! Maximum number of points
-      real(pr), optional, intent(in) :: maxP !! Maximum pressure
-      type(EquilibriumState), optional, intent(in) :: first_point
-      logical, optional :: stability_analysis
+      real(pr), optional, intent(in) :: v0 !! Initial volume [L/mol], defaults to the vapor root at \(T_0\), \(P_0\)
+      real(pr), optional, intent(in) :: t0 !! Initial temperature [K], defaults to \(\sum z_i T_{c,i}\)
+      real(pr), optional, intent(in) :: p0 !! Initial pressure [bar], defaults to \(\sum z_i P_{c,i}\)
+      integer, optional, intent(in) :: max_points !! Maximum number of points, defaults to 1000
+      real(pr), optional, intent(in) :: maxP !! Maximum pressure [bar], defaults to 2500
+      type(EquilibriumState), optional, intent(in) :: first_point !! Optional initial point; overrides the initial guess with \(\alpha=\) `first_point%x(2)`, `Vx`, `T`, `P`.
+      logical, optional :: stability_analysis !! If `.true.`, check the stability of each traced critical state (default `.false.`).
 
 
       real(pr) :: u(size(z0)) !! eigen-vector
       real(pr) :: u_new(size(z0)) !! eigen-vector
 
-      real(pr), allocatable :: XS_i(:), XS(:, :)!! Full set of solved points
+      real(pr), allocatable :: XS_i(:) !! Full set of solved points
+      real(pr), allocatable :: XS(:, :) !! Full set of solved points
 
       integer :: ns
       real(pr) :: S
 
-      real(pr) :: X0(4), T, P, V, a, z(size(z0))
+      real(pr) :: X0(4)
+      real(pr) :: T
+      real(pr) :: P
+      real(pr) :: V
+      real(pr) :: a
+      real(pr) :: z(size(z0)) !! Feed or overall composition.
 
-      integer :: i, npoints, nc
+      integer :: i !! Loop/index variable.
+      integer :: npoints
+      integer :: nc !! Number of components.
 
       real(pr) :: max_P
 
@@ -192,14 +223,26 @@ contains
       solve_points: block
          use yaeos__math, only: solve_system
          use yaeos__math_continuation, only: full_newton
-         real(pr) :: X(4), dX(4), dS, F(4), dF(4,4), dFdS(4), dXdS(4)
-         real(pr) :: u_new(size(z0)), l1, Si
-         real(pr) :: dPdT_1, dPdT_2, d2PdT2, dT2
+         real(pr) :: X(4)
+         real(pr) :: dX(4)
+         real(pr) :: dS
+         real(pr) :: F(4)
+         real(pr) :: dF(4,4)
+         real(pr) :: dFdS(4)
+         real(pr) :: dXdS(4)
+         real(pr) :: u_new(size(z0))
+         real(pr) :: l1
+         real(pr) :: Si
+         real(pr) :: dPdT_1
+         real(pr) :: dPdT_2
+         real(pr) :: d2PdT2
+         real(pr) :: dT2
 
-         integer :: its, real_its
+         integer :: its !! Iteration count.
+         integer :: real_its
 
-         if (exp(X(4)) > max_P) then
-            max_P = exp(X(4)) + 100
+         if (exp(X0(4)) > max_P) then
+            max_P = exp(X0(4)) + 100
          end if
 
          X = X0
@@ -353,11 +396,16 @@ contains
       real(pr), intent(in out) :: u(:) !! Eigen-vector
       type(EquilibriumState), intent(out) :: CEP !! Critical End Point
 
-      real(pr) :: y_cep(size(z0)), V_cep
-      real(pr) :: Xcep(size(z0)+4),Fcep(size(z0)+4), dFcep(size(z0)+4, size(z0)+4), dXcep(size(z0)+4)
+      real(pr) :: y_cep(size(z0))
+      real(pr) :: V_cep
+      real(pr) :: Xcep(size(z0)+4)
+      real(pr) :: Fcep(size(z0)+4)
+      real(pr) :: dFcep(size(z0)+4, size(z0)+4)
+      real(pr) :: dXcep(size(z0)+4)
       real(pr) :: Fcep_new(size(z0)+4)
-      integer :: its, inits
-      integer :: nc
+      integer :: its !! Iteration count.
+      integer :: inits
+      integer :: nc !! Number of components.
       real(pr) :: damp
       real(pr) :: alpha
       nc = size(z0)
@@ -417,7 +465,7 @@ contains
       !!
       !! ## Description
       !! Check the stability of a point in the critical line. The stability is
-      !! determined by `tpd` analysis.
+      !! determined by a `tpd` scan over trial compositions (binary mixtures only).
       use yaeos__equilibria_stability, only: min_tpd
       class(ArModel), intent(in) :: model !! Equation of state model
       real(pr), intent(in) :: z0(:) !! Molar fractions of the first fluid
@@ -426,17 +474,23 @@ contains
       real(pr), intent(in) :: Vc !! Volume [L/mol]
       real(pr), intent(in) :: Tc !! Temperature [K]
       real(pr), intent(in) :: a !! Molar fraction of the second fluid
-      logical, intent(out) :: unstable !! Stability of the point)
-      real(pr), intent(out) :: V_other !! Volume [L/mol]
-      real(pr), intent(out) :: y_other(:) !! Molar fractions of the second fluid
+      logical, intent(out) :: unstable !! `.true.` if a trial composition has \(tpd < -0.01\)
+      real(pr), intent(out) :: V_other !! Volume of the last trial phase evaluated [L/mol]
+      real(pr), intent(out) :: y_other(:) !! First trial composition found with negative \(tpd\) (set only when `unstable`)
 
-      real(pr) :: z(2)
-      real(pr) :: y(2), dy
-      real(pr) :: fug_z(2), fug_y(2), P, mintpd
-      integer :: istab, istab0
+      real(pr) :: z(2) !! Feed or overall composition.
+      real(pr) :: y(2) !! Incipient/second phase composition.
+      real(pr) :: dy
+      real(pr) :: fug_z(2)
+      real(pr) :: fug_y(2)
+      real(pr) :: P
+      real(pr) :: mintpd
+      integer :: istab
+      integer :: istab0
       real(pr) :: tpd
 
-      logical :: first, possible
+      logical :: first
+      logical :: possible
 
       if (size(z0) /= 2) then
          error stop "Stability check only for binary mixtures"
@@ -501,7 +555,7 @@ contains
       !! And \( \mathbf{u} \) should be the eigen-vector corresponding to the
       !! smallest eigen-value when \(s = 0\)
       use yaeos__math_linalg, only: eigen
-      class(ArModel), intent(in) :: model
+      class(ArModel), intent(in) :: model !! EOS used to evaluate the stability matrix.
       real(pr), intent(in) :: z0(:) !! Molar fractions of the first fluid
       real(pr), intent(in) :: zi(:) !! Molar fractions of the second fluid
       real(pr), intent(in) :: s
@@ -515,14 +569,21 @@ contains
       !! \[ M_{ij} = \sqrt{z_i z_j} \frac{\partial \ln f_i}{\partial n_j} \]
       real(pr), optional, intent(out) :: P !! Pressure of the system [bar]
 
-      real(pr) :: n(size(z0)), V, T
+      real(pr) :: n(size(z0))
+      real(pr) :: V
+      real(pr) :: T
       real(pr) :: dlnf_dn(size(z0), size(z0))
-      real(pr) :: lambda(size(z0)), vectors(size(z0), size(z0))
+      real(pr) :: lambda(size(z0))
+      real(pr) :: vectors(size(z0), size(z0))
 
       ! type(linalg_state_type) :: stat
 
-      integer :: i, j, nc
-      real(pr) :: M(size(z0), size(z0)), z(size(z0)), Pin
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: nc !! Number of components.
+      real(pr) :: M(size(z0), size(z0))
+      real(pr) :: z(size(z0)) !! Feed or overall composition.
+      real(pr) :: Pin
 
       real(pr) :: a
 
@@ -557,14 +618,14 @@ contains
       !! # F_critical
       !!
       !! ## Description
-      !! Function that should be equal to zero at a critical point is found.
+      !! Function that is equal to zero at a critical point.
       !! The second criticality condition is calculated as a numerical
       !! derivative with `eps=1e-4`.
       !!
       !! \[
       !! F = \begin{bmatrix}
       !!   \lambda_1(s) \\
-      !!   \frac{\partial \lambda_1(s+\epsilon) - \lambda_1(s-\epsilon)}{2\epsilon} \\
+      !!   \frac{\lambda_1(s+\epsilon) - \lambda_1(s-\epsilon)}{2\epsilon} \\
       !!   \ln P - X_4 \\
       !!   X_{ns} - S
       !! \end{bmatrix} = 0
@@ -575,6 +636,9 @@ contains
       !! \[
       !! X = [\alpha, \ln V, \ln T, \ln P]
       !! \]
+      !!
+      !! For binary mixtures the first variable is stored as \(\ln \alpha\)
+      !! (see `get_a`/`set_a`); for more components it is \(\alpha\).
       !!
       !! Including internally the extra equation:
       !! \[ \mathbf{z} = \alpha \mathbf{z_i} + (1-\alpha) \mathbf{z_0} \]
@@ -589,14 +653,21 @@ contains
       real(pr) :: u_new(size(u))
 
       real(pr) :: F_critical(4)
-      real(pr) :: z(size(u))
+      real(pr) :: z(size(u)) !! Feed or overall composition.
 
-      real(pr) :: a, V, T, P
+      real(pr) :: a
+      real(pr) :: V
+      real(pr) :: T
+      real(pr) :: P
 
-      real(pr), parameter :: eps=1e-4_pr
+      real(pr), parameter :: eps=1e-4_pr !! Small numerical tolerance or perturbation.
 
-      integer :: i, nc
-      real(pr) :: eps_df, F1(4), F2(4), dx(4)
+      integer :: i !! Loop/index variable.
+      integer :: nc !! Number of components.
+      real(pr) :: eps_df !! Unused finite-difference workspace in this routine.
+      real(pr) :: F1(4) !! Unused residual workspace in this routine.
+      real(pr) :: F2(4) !! Unused residual workspace in this routine.
+      real(pr) :: dx(4) !! Unused perturbation workspace in this routine.
 
       nc = size(z0)
 
@@ -630,12 +701,15 @@ contains
       real(pr), intent(in out) :: u(:) !! Eigen-vector
       real(pr) :: df_critical(4, 4) !! Jacobian of the critical point function
 
-      real(pr) :: eps, a
+      real(pr) :: eps !! Small numerical tolerance or perturbation.
+      real(pr) :: a
 
-      real(pr) :: dx(4), F1(4), F2(4)
+      real(pr) :: dx(4) !! Perturbation vector with one nonzero entry for each Jacobian column.
+      real(pr) :: F1(4) !! Criticality residuals evaluated at X - dx.
+      real(pr) :: F2(4) !! Criticality residuals evaluated at X + dx.
 
-      integer :: i
-      integer :: nc
+      integer :: i !! Loop/index variable.
+      integer :: nc !! Number of components.
       nc = size(z0)
 
       ! if (any(X(1)*zi + (1-X(1))*z0 > 0.99)) then
@@ -674,21 +748,27 @@ contains
       real(pr), intent(in out) :: u(nc) !! Eigen-vector
 
       real(pr) :: F_cep(nc+4)
-      real(pr) :: z(nc)
+      real(pr) :: z(nc) !! Feed or overall composition.
 
-      real(pr) :: V, T, P
+      real(pr) :: V
+      real(pr) :: T
+      real(pr) :: P
       real(pr) :: Xcp(nc+4)
 
-      real(pr) :: Vc, Pc, lnf_z(nc)
-      real(pr) :: y(nc)
-      real(pr) :: Vy, Py
+      real(pr) :: Vc
+      real(pr) :: Pc
+      real(pr) :: lnf_z(nc)
+      real(pr) :: y(nc) !! Incipient/second phase composition.
+      real(pr) :: Vy
+      real(pr) :: Py
       real(pr) :: lnf_y(nc)
 
-      real(pr), parameter :: eps=1e-5_pr
+      real(pr), parameter :: eps=1e-5_pr !! Small numerical tolerance or perturbation.
 
-      real(pr) :: a, u_new(nc)
+      real(pr) :: a
+      real(pr) :: u_new(nc)
 
-      integer, intent(in) :: nc
+      integer, intent(in) :: nc !! Number of components.
 
       y = exp(X(:nc))
       Vy = exp(X(nc+1))
@@ -722,20 +802,22 @@ contains
       !! ## Description
       !! Calculates the Jacobian of the critical point function `F_critical`.
       class(ArModel), intent(in) :: model !! Equation of state model
-      integer, intent(in) :: nc
+      integer, intent(in) :: nc !! Number of components.
       real(pr), intent(in) :: z0(nc) !! Molar fractions of the first fluid
       real(pr), intent(in) :: X(nc+4) !! Vector of variables
       real(pr), intent(in) :: zi(nc) !! Molar fractions of the second fluid
       real(pr), intent(in out) :: u(nc) !! Eigen-vector
       real(pr) :: df_cep(nc+4, nc+4) !! Jacobian of the critical point function
 
-      real(pr) :: eps
+      real(pr) :: eps !! Small numerical tolerance or perturbation.
 
-      real(pr) :: dx(nc+4), F1(nc+4), F2(nc+4)
+      real(pr) :: dx(nc+4)
+      real(pr) :: F1(nc+4)
+      real(pr) :: F2(nc+4)
 
       real(pr) :: a
 
-      integer :: i
+      integer :: i !! Loop/index variable.
 
       a = get_a(nc, X(1))
 
@@ -778,9 +860,9 @@ contains
       !!        model, z0, zi, S=0.5_pr, spec=spec_CP%a, max_iters=1000)
       !! ```
       !!
-      !! ### Specifiying another variable
+      !! ### Specifying another variable
       !! The natural variables are a, lnV, lnT and lnP. So it is important to
-      !! specify the variable in logaritmic scale if that is the case.
+      !! specify the variable in logarithmic scale if that is the case.
       !!
       !! ```fortran
       !!   cp = critical_point(model, z0, zi, S=log(200._pr), spec=spec_CP%P, max_iters=1000)
@@ -789,9 +871,9 @@ contains
       class(ArModel), intent(in) :: model !! Equation of state model
       real(pr), intent(in) :: z0(:) !! Molar fractions of the first fluid
       real(pr), intent(in) :: zi(:) !! Molar fractions of the second fluid
-      integer, intent(in) :: spec !! Specification `[1:"z", 2:"V", 3:"T", 4:"P"]`
-      real(pr), intent(in) :: S !! Specification value
-      integer, intent(in) :: max_iters !! Maxiumum number of iterations
+      integer, intent(in) :: spec !! Specification `[1:"a", 2:"V", 3:"T", 4:"P"]` (use `spec_CP`)
+      real(pr), intent(in) :: S !! Specification value: \(\alpha\) for `spec_CP%a`, otherwise \(\ln V\), \(\ln T\) or \(\ln P\)
+      integer, intent(in) :: max_iters !! Maximum number of iterations
 
       real(pr), optional, intent(in) :: V0 !! Initial volume [L/mol].
       real(pr), optional, intent(in) :: T0 !! Initial temperature [K].
@@ -800,12 +882,18 @@ contains
 
       real(pr) :: X(4)
       integer :: ns
-      real(pr) :: F(4), df(4, 4), dX(4), u(size(z0))
+      real(pr) :: F(4)
+      real(pr) :: df(4, 4)
+      real(pr) :: dX(4)
+      real(pr) :: u(size(z0))
 
-      real(pr) :: z(size(z0)), u_new(size(z0)), l, a
+      real(pr) :: z(size(z0)) !! Feed or overall composition.
+      real(pr) :: u_new(size(z0))
+      real(pr) :: l !! Minimum eigenvalue \(\lambda_1\) of the stability matrix.
+      real(pr) :: a
       real(pr) :: Sin
-      integer :: i
-      integer :: nc
+      integer :: i !! Loop/index variable.
+      integer :: nc !! Number of components.
 
       nc = size(z0)
 
@@ -829,9 +917,10 @@ contains
          X(3) = log(sum(model%components%Tc * z))
       end if
 
-      if (ns == spec_CP%P) then
-         X(4) = S
-      else if (present(P0)) then
+      ! Initial pressure: P0 or a mole-fraction average of Pc. When P itself is
+      ! specified, X(4) is set to S below, after the initial volume is
+      ! computed at this initial pressure.
+      if (present(P0)) then
          X(4) = log(P0)
       else
          X(4) = log(sum(model%components%Pc * z))
@@ -852,6 +941,10 @@ contains
          Sin = S
          X(ns) = Sin
       end if
+
+      ! Initial eigenvector guess, as in critical_line. lambda1 evaluates
+      ! z + s*u*sqrt(z), so u must be defined even when s = 0.
+      u = (z0 + zi)/sum(z0 + zi)
 
       ! ========================================================================
       ! Solve the system of equations
@@ -891,8 +984,8 @@ contains
    end function critical_point
 
    real(pr) function get_a(nc, X)
-      integer, intent(in) :: nc
-      real(pr), intent(in) :: X
+      integer, intent(in) :: nc !! Number of components.
+      real(pr), intent(in) :: X !! Solver variable for the composition parameter: \(\ln a\) if `nc == 2`, else \(a\).
       if (nc == 2) then
          get_a = exp(X)
       else
@@ -901,8 +994,8 @@ contains
    end function get_a
 
    real(pr) function set_a(nc, a)
-      integer, intent(in) :: nc
-      real(pr), intent(in) :: a
+      integer, intent(in) :: nc !! Number of components.
+      real(pr), intent(in) :: a !! Composition parameter \(a\) in \(z = a z_i + (1-a) z_0\).
       if (nc == 2) then
          set_a = log(a)
       else
@@ -930,11 +1023,14 @@ contains
       !! @endnote
       !!
       class(ArModel), intent(in out) :: model !! Thermodynamic model.
-      real(pr) :: z(size(model%components%Tc)), Psat_i
+      real(pr) :: z(size(model%components%Tc)) !! Feed or overall composition.
+      real(pr) :: Psat_i
       type(EquilibriumState) :: cp
-      real(pr) :: Vl, Vv
+      real(pr) :: Vl
+      real(pr) :: Vv
 
-      integer :: i, nc
+      integer :: i !! Loop/index variable.
+      integer :: nc !! Number of components.
 
       nc = size(model%components%Tc)
       do i=1,nc

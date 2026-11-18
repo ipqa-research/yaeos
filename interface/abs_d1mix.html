@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>abs_D1mix &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.2% of total for procedures.">31 statements</a>
+                 title=" 0.3% of total for procedures.">48 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -174,7 +175,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~63"></span>
+              <span class="anchor" id="variable-self~36"></span>
               class(<a href='../type/cubicmixrule.html'>CubicMixRule</a>),
             </td>
 <td>intent(in)</td>
@@ -184,12 +185,12 @@
             <td>::</td>
             <td><strong>self</strong></td>
             <td>
-                
+                <p>Mixing-rule implementation.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~122"></span>
+              <span class="anchor" id="variable-n~33"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -199,12 +200,12 @@
             <td>::</td>
             <td><strong>n</strong>(:)</td>
             <td>
-                
+                <p>Component mole amounts [mol].</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-d1i~8"></span>
+              <span class="anchor" id="variable-d1i~5"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -214,12 +215,12 @@
             <td>::</td>
             <td><strong>d1i</strong>(:)</td>
             <td>
-                
+                <p>Pure-component <script type="math/tex">\delta_1</script> values.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-d1~12"></span>
+              <span class="anchor" id="variable-d1~5"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -229,12 +230,12 @@
             <td>::</td>
             <td><strong>D1</strong></td>
             <td>
-                
+                <p>Mixture <script type="math/tex">\delta_1</script> parameter.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dd1i~13"></span>
+              <span class="anchor" id="variable-dd1i~5"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -244,12 +245,12 @@
             <td>::</td>
             <td><strong>dD1i</strong>(:)</td>
             <td>
-                
+                <p>Gradient of <code>D1</code> with respect to mole amounts.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dd1ij~13"></span>
+              <span class="anchor" id="variable-dd1ij~5"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -259,12 +260,16 @@
             <td>::</td>
             <td><strong>dD1ij</strong>(:,:)</td>
             <td>
-                
+                <p>Hessian of <code>D1</code> with respect to mole amounts.</p>
             </td>
         </tr>
     </tbody>
   </table>
 
+    <h3>Description</h3>
+    <h1 id="abs_d1mix">abs_D1mix</h1>
+<h1 id="description">Description</h1>
+<p>Evaluate the first denominator parameter and its composition derivatives.</p>
     <br>
 
  </div>
@@ -278,14 +283,14 @@
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

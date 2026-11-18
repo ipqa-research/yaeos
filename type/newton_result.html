@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>newton_result &ndash; yaeos </title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -138,9 +139,9 @@
             <a class="list-group-item" href="../type/newton_result.html#variable-cond_est">cond_est</a>
             <a class="list-group-item" href="../type/newton_result.html#variable-dx_norm">dx_norm</a>
             <a class="list-group-item" href="../type/newton_result.html#variable-f_history">f_history</a>
-            <a class="list-group-item" href="../type/newton_result.html#variable-f_norm">f_norm</a>
-            <a class="list-group-item" href="../type/newton_result.html#variable-iterations~2">iterations</a>
-            <a class="list-group-item" href="../type/newton_result.html#variable-lambda">lambda</a>
+            <a class="list-group-item" href="../type/newton_result.html#variable-f_norm~2">f_norm</a>
+            <a class="list-group-item" href="../type/newton_result.html#variable-iterations~8">iterations</a>
+            <a class="list-group-item" href="../type/newton_result.html#variable-lambda~2">lambda</a>
             <a class="list-group-item" href="../type/newton_result.html#variable-status">status</a>
         </div>
       </div>
@@ -173,7 +174,16 @@
     <div class="col-md-9" id='text'>
       <h2 id="type-def-statement">
         type, public :: newton_result</h2>
-    
+    <h1 id="newton_result">newton_result</h1>
+<p>Diagnostics produced by one nonlinear solve.</p>
+<h1 id="description">Description</h1>
+<p>Contains the termination status, iteration count, final residual and
+step norms, final damping and condition estimates, and optionally the
+residual history. The final (last accepted) iterate is returned in <code>x</code>.</p>
+<h1 id="examples">Examples</h1>
+<div class="codehilite"><pre><span></span><code><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">result</span><span class="p">%</span><span class="n">status</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="n">NEWTON_SUCCESS</span><span class="p">)</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">   </span><span class="k">write</span><span class="p">(</span><span class="o">*</span><span class="p">,</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="n">newton_status_msg</span><span class="p">(</span><span class="k">result</span><span class="p">%</span><span class="n">status</span><span class="p">)</span>
+</code></pre></div>
     <br>
 
     <section>
@@ -245,7 +255,7 @@ Size: (iterations + 1).</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-f_norm"></span>
+              <span class="anchor" id="variable-f_norm~2"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -263,7 +273,7 @@ Units: same as F.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iterations~2"></span>
+              <span class="anchor" id="variable-iterations~8"></span>
               integer,
             </td>
               <td>public</td>
@@ -280,7 +290,7 @@ Units: same as F.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lambda"></span>
+              <span class="anchor" id="variable-lambda~2"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -336,14 +346,14 @@ Use newton_status_msg(status) for a human-readable string.</p>
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

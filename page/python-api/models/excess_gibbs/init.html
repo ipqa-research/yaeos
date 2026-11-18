@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Excess Gibbs Models &mdash; yaeos 4.5.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+  <title>Excess Gibbs Models &mdash; yaeos 4.5.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=a284863f"></script>
+      <script src="../../_static/documentation_options.js?v=06fc0226"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,16 +56,19 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../init.html">Models</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../residual_helmholtz/init.html">Residual Helmholtz Models</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Excess Gibbs Models</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="nrtl.html">NRTL</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unifacvle.html">UNIFACVLE</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unifac_dortmund.html">UNIFAC Dortmund</a></li>
-<li class="toctree-l3"><a class="reference internal" href="psrk_unifac.html">UNIFAC PSRK</a></li>
-<li class="toctree-l3"><a class="reference internal" href="uniquac.html">UNIQUAC</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../init.html#choose-the-model-before-the-solver">Choose the model before the solver</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../residual_helmholtz/init.html">Residual Helmholtz Models</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Excess Gibbs Models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="nrtl.html">NRTL</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unifacvle.html">UNIFACVLE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unifac_dortmund.html">UNIFAC Dortmund</a></li>
+<li class="toctree-l4"><a class="reference internal" href="psrk_unifac.html">UNIFAC PSRK</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uniquac.html">UNIQUAC</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../groups.html">Groups module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../groups.html">Groups module</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -101,11 +104,34 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-yaeos.models.excess_gibbs">
-<span id="excess-gibbs-models"></span><h1>Excess Gibbs Models<a class="headerlink" href="#module-yaeos.models.excess_gibbs" title="Link to this heading"></a></h1>
-<p>Gibbs Excess Models module.</p>
-<p>Yaeos Gibbs excess module. This module provides the following submodules:</p>
-<p>Excess Gibbs energy models:</p>
+  <section id="excess-gibbs-models">
+<h1>Excess Gibbs Models<a class="headerlink" href="#excess-gibbs-models" title="Link to this heading"></a></h1>
+<p>These models describe how a liquid mixture differs from ideal mixing.
+Their activity coefficients correct each component’s liquid-phase chemical
+potential: <code class="docutils literal notranslate"><span class="pre">ln_gamma</span></code> returns the natural logarithm, so use
+<code class="docutils literal notranslate"><span class="pre">numpy.exp(model.ln_gamma(n,</span> <span class="pre">T))</span></code> to obtain gamma. Gamma near one means a
+small activity correction at that composition, not necessarily a stable
+single liquid phase.</p>
+<p>Use <a class="reference internal" href="nrtl.html"><span class="doc">NRTL</span></a> or <a class="reference internal" href="uniquac.html"><span class="doc">UNIQUAC</span></a> with suitable fitted interaction parameters.
+Use the UNIFAC variants when representing molecules by functional groups,
+checking the variant’s group definitions and available interactions first.
+The variants are distinct parameterizations, not interchangeable names.</p>
+<p>Inputs to property methods are component moles and temperature in K;
+equilibrium methods take overall mole fractions. Keep the constructor’s
+component order throughout. <code class="docutils literal notranslate"><span class="pre">flash_t</span></code> describes a liquid-liquid split,
+not boiling: these models alone do not provide a vapor equation of state
+or pure-component vapor pressures. See <a class="reference internal" href="../../core.html"><span class="doc">Core Module</span></a> for inherited methods
+and <a class="reference internal" href="../../tutorial/gibbs_excess/gibbs_excess.html"><span class="doc">Excess Gibbs models</span></a> for examples.</p>
+<p id="module-yaeos.models.excess_gibbs">Gibbs Excess Models module.</p>
+<p>Yaeos Gibbs excess module. This module provides the following excess Gibbs
+energy models:</p>
+<ul class="simple">
+<li><p>NRTL: non-random two-liquid model</p></li>
+<li><p>UNIFACVLE: original UNIFAC VLE model</p></li>
+<li><p>UNIFACPSRK: PSRK-UNIFAC model</p></li>
+<li><p>UNIFACDortmund: UNIFAC Dortmund model</p></li>
+<li><p>UNIQUAC: UNIversal QUAsiChemical model</p></li>
+</ul>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="nrtl.html">NRTL</a></li>

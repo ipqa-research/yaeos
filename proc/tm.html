@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>tm &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.2% of total for procedures.">33 statements</a>
+                 title=" 0.2% of total for procedures.">36 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -136,8 +137,8 @@
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
             <a class="list-group-item" href="../proc/tm.html#variable-di">di</a>
-            <a class="list-group-item" href="../proc/tm.html#variable-lnphi_w~6">lnphi_w</a>
-            <a class="list-group-item" href="../proc/tm.html#variable-lnphi_z~2">lnphi_z</a>
+            <a class="list-group-item" href="../proc/tm.html#variable-lnphi_w~7">lnphi_w</a>
+            <a class="list-group-item" href="../proc/tm.html#variable-lnphi_z">lnphi_z</a>
             <a class="list-group-item" href="../proc/tm.html#variable-vw~2">vw</a>
             <a class="list-group-item" href="../proc/tm.html#variable-vz~2">vz</a>
         </div>
@@ -173,8 +174,8 @@
 </h2>
     
 
-    <h1 id="alternative-formulation-of-tangent-plane-distance">Alternative formulation of tangent-plane-distance</h1>
-<p>Michelsen&rsquo;s modified <script type="math/tex">tpd</script> function, <script type="math/tex">tm</script>.</p>
+    <h1 id="tm">tm</h1>
+<p>Evaluate Michelsen&rsquo;s modified reduced tangent-plane distance.</p>
 <h1 id="description">Description</h1>
 <p>Alternative formulation of the reduced tangent plane <script type="math/tex">tpd</script> function,
 where the test phase is defined in moles, which enables for unconstrained
@@ -185,20 +186,15 @@ minimization.
 </p>
 <h1 id="examples">Examples</h1>
 <h2 id="calculation-of-tm">Calculation of <code>tm</code></h2>
-<div class="codehilite"><pre><span></span><code><span class="w"> </span><span class="n">tm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tpd</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">)</span>
-<span class="w"> </span><span class="o">---------------------------</span>
+<div class="codehilite"><pre><span></span><code><span class="w"> </span><span class="n">tpd_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tm</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">)</span>
 </code></pre></div>
 
-<h2 id="using-precalculated-trial-phase-data">Using precalculated trial-phase data</h2>
-<p>It is possible to calculate externaly the <code>d_i</code> vector and use it for
+<h2 id="using-precalculated-feed-data">Using precalculated feed data</h2>
+<p>It is possible to calculate externally the feed <code>d_i</code> vector and use it for
 later calculations.</p>
-<div class="codehilite"><pre><span></span><code><span class="k">call </span><span class="n">fugacity_tp</span><span class="p">(&amp;</span>
-<span class="w">  </span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="o">=</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="o">=</span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">=</span><span class="n">Vz</span><span class="p">,</span><span class="w"> </span><span class="n">root_type</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">lnphip</span><span class="o">=</span><span class="n">lnphi_z</span><span class="p">&amp;</span>
-<span class="p">)</span>
-<span class="n">lnphi_z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lnphi_z</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">log</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>
-<span class="n">di</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">log</span><span class="p">(</span><span class="n">z</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">lnphi_z</span>
-<span class="n">tm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tpd</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">d</span><span class="o">=</span><span class="n">di</span><span class="p">)</span>
-<span class="w"> </span><span class="o">---------------------------</span>
+<div class="codehilite"><pre><span></span><code><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">lnphi_pt</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="o">=</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="o">=</span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">=</span><span class="n">Vz</span><span class="p">,</span><span class="w"> </span><span class="n">root_type</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">lnPhi</span><span class="o">=</span><span class="n">lnphi_z</span><span class="p">)</span>
+<span class="n">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">log</span><span class="p">(</span><span class="n">z</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">lnphi_z</span>
+<span class="n">tpd_value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tm</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">d</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
 </code></pre></div>
 
 <h1 id="references">References</h1>
@@ -222,7 +218,7 @@ Michelsen, Jørgen M. Mollerup. Tie-Line Publications, Denmark (2004)
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~70"></span>
+              <span class="anchor" id="variable-model~54"></span>
               class(<a href='../type/basemodel.html'>BaseModel</a>),
             </td>
 <td>intent(in)</td>
@@ -237,7 +233,7 @@ Michelsen, Jørgen M. Mollerup. Tie-Line Publications, Denmark (2004)
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z~50"></span>
+              <span class="anchor" id="variable-z~54"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -252,7 +248,7 @@ Michelsen, Jørgen M. Mollerup. Tie-Line Publications, Denmark (2004)
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-w~33"></span>
+              <span class="anchor" id="variable-w~32"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -282,7 +278,7 @@ Michelsen, Jørgen M. Mollerup. Tie-Line Publications, Denmark (2004)
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~112"></span>
+              <span class="anchor" id="variable-t~109"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -297,7 +293,7 @@ Michelsen, Jørgen M. Mollerup. Tie-Line Publications, Denmark (2004)
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-d~7"></span>
+              <span class="anchor" id="variable-d~3"></span>
               real(kind=pr),
             </td>
 <td>intent(in),</td>
@@ -323,7 +319,7 @@ Michelsen, Jørgen M. Mollerup. Tie-Line Publications, Denmark (2004)
             <td>::</td>
             <td><strong>dtpd</strong>(:)</td>
             <td>
-                
+                <p>Gradient of <code>tm</code> with respect to trial-phase mole amounts.</p>
             </td>
         </tr>
     </tbody>
@@ -345,43 +341,43 @@ Michelsen, Jørgen M. Mollerup. Tie-Line Publications, Denmark (2004)
   <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: proc~~tm~~CallsGraph Pages: 1 -->
-<svg id="proctmCallsGraph" width="225pt" height="74pt"
- viewBox="0.00 0.00 225.00 74.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~tm~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 70)">
+<svg id="proctmCallsGraph" width="224pt" height="74pt"
+ viewBox="0.00 0.00 224.00 74.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~tm~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 70.27)">
 <title>proc~~tm~~CallsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-70 221,-70 221,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-70.27 220.27,-70.27 220.27,4 -4,4"/>
 <!-- proc~tm -->
 <g id="proc~~tm~~CallsGraph_node1" class="node">
 <title>proc~tm</title>
-<polygon fill="none" stroke="black" points="54,-45 0,-45 0,-21 54,-21 54,-45"/>
-<text text-anchor="middle" x="27" y="-30.6" font-family="Helvetica,sans-Serif" font-size="10.50">tm</text>
+<polygon fill="none" stroke="black" points="54,-45.27 0,-45.27 0,-21 54,-21 54,-45.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-29.53" font-family="Helvetica,sans-Serif" font-size="10.50">tm</text>
 </g>
 <!-- ln_activity_coefficient -->
 <g id="proc~~tm~~CallsGraph_node2" class="node">
 <title>ln_activity_coefficient</title>
-<polygon fill="#777777" stroke="#777777" points="217,-66 90,-66 90,-42 217,-42 217,-66"/>
-<text text-anchor="middle" x="153.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ln_activity_coefficient</text>
+<polygon fill="#777777" stroke="#777777" points="216.27,-66.27 90,-66.27 90,-42 216.27,-42 216.27,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="153.13" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ln_activity_coefficient</text>
 </g>
 <!-- proc~tm&#45;&gt;ln_activity_coefficient -->
 <g id="proc~~tm~~CallsGraph_edge1" class="edge">
 <title>proc~tm&#45;&gt;ln_activity_coefficient</title>
-<path fill="none" stroke="#000000" d="M54.1,-37.4C61.8,-38.7 70.62,-40.19 79.76,-41.73"/>
-<polygon fill="#000000" stroke="#000000" points="79.31,-45.2 89.76,-43.42 80.48,-38.3 79.31,-45.2"/>
+<path fill="none" stroke="#000000" d="M54.33,-37.59C61.55,-38.81 69.76,-40.2 78.27,-41.64"/>
+<polygon fill="#000000" stroke="#000000" points="77.64,-45.08 88.09,-43.3 78.81,-38.18 77.64,-45.08"/>
 </g>
 <!-- lnphi_pt -->
 <g id="proc~~tm~~CallsGraph_node3" class="node">
 <title>lnphi_pt</title>
-<polygon fill="#777777" stroke="#777777" points="181,-24 126,-24 126,0 181,0 181,-24"/>
-<text text-anchor="middle" x="153.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">lnphi_pt</text>
+<polygon fill="#777777" stroke="#777777" points="180.13,-24.27 126.13,-24.27 126.13,0 180.13,0 180.13,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="153.13" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">lnphi_pt</text>
 </g>
 <!-- proc~tm&#45;&gt;lnphi_pt -->
 <g id="proc~~tm~~CallsGraph_edge2" class="edge">
 <title>proc~tm&#45;&gt;lnphi_pt</title>
-<path fill="none" stroke="#000000" d="M54.1,-28.6C71.95,-25.59 95.87,-21.55 115.66,-18.21"/>
-<polygon fill="#000000" stroke="#000000" points="116.3,-21.66 125.58,-16.54 115.13,-14.75 116.3,-21.66"/>
+<path fill="none" stroke="#000000" d="M54.33,-28.68C71.85,-25.72 95.15,-21.78 114.61,-18.48"/>
+<polygon fill="#000000" stroke="#000000" points="115.08,-21.95 124.35,-16.83 113.91,-15.05 115.08,-21.95"/>
 </g>
 </g>
 </svg>
@@ -400,55 +396,55 @@ Michelsen, Jørgen M. Mollerup. Tie-Line Publications, Denmark (2004)
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
 <svg width="641pt" height="28pt"
- viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
 <!-- Subroutine -->
 <g id="node1" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node2" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Interface -->
 <g id="node3" class="node">
 <title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
 </g>
 <!-- Type Bound Procedure -->
 <g id="node4" class="node">
 <title>Type Bound Procedure</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
-<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
 </g>
 <!-- Unknown Procedure Type -->
 <g id="node5" class="node">
 <title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
-<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
 </g>
 <!-- Program -->
 <g id="node6" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node7" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
-<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -472,64 +468,79 @@ implementation in a submodule of an interface in a parent module.
   <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: proc~~tm~~CalledByGraph Pages: 1 -->
-<svg id="proctmCalledByGraph" width="375pt" height="74pt"
- viewBox="0.00 0.00 375.00 74.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~tm~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 70)">
+<svg id="proctmCalledByGraph" width="413pt" height="95pt"
+ viewBox="0.00 0.00 413.00 95.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~tm~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 91.27)">
 <title>proc~~tm~~CalledByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-70 371,-70 371,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-91.27 408.79,-91.27 408.79,4 -4,4"/>
 <!-- proc~tm -->
 <g id="proc~~tm~~CalledByGraph_node1" class="node">
 <title>proc~tm</title>
-<polygon fill="none" stroke="black" points="367,-45 313,-45 313,-21 367,-21 367,-45"/>
-<text text-anchor="middle" x="340" y="-30.6" font-family="Helvetica,sans-Serif" font-size="10.50">tm</text>
+<polygon fill="none" stroke="black" points="404.79,-66.27 350.79,-66.27 350.79,-42 404.79,-42 404.79,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="377.79" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50">tm</text>
 </g>
 <!-- proc~create_generalized_isoz_line -->
 <g id="proc~~tm~~CalledByGraph_node2" class="node">
 <title>proc~create_generalized_isoz_line</title>
 <g id="a_proc~~tm~~CalledByGraph_node2"><a xlink:href="../proc/create_generalized_isoz_line.html" xlink:title="create_generalized_isoz_line">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="277,-66 112,-66 112,-42 277,-42 277,-66"/>
-<text text-anchor="middle" x="194.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">create_generalized_isoz_line</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="314.79,-87.27 151.02,-87.27 151.02,-63 314.79,-63 314.79,-87.27"/>
+<text xml:space="preserve" text-anchor="middle" x="232.9" y="-71.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">create_generalized_isoz_line</text>
 </a>
 </g>
 </g>
 <!-- proc~create_generalized_isoz_line&#45;&gt;proc~tm -->
 <g id="proc~~tm~~CalledByGraph_edge1" class="edge">
 <title>proc~create_generalized_isoz_line&#45;&gt;proc~tm</title>
-<path fill="none" stroke="#000000" d="M277.31,-42.03C286.24,-40.72 294.95,-39.45 302.89,-38.28"/>
-<polygon fill="#000000" stroke="#000000" points="303.44,-41.74 312.83,-36.83 302.42,-34.82 303.44,-41.74"/>
+<path fill="none" stroke="#000000" d="M314.95,-63.22C323.38,-61.98 331.63,-60.77 339.22,-59.66"/>
+<polygon fill="#000000" stroke="#000000" points="339.65,-63.13 349.03,-58.21 338.63,-56.21 339.65,-63.13"/>
 </g>
 <!-- proc~min_tpd -->
 <g id="proc~~tm~~CalledByGraph_node3" class="node">
 <title>proc~min_tpd</title>
 <g id="a_proc~~tm~~CalledByGraph_node3"><a xlink:href="../proc/min_tpd.html" xlink:title="min_tpd">
-<polygon fill="#d9534f" stroke="#d9534f" points="222,-24 167,-24 167,0 222,0 222,-24"/>
-<text text-anchor="middle" x="194.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">min_tpd</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="260.04,-45.27 205.77,-45.27 205.77,-21 260.04,-21 260.04,-45.27"/>
+<text xml:space="preserve" text-anchor="middle" x="232.9" y="-29.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">min_tpd</text>
 </a>
 </g>
 </g>
 <!-- proc~min_tpd&#45;&gt;proc~tm -->
 <g id="proc~~tm~~CalledByGraph_edge2" class="edge">
 <title>proc~min_tpd&#45;&gt;proc~tm</title>
-<path fill="none" stroke="#000000" d="M222.15,-15.9C244.85,-19.22 277.67,-24.02 302.75,-27.69"/>
-<polygon fill="#000000" stroke="#000000" points="302.57,-31.21 312.97,-29.19 303.58,-24.28 302.57,-31.21"/>
+<path fill="none" stroke="#000000" d="M260.45,-37.04C282.6,-40.29 314.45,-44.97 339.22,-48.61"/>
+<polygon fill="#000000" stroke="#000000" points="338.49,-52.04 348.89,-50.04 339.51,-45.12 338.49,-52.04"/>
+</g>
+<!-- proc~flash_second_order -->
+<g id="proc~~tm~~CalledByGraph_node4" class="node">
+<title>proc~flash_second_order</title>
+<g id="a_proc~~tm~~CalledByGraph_node4"><a xlink:href="../proc/flash_second_order.html" xlink:title="flash_second_order">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="115.02,-66.27 0,-66.27 0,-42 115.02,-42 115.02,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="57.51" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">flash_second_order</text>
+</a>
+</g>
+</g>
+<!-- proc~flash_second_order&#45;&gt;proc~min_tpd -->
+<g id="proc~~tm~~CalledByGraph_edge3" class="edge">
+<title>proc~flash_second_order&#45;&gt;proc~min_tpd</title>
+<path fill="none" stroke="#000000" d="M115.29,-47.26C141.19,-44.12 171.16,-40.49 194.23,-37.7"/>
+<polygon fill="#000000" stroke="#000000" points="194.6,-41.18 204.1,-36.5 193.75,-34.23 194.6,-41.18"/>
 </g>
 <!-- proc~pt_mp_flash -->
-<g id="proc~~tm~~CalledByGraph_node4" class="node">
+<g id="proc~~tm~~CalledByGraph_node5" class="node">
 <title>proc~pt_mp_flash</title>
-<g id="a_proc~~tm~~CalledByGraph_node4"><a xlink:href="../proc/pt_mp_flash.html" xlink:title="pt_mp_flash">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="76,-24 0,-24 0,0 76,0 76,-24"/>
-<text text-anchor="middle" x="38" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">pt_mp_flash</text>
+<g id="a_proc~~tm~~CalledByGraph_node5"><a xlink:href="../proc/pt_mp_flash.html" xlink:title="pt_mp_flash">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="95.14,-24.27 19.87,-24.27 19.87,0 95.14,0 95.14,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="57.51" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">pt_mp_flash</text>
 </a>
 </g>
 </g>
 <!-- proc~pt_mp_flash&#45;&gt;proc~min_tpd -->
-<g id="proc~~tm~~CalledByGraph_edge3" class="edge">
+<g id="proc~~tm~~CalledByGraph_edge4" class="edge">
 <title>proc~pt_mp_flash&#45;&gt;proc~min_tpd</title>
-<path fill="none" stroke="#000000" d="M76.01,-12C100.42,-12 132.29,-12 156.67,-12"/>
-<polygon fill="#000000" stroke="#000000" points="156.95,-15.5 166.95,-12 156.95,-8.5 156.95,-15.5"/>
+<path fill="none" stroke="#000000" d="M95.28,-16.59C124.42,-20.12 164.97,-25.03 194.32,-28.58"/>
+<polygon fill="#000000" stroke="#000000" points="193.51,-32.01 203.86,-29.74 194.35,-25.06 193.51,-32.01"/>
 </g>
 </g>
 </svg>
@@ -548,55 +559,55 @@ implementation in a submodule of an interface in a parent module.
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
 <svg width="641pt" height="28pt"
- viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
 <!-- Subroutine -->
 <g id="node1" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node2" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Interface -->
 <g id="node3" class="node">
 <title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
 </g>
 <!-- Type Bound Procedure -->
 <g id="node4" class="node">
 <title>Type Bound Procedure</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
-<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
 </g>
 <!-- Unknown Procedure Type -->
 <g id="node5" class="node">
 <title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
-<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
 </g>
 <!-- Program -->
 <g id="node6" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node7" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
-<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -646,7 +657,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lnphi_w~6"></span>
+              <span class="anchor" id="variable-lnphi_w~7"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -663,7 +674,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lnphi_z~2"></span>
+              <span class="anchor" id="variable-lnphi_z"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -738,14 +749,14 @@ implementation in a submodule of an interface in a parent module.
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Solvers Fitting module &mdash; yaeos 4.5.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+  <title>Solvers Fitting module &mdash; yaeos 4.5.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=a284863f"></script>
+      <script src="../_static/documentation_options.js?v=06fc0226"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -61,9 +61,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../gpec.html">GPEC module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../envelopes.html">Envelopes Module</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="init.html">EoS Fitting Module</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="core.html">Core Fitting module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model_setters.html">Model Setters Fitting module</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Solvers Fitting module</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="init.html#practical-guidance">Practical guidance</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="core.html">Core Fitting module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="model_setters.html">Model Setters Fitting module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Solvers Fitting module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#interpreting-the-output">Interpreting the output</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cautions">Cautions</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../tools/init.html">Tools</a></li>
@@ -94,14 +101,71 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-yaeos.fitting.solvers">
-<span id="solvers-fitting-module"></span><h1>Solvers Fitting module<a class="headerlink" href="#module-yaeos.fitting.solvers" title="Link to this heading"></a></h1>
-<p>Solvers.</p>
-<p>Module that contains different solvers for specific porpouses.</p>
+  <section id="solvers-fitting-module">
+<h1>Solvers Fitting module<a class="headerlink" href="#solvers-fitting-module" title="Link to this heading"></a></h1>
+<p>These helpers compute the phase-equilibrium states that the fitter compares
+with experimental data. They answer a different question from the flash
+methods in <a class="reference internal" href="core.html"><span class="doc">Core Fitting module</span></a>: they return the <strong>compositions of two phases at
+given pressure and temperature</strong>, not the phase amounts of an overall feed.</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">solve_pt(model,</span> <span class="pre">pressure,</span> <span class="pre">temperature,</span> <span class="pre">kind)</span></code></dt><dd><p>Solves a binary equilibrium at the given pressure (bar) and temperature
+(K). It handles liquid-vapor and liquid-liquid cases; the <code class="docutils literal notranslate"><span class="pre">kind</span></code>
+argument selects which (<code class="docutils literal notranslate"><span class="pre">&quot;liquid-liquid&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;PT&quot;</span></code>).</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">binary_isofugacity_x1y1pt(x,</span> <span class="pre">p,</span> <span class="pre">t,</span> <span class="pre">model)</span></code></dt><dd><p>Evaluates the binary isofugacity condition. <code class="docutils literal notranslate"><span class="pre">solve_pt</span></code> does not call
+it (it runs <code class="docutils literal notranslate"><span class="pre">flash_pt</span></code> on a feed between the two initial guesses); it
+is available for building custom solvers. The argument
+<code class="docutils literal notranslate"><span class="pre">x</span></code> is the pair of trial mole fractions <code class="docutils literal notranslate"><span class="pre">[y1,</span> <span class="pre">x1]</span></code> of the light
+component, and the result is the squared residual of the equal-fugacity
+condition.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">find_init_binary_ll(model,</span> <span class="pre">pressure,</span> <span class="pre">temperature,</span> <span class="pre">kind)</span></code></dt><dd><p>Provides an initial guess for the liquid-liquid case by scanning the
+fugacity of the light component over the composition range.</p>
+</dd>
+</dl>
+<section id="interpreting-the-output">
+<h2>Interpreting the output<a class="headerlink" href="#interpreting-the-output" title="Link to this heading"></a></h2>
+<p>The solver returns <code class="docutils literal notranslate"><span class="pre">(x1,</span> <span class="pre">y1)</span></code>: the mole fraction of the <strong>light component</strong>
+in the heavy and the light phase. The complete binary compositions are
+<code class="docutils literal notranslate"><span class="pre">[x1,</span> <span class="pre">1</span> <span class="pre">-</span> <span class="pre">x1]</span></code> and <code class="docutils literal notranslate"><span class="pre">[y1,</span> <span class="pre">1</span> <span class="pre">-</span> <span class="pre">y1]</span></code> in the model’s component order. A
+solution with <code class="docutils literal notranslate"><span class="pre">x1</span> <span class="pre">==</span> <span class="pre">y1</span></code> means no separation was found at those
+conditions, which the fitter interprets as a single-phase situation rather
+than as an error.</p>
+</section>
+<section id="cautions">
+<h2>Cautions<a class="headerlink" href="#cautions" title="Link to this heading"></a></h2>
+<p>Initial guesses and near-identical phase compositions make these solves
+fragile. Check that the returned values are finite and physically plausible
+(<code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">x1,</span> <span class="pre">y1</span> <span class="pre">&lt;=</span> <span class="pre">1</span></code>) and that the branch corresponds to the phase pair you
+expect. A small isofugacity residual alone does not guarantee the correct
+branch was followed.</p>
+<p>These functions are used by <a class="reference internal" href="core.html"><span class="doc">Core Fitting module</span></a> for the <code class="docutils literal notranslate"><span class="pre">PT</span></code> and <code class="docutils literal notranslate"><span class="pre">liquid-liquid</span></code>
+data kinds; see the
+<a class="reference internal" href="../tutorial/equations_of_state/fitting/fitting.html"><span class="doc">fitting tutorial</span></a> for
+how they fit into a complete workflow.</p>
+<p id="module-yaeos.fitting.solvers">Solvers.</p>
+<p>Module that contains different solvers for specific purposes.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="yaeos.fitting.solvers.binary_isofugacity_x1y1pt">
 <span class="sig-name descname"><span class="pre">binary_isofugacity_x1y1pt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../core.html#yaeos.core.ArModel" title="yaeos.core.ArModel"><span class="pre">ArModel</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yaeos/fitting/solvers.html#binary_isofugacity_x1y1pt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.fitting.solvers.binary_isofugacity_x1y1pt" title="Link to this definition"></a></dt>
 <dd><p>Isofugacity evaluation at a given P and T.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>array_like</em>) – Mole fractions of component 1 in both phases, ordered as
+<code class="docutils literal notranslate"><span class="pre">[y1,</span> <span class="pre">x1]</span></code>.</p></li>
+<li><p><strong>p</strong> (<em>float</em>) – Pressure [bar].</p></li>
+<li><p><strong>t</strong> (<em>float</em>) – Temperature [K].</p></li>
+<li><p><strong>model</strong> (<a class="reference internal" href="../core.html#yaeos.core.ArModel" title="yaeos.core.ArModel"><em>ArModel</em></a>) – yaeos ArModel object.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Squared isofugacity residual of each component.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -117,9 +181,12 @@ handles liquid-vapor or liquid-liquid.</p>
 <li><p><strong>model</strong> (<a class="reference internal" href="../core.html#yaeos.core.ArModel" title="yaeos.core.ArModel"><em>ArModel</em></a>) – yaeos ArModel object.</p></li>
 <li><p><strong>pressure</strong> (<em>float</em>) – Pressure [bar].</p></li>
 <li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K].</p></li>
-<li><p><strong>kind</strong> (<em>str</em>) – Kind of phase equilibrium calculation. Options are:
-- “liquid-liquid”: liquid-liquid equilibrium calculation.
-- “PT”: pressure-temperature calculation.</p></li>
+<li><p><strong>kind</strong> (<em>str</em>) – <p>Kind of phase equilibrium calculation. Options are:</p>
+<ul>
+<li><p>”liquid-liquid”: liquid-liquid equilibrium calculation.</p></li>
+<li><p>”PT”: pressure-temperature calculation.</p></li>
+</ul>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -141,9 +208,12 @@ handles liquid-vapor or liquid-liquid.</p>
 <li><p><strong>model</strong> (<a class="reference internal" href="../core.html#yaeos.core.ArModel" title="yaeos.core.ArModel"><em>ArModel</em></a>) – yaeos ArModel object.</p></li>
 <li><p><strong>pressure</strong> (<em>float</em>) – Pressure [bar].</p></li>
 <li><p><strong>temperature</strong> (<em>float</em>) – Temperature [K].</p></li>
-<li><p><strong>kind</strong> (<em>str</em>) – Kind of phase equilibrium calculation. Options are:
-- “liquid-liquid”: liquid-liquid equilibrium calculation.
-- “PT”: pressure-temperature calculation.</p></li>
+<li><p><strong>kind</strong> (<em>str</em>) – <p>Kind of phase equilibrium calculation. Options are:</p>
+<ul>
+<li><p>”liquid-liquid”: liquid-liquid equilibrium calculation.</p></li>
+<li><p>”PT”: pressure-temperature calculation.</p></li>
+</ul>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -156,6 +226,7 @@ component) in both phases.</p>
 </dl>
 </dd></dl>
 
+</section>
 </section>
 
 

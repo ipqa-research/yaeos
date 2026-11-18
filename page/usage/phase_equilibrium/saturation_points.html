@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../../../favicon.png">
 
     <title>Saturation Points &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../../../css/local.css" rel="stylesheet">
     <link href="../../../css/pygments.css" rel="stylesheet">
+      <link href="../../../css/user.css" rel="stylesheet">
     <script src="../../../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -92,7 +93,7 @@
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb justify-content-end mb-0">
                 <li class="breadcrumb-item"><a href='../../index.html'>User documentation</a></li>
-                <li class="breadcrumb-item"><a href='../index.html'>Using yaeos</a></li>
+                <li class="breadcrumb-item"><a href='../index.html'>Getting started</a></li>
                 <li class="breadcrumb-item"><a href='index.html'>Phase Equilibrium</a></li>
               <li class="breadcrumb-item active" aria-current="page">Saturation Points</li>
             </ol>
@@ -112,9 +113,10 @@
           </ul>
           <hr>
           <nav class="nav nav-pills flex-column">
-              <a class="nav-link" href="../index.html">Using yaeos</a>
+              <a class="nav-link" href="../index.html">Getting started</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../eos/index.html">Equations of State</a>
+                                <a class="nav-link" href="../fundamentals.html">Thermodynamics essentials</a>
+              <a class="nav-link" href="../eos/index.html">Equations of State</a>
                 <nav class="nav nav-pills flex-column">
                                 <a class="nav-link" href="../eos/cubics/index.html">Cubics</a>
                 <nav class="nav nav-pills flex-column">
@@ -122,27 +124,33 @@
               <a class="nav-link" href="../eos/cubics/mixing.html">Mixing Rules</a>
 
                 </nav>
+              <a class="nav-link" href="../eos/gerg2008.html">GERG2008</a>
+              <a class="nav-link" href="../eos/gerg2008_parameters.html">GERG2008 parameters</a>
+              <a class="nav-link" href="../eos/pc_saft.html">PC-SAFT</a>
 
                 </nav>
               <a class="nav-link" href="../excessmodels/index.html">Gibbs Excess Models</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../excessmodels/nrtl-hv.html">NRTL-HV</a>
-              <a class="nav-link" href="../excessmodels/nrtl.html">NRTL</a>
+                                <a class="nav-link" href="../excessmodels/nrtl.html">NRTL</a>
+              <a class="nav-link" href="../excessmodels/nrtl-hv.html">NRTL-HV</a>
+              <a class="nav-link" href="../excessmodels/uniquac.html">UNIQUAC</a>
               <a class="nav-link" href="../excessmodels/unifac_models/index.html">UNIFAC Models</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
+                                <a class="nav-link" href="../excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
+              <a class="nav-link" href="../excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
               <a class="nav-link" href="../excessmodels/unifac_models/psrk.html">UNIFAC-PSRK</a>
-              <a class="nav-link" href="../excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
 
                 </nav>
-              <a class="nav-link" href="../excessmodels/uniquac.html">UNIQUAC</a>
 
                 </nav>
               <a class="nav-link" href="index.html">Phase Equilibrium</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="envelopes.html">Phase envelopes</a>
-              <a class="nav-link" href="flash.html">Flash calculations</a>
+                                <a class="nav-link" href="flash.html">Flash calculations</a>
               <a class="nav-link active disabled" href="saturation_points.html">Saturation Points</a>
+              <a class="nav-link" href="envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="stability.html">Stability analysis</a>
+              <a class="nav-link" href="critical.html">Critical points</a>
+              <a class="nav-link" href="multiphase.html">Multiphase flash</a>
 
                 </nav>
               <a class="nav-link" href="../newmodels/index.html">Adding your own models</a>
@@ -153,18 +161,339 @@
                 </nav>
 
                 </nav>
+              <a class="nav-link" href="../../python-api/index.html">Python-API</a>
+              <a class="nav-link" href="../../developer/index.html">Becoming a yaeos developer</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../developer/architecture.html">Architecture and repository map</a>
+              <a class="nav-link" href="../../developer/workflow.html">Developer workflow</a>
+              <a class="nav-link" href="../../developer/fortran.html">Working in the Fortran core</a>
+              <a class="nav-link" href="../../developer/numerics.html">Working on numerical algorithms</a>
+              <a class="nav-link" href="../../developer/c_interface.html">C interface layer</a>
+              <a class="nav-link" href="../../developer/python_interface.html">Python interface layer</a>
+              <a class="nav-link" href="../../developer/testing.html">Tests and numerical validation</a>
+              <a class="nav-link" href="../../developer/walkthrough.html">An end-to-end change</a>
+
+                </nav>
               <a class="nav-link" href="../../contributing/index.html">Contributing</a>
                 <nav class="nav nav-pills flex-column">
                                 <a class="nav-link" href="../../contributing/styleguide.html">Style guide</a>
 
                 </nav>
-              <a class="nav-link" href="../../python-api/index.html">Python-API</a>
           </nav>
         </div>
       </div>
 
     <div class="col-9" id='text'>
-      
+      <div class="toc">
+<ul>
+<li><a href="#saturation-points">Saturation points</a></li>
+<li><a href="#theory">Theory</a></li>
+<li><a href="#saturation_pressure">saturation_pressure</a></li>
+<li><a href="#saturation_temperature">saturation_temperature</a></li>
+<li><a href="#choosing-the-kind">Choosing the kind</a></li>
+<li><a href="#results">Results</a></li>
+<li><a href="#pure-component-saturation-lines">Pure-component saturation lines</a></li>
+<li><a href="#relation-with-phase-envelopes">Relation with phase envelopes</a></li>
+<li><a href="#critical-points">Critical points</a></li>
+<li><a href="#practical-notes">Practical notes</a></li>
+</ul>
+</div>
+<h1 id="saturation-points">Saturation points</h1>
+<p>A saturation point is a state where a feed of fixed composition is in
+equilibrium with an incipient phase. The two most common cases are:</p>
+<ul>
+<li><strong>Bubble point</strong>: the incipient phase is vapor and the feed is liquid.</li>
+<li><strong>Dew point</strong>: the incipient phase is liquid and the feed is vapor.</li>
+<li><strong>Liquid-liquid point</strong>: both phases are liquids.</li>
+</ul>
+<p>In <code>yaeos</code>, saturation points are calculated with
+<a href="../../../proc/saturation_pressure.html">saturation_pressure</a> and <a href="../../../proc/saturation_temperature.html">saturation_temperature</a>. Both return an
+<a href="../../../type/equilibriumstate.html">EquilibriumState</a>.</p>
+<p>“Incipient” means the limit as the amount of the new phase approaches zero.
+The new phase can have a very different composition despite its negligible
+amount. Saturation fixes the bulk-phase composition and <strong>either</strong> temperature
+or pressure, then solves the other condition and the incipient composition.
+To find finite amounts of both phases at specified T and P, use a
+<a href="flash.html">flash</a>. These saturation interfaces require an <code>ArModel</code>.</p>
+<h1 id="theory">Theory</h1>
+<p>A saturation point is the limit of a two-phase region at fixed composition. For
+a bubble point, the liquid phase has the feed composition and the vapor phase is
+incipient:</p>
+<p>
+<script type="math/tex; mode=display">
+   z_i = x_i, \qquad \sum_i x_i K_i = 1
+</script>
+</p>
+<p>For a dew point, the vapor phase has the feed composition and the liquid phase
+is incipient:</p>
+<p>
+<script type="math/tex; mode=display">
+   z_i = y_i, \qquad \sum_i \frac{y_i}{K_i} = 1
+</script>
+</p>
+<p>Here <script type="math/tex">x_i</script> and <script type="math/tex">y_i</script> denote liquid and vapor mole fractions and
+<script type="math/tex">K_i=y_i/x_i</script>. The bubble equation normalizes the emerging vapor,
+<code>y=x*K</code>; the dew equation normalizes the emerging liquid, <code>x=y/K</code>.</p>
+<p>In both cases the K-factors are updated from the fugacity coefficients, and the
+pressure or temperature is adjusted until the corresponding sum condition is
+satisfied. A liquid-liquid point follows the same structure with both phases
+evaluated on the liquid root, so the sum condition normalizes the incipient
+liquid composition.</p>
+<h1 id="saturation_pressure"><code>saturation_pressure</code></h1>
+<div class="codehilite"><pre><span></span><code><span class="k">type</span><span class="p">(</span><span class="n">EquilibriumState</span><span class="p">)</span><span class="w"> </span><span class="k">function </span><span class="n">saturation_pressure</span><span class="p">(</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">   </span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="nb">kind</span><span class="p">,</span><span class="w"> </span><span class="n">p0</span><span class="p">,</span><span class="w"> </span><span class="n">y0</span><span class="p">,</span><span class="w"> </span><span class="n">max_iters</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">   </span><span class="p">)</span>
+<span class="w">   </span><span class="k">class</span><span class="p">(</span><span class="n">ArModel</span><span class="p">),</span><span class="w"> </span><span class="k">target</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(:)</span><span class="w">          </span><span class="c">!! Composition [moles or mole fractions]</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span><span class="w">             </span><span class="c">!! Temperature [K]</span>
+<span class="w">   </span><span class="kt">character</span><span class="p">(</span><span class="nb">len</span><span class="o">=*</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="nb">kind</span><span class="w">  </span><span class="c">!! &quot;bubble&quot;, &quot;dew&quot;, or &quot;liquid-liquid&quot;</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">p0</span><span class="w">  </span><span class="c">!! Initial pressure [bar]</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">y0</span><span class="p">(:)</span><span class="w"> </span><span class="c">!! Initial incipient composition</span>
+<span class="w">   </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">optional</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">max_iters</span>
+<span class="k">end function </span><span class="n">saturation_pressure</span>
+</code></pre></div>
+
+<p>The calculation first solves a scalar normalization equation. Internally its
+updated ratio <script type="math/tex">q_i</script> is <strong>incipient/bulk</strong>, so the common equation is:</p>
+<p>
+<script type="math/tex; mode=display">
+    f(P) = \sum_i z_i q_i(P) - 1 = 0
+</script>
+</p>
+<p>For bubbles <script type="math/tex">q=K</script>, but for dews <script type="math/tex">q=1/K</script>. Do not transfer this internal
+ratio convention into flash <code>k0</code>, which is always <code>y/x</code>. The scalar loop
+updates this ratio from bulk/incipient fugacity coefficients. A <code>y0</code> argument
+is always an incipient <strong>composition</strong>, not a K-factor vector.</p>
+<p>A one-dimensional Newton step updates pressure. If the scalar iteration
+reaches its limit, the
+routine switches to a full Newton method that solves for the K-factors and
+<script type="math/tex">\ln P</script> simultaneously.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">program </span><span class="n">bubble_pressure</span>
+<span class="w">   </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">ArModel</span><span class="p">,</span><span class="w"> </span><span class="n">EquilibriumState</span><span class="p">,</span><span class="w"> </span><span class="n">PengRobinson76</span>
+<span class="w">   </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">saturation_pressure</span>
+<span class="w">   </span><span class="k">use</span><span class="p">,</span><span class="w"> </span><span class="k">intrinsic</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ieee_arithmetic</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">ieee_is_finite</span>
+<span class="w">   </span><span class="k">implicit none</span>
+
+<span class="k">   class</span><span class="p">(</span><span class="n">ArModel</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">EquilibriumState</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">sat</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">tc</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">pc</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">w</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">K</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="w">   </span><span class="n">tc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">19</span><span class="mf">0.564_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="mf">5.12_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">pc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">4</span><span class="mf">5.99_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="mf">7.96_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.0115478_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.200164_pr</span><span class="p">]</span>
+
+<span class="w">   </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span><span class="w"> </span><span class="n">pc</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">)</span>
+
+<span class="w">   </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">2.5_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">6.7_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">15</span><span class="mf">0.0_pr</span>
+
+<span class="w">   </span><span class="n">sat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">saturation_pressure</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="nb">kind</span><span class="o">=</span><span class="s2">&quot;bubble&quot;</span><span class="p">)</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">sat</span><span class="p">%</span><span class="nb">kind</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="s2">&quot;bubble&quot;</span><span class="p">)</span><span class="w"> </span><span class="k">error stop</span><span class="w"> </span><span class="s2">&quot;No accepted bubble point&quot;</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(.</span><span class="nb">not</span><span class="p">.</span><span class="w"> </span><span class="n">ieee_is_finite</span><span class="p">(</span><span class="n">sat</span><span class="p">%</span><span class="n">P</span><span class="p">))</span><span class="w"> </span><span class="k">error stop</span><span class="w"> </span><span class="s2">&quot;Nonfinite saturation pressure&quot;</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">sat</span><span class="p">%</span><span class="n">P</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mf">0.0_pr</span><span class="p">)</span><span class="w"> </span><span class="k">error stop</span><span class="w"> </span><span class="s2">&quot;Invalid saturation pressure&quot;</span>
+
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">sat</span><span class="p">%</span><span class="nb">kind</span><span class="p">,</span><span class="w"> </span><span class="n">sat</span><span class="p">%</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">sat</span><span class="p">%</span><span class="n">P</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;x = &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">sat</span><span class="p">%</span><span class="n">x</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;y = &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">sat</span><span class="p">%</span><span class="n">y</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Composition sums: &quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">sat</span><span class="p">%</span><span class="n">x</span><span class="p">),</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">sat</span><span class="p">%</span><span class="n">y</span><span class="p">)</span>
+<span class="w">   </span><span class="n">K</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">sat</span><span class="p">%</span><span class="n">y</span><span class="o">/</span><span class="n">sat</span><span class="p">%</span><span class="n">x</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Bubble sum x*K (should approach one): &quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">sat</span><span class="p">%</span><span class="n">x</span><span class="o">*</span><span class="n">K</span><span class="p">)</span>
+<span class="k">end program </span><span class="n">bubble_pressure</span>
+</code></pre></div>
+
+<p>This sum verifies the convention but is not an independent equilibrium test.
+Also evaluate the log-fugacity mismatch as in the <a href="flash.html">flash example</a>.
+Check finite, positive conditions, distinct volumes, and normalized
+compositions before accepting the result.</p>
+<h1 id="saturation_temperature"><code>saturation_temperature</code></h1>
+<div class="codehilite"><pre><span></span><code><span class="k">type</span><span class="p">(</span><span class="n">EquilibriumState</span><span class="p">)</span><span class="w"> </span><span class="k">function </span><span class="n">saturation_temperature</span><span class="p">(</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">   </span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="nb">kind</span><span class="p">,</span><span class="w"> </span><span class="n">t0</span><span class="p">,</span><span class="w"> </span><span class="n">y0</span><span class="p">,</span><span class="w"> </span><span class="n">max_iters</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">   </span><span class="p">)</span>
+<span class="w">   </span><span class="k">class</span><span class="p">(</span><span class="n">ArModel</span><span class="p">),</span><span class="w"> </span><span class="k">target</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(:)</span><span class="w">          </span><span class="c">!! Composition [moles or mole fractions]</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">P</span><span class="w">             </span><span class="c">!! Pressure [bar]</span>
+<span class="w">   </span><span class="kt">character</span><span class="p">(</span><span class="nb">len</span><span class="o">=*</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="nb">kind</span><span class="w">  </span><span class="c">!! &quot;bubble&quot;, &quot;dew&quot;, or &quot;liquid-liquid&quot;</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">t0</span><span class="w">  </span><span class="c">!! Initial temperature [K]</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">y0</span><span class="p">(:)</span><span class="w"> </span><span class="c">!! Initial incipient composition</span>
+<span class="w">   </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">optional</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">max_iters</span>
+<span class="k">end function </span><span class="n">saturation_temperature</span>
+</code></pre></div>
+
+<p>The same two-stage strategy is used, but now with respect to temperature.
+Call fragments using a declared model and result:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">sat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">saturation_temperature</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="o">=</span><span class="mi">1</span><span class="mf">5.0_pr</span><span class="p">,</span><span class="w"> </span><span class="nb">kind</span><span class="o">=</span><span class="s2">&quot;bubble&quot;</span><span class="p">)</span>
+<span class="n">sat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">saturation_temperature</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="o">=</span><span class="mi">1</span><span class="mf">5.0_pr</span><span class="p">,</span><span class="w"> </span><span class="nb">kind</span><span class="o">=</span><span class="s2">&quot;dew&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">t0</span><span class="o">=</span><span class="mi">33</span><span class="mf">0.0_pr</span><span class="p">)</span>
+</code></pre></div>
+
+<p>The optional initial guesses <code>p0</code>, <code>t0</code>, and <code>y0</code> are useful for a sequence of
+points. For bubbles use <code>y0=previous%y</code>; for dews use <code>y0=previous%x</code>, because
+the argument means <strong>incipient</strong> composition in either case. Reuse only checked
+points. Initialization can help branch tracking but does not guarantee it.</p>
+<h1 id="choosing-the-kind">Choosing the kind</h1>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>kind</code></th>
+<th style="text-align: left;">Feed phase</th>
+<th style="text-align: left;">Incipient phase</th>
+<th style="text-align: left;">Typical use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>"bubble"</code></td>
+<td style="text-align: left;">Liquid</td>
+<td style="text-align: left;">Vapor</td>
+<td style="text-align: left;">Boiling point at fixed composition</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>"dew"</code></td>
+<td style="text-align: left;">Vapor</td>
+<td style="text-align: left;">Liquid</td>
+<td style="text-align: left;">Condensation point at fixed composition</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>"liquid-liquid"</code></td>
+<td style="text-align: left;">Liquid</td>
+<td style="text-align: left;">Liquid</td>
+<td style="text-align: left;">Immiscible liquid splits</td>
+</tr>
+</tbody>
+</table>
+<p>The incipient phase root is selected internally. For <code>"bubble"</code> the main phase
+uses the liquid root and the incipient phase the vapor root; for <code>"dew"</code> the
+roles are reversed.</p>
+<h1 id="results">Results</h1>
+<p>The returned <a href="../../../type/equilibriumstate.html">EquilibriumState</a> contains the same fields used by flash
+calculations:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>kind</code></td>
+<td style="text-align: left;">The requested kind, or <code>"failed"</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>x</code></td>
+<td style="text-align: left;">Heavy-phase composition: the feed for a bubble point, the incipient liquid for a dew point</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>y</code></td>
+<td style="text-align: left;">Light-phase composition: the incipient vapor for a bubble point, the feed for a dew point</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>Vx</code>, <code>Vy</code></td>
+<td style="text-align: left;">Phase molar volumes [L/mol]</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>T</code>, <code>P</code></td>
+<td style="text-align: left;">Saturation temperature [K] and pressure [bar]</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>beta</code></td>
+<td style="text-align: left;">Phase fraction (0 for bubble, 1 for dew)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>iters</code></td>
+<td style="text-align: left;">Iterations used</td>
+</tr>
+</tbody>
+</table>
+<p>A detected failure has <code>kind="failed"</code>. Current checks include NaN values,
+an iteration-limit test, and a phase-volume difference below <code>1e-8</code>. They are
+not exhaustive residual or global-stability tests. Although <code>max_iters</code> is
+accepted, the current fallback and final limit test use the module&rsquo;s
+<code>max_iterations</code> rather than that argument. Do not rely on it to bound work.</p>
+<h1 id="pure-component-saturation-lines">Pure-component saturation lines</h1>
+<p>For a pure component, <a href="../../../proc/psat_pure.html">Psat_pure</a> calculates the saturation pressure at a
+given temperature:</p>
+<p>The following are fragments for an initialized model. Add imports and
+declarations before executable statements, and choose a subcritical temperature
+for the selected component (300 K is not subcritical for methane):</p>
+<div class="codehilite"><pre><span></span><code><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Psat</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Vl</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Vv</span>
+<span class="kt">logical</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">converged</span>
+
+<span class="n">Psat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">model</span><span class="p">%</span><span class="n">Psat_pure</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="o">=</span><span class="mi">15</span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="n">Vl</span><span class="o">=</span><span class="n">Vl</span><span class="p">,</span><span class="w"> </span><span class="n">Vv</span><span class="o">=</span><span class="n">Vv</span><span class="p">,</span><span class="w"> </span><span class="n">converged</span><span class="o">=</span><span class="n">converged</span><span class="p">)</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(.</span><span class="nb">not</span><span class="p">.</span><span class="w"> </span><span class="n">converged</span><span class="p">)</span><span class="w"> </span><span class="k">error stop</span><span class="w"> </span><span class="s2">&quot;Pure saturation did not converge&quot;</span>
+</code></pre></div>
+
+<p>The method uses a secant/Newton formulation on the isofugacity condition and
+returns the liquid and vapor volumes. It has no critical-temperature guard: for
+methane at 300 K, above its critical temperature, it returned a pressure of
+about 34.8 bar with identical liquid and vapor volumes and still reported
+<code>converged=.true.</code>. Always compare the temperature with the component&rsquo;s
+critical temperature and check that the two volumes differ.</p>
+<p>To calculate a complete pure-component saturation line, use
+<a href="../../../proc/pure_saturation_line.html">pure_saturation_line</a>:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pure_saturation_line</span><span class="p">,</span><span class="w"> </span><span class="n">PurePsat</span>
+
+<span class="k">type</span><span class="p">(</span><span class="n">PurePsat</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">psat</span>
+
+<span class="n">psat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pure_saturation_line</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">component</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">minP</span><span class="o">=</span><span class="mf">0.1_pr</span><span class="p">,</span><span class="w"> </span><span class="n">minT</span><span class="o">=</span><span class="mi">10</span><span class="mf">0.0_pr</span><span class="p">)</span>
+
+<span class="c">! Interpolate the saturation temperature at a given pressure</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">psat</span><span class="p">%</span><span class="n">get_T</span><span class="p">(</span><span class="n">P</span><span class="o">=</span><span class="mf">1.0_pr</span><span class="p">)</span>
+
+<span class="c">! Interpolate the saturation pressure at a given temperature</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">psat</span><span class="p">%</span><span class="n">get_P</span><span class="p">(</span><span class="n">T</span><span class="o">=</span><span class="mi">15</span><span class="mf">0.0_pr</span><span class="p">)</span>
+</code></pre></div>
+
+<p>The <a href="../../../type/purepsat.html">PurePsat</a> type stores the saturation temperatures, pressures, and
+liquid/vapor volumes, together with interpolators for <code>get_T</code> and <code>get_P</code>.
+The line is traced from the pure-component critical point down to <code>minP</code> or
+<code>minT</code> with the continuation method. Both lower limits are required, and the
+trace stops at whichever limit is reached first. For methane with
+<code>minP=0.1 bar</code> and <code>minT=100 K</code> the line covered 99.8 K to 190.5 K, that is,
+up to the critical point. Inspect the stored <code>P</code> and <code>T</code> ranges before
+interpolating; extrapolation is not evidence that liquid-vapor coexistence
+exists.</p>
+<h1 id="relation-with-phase-envelopes">Relation with phase envelopes</h1>
+<p>A saturation point is the starting point for a phase-envelope calculation. The
+envelope routines in <a href="envelopes.html">Phase envelopes</a> take a converged
+<code>EquilibriumState</code> and continue it along the phase boundary:</p>
+<p>Fragment (add imports and declarations before executable statements):</p>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pt_envelope_2ph</span><span class="p">,</span><span class="w"> </span><span class="n">PTEnvel2</span>
+
+<span class="k">type</span><span class="p">(</span><span class="n">PTEnvel2</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">envelope</span>
+
+<span class="n">sat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">saturation_temperature</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="o">=</span><span class="mf">1.0_pr</span><span class="p">,</span><span class="w"> </span><span class="nb">kind</span><span class="o">=</span><span class="s2">&quot;dew&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">t0</span><span class="o">=</span><span class="mi">15</span><span class="mf">0.0_pr</span><span class="p">)</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">sat</span><span class="p">%</span><span class="nb">kind</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;dew&quot;</span><span class="p">)</span><span class="w"> </span><span class="n">envelope</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pt_envelope_2ph</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="o">/</span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="w"> </span><span class="n">sat</span><span class="p">)</span>
+</code></pre></div>
+
+<p>This is usually more robust than calculating every saturation point
+independently, especially near critical points.</p>
+<h1 id="critical-points">Critical points</h1>
+<p>Critical points and critical lines are calculated with
+<a href="../../../proc/critical_point.html">critical_point</a> and <a href="../../../proc/critical_line.html">critical_line</a>. They are described in the
+<a href="critical.html">critical points</a> page. The <code>spec_CP</code> object provides the
+allowed specifications for a critical-point calculation.</p>
+<h1 id="practical-notes">Practical notes</h1>
+<ul>
+<li>Use <code>z = n/sum(n)</code> when working with mole fractions; the routines normalize
+  the feed internally, and the compositions returned are normalized.</li>
+<li>Prefer a reduced model containing only present components for feeds with
+  exact zeros. Some paths divide by feed fractions or take logarithms before
+  masking zeros; blanket zero-component support is not assured.</li>
+<li>Nearly identical volumes can trigger failure near criticality. Do not treat
+  an identical-phase solution as a physical bubble/dew point; investigate with
+  the <a href="critical.html">critical solver</a>.</li>
+<li>When scanning a phase boundary, reuse <code>y0</code> and the previous pressure or
+  temperature as initial guesses.</li>
+<li>See <code>example/basics/2_saturation_points.f90</code> and
+  <code>example/basics/5_pure_psat.f90</code> for complete runnable examples.</li>
+</ul>
     </div>
   </div>
       <hr>
@@ -175,14 +504,14 @@
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

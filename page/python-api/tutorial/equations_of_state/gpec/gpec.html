@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GPEC (Global Phase Equilibrium Calculations) &mdash; yaeos 4.5.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+  <title>GPEC (Global Phase Equilibrium Calculations) &mdash; yaeos 4.5.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=a284863f"></script>
+      <script src="../../../_static/documentation_options.js?v=06fc0226"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -49,21 +49,21 @@
               <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../tutorial_tree.html">Tutorial</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../../getting_started.html">Getting Started</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../equations_of_state.html">Equations of State (EoS)</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../bulk_properties.html">Bulk Properties</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../cubic_eos/cubic_eos.html">Cubic Equations of State</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../multifluid_eos/multifluid_eos.html">Multifluid Equations of State</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../saft_eos/saft_eos.html">SAFT Equations of State</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../phase_equilibrium/phase_equilibrium.html">Phase Equilibrium Calculations</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">GPEC (Global Phase Equilibrium Calculations)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="gpec_tutorial.html">Binary Systems Diagrams</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../tutorial_tree.html#suggested-route">Suggested route</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../equations_of_state.html">Equations of State (EoS)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../bulk_properties.html">Bulk Properties</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cubic_eos/cubic_eos.html">Cubic Equations of State</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../multifluid_eos/multifluid_eos.html">Multifluid Equations of State</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../saft_eos/saft_eos.html">SAFT Equations of State</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../phase_equilibrium/phase_equilibrium.html">Phase Equilibrium Calculations</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">GPEC (Global Phase Equilibrium Calculations)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../fitting/fitting.html">Fitting Equations of State</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../fitting/fitting.html">Fitting Equations of State</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../gibbs_excess/gibbs_excess.html">Excess Gibbs models</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../gibbs_excess/gibbs_excess.html">Excess Gibbs models</a></li>
 </ul>
 </li>
 </ul>
@@ -109,10 +109,23 @@
              
   <section id="gpec-global-phase-equilibrium-calculations">
 <h1>GPEC (Global Phase Equilibrium Calculations)<a class="headerlink" href="#gpec-global-phase-equilibrium-calculations" title="Link to this heading"></a></h1>
+<p>GPEC explores the organization of a <strong>binary</strong> mixture’s phase diagram,
+including critical lines and connections to three-phase boundaries. Use it
+when a single flash or fixed-composition envelope does not explain the
+mixture’s overall phase behavior.</p>
+<p>First complete the
+<a class="reference internal" href="../phase_equilibrium/phase_equilibrium.html"><span class="doc">phase-equilibrium tutorial</span></a>
+with a two-component EoS. Check that its parameters are appropriate over
+the wider conditions being traced. Pressure limits use bar; composition
+coordinates are mole fractions in the model’s fixed component order.</p>
+<p>Trace limits and continuation step sizes affect which branches are found;
+a missing branch is not proof that it cannot exist. Inspect the calculated
+critical and three-phase information, not just the plotted lines. The
+<a class="reference internal" href="../../../gpec.html"><span class="doc">GPEC module</span></a> reference describes the driver and its controls.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="gpec_tutorial.html">Binary Systems Diagrams</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="gpec_tutorial.html#Global-Phase-Equilibria-Diagram-(GPED)">Global Phase Equilibria Diagram (GPED)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gpec_tutorial.html#Global-Phase-Equilibrium-Diagrams-(GPED)">Global Phase Equilibrium Diagrams (GPED)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="gpec_tutorial.html#Plotting-diagrams">Plotting diagrams</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gpec_tutorial.html#Plotting-isotherms-(Pxy-diagrams)">Plotting isotherms (Pxy diagrams)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gpec_tutorial.html#Pxy-regions-with-LL-equilibria">Pxy regions with LL equilibria</a></li>

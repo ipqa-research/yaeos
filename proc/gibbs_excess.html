@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>gibbs_excess &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.2% of total for procedures.">26 statements</a>
+                 title=" 0.2% of total for procedures.">31 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -135,13 +136,13 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/gibbs_excess.html#variable-dlngammadp~3">dlngammadP</a>
-            <a class="list-group-item" href="../proc/gibbs_excess.html#variable-dlngammadt~4">dlngammadT</a>
-            <a class="list-group-item" href="../proc/gibbs_excess.html#variable-dn~11">dn</a>
-            <a class="list-group-item" href="../proc/gibbs_excess.html#variable-dp~9">dp</a>
-            <a class="list-group-item" href="../proc/gibbs_excess.html#variable-dt~10">dt</a>
-            <a class="list-group-item" href="../proc/gibbs_excess.html#variable-lngamma~4">lngamma</a>
-            <a class="list-group-item" href="../proc/gibbs_excess.html#variable-present_derivs~5">present_derivs</a>
+            <a class="list-group-item" href="../proc/gibbs_excess.html#variable-dlngammadp~2">dlngammadP</a>
+            <a class="list-group-item" href="../proc/gibbs_excess.html#variable-dlngammadt~2">dlngammadT</a>
+            <a class="list-group-item" href="../proc/gibbs_excess.html#variable-dn~9">dn</a>
+            <a class="list-group-item" href="../proc/gibbs_excess.html#variable-dp~7">dp</a>
+            <a class="list-group-item" href="../proc/gibbs_excess.html#variable-dt~7">dt</a>
+            <a class="list-group-item" href="../proc/gibbs_excess.html#variable-lngamma~2">lngamma</a>
+            <a class="list-group-item" href="../proc/gibbs_excess.html#variable-present_derivs~4">present_derivs</a>
         </div>
       </div>
     </div>
@@ -206,7 +207,7 @@ temperature.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-eos~24"></span>
+              <span class="anchor" id="variable-eos~27"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -221,7 +222,7 @@ temperature.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~90"></span>
+              <span class="anchor" id="variable-n~65"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -236,7 +237,7 @@ temperature.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~57"></span>
+              <span class="anchor" id="variable-p~59"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -251,7 +252,7 @@ temperature.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~84"></span>
+              <span class="anchor" id="variable-t~80"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -266,7 +267,7 @@ temperature.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-root_type~14"></span>
+              <span class="anchor" id="variable-root_type~13"></span>
               character(len=*),
             </td>
 <td>intent(in)</td>
@@ -282,7 +283,7 @@ temperature.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ge~15"></span>
+              <span class="anchor" id="variable-ge~11"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -308,13 +309,13 @@ temperature.</p>
             <td><strong>GeP</strong></td>
             <td>
                 <p>
-<script type="math/tex">\frac{dG^E}}{dP}</script>
+<script type="math/tex">\frac{dG^E}{dP}</script>
 </p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-get~12"></span>
+              <span class="anchor" id="variable-get~8"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -325,13 +326,13 @@ temperature.</p>
             <td><strong>GeT</strong></td>
             <td>
                 <p>
-<script type="math/tex">\frac{dG^E}}{dT}</script>
+<script type="math/tex">\frac{dG^E}{dT}</script>
 </p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-gen~12"></span>
+              <span class="anchor" id="variable-gen~9"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -342,7 +343,7 @@ temperature.</p>
             <td><strong>Gen</strong>(size(n))</td>
             <td>
                 <p>
-<script type="math/tex">\frac{dG^E}}{dn}</script>
+<script type="math/tex">\frac{dG^E}{dn}</script>
 </p>
             </td>
         </tr>
@@ -358,133 +359,133 @@ temperature.</p>
   <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: proc~~gibbs_excess~~CallsGraph Pages: 1 -->
-<svg id="procgibbs_excessCallsGraph" width="641pt" height="82pt"
- viewBox="0.00 0.00 641.00 82.25" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~gibbs_excess~~CallsGraph" class="graph" transform="scale(0.71 0.71) rotate(0) translate(4 112)">
+<svg id="procgibbs_excessCallsGraph" width="641pt" height="83pt"
+ viewBox="0.00 0.00 641.00 83.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~gibbs_excess~~CallsGraph" class="graph" transform="scale(0.714111 0.714111) rotate(0) translate(4 112.27)">
 <title>proc~~gibbs_excess~~CallsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-112 900,-112 900,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-112.27 893.62,-112.27 893.62,4 -4,4"/>
 <!-- proc~gibbs_excess -->
 <g id="proc~~gibbs_excess~~CallsGraph_node1" class="node">
 <title>proc~gibbs_excess</title>
-<polygon fill="none" stroke="black" points="136,-87 0,-87 0,-63 136,-63 136,-87"/>
-<text text-anchor="middle" x="68" y="-72.6" font-family="Helvetica,sans-Serif" font-size="10.50">ArModel%gibbs_excess</text>
+<polygon fill="none" stroke="black" points="134.52,-87.27 0,-87.27 0,-63 134.52,-63 134.52,-87.27"/>
+<text xml:space="preserve" text-anchor="middle" x="67.26" y="-71.54" font-family="Helvetica,sans-Serif" font-size="10.50">ArModel%gibbs_excess</text>
 </g>
-<!-- proc~ln_activity_coefficient~3 -->
+<!-- proc~ln_activity_coefficient -->
 <g id="proc~~gibbs_excess~~CallsGraph_node2" class="node">
-<title>proc~ln_activity_coefficient~3</title>
-<g id="a_proc~~gibbs_excess~~CallsGraph_node2"><a xlink:href="../proc/ln_activity_coefficient~3.html" xlink:title="ArModel%ln_activity_coefficient">
-<polygon fill="#d9534f" stroke="#d9534f" points="353,-87 172,-87 172,-63 353,-63 353,-87"/>
-<text text-anchor="middle" x="262.5" y="-72.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%ln_activity_coefficient</text>
+<title>proc~ln_activity_coefficient</title>
+<g id="a_proc~~gibbs_excess~~CallsGraph_node2"><a xlink:href="../proc/ln_activity_coefficient.html" xlink:title="ArModel%ln_activity_coefficient">
+<polygon fill="#d9534f" stroke="#d9534f" points="350.79,-87.27 170.52,-87.27 170.52,-63 350.79,-63 350.79,-87.27"/>
+<text xml:space="preserve" text-anchor="middle" x="260.65" y="-71.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%ln_activity_coefficient</text>
 </a>
 </g>
 </g>
-<!-- proc~gibbs_excess&#45;&gt;proc~ln_activity_coefficient~3 -->
+<!-- proc~gibbs_excess&#45;&gt;proc~ln_activity_coefficient -->
 <g id="proc~~gibbs_excess~~CallsGraph_edge1" class="edge">
-<title>proc~gibbs_excess&#45;&gt;proc~ln_activity_coefficient~3</title>
-<path fill="none" stroke="#000000" d="M136.06,-75C144.4,-75 153.07,-75 161.78,-75"/>
-<polygon fill="#000000" stroke="#000000" points="162,-78.5 172,-75 162,-71.5 162,-78.5"/>
+<title>proc~gibbs_excess&#45;&gt;proc~ln_activity_coefficient</title>
+<path fill="none" stroke="#000000" d="M134.93,-75.14C142.7,-75.14 150.76,-75.14 158.86,-75.14"/>
+<polygon fill="#000000" stroke="#000000" points="158.81,-78.64 168.81,-75.14 158.81,-71.64 158.81,-78.64"/>
 </g>
 <!-- proc~lnphi_pt -->
 <g id="proc~~gibbs_excess~~CallsGraph_node3" class="node">
 <title>proc~lnphi_pt</title>
 <g id="a_proc~~gibbs_excess~~CallsGraph_node3"><a xlink:href="../proc/lnphi_pt.html" xlink:title="ArModel%lnphi_pt">
-<polygon fill="#d9534f" stroke="#d9534f" points="498,-87 389,-87 389,-63 498,-63 498,-87"/>
-<text text-anchor="middle" x="443.5" y="-72.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%lnphi_pt</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="494.31,-87.27 386.79,-87.27 386.79,-63 494.31,-63 494.31,-87.27"/>
+<text xml:space="preserve" text-anchor="middle" x="440.55" y="-71.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%lnphi_pt</text>
 </a>
 </g>
 </g>
-<!-- proc~ln_activity_coefficient~3&#45;&gt;proc~lnphi_pt -->
+<!-- proc~ln_activity_coefficient&#45;&gt;proc~lnphi_pt -->
 <g id="proc~~gibbs_excess~~CallsGraph_edge2" class="edge">
-<title>proc~ln_activity_coefficient~3&#45;&gt;proc~lnphi_pt</title>
-<path fill="none" stroke="#000000" d="M353.26,-75C361.85,-75 370.43,-75 378.7,-75"/>
-<polygon fill="#000000" stroke="#000000" points="378.97,-78.5 388.97,-75 378.97,-71.5 378.97,-78.5"/>
+<title>proc~ln_activity_coefficient&#45;&gt;proc~lnphi_pt</title>
+<path fill="none" stroke="#000000" d="M351.12,-75.14C359.26,-75.14 367.39,-75.14 375.25,-75.14"/>
+<polygon fill="#000000" stroke="#000000" points="375.01,-78.64 385.01,-75.14 375.01,-71.64 375.01,-78.64"/>
 </g>
 <!-- proc~lnphi_vt -->
 <g id="proc~~gibbs_excess~~CallsGraph_node4" class="node">
 <title>proc~lnphi_vt</title>
 <g id="a_proc~~gibbs_excess~~CallsGraph_node4"><a xlink:href="../proc/lnphi_vt.html" xlink:title="ArModel%lnphi_vt">
-<polygon fill="#d9534f" stroke="#d9534f" points="642,-108 534,-108 534,-84 642,-84 642,-108"/>
-<text text-anchor="middle" x="588" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%lnphi_vt</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="637.08,-108.27 530.31,-108.27 530.31,-84 637.08,-84 637.08,-108.27"/>
+<text xml:space="preserve" text-anchor="middle" x="583.69" y="-92.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%lnphi_vt</text>
 </a>
 </g>
 </g>
 <!-- proc~lnphi_pt&#45;&gt;proc~lnphi_vt -->
 <g id="proc~~gibbs_excess~~CallsGraph_edge3" class="edge">
 <title>proc~lnphi_pt&#45;&gt;proc~lnphi_vt</title>
-<path fill="none" stroke="#000000" d="M498.37,-82.94C506.76,-84.17 515.48,-85.46 524.05,-86.72"/>
-<polygon fill="#000000" stroke="#000000" points="523.59,-90.19 534,-88.19 524.61,-83.27 523.59,-90.19"/>
+<path fill="none" stroke="#000000" d="M494.51,-83.01C502.38,-84.19 510.56,-85.4 518.63,-86.6"/>
+<polygon fill="#000000" stroke="#000000" points="518.01,-90.05 528.41,-88.06 519.04,-83.12 518.01,-90.05"/>
 </g>
-<!-- proc~volume~3 -->
+<!-- proc~volume~2 -->
 <g id="proc~~gibbs_excess~~CallsGraph_node5" class="node">
-<title>proc~volume~3</title>
-<g id="a_proc~~gibbs_excess~~CallsGraph_node5"><a xlink:href="../proc/volume~3.html" xlink:title="ArModel%volume">
-<polygon fill="#d9534f" stroke="#d9534f" points="641,-66 535,-66 535,-42 641,-42 641,-66"/>
-<text text-anchor="middle" x="588" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%volume</text>
+<title>proc~volume~2</title>
+<g id="a_proc~~gibbs_excess~~CallsGraph_node5"><a xlink:href="../proc/volume~2.html" xlink:title="ArModel%volume">
+<polygon fill="#d9534f" stroke="#d9534f" points="636.33,-66.27 531.06,-66.27 531.06,-42 636.33,-42 636.33,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="583.69" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%volume</text>
 </a>
 </g>
 </g>
-<!-- proc~lnphi_pt&#45;&gt;proc~volume~3 -->
+<!-- proc~lnphi_pt&#45;&gt;proc~volume~2 -->
 <g id="proc~~gibbs_excess~~CallsGraph_edge4" class="edge">
-<title>proc~lnphi_pt&#45;&gt;proc~volume~3</title>
-<path fill="none" stroke="#000000" d="M498.37,-67.06C507.08,-65.78 516.15,-64.44 525.03,-63.13"/>
-<polygon fill="#000000" stroke="#000000" points="525.55,-66.59 534.94,-61.67 524.53,-59.67 525.55,-66.59"/>
+<title>proc~lnphi_pt&#45;&gt;proc~volume~2</title>
+<path fill="none" stroke="#000000" d="M494.51,-67.26C502.68,-66.04 511.19,-64.77 519.56,-63.53"/>
+<polygon fill="#000000" stroke="#000000" points="519.97,-67.01 529.35,-62.07 518.94,-60.08 519.97,-67.01"/>
 </g>
 <!-- residual_helmholtz -->
 <g id="proc~~gibbs_excess~~CallsGraph_node8" class="node">
 <title>residual_helmholtz</title>
-<polygon fill="#777777" stroke="#777777" points="790,-108 678,-108 678,-84 790,-84 790,-108"/>
-<text text-anchor="middle" x="734" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">residual_helmholtz</text>
+<polygon fill="#777777" stroke="#777777" points="784.35,-108.27 673.08,-108.27 673.08,-84 784.35,-84 784.35,-108.27"/>
+<text xml:space="preserve" text-anchor="middle" x="728.71" y="-92.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">residual_helmholtz</text>
 </g>
 <!-- proc~lnphi_vt&#45;&gt;residual_helmholtz -->
 <g id="proc~~gibbs_excess~~CallsGraph_edge5" class="edge">
 <title>proc~lnphi_vt&#45;&gt;residual_helmholtz</title>
-<path fill="none" stroke="#000000" d="M642.21,-96C650.41,-96 658.97,-96 667.4,-96"/>
-<polygon fill="#000000" stroke="#000000" points="667.6,-99.5 677.6,-96 667.6,-92.5 667.6,-99.5"/>
+<path fill="none" stroke="#000000" d="M637.54,-96.14C645.24,-96.14 653.25,-96.14 661.18,-96.14"/>
+<polygon fill="#000000" stroke="#000000" points="661.17,-99.64 671.17,-96.14 661.17,-92.64 661.17,-99.64"/>
 </g>
 <!-- get_v0 -->
 <g id="proc~~gibbs_excess~~CallsGraph_node6" class="node">
 <title>get_v0</title>
-<polygon fill="#777777" stroke="#777777" points="761,-66 707,-66 707,-42 761,-42 761,-66"/>
-<text text-anchor="middle" x="734" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_v0</text>
+<polygon fill="#777777" stroke="#777777" points="755.71,-66.27 701.71,-66.27 701.71,-42 755.71,-42 755.71,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="728.71" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_v0</text>
 </g>
-<!-- proc~volume~3&#45;&gt;get_v0 -->
+<!-- proc~volume~2&#45;&gt;get_v0 -->
 <g id="proc~~gibbs_excess~~CallsGraph_edge6" class="edge">
-<title>proc~volume~3&#45;&gt;get_v0</title>
-<path fill="none" stroke="#000000" d="M641.39,-54C659.6,-54 679.62,-54 696.29,-54"/>
-<polygon fill="#000000" stroke="#000000" points="696.7,-57.5 706.7,-54 696.7,-50.5 696.7,-57.5"/>
+<title>proc~volume~2&#45;&gt;get_v0</title>
+<path fill="none" stroke="#000000" d="M636.73,-54.13C654.47,-54.13 673.94,-54.13 690.3,-54.13"/>
+<polygon fill="#000000" stroke="#000000" points="690.08,-57.64 700.08,-54.14 690.08,-50.64 690.08,-57.64"/>
 </g>
 <!-- interface~newton -->
 <g id="proc~~gibbs_excess~~CallsGraph_node7" class="node">
 <title>interface~newton</title>
 <g id="a_proc~~gibbs_excess~~CallsGraph_node7"><a xlink:href="../interface/newton.html" xlink:title="newton">
-<polygon fill="#a7506f" stroke="#a7506f" points="761,-24 707,-24 707,0 761,0 761,-24"/>
-<text text-anchor="middle" x="734" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">newton</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="755.71,-24.27 701.71,-24.27 701.71,0 755.71,0 755.71,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="728.71" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">newton</text>
 </a>
 </g>
 </g>
-<!-- proc~volume~3&#45;&gt;interface~newton -->
+<!-- proc~volume~2&#45;&gt;interface~newton -->
 <g id="proc~~gibbs_excess~~CallsGraph_edge7" class="edge">
-<title>proc~volume~3&#45;&gt;interface~newton</title>
-<path fill="none" stroke="#000000" d="M630.26,-41.96C651.31,-35.83 676.67,-28.43 696.92,-22.52"/>
-<polygon fill="#000000" stroke="#000000" points="698.09,-25.83 706.71,-19.67 696.13,-19.11 698.09,-25.83"/>
+<title>proc~volume~2&#45;&gt;interface~newton</title>
+<path fill="none" stroke="#000000" d="M627.61,-41.53C647.69,-35.64 671.38,-28.68 690.67,-23.01"/>
+<polygon fill="#000000" stroke="#000000" points="691.4,-26.45 700,-20.27 689.42,-19.73 691.4,-26.45"/>
 </g>
 <!-- proc~newton_1d -->
 <g id="proc~~gibbs_excess~~CallsGraph_node9" class="node">
 <title>proc~newton_1d</title>
 <g id="a_proc~~gibbs_excess~~CallsGraph_node9"><a xlink:href="../proc/newton_1d.html" xlink:title="newton_1d">
-<polygon fill="#d9534f" stroke="#d9534f" points="896,-24 826,-24 826,0 896,0 896,-24"/>
-<text text-anchor="middle" x="861" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">newton_1d</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="889.62,-24.27 820.35,-24.27 820.35,0 889.62,0 889.62,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="854.98" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">newton_1d</text>
 </a>
 </g>
 </g>
 <!-- interface~newton&#45;&gt;proc~newton_1d -->
 <g id="proc~~gibbs_excess~~CallsGraph_edge8" class="edge">
 <title>interface~newton&#45;&gt;proc~newton_1d</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M761.2,-12C776.96,-12 797.42,-12 815.63,-12"/>
-<polygon fill="#000000" stroke="#000000" points="815.75,-15.5 825.75,-12 815.75,-8.5 815.75,-15.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M756.07,-12.13C771.38,-12.13 791.09,-12.13 808.81,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="808.59,-15.64 818.59,-12.14 808.59,-8.64 808.59,-15.64"/>
 </g>
 </g>
 </svg>
@@ -507,55 +508,55 @@ temperature.</p>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
 <svg width="641pt" height="28pt"
- viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
 <!-- Subroutine -->
 <g id="node1" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node2" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Interface -->
 <g id="node3" class="node">
 <title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
 </g>
 <!-- Type Bound Procedure -->
 <g id="node4" class="node">
 <title>Type Bound Procedure</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
-<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
 </g>
 <!-- Unknown Procedure Type -->
 <g id="node5" class="node">
 <title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
-<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
 </g>
 <!-- Program -->
 <g id="node6" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node7" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
-<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -588,7 +589,7 @@ implementation in a submodule of an interface in a parent module.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-dlngammadp~3"></span>
+              <span class="anchor" id="variable-dlngammadp~2"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -605,7 +606,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dlngammadt~4"></span>
+              <span class="anchor" id="variable-dlngammadt~2"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -622,7 +623,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dn~11"></span>
+              <span class="anchor" id="variable-dn~9"></span>
               logical,
             </td>
               <td>private</td>
@@ -639,7 +640,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dp~9"></span>
+              <span class="anchor" id="variable-dp~7"></span>
               logical,
             </td>
               <td>private</td>
@@ -656,7 +657,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dt~10"></span>
+              <span class="anchor" id="variable-dt~7"></span>
               logical,
             </td>
               <td>private</td>
@@ -673,7 +674,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lngamma~4"></span>
+              <span class="anchor" id="variable-lngamma~2"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -690,7 +691,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-present_derivs~5"></span>
+              <span class="anchor" id="variable-present_derivs~4"></span>
               logical,
             </td>
               <td>private</td>
@@ -731,14 +732,14 @@ implementation in a submodule of an interface in a parent module.
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

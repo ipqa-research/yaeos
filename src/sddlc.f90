@@ -1,10 +1,33 @@
 module yaeos__models_ar_cubic_mixing_sddlc
+   !! # Segmented density-dependent local-composition mixing rule
+   !!
+   !! # Description
+   !! Implementation of the s-DDLC mixing rule, in which the attractive
+   !! parameter depends on density, temperature, and composition through
+   !! local-composition segment fractions.
+   !! This model extends the temperature-dependent quadratic mixing rule with
+   !! segment-size data and volume-dependent local compositions.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! rule = sDDLC(k=k, k0=k0, tref=tref, l=l, q=q)
+   !! call model%set_mixrule(rule)
+   !! ```
    use yaeos__constants, only: pr, R
    use yaeos__models_ar_cubic_quadratic_mixing, only: QMRTD
 
    type, extends(QMRTD) :: sDDLC
-      !! Segmented Density-Dependent Local-Composition Mixing Rule.
-      real(pr), allocatable :: q(:) !! Segment size
+      !! # sDDLC
+      !! Segmented density-dependent local-composition mixing rule.
+      !!
+      !! # Description
+      !! Extends `QMRTD` with segment-size data and a density-dependent local
+      !! composition correction to the attractive mixture parameter.
+      !!
+      !! # Examples
+      !! Initialize through the `sDDLC` constructor and install with
+      !! `model%set_mixrule`.
+      real(pr), allocatable :: q(:) !! Pure-component segment sizes \(q_i\)
    contains
       procedure :: Dmix => ddlc_Dmix
    end type sDDLC
@@ -16,11 +39,15 @@ module yaeos__models_ar_cubic_mixing_sddlc
 contains
 
    type(sDDLC) function init_sddlc(k, k0, tref, l, q) result(mixrule)
-      real(pr), intent(in) :: k(:, :)
-      real(pr), intent(in) :: k0(:, :)
-      real(pr), intent(in) :: tref(:, :)
-      real(pr), intent(in) :: l(:, :)
-      real(pr), intent(in) :: q(:)
+      !! # init_sddlc
+      !!
+      !! # Description
+      !! Create a segmented density-dependent local-composition mixing rule.
+      real(pr), intent(in) :: k(:, :) !! \(k_{ij}\) interaction matrix
+      real(pr), intent(in) :: k0(:, :) !! \(k^0_{ij}\) matrix
+      real(pr), intent(in) :: tref(:, :) !! Reference-temperature matrix \(T^{ref}_{ij}\) [K]
+      real(pr), intent(in) :: l(:, :) !! \(l_{ij}\) matrix
+      real(pr), intent(in) :: q(:) !! Segment sizes
 
       mixrule%k = k
       mixrule%k0 = k0
@@ -36,6 +63,9 @@ contains
       D, &
       dDdV, dDdT, dDdV2, dDdT2, dDi, dDdTV, dDidV, dDidT, dDij &
       )
+      !! # ddlc_Dmix
+      !!
+      !! # Description
       !! s-DDLC D mixing rule including V, n, and T derivatives.
       !!
       !! The local-composition D is:
@@ -45,18 +75,36 @@ contains
       !! where \(E_{ij} = \exp\!\left(\frac{a_{ij}\sum_k n_k q_k}{q_i q_j RTV}\right)\)
       !! and \(\Lambda = \sum_{ij} s_i s_j E_{ij}\), with segment fractions
       !! \(s_i = n_i q_i / \sum_k n_k q_k\).
-      class(sDDLC), intent(in)  :: self
-      real(pr),            intent(in)  :: n(:), V, T
-      real(pr),            intent(in)  :: ai(:), daidt(:), daidt2(:)
-      real(pr),            intent(out) :: D, dDdT, dDdT2, dDdV, dDdV2, dDdTV
-      real(pr),            intent(out) :: dDi(:), dDidT(:), dDidV(:), dDij(:,:)
+      class(sDDLC), intent(in)  :: self !! Mixing rule object.
+      real(pr),            intent(in) :: n(:) !! Component mole amounts [mol]
+      real(pr),            intent(in) :: V !! Total volume [L]
+      real(pr),            intent(in) :: T !! Temperature [K]
+      real(pr),            intent(in) :: ai(:) !! Pure-component attractive parameters \(a_i\)
+      real(pr),            intent(in) :: daidt(:) !! \(da_i/dT\)
+      real(pr),            intent(in) :: daidt2(:) !! \(d^2a_i/dT^2\)
+      real(pr),            intent(out) :: D !! Mixture attractive parameter \(D\) [bar L^2]
+      real(pr),            intent(out) :: dDdT !! \(\partial D/\partial T\)
+      real(pr),            intent(out) :: dDdT2 !! \(\partial^2 D/\partial T^2\)
+      real(pr),            intent(out) :: dDdV !! \(\partial D/\partial V\)
+      real(pr),            intent(out) :: dDdV2 !! \(\partial^2 D/\partial V^2\)
+      real(pr),            intent(out) :: dDdTV !! \(\partial^2 D/\partial T \partial V\)
+      real(pr),            intent(out) :: dDi(:) !! \(\partial D/\partial n_i\)
+      real(pr),            intent(out) :: dDidT(:) !! \(\partial^2 D/\partial T \partial n_i\)
+      real(pr),            intent(out) :: dDidV(:) !! \(\partial^2 D/\partial V \partial n_i\)
+      real(pr),            intent(out) :: dDij(:,:) !! \(\partial^2 D/\partial n_i \partial n_j\)
 
-      integer  :: i, j, k, m, nc
-      real(pr) :: RTV, sumnq
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: k !! Loop index `k`.
+      integer :: m
+      integer :: nc !! Number of components.
+      real(pr) :: RTV
+      real(pr) :: sumnq
 
       ! -- aij and its T-derivatives --
       real(pr) :: aij(size(n),size(n))
-      real(pr) :: daijdT(size(n),size(n)), daijdT2(size(n),size(n))
+      real(pr) :: daijdT(size(n),size(n)) !! Temperature derivative of the pair attractive parameters.
+      real(pr) :: daijdT2(size(n),size(n)) !! Second temperature derivative of the pair attractive parameters.
 
       ! -- Segment fractions and composition derivatives --
       real(pr) :: sfrac(size(n))
@@ -68,23 +116,44 @@ contains
       real(pr) :: E(size(n),size(n))
       real(pr) :: dEdn(size(n),size(n),size(n))
       real(pr) :: d2Edn2(size(n),size(n),size(n),size(n))
-      real(pr) :: dEdT(size(n),size(n)), d2EdT2(size(n),size(n))
-      real(pr) :: dEdV(size(n),size(n)), d2EdV2(size(n),size(n))
+      real(pr) :: dEdT(size(n),size(n))
+      real(pr) :: d2EdT2(size(n),size(n))
+      real(pr) :: dEdV(size(n),size(n))
+      real(pr) :: d2EdV2(size(n),size(n))
       real(pr) :: d2EdnT(size(n),size(n),size(n))
       real(pr) :: d2EdnV(size(n),size(n),size(n))
       real(pr) :: d2EdVT(size(n),size(n))
 
       ! -- Denominator Den and its derivatives --
-      real(pr) :: Den
-      real(pr) :: dDendn(size(n)), d2Dendn2(size(n),size(n))
-      real(pr) :: d2DendnT(size(n)), d2DendnV(size(n))
-      real(pr) :: dDendV, d2DendV2, d2DendVT, dDendT, d2DendT2
+      real(pr) :: Den !! Local-composition denominator \(\Lambda = \sum_{ij} s_i s_j E_{ij}\)
+      real(pr) :: dDendn(size(n))
+      real(pr) :: d2Dendn2(size(n),size(n))
+      real(pr) :: d2DendnT(size(n))
+      real(pr) :: d2DendnV(size(n))
+      real(pr) :: dDendV
+      real(pr) :: d2DendV2
+      real(pr) :: d2DendVT
+      real(pr) :: dDendT
+      real(pr) :: d2DendT2
 
       ! -- Loop temporaries --
-      real(pr) :: aux, auxV, auxVV, auxT, auxTT, auxVT
-      real(pr) :: auxjmi, auxjmiT, auxjmiV
-      real(pr) :: auxdfE, auxd2fE, auxdfdE, auxfd2E, auxd2Ek
-      real(pr) :: auxTij, auxdE, auxd2E
+      real(pr) :: aux !! Intermediate accumulator.
+      real(pr) :: auxV
+      real(pr) :: auxVV
+      real(pr) :: auxT
+      real(pr) :: auxTT
+      real(pr) :: auxVT
+      real(pr) :: auxjmi
+      real(pr) :: auxjmiT
+      real(pr) :: auxjmiV
+      real(pr) :: auxdfE
+      real(pr) :: auxd2fE
+      real(pr) :: auxdfdE
+      real(pr) :: auxfd2E
+      real(pr) :: auxd2Ek
+      real(pr) :: auxTij
+      real(pr) :: auxdE
+      real(pr) :: auxd2E
 
       nc  = size(n)
       RTV = R*T*V
@@ -334,4 +403,3 @@ contains
       end do
    end subroutine ddlc_Dmix
 end module yaeos__models_ar_cubic_mixing_sddlc
-

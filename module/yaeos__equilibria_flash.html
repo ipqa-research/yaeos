@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>yaeos__equilibria_flash &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 1.4% of total for modules and submodules.">255 statements</a>
+                 title=" 1.4% of total for modules and submodules.">282 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -165,274 +166,284 @@
     </div>
 
     <div class="col-md-9" id='text'>
-      
+      <h1 id="flash-calculations">Flash calculations</h1>
+<h1 id="description">Description</h1>
+<p>Two-phase isothermal flash calculations at specified pressure or
+volume. The main entry point is <a href="../proc/flash.html">flash</a>, which uses successive
+substitution with a Rachford-Rice inner solve. The module also provides
+<a href="../proc/flash_no_beta_limits.html">flash_no_beta_limits</a>, which does not force the K-factors into the
+region where <script type="math/tex">0 < \beta < 1</script>.</p>
+<h1 id="examples">Examples</h1>
+<div class="codehilite"><pre><span></span><code><span class="k">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flash</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">p_spec</span><span class="o">=</span><span class="n">P</span><span class="p">)</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">result</span><span class="p">%</span><span class="nb">kind</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;split&quot;</span><span class="p">)</span><span class="w"> </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="k">result</span><span class="p">%</span><span class="n">beta</span><span class="p">,</span><span class="w"> </span><span class="k">result</span><span class="p">%</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="k">result</span><span class="p">%</span><span class="n">y</span>
+</code></pre></div>
 <br>          <div class="card mb-4">
       <h3 class="card-header card-title bg-light">Uses</h3>
       <div class="card-body">
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
-                  <li class="list-inline-item"><a href='yaeos__models_ge.html'>yaeos__models_ge</a></li>
-                  <li class="list-inline-item"><a href='yaeos__solvers_pressure_equality.html'>yaeos__solvers_pressure_equality</a></li>
-                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
-                  <li class="list-inline-item"><a href='yaeos__equilibria_equilibrium_state.html'>yaeos__equilibria_equilibrium_state</a></li>
-                  <li class="list-inline-item"><a href='yaeos__equilibria_rachford_rice.html'>yaeos__equilibria_rachford_rice</a></li>
-                  <li class="list-inline-item"><a href='yaeos__equilibria_auxiliar.html'>yaeos__equilibria_auxiliar</a></li>
                   <li class="list-inline-item"><a href='yaeos__constants.html'>yaeos__constants</a></li>
-                  <li class="list-inline-item"><a href='yaeos__models_ar.html'>yaeos__models_ar</a></li>
+                  <li class="list-inline-item"><a href='yaeos__equilibria_rachford_rice.html'>yaeos__equilibria_rachford_rice</a></li>
+                  <li class="list-inline-item"><a href='yaeos__solvers_pressure_equality.html'>yaeos__solvers_pressure_equality</a></li>
                   <li class="list-inline-item"><a href='yaeos__models_base.html'>yaeos__models_base</a></li>
+                  <li class="list-inline-item"><a href='yaeos__equilibria_auxiliar.html'>yaeos__equilibria_auxiliar</a></li>
+                  <li class="list-inline-item"><a href='yaeos__equilibria_equilibrium_state.html'>yaeos__equilibria_equilibrium_state</a></li>
+                  <li class="list-inline-item"><a href='yaeos__models_ge.html'>yaeos__models_ge</a></li>
+                  <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
+                  <li class="list-inline-item"><a href='yaeos__models_ar.html'>yaeos__models_ar</a></li>
               </ul>
             </li>
             <li class="list-group-item">
               <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: module~~yaeos__equilibria_flash~~UsesGraph Pages: 1 -->
-<svg id="moduleyaeos__equilibria_flashUsesGraph" width="641pt" height="122pt"
- viewBox="0.00 0.00 641.00 122.03" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="module~~yaeos__equilibria_flash~~UsesGraph" class="graph" transform="scale(0.51 0.51) rotate(0) translate(4 233.02)">
+<svg id="moduleyaeos__equilibria_flashUsesGraph" width="641pt" height="123pt"
+ viewBox="0.00 0.00 641.00 123.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~yaeos__equilibria_flash~~UsesGraph" class="graph" transform="scale(0.517608 0.517608) rotate(0) translate(4 233.03)">
 <title>module~~yaeos__equilibria_flash~~UsesGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-233.02 1241,-233.02 1241,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-233.03 1234.39,-233.03 1234.39,4 -4,4"/>
 <!-- module~yaeos__equilibria_flash -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_node1" class="node">
 <title>module~yaeos__equilibria_flash</title>
-<polygon fill="none" stroke="black" points="1237,-95.94 1101,-95.94 1101,-71.94 1237,-71.94 1237,-95.94"/>
-<text text-anchor="middle" x="1169" y="-81.54" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__equilibria_flash</text>
+<polygon fill="none" stroke="black" points="1230.39,-96.07 1095.87,-96.07 1095.87,-71.8 1230.39,-71.8 1230.39,-96.07"/>
+<text xml:space="preserve" text-anchor="middle" x="1163.13" y="-80.33" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__equilibria_flash</text>
 </g>
 <!-- iso_fortran_env -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_node2" class="node">
 <title>iso_fortran_env</title>
 <g id="a_module~~yaeos__equilibria_flash~~UsesGraph_node2"><a xlink:href="http://fortranwiki.org/fortran/show/iso_fortran_env" xlink:title="iso_fortran_env">
-<polygon fill="#337ab7" stroke="#337ab7" points="94,-194.94 0,-194.94 0,-170.94 94,-170.94 94,-194.94"/>
-<text text-anchor="middle" x="47" y="-180.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="93.27,-195.07 0,-195.07 0,-170.8 93.27,-170.8 93.27,-195.07"/>
+<text xml:space="preserve" text-anchor="middle" x="46.63" y="-179.33" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_flash&#45;&gt;iso_fortran_env -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_edge1" class="edge">
 <title>module~yaeos__equilibria_flash&#45;&gt;iso_fortran_env</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M361.5,-221.94C271.22,-213.65 166.82,-199.81 104.18,-191.04"/>
-<polygon fill="#000000" stroke="#000000" points="104.5,-187.55 94.11,-189.62 103.53,-194.48 104.5,-187.55"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M358.93,-221.93C269.97,-213.58 167.2,-199.92 104.85,-191.18"/>
+<polygon fill="#000000" stroke="#000000" points="105.57,-187.75 95.18,-189.82 104.6,-194.68 105.57,-187.75"/>
 </g>
 <!-- module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_node3" class="node">
 <title>module~yaeos__constants</title>
 <g id="a_module~~yaeos__equilibria_flash~~UsesGraph_node3"><a xlink:href="../module/yaeos__constants.html" xlink:title="yaeos__constants">
-<polygon fill="#337ab7" stroke="#337ab7" points="236,-155.94 130,-155.94 130,-131.94 236,-131.94 236,-155.94"/>
-<text text-anchor="middle" x="183" y="-141.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__constants</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="233.79,-156.07 129.27,-156.07 129.27,-131.8 233.79,-131.8 233.79,-156.07"/>
+<text xml:space="preserve" text-anchor="middle" x="181.53" y="-140.33" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__constants</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_flash&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_edge2" class="edge">
 <title>module~yaeos__equilibria_flash&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M782,-181.94C740.49,-182.34 732.09,-197.05 691,-202.94 546.67,-223.63 508.47,-237.51 363.5,-221.94"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M361.5,-221.94C303.59,-216.62 243.01,-182.96 209.73,-161.63"/>
-<polygon fill="#000000" stroke="#000000" points="211.38,-158.53 201.09,-155.98 207.54,-164.39 211.38,-158.53"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M777.97,-181.93C736.62,-182.34 728.26,-197.04 687.33,-202.93 543.5,-223.63 505.4,-237.54 360.93,-221.93"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M358.93,-221.93C302.13,-216.6 242.8,-183.82 209.47,-162.48"/>
+<polygon fill="#000000" stroke="#000000" points="211.54,-159.66 201.26,-157.1 207.7,-165.51 211.54,-159.66"/>
 </g>
 <!-- module~yaeos__equilibria_auxiliar -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_node4" class="node">
 <title>module~yaeos__equilibria_auxiliar</title>
 <g id="a_module~~yaeos__equilibria_flash~~UsesGraph_node4"><a xlink:href="../module/yaeos__equilibria_auxiliar.html" xlink:title="yaeos__equilibria_auxiliar">
-<polygon fill="#337ab7" stroke="#337ab7" points="1045,-115.94 895,-115.94 895,-91.94 1045,-91.94 1045,-115.94"/>
-<text text-anchor="middle" x="970" y="-101.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_auxiliar</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="1039.62,-116.07 890.85,-116.07 890.85,-91.8 1039.62,-91.8 1039.62,-116.07"/>
+<text xml:space="preserve" text-anchor="middle" x="965.24" y="-100.33" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_auxiliar</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_flash&#45;&gt;module~yaeos__equilibria_auxiliar -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_edge3" class="edge">
 <title>module~yaeos__equilibria_flash&#45;&gt;module~yaeos__equilibria_auxiliar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1100.75,-90.77C1086.03,-92.26 1070.27,-93.86 1054.99,-95.42"/>
-<polygon fill="#000000" stroke="#000000" points="1054.63,-91.94 1045.03,-96.43 1055.33,-98.9 1054.63,-91.94"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1095.54,-90.73C1081.31,-92.18 1066.09,-93.74 1051.27,-95.25"/>
+<polygon fill="#000000" stroke="#000000" points="1051.14,-91.75 1041.55,-96.24 1051.85,-98.71 1051.14,-91.75"/>
 </g>
 <!-- module~yaeos__equilibria_equilibrium_state -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_node5" class="node">
 <title>module~yaeos__equilibria_equilibrium_state</title>
 <g id="a_module~~yaeos__equilibria_flash~~UsesGraph_node5"><a xlink:href="../module/yaeos__equilibria_equilibrium_state.html" xlink:title="yaeos__equilibria_equilibrium_state">
-<polygon fill="#337ab7" stroke="#337ab7" points="691,-193.94 489,-193.94 489,-169.94 691,-169.94 691,-193.94"/>
-<text text-anchor="middle" x="590" y="-179.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_equilibrium_state</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="687.33,-194.07 486.06,-194.07 486.06,-169.8 687.33,-169.8 687.33,-194.07"/>
+<text xml:space="preserve" text-anchor="middle" x="586.7" y="-178.33" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_equilibrium_state</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_flash&#45;&gt;module~yaeos__equilibria_equilibrium_state -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_edge4" class="edge">
 <title>module~yaeos__equilibria_flash&#45;&gt;module~yaeos__equilibria_equilibrium_state</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M782,-181.94C755.83,-181.94 727.65,-181.94 701.17,-181.94"/>
-<polygon fill="#000000" stroke="#000000" points="701.12,-178.44 691.12,-181.94 701.12,-185.44 701.12,-178.44"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M777.97,-181.93C752.36,-181.93 724.81,-181.93 698.84,-181.93"/>
+<polygon fill="#000000" stroke="#000000" points="698.94,-178.43 688.94,-181.93 698.94,-185.43 698.94,-178.43"/>
 </g>
 <!-- module~yaeos__equilibria_rachford_rice -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_node6" class="node">
 <title>module~yaeos__equilibria_rachford_rice</title>
 <g id="a_module~~yaeos__equilibria_flash~~UsesGraph_node6"><a xlink:href="../module/yaeos__equilibria_rachford_rice.html" xlink:title="yaeos__equilibria_rachford_rice">
-<polygon fill="#337ab7" stroke="#337ab7" points="453,-155.94 272,-155.94 272,-131.94 453,-131.94 453,-155.94"/>
-<text text-anchor="middle" x="362.5" y="-141.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_rachford_rice</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="450.06,-156.07 269.79,-156.07 269.79,-131.8 450.06,-131.8 450.06,-156.07"/>
+<text xml:space="preserve" text-anchor="middle" x="359.93" y="-140.33" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_rachford_rice</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_flash&#45;&gt;module~yaeos__equilibria_rachford_rice -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_edge5" class="edge">
 <title>module~yaeos__equilibria_flash&#45;&gt;module~yaeos__equilibria_rachford_rice</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M969,-181.94C888.04,-196.3 866.22,-181.94 784,-181.94"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M782,-181.94C740.49,-181.94 732.11,-166.71 691,-160.94 615.14,-150.3 528.55,-146.15 463.47,-144.61"/>
-<polygon fill="#000000" stroke="#000000" points="463.29,-141.1 453.21,-144.38 463.13,-148.1 463.29,-141.1"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M964.24,-181.93C883.61,-196.31 861.86,-181.93 779.97,-181.93"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M777.97,-181.93C736.62,-181.93 728.28,-166.7 687.33,-160.93 612.19,-150.35 526.49,-146.19 461.76,-144.62"/>
+<polygon fill="#000000" stroke="#000000" points="461.93,-141.13 451.85,-144.4 461.77,-148.12 461.93,-141.13"/>
 </g>
 <!-- module~yaeos__models_ar -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_node7" class="node">
 <title>module~yaeos__models_ar</title>
 <g id="a_module~~yaeos__equilibria_flash~~UsesGraph_node7"><a xlink:href="../module/yaeos__models_ar.html" xlink:title="yaeos__models_ar">
-<polygon fill="#337ab7" stroke="#337ab7" points="838,-35.94 728,-35.94 728,-11.94 838,-11.94 838,-35.94"/>
-<text text-anchor="middle" x="783" y="-21.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="833.48,-36.07 724.46,-36.07 724.46,-11.8 833.48,-11.8 833.48,-36.07"/>
+<text xml:space="preserve" text-anchor="middle" x="778.97" y="-20.33" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_flash&#45;&gt;module~yaeos__models_ar -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_edge6" class="edge">
 <title>module~yaeos__equilibria_flash&#45;&gt;module~yaeos__models_ar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1100.97,-77.21C1062.86,-73.37 1014.26,-68.43 971,-63.94"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M969,-63.94C923.89,-59.26 873.64,-48 836.91,-38.62"/>
-<polygon fill="#000000" stroke="#000000" points="837.49,-35.15 826.93,-36.03 835.73,-41.93 837.49,-35.15"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1095.48,-77.2C1057.58,-73.35 1009.25,-68.41 966.24,-63.93"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M964.24,-63.93C920.42,-59.37 871.74,-48.55 835.43,-39.31"/>
+<polygon fill="#000000" stroke="#000000" points="836.6,-36 826.04,-36.88 834.85,-42.77 836.6,-36"/>
 </g>
 <!-- module~yaeos__models_base -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_node8" class="node">
 <title>module~yaeos__models_base</title>
 <g id="a_module~~yaeos__equilibria_flash~~UsesGraph_node8"><a xlink:href="../module/yaeos__models_base.html" xlink:title="yaeos__models_base">
-<polygon fill="#337ab7" stroke="#337ab7" points="652,-75.94 528,-75.94 528,-51.94 652,-51.94 652,-75.94"/>
-<text text-anchor="middle" x="590" y="-61.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_base</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="648.33,-76.07 525.06,-76.07 525.06,-51.8 648.33,-51.8 648.33,-76.07"/>
+<text xml:space="preserve" text-anchor="middle" x="586.7" y="-60.33" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_base</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_flash&#45;&gt;module~yaeos__models_base -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_edge7" class="edge">
 <title>module~yaeos__equilibria_flash&#45;&gt;module~yaeos__models_base</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M969,-63.94C862.71,-52.92 738.69,-55.92 662.51,-59.56"/>
-<polygon fill="#000000" stroke="#000000" points="661.9,-56.09 652.09,-60.08 662.25,-63.08 661.9,-56.09"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M964.24,-63.93C858.79,-52.94 735.83,-55.88 659.87,-59.5"/>
+<polygon fill="#000000" stroke="#000000" points="659.87,-56 650.06,-59.99 660.22,-62.99 659.87,-56"/>
 </g>
 <!-- module~yaeos__models_ge -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_node9" class="node">
 <title>module~yaeos__models_ge</title>
 <g id="a_module~~yaeos__equilibria_flash~~UsesGraph_node9"><a xlink:href="../module/yaeos__models_ge.html" xlink:title="yaeos__models_ge">
-<polygon fill="#337ab7" stroke="#337ab7" points="839,-153.94 727,-153.94 727,-129.94 839,-129.94 839,-153.94"/>
-<text text-anchor="middle" x="783" y="-139.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ge</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="834.6,-154.07 723.33,-154.07 723.33,-129.8 834.6,-129.8 834.6,-154.07"/>
+<text xml:space="preserve" text-anchor="middle" x="778.97" y="-138.33" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ge</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_flash&#45;&gt;module~yaeos__models_ge -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_edge8" class="edge">
 <title>module~yaeos__equilibria_flash&#45;&gt;module~yaeos__models_ge</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1151.77,-96.13C1119.48,-119.4 1043.97,-169 971,-181.94"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M969,-181.94C916.58,-191.24 856.41,-172.75 819.3,-157.92"/>
-<polygon fill="#000000" stroke="#000000" points="820.5,-154.63 809.92,-154.05 817.83,-161.1 820.5,-154.63"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1145.51,-96.48C1113.14,-119.89 1038.49,-169.05 966.24,-181.93"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M964.24,-181.93C913.05,-191.06 854.45,-173.46 817.34,-158.79"/>
+<polygon fill="#000000" stroke="#000000" points="818.98,-155.68 808.4,-155.13 816.33,-162.16 818.98,-155.68"/>
 </g>
 <!-- module~yaeos__solvers_pressure_equality -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_node10" class="node">
 <title>module~yaeos__solvers_pressure_equality</title>
 <g id="a_module~~yaeos__equilibria_flash~~UsesGraph_node10"><a xlink:href="../module/yaeos__solvers_pressure_equality.html" xlink:title="yaeos__solvers_pressure_equality">
-<polygon fill="#337ab7" stroke="#337ab7" points="1065,-35.94 875,-35.94 875,-11.94 1065,-11.94 1065,-35.94"/>
-<text text-anchor="middle" x="970" y="-21.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__solvers_pressure_equality</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="1059.87,-36.07 870.6,-36.07 870.6,-11.8 1059.87,-11.8 1059.87,-36.07"/>
+<text xml:space="preserve" text-anchor="middle" x="965.24" y="-20.33" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__solvers_pressure_equality</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_flash&#45;&gt;module~yaeos__solvers_pressure_equality -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_edge9" class="edge">
 <title>module~yaeos__equilibria_flash&#45;&gt;module~yaeos__solvers_pressure_equality</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1132.86,-71.87C1113.01,-65.17 1087.71,-56.83 1065,-49.94 1052.6,-46.18 1039.21,-42.35 1026.53,-38.82"/>
-<polygon fill="#000000" stroke="#000000" points="1027.12,-35.35 1016.55,-36.06 1025.26,-42.1 1027.12,-35.35"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1125.83,-71.37C1106.35,-64.75 1081.88,-56.64 1059.87,-49.93 1048.5,-46.46 1036.29,-42.94 1024.57,-39.64"/>
+<polygon fill="#000000" stroke="#000000" points="1025.55,-36.28 1014.98,-36.97 1023.68,-43.03 1025.55,-36.28"/>
 </g>
 <!-- module~yaeos__constants&#45;&gt;iso_fortran_env -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_edge10" class="edge">
 <title>module~yaeos__constants&#45;&gt;iso_fortran_env</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M140.7,-155.96C127.58,-159.78 112.92,-164.05 99.19,-168.05"/>
-<polygon fill="#000000" stroke="#000000" points="98.02,-164.74 89.39,-170.9 99.97,-171.46 98.02,-164.74"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M137.75,-156.49C126.13,-159.9 113.4,-163.63 101.27,-167.19"/>
+<polygon fill="#000000" stroke="#000000" points="100.4,-163.8 91.79,-169.97 102.37,-170.52 100.4,-163.8"/>
 </g>
 <!-- module~yaeos__equilibria_auxiliar&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_edge11" class="edge">
 <title>module~yaeos__equilibria_auxiliar&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M782,-101.94C697.22,-97.54 675.8,-107.89 591,-103.94"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M589,-103.94C448.01,-97.38 411.62,-102.26 272,-122.94 260.94,-124.58 249.22,-126.93 238.07,-129.48"/>
-<polygon fill="#000000" stroke="#000000" points="236.95,-126.14 228.02,-131.85 238.56,-132.96 236.95,-126.14"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M777.97,-101.93C693.51,-97.53 672.17,-107.88 587.7,-103.93"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M585.7,-103.93C445.19,-97.37 408.91,-102.17 269.79,-122.93 259.72,-124.43 249.1,-126.54 238.87,-128.84"/>
+<polygon fill="#000000" stroke="#000000" points="238.38,-125.36 229.45,-131.05 239.98,-132.18 238.38,-125.36"/>
 </g>
 <!-- module~yaeos__equilibria_auxiliar&#45;&gt;module~yaeos__models_ar -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_edge12" class="edge">
 <title>module~yaeos__equilibria_auxiliar&#45;&gt;module~yaeos__models_ar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M915.95,-91.92C902.36,-88.12 887.93,-83.45 875,-77.94 851.83,-68.07 827.38,-53.29 809.66,-41.68"/>
-<polygon fill="#000000" stroke="#000000" points="811.31,-38.58 801.05,-35.94 807.43,-44.4 811.31,-38.58"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M909.42,-91.35C896.46,-87.65 882.85,-83.17 870.6,-77.93 848.22,-68.36 824.64,-54.17 807.15,-42.74"/>
+<polygon fill="#000000" stroke="#000000" points="809.13,-39.85 798.87,-37.22 805.25,-45.68 809.13,-39.85"/>
 </g>
 <!-- module~yaeos__equilibria_auxiliar&#45;&gt;module~yaeos__models_base -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_edge13" class="edge">
 <title>module~yaeos__equilibria_auxiliar&#45;&gt;module~yaeos__models_base</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M894.69,-104.53C860.9,-104.44 820.41,-103.83 784,-101.94"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M782,-101.94C734.27,-99.47 681.01,-88.14 642.88,-78.49"/>
-<polygon fill="#000000" stroke="#000000" points="643.6,-75.06 633.04,-75.95 641.85,-81.84 643.6,-75.06"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M890.66,-104.52C856.91,-104.43 816.39,-103.83 779.97,-101.93"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M777.97,-101.93C731.73,-99.52 680.3,-88.75 642.58,-79.29"/>
+<polygon fill="#000000" stroke="#000000" points="643.85,-76 633.29,-76.91 642.11,-82.78 643.85,-76"/>
 </g>
 <!-- module~yaeos__equilibria_equilibrium_state&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_edge14" class="edge">
 <title>module~yaeos__equilibria_equilibrium_state&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M488.96,-181.19C426.34,-179.59 344.13,-175.4 272,-164.94 260.7,-163.31 248.72,-160.9 237.36,-158.31"/>
-<polygon fill="#000000" stroke="#000000" points="238.1,-154.88 227.57,-155.98 236.49,-161.7 238.1,-154.88"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M485.64,-181.2C423.28,-179.6 341.53,-175.41 269.79,-164.93 259.71,-163.46 249.09,-161.37 238.87,-159.08"/>
+<polygon fill="#000000" stroke="#000000" points="239.97,-155.74 229.44,-156.87 238.38,-162.56 239.97,-155.74"/>
 </g>
 <!-- module~yaeos__equilibria_rachford_rice&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_edge15" class="edge">
 <title>module~yaeos__equilibria_rachford_rice&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M271.97,-143.94C263.37,-143.94 254.77,-143.94 246.52,-143.94"/>
-<polygon fill="#000000" stroke="#000000" points="246.26,-140.44 236.26,-143.94 246.26,-147.44 246.26,-140.44"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M269.44,-143.93C261.39,-143.93 253.37,-143.93 245.62,-143.93"/>
+<polygon fill="#000000" stroke="#000000" points="245.63,-140.43 235.63,-143.93 245.63,-147.43 245.63,-140.43"/>
 </g>
 <!-- module~yaeos__models_ar&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_edge16" class="edge">
 <title>module~yaeos__models_ar&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M727.62,-22.45C689.38,-21.77 637.03,-21.56 591,-23.94"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M724.21,-22.45C686.08,-21.76 633.71,-21.54 587.7,-23.93"/>
 </g>
 <!-- module~yaeos__models_ar&#45;&gt;module~yaeos__models_base -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_edge17" class="edge">
 <title>module~yaeos__models_ar&#45;&gt;module~yaeos__models_base</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M727.78,-35.3C706.16,-39.83 681.05,-45.08 658.29,-49.85"/>
-<polygon fill="#000000" stroke="#000000" points="657.43,-46.46 648.36,-51.93 658.86,-53.31 657.43,-46.46"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M724.2,-35.23C703.9,-39.5 680.47,-44.43 658.81,-48.98"/>
+<polygon fill="#000000" stroke="#000000" points="658.22,-45.53 649.16,-51.01 659.66,-52.38 658.22,-45.53"/>
 </g>
 <!-- module~yaeos__substance -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_node11" class="node">
 <title>module~yaeos__substance</title>
 <g id="a_module~~yaeos__equilibria_flash~~UsesGraph_node11"><a xlink:href="../module/yaeos__substance.html" xlink:title="yaeos__substance">
-<polygon fill="#337ab7" stroke="#337ab7" points="417,-75.94 308,-75.94 308,-51.94 417,-51.94 417,-75.94"/>
-<text text-anchor="middle" x="362.5" y="-61.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__substance</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="413.69,-76.07 306.17,-76.07 306.17,-51.8 413.69,-51.8 413.69,-76.07"/>
+<text xml:space="preserve" text-anchor="middle" x="359.93" y="-60.33" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__substance</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__models_base&#45;&gt;module~yaeos__substance -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_edge18" class="edge">
 <title>module~yaeos__models_base&#45;&gt;module~yaeos__substance</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M527.98,-63.94C496.79,-63.94 458.85,-63.94 427.28,-63.94"/>
-<polygon fill="#000000" stroke="#000000" points="427.27,-60.44 417.27,-63.94 427.27,-67.44 427.27,-60.44"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M524.57,-63.93C493.78,-63.93 456.44,-63.93 425.21,-63.93"/>
+<polygon fill="#000000" stroke="#000000" points="425.52,-60.43 415.52,-63.93 425.52,-67.43 425.52,-60.43"/>
 </g>
 <!-- module~yaeos__models_ge&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_edge19" class="edge">
 <title>module~yaeos__models_ge&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M740.34,-129.9C701.94,-119.71 643.18,-106.37 591,-103.94"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M734.6,-129.4C696.33,-119.27 638.84,-106.32 587.7,-103.93"/>
 </g>
 <!-- module~yaeos__models_ge&#45;&gt;module~yaeos__models_base -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_edge20" class="edge">
 <title>module~yaeos__models_ge&#45;&gt;module~yaeos__models_base</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M753.79,-129.82C745.03,-125.74 735.46,-120.94 727,-115.94 710.01,-105.91 708.86,-98.35 691,-89.94 681.78,-85.6 671.72,-81.91 661.65,-78.78"/>
-<polygon fill="#000000" stroke="#000000" points="662.61,-75.42 652.02,-75.96 660.64,-82.13 662.61,-75.42"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M749.1,-129.39C740.63,-125.39 731.46,-120.75 723.33,-115.93 706.35,-105.87 705.18,-98.35 687.33,-89.93 678.58,-85.81 669.07,-82.26 659.52,-79.24"/>
+<polygon fill="#000000" stroke="#000000" points="660.79,-75.97 650.21,-76.48 658.8,-82.68 660.79,-75.97"/>
 </g>
 <!-- module~yaeos__solvers_pressure_equality&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_edge21" class="edge">
 <title>module~yaeos__solvers_pressure_equality&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M907.42,-11.92C885.87,-8.27 861.45,-4.74 839,-2.94 789.38,1.04 776.63,0.87 727,-2.94 666.02,-7.62 652.08,-20.79 591,-23.94"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M589,-23.94C447.92,-28.14 398.66,19.33 272,-42.94 236.62,-60.34 209.52,-98.97 195.23,-123.1"/>
-<polygon fill="#000000" stroke="#000000" points="192.15,-121.44 190.24,-131.86 198.23,-124.91 192.15,-121.44"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M899.2,-11.3C878.62,-7.87 855.74,-4.63 834.6,-2.93 785.31,1.03 772.64,0.86 723.33,-2.93 662.51,-7.61 648.61,-20.77 587.7,-23.93"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M585.7,-23.93C445.1,-28.03 395.88,19.41 269.79,-42.93 235.23,-60.02 208.73,-97.56 194.42,-121.75"/>
+<polygon fill="#000000" stroke="#000000" points="191.52,-119.76 189.62,-130.18 197.61,-123.22 191.52,-119.76"/>
 </g>
 <!-- module~yaeos__solvers_pressure_equality&#45;&gt;module~yaeos__models_ar -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_edge22" class="edge">
 <title>module~yaeos__solvers_pressure_equality&#45;&gt;module~yaeos__models_ar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M874.87,-23.94C865.99,-23.94 857.13,-23.94 848.61,-23.94"/>
-<polygon fill="#000000" stroke="#000000" points="848.42,-20.44 838.42,-23.94 848.42,-27.44 848.42,-20.44"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M870.21,-23.93C861.65,-23.93 853.1,-23.93 844.88,-23.93"/>
+<polygon fill="#000000" stroke="#000000" points="845.01,-20.43 835.01,-23.93 845.01,-27.43 845.01,-20.43"/>
 </g>
 <!-- module~yaeos__substance&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_flash~~UsesGraph_edge23" class="edge">
 <title>module~yaeos__substance&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M310.95,-76.07C298.01,-79.87 284.28,-84.51 272,-89.94 249.67,-99.82 226.18,-114.48 209.09,-126.04"/>
-<polygon fill="#000000" stroke="#000000" points="207.04,-123.2 200.78,-131.75 211,-128.97 207.04,-123.2"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M307.17,-76.46C294.69,-80.18 281.57,-84.69 269.79,-89.93 248.16,-99.57 225.47,-113.75 208.65,-125.17"/>
+<polygon fill="#000000" stroke="#000000" points="206.95,-122.08 200.72,-130.65 210.93,-127.84 206.95,-122.08"/>
 </g>
 </g>
 </svg>
@@ -455,49 +466,49 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="518pt" height="32pt"
- viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="511pt" height="32pt"
+ viewBox="0.00 0.00 511.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 506.88,-28.27 506.88,4 -4,4"/>
 <!-- Module -->
 <g id="node1" class="node">
 <title>Module</title>
-<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
 </g>
 <!-- Submodule -->
 <g id="node2" class="node">
 <title>Submodule</title>
-<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
-<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="144.13,-24.27 71.87,-24.27 71.87,0 144.13,0 144.13,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="108" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
 </g>
 <!-- Subroutine -->
 <g id="node3" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
-<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="231.63,-24.27 162.37,-24.27 162.37,0 231.63,0 231.63,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="197" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node4" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
-<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="306.26,-24.27 249.74,-24.27 249.74,0 306.26,0 306.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="278" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Program -->
 <g id="node5" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
-<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="381.26,-24.27 324.74,-24.27 324.74,0 381.26,0 381.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="353" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node6" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
-<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="502.88,-24.27 399.12,-24.27 399.12,0 502.88,0 502.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="451" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -523,49 +534,49 @@ modules which it uses.
               <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: module~~yaeos__equilibria_flash~~UsedByGraph Pages: 1 -->
-<svg id="moduleyaeos__equilibria_flashUsedByGraph" width="375pt" height="32pt"
- viewBox="0.00 0.00 375.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="module~~yaeos__equilibria_flash~~UsedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg id="moduleyaeos__equilibria_flashUsedByGraph" width="372pt" height="32pt"
+ viewBox="0.00 0.00 372.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~yaeos__equilibria_flash~~UsedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>module~~yaeos__equilibria_flash~~UsedByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 371,-28 371,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 368.29,-28.27 368.29,4 -4,4"/>
 <!-- module~yaeos__equilibria_flash -->
 <g id="module~~yaeos__equilibria_flash~~UsedByGraph_node1" class="node">
 <title>module~yaeos__equilibria_flash</title>
-<polygon fill="none" stroke="black" points="136,-24 0,-24 0,0 136,0 136,-24"/>
-<text text-anchor="middle" x="68" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__equilibria_flash</text>
+<polygon fill="none" stroke="black" points="134.52,-24.27 0,-24.27 0,0 134.52,0 134.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="67.26" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__equilibria_flash</text>
 </g>
 <!-- module~yaeos__equilibria -->
 <g id="module~~yaeos__equilibria_flash~~UsedByGraph_node2" class="node">
 <title>module~yaeos__equilibria</title>
 <g id="a_module~~yaeos__equilibria_flash~~UsedByGraph_node2"><a xlink:href="../module/yaeos__equilibria.html" xlink:title="yaeos__equilibria">
-<polygon fill="#337ab7" stroke="#337ab7" points="277,-24 172,-24 172,0 277,0 277,-24"/>
-<text text-anchor="middle" x="224.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="274.29,-24.27 170.52,-24.27 170.52,0 274.29,0 274.29,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="222.41" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_flash -->
 <g id="module~~yaeos__equilibria_flash~~UsedByGraph_edge1" class="edge">
 <title>module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_flash</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M171.62,-12C163.43,-12 154.81,-12 146.2,-12"/>
-<polygon fill="#000000" stroke="#000000" points="146.1,-8.5 136.1,-12 146.1,-15.5 146.1,-8.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M170.41,-12.13C162.57,-12.13 154.33,-12.13 146.07,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="146.35,-8.64 136.35,-12.14 146.35,-15.64 146.35,-8.64"/>
 </g>
 <!-- module~yaeos -->
 <g id="module~~yaeos__equilibria_flash~~UsedByGraph_node3" class="node">
 <title>module~yaeos</title>
 <g id="a_module~~yaeos__equilibria_flash~~UsedByGraph_node3"><a xlink:href="../module/yaeos.html" xlink:title="yaeos">
-<polygon fill="#337ab7" stroke="#337ab7" points="367,-24 313,-24 313,0 367,0 367,-24"/>
-<text text-anchor="middle" x="340" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="364.29,-24.27 310.29,-24.27 310.29,0 364.29,0 364.29,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="337.29" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos&#45;&gt;module~yaeos__equilibria -->
 <g id="module~~yaeos__equilibria_flash~~UsedByGraph_edge2" class="edge">
 <title>module~yaeos&#45;&gt;module~yaeos__equilibria</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M312.96,-12C305.26,-12 296.47,-12 287.51,-12"/>
-<polygon fill="#000000" stroke="#000000" points="287.37,-8.5 277.37,-12 287.37,-15.5 287.37,-8.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M309.82,-12.13C302.57,-12.13 294.38,-12.13 286,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="286.06,-8.64 276.06,-12.14 286.06,-15.64 286.06,-8.64"/>
 </g>
 </g>
 </svg>
@@ -584,49 +595,49 @@ modules which it uses.
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="518pt" height="32pt"
- viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="511pt" height="32pt"
+ viewBox="0.00 0.00 511.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 506.88,-28.27 506.88,4 -4,4"/>
 <!-- Module -->
 <g id="node1" class="node">
 <title>Module</title>
-<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
 </g>
 <!-- Submodule -->
 <g id="node2" class="node">
 <title>Submodule</title>
-<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
-<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="144.13,-24.27 71.87,-24.27 71.87,0 144.13,0 144.13,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="108" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
 </g>
 <!-- Subroutine -->
 <g id="node3" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
-<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="231.63,-24.27 162.37,-24.27 162.37,0 231.63,0 231.63,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="197" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node4" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
-<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="306.26,-24.27 249.74,-24.27 249.74,0 306.26,0 306.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="278" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Program -->
 <g id="node5" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
-<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="381.26,-24.27 324.74,-24.27 324.74,0 381.26,0 381.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="353" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node6" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
-<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="502.88,-24.27 399.12,-24.27 399.12,0 502.88,0 502.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="451" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -659,7 +670,7 @@ modules which it uses.
 </h3></div>
     <div class="card-body">
           
-  <p>Flash algorithm using sucessive substitutions.</p><a href="../proc/flash.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+  <p>Flash algorithm using successive substitutions.</p><a href="../proc/flash.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -674,7 +685,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~40"></span>
+              <span class="anchor" id="variable-model~9"></span>
               class(<a href='../type/basemodel.html'>BaseModel</a>),
             </td>
 <td>intent(in)</td>
@@ -689,7 +700,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z~28"></span>
+              <span class="anchor" id="variable-z~6"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -704,7 +715,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~25"></span>
+              <span class="anchor" id="variable-t~3"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -749,7 +760,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-k0~3"></span>
+              <span class="anchor" id="variable-k0~2"></span>
               real(kind=pr),
             </td>
 <td>intent(in),</td>
@@ -764,7 +775,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iters~8"></span>
+              <span class="anchor" id="variable-iters~4"></span>
               integer,
             </td>
 <td>intent(out),</td>
@@ -774,7 +785,7 @@ modules which it uses.
             <td>::</td>
             <td><strong>iters</strong></td>
             <td>
-<p>Number of iterations</p>
+<p>Number of iterations (also stored in the result&rsquo;s <code>iters</code>)</p>
             </td>
         </tr>
     </tbody>
@@ -794,7 +805,9 @@ modules which it uses.
 </h3></div>
     <div class="card-body">
           
-  <p>Flash algorithm using sucessive substitutions.</p><a href="../proc/flash_no_beta_limits.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+  <p>Flash algorithm using successive substitutions that, unlike <a href="../proc/flash_no_beta_limits.html#variable-flash~3">flash</a>,
+does not rescale the K-factors with <code>betato01</code> to force
+<script type="math/tex">0 < \beta < 1</script>, so negative-flash solutions can be reached.</p><a href="../proc/flash_no_beta_limits.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -809,7 +822,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~41"></span>
+              <span class="anchor" id="variable-model~10"></span>
               class(<a href='../type/basemodel.html'>BaseModel</a>),
             </td>
 <td>intent(in)</td>
@@ -824,7 +837,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z~29"></span>
+              <span class="anchor" id="variable-z~7"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -839,7 +852,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~26"></span>
+              <span class="anchor" id="variable-t~4"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -854,7 +867,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-beta0~2"></span>
+              <span class="anchor" id="variable-beta0"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -864,7 +877,7 @@ modules which it uses.
             <td>::</td>
             <td><strong>beta0</strong></td>
             <td>
-<p>Initial guess for vapor fraction</p>
+<p>Initial guess for the vapor fraction</p>
             </td>
         </tr>
         <tr>
@@ -899,7 +912,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-k0~4"></span>
+              <span class="anchor" id="variable-k0~3"></span>
               real(kind=pr),
             </td>
 <td>intent(in),</td>
@@ -914,7 +927,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iters~9"></span>
+              <span class="anchor" id="variable-iters~5"></span>
               integer,
             </td>
 <td>intent(out),</td>
@@ -924,7 +937,7 @@ modules which it uses.
             <td>::</td>
             <td><strong>iters</strong></td>
             <td>
-<p>Number of iterations</p>
+<p>Number of iterations (also stored in the result&rsquo;s <code>iters</code>)</p>
             </td>
         </tr>
     </tbody>
@@ -956,14 +969,14 @@ modules which it uses.
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

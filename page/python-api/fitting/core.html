@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Core Fitting module &mdash; yaeos 4.5.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+  <title>Core Fitting module &mdash; yaeos 4.5.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=a284863f"></script>
+      <script src="../_static/documentation_options.js?v=06fc0226"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -61,9 +61,17 @@
 <li class="toctree-l1"><a class="reference internal" href="../gpec.html">GPEC module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../envelopes.html">Envelopes Module</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="init.html">EoS Fitting Module</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Core Fitting module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="model_setters.html">Model Setters Fitting module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html">Solvers Fitting module</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="init.html#practical-guidance">Practical guidance</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Core Fitting module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#data-format">Data format</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#how-the-fit-runs">How the fit runs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#errors-and-diagnostics">Errors and diagnostics</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="model_setters.html">Model Setters Fitting module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="solvers.html">Solvers Fitting module</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../tools/init.html">Tools</a></li>
@@ -94,9 +102,82 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-yaeos.fitting.core">
-<span id="core-fitting-module"></span><h1>Core Fitting module<a class="headerlink" href="#module-yaeos.fitting.core" title="Link to this heading"></a></h1>
-<p>Yaeos fitting core module.</p>
+  <section id="core-fitting-module">
+<h1>Core Fitting module<a class="headerlink" href="#core-fitting-module" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">BinaryFitter</span></code> scores a model against experimental data and drives an
+optimizer over the interaction parameters. It needs three things from you:
+a <strong>model setter</strong> that builds a model from a parameter vector, the <strong>data</strong>
+to fit, and (optionally) the error definitions to use.</p>
+<section id="data-format">
+<h2>Data format<a class="headerlink" href="#data-format" title="Link to this heading"></a></h2>
+<p>The data is a pandas <code class="docutils literal notranslate"><span class="pre">DataFrame</span></code>. The documented columns are:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">kind</span></code></dt><dd><p>Which measurement was made. The documented values are <code class="docutils literal notranslate"><span class="pre">bubbleT</span></code>,
+<code class="docutils literal notranslate"><span class="pre">bubbleP</span></code>, <code class="docutils literal notranslate"><span class="pre">dewT</span></code>, <code class="docutils literal notranslate"><span class="pre">dewP</span></code>, <code class="docutils literal notranslate"><span class="pre">PT</span></code>, <code class="docutils literal notranslate"><span class="pre">liquid-liquid</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">critical</span></code>; the shorter aliases <code class="docutils literal notranslate"><span class="pre">bubble</span></code> and <code class="docutils literal notranslate"><span class="pre">dew</span></code> are also
+accepted. Use <code class="docutils literal notranslate"><span class="pre">critical</span></code> rather than the <code class="docutils literal notranslate"><span class="pre">CP</span></code> alias: the critical
+line is only computed when at least one row has <code class="docutils literal notranslate"><span class="pre">kind</span> <span class="pre">==</span> <span class="pre">&quot;critical&quot;</span></code>,
+so a data set that marks critical points only as <code class="docutils literal notranslate"><span class="pre">CP</span></code> fails.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">T</span></code></dt><dd><p>Temperature in K.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">P</span></code></dt><dd><p>Pressure in bar.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">x1</span></code></dt><dd><p>Mole fraction of component 1 (the light component) in the heavy phase.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">y1</span></code></dt><dd><p>Mole fraction of component 1 (the light component) in the light phase.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">weight</span></code> (optional)</dt><dd><p>Relative weight of the point; points without a weight count as 1.</p>
+</dd>
+</dl>
+<p>What each <code class="docutils literal notranslate"><span class="pre">kind</span></code> does with the data:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">bubbleP</span></code> compares the experimental pressure with the bubble saturation
+pressure at <code class="docutils literal notranslate"><span class="pre">T</span></code> for the liquid of composition <code class="docutils literal notranslate"><span class="pre">x1</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bubbleT</span></code> compares the experimental temperature with the bubble saturation
+temperature at <code class="docutils literal notranslate"><span class="pre">P</span></code> for the liquid of composition <code class="docutils literal notranslate"><span class="pre">x1</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dewP</span></code> and <code class="docutils literal notranslate"><span class="pre">dewT</span></code> do the same for the dew point, using the vapor
+composition <code class="docutils literal notranslate"><span class="pre">y1</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">PT</span></code> and <code class="docutils literal notranslate"><span class="pre">liquid-liquid</span></code> compare the two-phase equilibrium computed at
+<code class="docutils literal notranslate"><span class="pre">P</span></code> and <code class="docutils literal notranslate"><span class="pre">T</span></code> with the experimental compositions.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">critical</span></code> compares the experimental point with the nearest point on the
+model’s calculated critical line.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">x1</span></code> and <code class="docutils literal notranslate"><span class="pre">y1</span></code> are mole fractions of the <em>same</em> component in the two
+phases, not fractions of two different components. Columns that a given
+<code class="docutils literal notranslate"><span class="pre">kind</span></code> does not use may be left as <code class="docutils literal notranslate"><span class="pre">NaN</span></code>. An unrecognized <code class="docutils literal notranslate"><span class="pre">kind</span></code> raises
+<code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.</p>
+</section>
+<section id="how-the-fit-runs">
+<h2>How the fit runs<a class="headerlink" href="#how-the-fit-runs" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">fit(x0,</span> <span class="pre">bounds=None,</span> <span class="pre">method=&quot;Nelder-Mead&quot;,</span> <span class="pre">optimizer_options=None)</span></code>
+minimizes the objective with <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code>. <code class="docutils literal notranslate"><span class="pre">x0</span></code> is the
+initial parameter guess, <code class="docutils literal notranslate"><span class="pre">bounds</span></code> may be <code class="docutils literal notranslate"><span class="pre">None</span></code> or a sequence of
+<code class="docutils literal notranslate"><span class="pre">(min,</span> <span class="pre">max)</span></code> pairs, one per fitted parameter, and <code class="docutils literal notranslate"><span class="pre">optimizer_options</span></code> is
+passed to <code class="docutils literal notranslate"><span class="pre">minimize</span></code> as <code class="docutils literal notranslate"><span class="pre">options</span></code>. The optimizer result is stored in the
+<code class="docutils literal notranslate"><span class="pre">solution</span></code> property, and the <code class="docutils literal notranslate"><span class="pre">model</span></code> property rebuilds the fitted model
+as <code class="docutils literal notranslate"><span class="pre">model_setter(solution.x,</span> <span class="pre">*model_setter_args)</span></code>.</p>
+</section>
+<section id="errors-and-diagnostics">
+<h2>Errors and diagnostics<a class="headerlink" href="#errors-and-diagnostics" title="Link to this heading"></a></h2>
+<p>The default pressure error is the squared difference between the
+experimental and model pressures divided by the experimental pressure; the
+temperature error does the same with temperatures. Points at low values
+therefore weigh more heavily than the raw difference suggests. The default
+composition error is the sum of the absolute log ratios of the two
+light-component mole fractions, which punishes near-zero compositions
+heavily. Supplying your own <code class="docutils literal notranslate"><span class="pre">pressure_error</span></code>, <code class="docutils literal notranslate"><span class="pre">temperature_error</span></code>, or
+<code class="docutils literal notranslate"><span class="pre">composition_error</span></code> callables changes what the objective value means, so
+keep the definitions consistent when comparing fits.</p>
+<p>Read the residuals stored in <code class="docutils literal notranslate"><span class="pre">evaluations[&quot;residuals&quot;]</span></code> and the per-point
+contributions in <code class="docutils literal notranslate"><span class="pre">evaluations[&quot;contributions&quot;]</span></code>: an overall objective value
+can hide a few badly predicted points. Check the fitted model against data
+that were not used in the fit, and confirm that the phases found are the
+expected ones before trusting the parameters.</p>
+<p>See <a class="reference internal" href="model_setters.html"><span class="doc">Model Setters Fitting module</span></a> for the parameter-vector conventions and
+<a class="reference internal" href="solvers.html"><span class="doc">Solvers Fitting module</span></a> for the equilibrium calculations used by the <code class="docutils literal notranslate"><span class="pre">PT</span></code> and
+<code class="docutils literal notranslate"><span class="pre">liquid-liquid</span></code> data kinds.</p>
+<p id="module-yaeos.fitting.core">Yaeos fitting core module.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="yaeos.fitting.core.BinaryFitter">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">BinaryFitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_setter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_setter_args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pressure_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">composition_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yaeos/fitting/core.html#BinaryFitter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.fitting.core.BinaryFitter" title="Link to this definition"></a></dt>
@@ -108,22 +189,28 @@ between the experimental data and the model predictions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>model_setter</strong> (<em>Callable</em>) – A function that returns a model object. The function should take the
-optimization parameters as the first argument and any other arguments
-as the following arguments.</p></li>
+<li><p><strong>model_setter</strong> (<em>Callable</em>) – A function that returns a model object. It is called as
+<code class="docutils literal notranslate"><span class="pre">model_setter(x,</span> <span class="pre">*model_setter_args)</span></code>, so it should take the
+optimization parameters as the first argument and the elements of
+<cite>model_setter_args</cite> as the following arguments.</p></li>
 <li><p><strong>model_setter_args</strong> (<em>tuple</em>) – A tuple with the arguments to pass to the model_setter function.</p></li>
-<li><p><strong>data</strong> (<em>pandas.DataFrame</em>) – A DataFrame with the experimental data.
-The DataFrame should have the following columns:
-- kind: str, the kind of data point (bubble, dew, liquid-liquid, PT,
-critical)
-- x1: float, the mole fraction of component 1 (lightest component) in
-heavy phase.
-- y1: float, the mole fraction of component 1 (lightest component) in
-light phase.
-- T: float, the temperature in K
-- P: float, the pressure in bar
-- weight: float, optional, the weight of the data point (default is 1)</p></li>
-<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, print the objective function value and the optimization</p></li>
+<li><p><strong>data</strong> (<em>pandas.DataFrame</em>) – <p>A DataFrame with the experimental data.
+The DataFrame should have the following columns:</p>
+<ul>
+<li><p>kind: str, the kind of data point. Accepted values are “bubble”
+(or “bubbleP”), “bubbleT”, “dew” (or “dewP”), “dewT”, “PT”,
+“liquid-liquid” and “critical”.</p></li>
+<li><p>x1: float, the mole fraction of component 1 (lightest component) in
+heavy phase.</p></li>
+<li><p>y1: float, the mole fraction of component 1 (lightest component) in
+light phase.</p></li>
+<li><p>T: float, the temperature in K</p></li>
+<li><p>P: float, the pressure in bar</p></li>
+<li><p>weight: float, optional, the weight of the data point (default is 1)</p></li>
+</ul>
+</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, print the objective function value and the optimization
+parameters at each evaluation.</p></li>
 <li><p><strong>pressure_error</strong> (<em>Callable</em><em>, </em><em>optional</em>) – A function <cite>f(Pexp, Pmodel)</cite> that calculates the pressure error between
 the experimental and model values.
 The function should take the experimental and model
@@ -179,8 +266,11 @@ parameters and the model_setter_args.</p>
 <dt class="sig sig-object py" id="yaeos.fitting.core.BinaryFitter.evaluations">
 <span class="sig-name descname"><span class="pre">evaluations</span></span><a class="headerlink" href="#yaeos.fitting.core.BinaryFitter.evaluations" title="Link to this definition"></a></dt>
 <dd><p>A dictionary with the evaluations of the objective function. The keys
-are ‘fobj’, and ‘x’. ‘fobj’ is the objective function value,
-‘x’ is the optimization parameters.</p>
+are ‘fobj’ and ‘x’. ‘fobj’ is the objective function value,
+‘x’ is the optimization parameters. After each evaluation the keys
+‘residuals’ and ‘contributions’ hold the residuals and the weighted
+objective function contributions of each data point of the last
+evaluation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict</p>
@@ -214,13 +304,16 @@ predictions.</p>
 <p>Fit the model to the data using the objective function defined in
 the objective_function method. The optimization is performed using
 the scipy.optimize.minimize function.
-The optimization result is stored in the <cite>.solution</cite> property. Which</p>
+The optimization result is stored in the <cite>.solution</cite> property, and
+the fitted model can be obtained with the <cite>.model</cite> property.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x0</strong> (<em>array-like</em>) – Initial guess for the fitting parameters.</p></li>
-<li><p><strong>bounds</strong> (<em>array-like</em>) – Bounds for the fitting parameters.</p></li>
+<li><p><strong>bounds</strong> (<em>array-like</em><em>, </em><em>optional</em>) – Bounds for the fitting parameters, by default None.</p></li>
 <li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – The optimization method to use. Default is ‘Nelder-Mead’.</p></li>
+<li><p><strong>optimizer_options</strong> (<em>dict</em><em>, </em><em>optional</em>) – Options passed to <code class="docutils literal notranslate"><span class="pre">scipy.optimize.minimize</span></code> as <cite>options</cite>, by
+default None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -243,6 +336,7 @@ The optimization result is stored in the <cite>.solution</cite> property. Which<
 
 </dd></dl>
 
+</section>
 </section>
 
 

@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>setup_uniquac &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -158,7 +159,9 @@
 </h2>
     
 
-    <p>Instantiate a UNIQUAC model.</p>
+    <h1 id="setup_uniquac">setup_uniquac</h1>
+<h1 id="description">Description</h1>
+<p>Instantiate a UNIQUAC model.</p>
 <p>Non provided interaction parameters are set to zero matrices.</p>
 
 
@@ -185,7 +188,7 @@
             <td>::</td>
             <td><strong>qs</strong>(:)</td>
             <td>
-                <p>Molecule&rsquo;s relative volumes <script type="math/tex">Q_i</script>
+                <p>Molecule&rsquo;s relative areas <script type="math/tex">Q_i</script>
 </p>
             </td>
         </tr>
@@ -201,7 +204,7 @@
             <td>::</td>
             <td><strong>rs</strong>(size(qs))</td>
             <td>
-                <p>Molecule&rsquo;s relative areas <script type="math/tex">R_i</script>
+                <p>Molecule&rsquo;s relative volumes <script type="math/tex">R_i</script>
 </p>
             </td>
         </tr>
@@ -217,12 +220,12 @@
             <td>::</td>
             <td><strong>aij</strong>(size(qs),size(qs))</td>
             <td>
-                <p>Interaction parameters matrix <script type="math/tex">a_{ij}</script>, zero matrix if no provided.</p>
+                <p>Interaction parameters matrix <script type="math/tex">a_{ij}</script>, zero matrix if not provided.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-bij~2"></span>
+              <span class="anchor" id="variable-bij~4"></span>
               real(kind=pr),
             </td>
 <td>intent(in),</td>
@@ -232,12 +235,12 @@
             <td>::</td>
             <td><strong>bij</strong>(size(qs),size(qs))</td>
             <td>
-                <p>Interaction parameters matrix <script type="math/tex">b_{ij}</script>, zero matrix if no provided.</p>
+                <p>Interaction parameters matrix <script type="math/tex">b_{ij}</script>, zero matrix if not provided.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-cij~2"></span>
+              <span class="anchor" id="variable-cij~4"></span>
               real(kind=pr),
             </td>
 <td>intent(in),</td>
@@ -247,7 +250,7 @@
             <td>::</td>
             <td><strong>cij</strong>(size(qs),size(qs))</td>
             <td>
-                <p>Interaction parameters matrix <script type="math/tex">c_{ij}</script>, zero matrix if no provided.</p>
+                <p>Interaction parameters matrix <script type="math/tex">c_{ij}</script>, zero matrix if not provided.</p>
             </td>
         </tr>
         <tr>
@@ -262,7 +265,7 @@
             <td>::</td>
             <td><strong>dij</strong>(size(qs),size(qs))</td>
             <td>
-                <p>Interaction parameters matrix <script type="math/tex">d_{ij}</script>, zero matrix if no provided.</p>
+                <p>Interaction parameters matrix <script type="math/tex">d_{ij}</script>, zero matrix if not provided.</p>
             </td>
         </tr>
         <tr>
@@ -277,7 +280,7 @@
             <td>::</td>
             <td><strong>eij</strong>(size(qs),size(qs))</td>
             <td>
-                <p>Interaction parameters matrix <script type="math/tex">e_{ij}</script>, zero matrix if no provided.</p>
+                <p>Interaction parameters matrix <script type="math/tex">e_{ij}</script>, zero matrix if not provided.</p>
             </td>
         </tr>
     </tbody>
@@ -314,14 +317,14 @@
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

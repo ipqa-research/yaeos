@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Envelopes Module &mdash; yaeos 4.5.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+  <title>Envelopes Module &mdash; yaeos 4.5.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=a284863f"></script>
+      <script src="_static/documentation_options.js?v=06fc0226"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -61,7 +61,10 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="gpec.html">GPEC module</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Envelopes Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Envelopes Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#reading-an-envelope">Reading an envelope</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="fitting/init.html">EoS Fitting Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tools/init.html">Tools</a></li>
 </ul>
@@ -90,9 +93,39 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-yaeos.envelopes">
-<span id="envelopes-module"></span><h1>Envelopes Module<a class="headerlink" href="#module-yaeos.envelopes" title="Link to this heading"></a></h1>
-<p>Envelopes Module.</p>
+  <section id="envelopes-module">
+<h1>Envelopes Module<a class="headerlink" href="#envelopes-module" title="Link to this heading"></a></h1>
+<p>An envelope follows a phase boundary, rather than repeatedly solving
+unrelated flashes. Use a PT envelope to examine temperature-pressure limits
+at fixed overall composition, PX at fixed temperature, and TX at fixed
+pressure. Start with the
+<a class="reference internal" href="tutorial/equations_of_state/phase_equilibrium/phase_equilibrium.html"><span class="doc">phase-equilibrium tutorial</span></a>;
+the calculation methods themselves belong to <a class="reference internal" href="core.html"><span class="doc">Core Module</span></a>.</p>
+<section id="reading-an-envelope">
+<h2>Reading an envelope<a class="headerlink" href="#reading-an-envelope" title="Link to this heading"></a></h2>
+<p>Results are <code class="docutils literal notranslate"><span class="pre">PTEnvelope</span></code>, <code class="docutils literal notranslate"><span class="pre">PXEnvelope</span></code>, or <code class="docutils literal notranslate"><span class="pre">TXEnvelope</span></code> objects. Read
+<code class="docutils literal notranslate"><span class="pre">pressures</span></code> in bar, <code class="docutils literal notranslate"><span class="pre">temperatures</span></code> in K, and <code class="docutils literal notranslate"><span class="pre">df</span></code> for tabular inspection.
+The objects also accept short string keys, which return the corresponding
+array, and slice, list, or array indexing, which returns a new envelope with
+the selected points (integer indices are not supported, and a TX envelope
+does not accept slices). A PT envelope answers to
+<code class="docutils literal notranslate"><span class="pre">&quot;T&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;P&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;Tc&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;Pc&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;z&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;x&quot;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&quot;w&quot;</span></code>, while the
+composition envelopes answer to <code class="docutils literal notranslate"><span class="pre">&quot;alpha&quot;</span></code> (or <code class="docutils literal notranslate"><span class="pre">&quot;a&quot;</span></code>), <code class="docutils literal notranslate"><span class="pre">&quot;x&quot;</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">&quot;w&quot;</span></code>, plus <code class="docutils literal notranslate"><span class="pre">&quot;P&quot;</span></code> for a PX envelope and <code class="docutils literal notranslate"><span class="pre">&quot;T&quot;</span></code> for a TX envelope.</p>
+<p>Composition arrays retain the model’s component order: the documented
+<code class="docutils literal notranslate"><span class="pre">(n_points,</span> <span class="pre">n_phases,</span> <span class="pre">n_components)</span></code> shape separates traced points, main
+phases, and components. Reference-phase compositions are stored separately.
+Do not flatten these axes into a single composition vector.</p>
+<p>For composition scans, <code class="docutils literal notranslate"><span class="pre">alphas</span></code> parameterizes the overall feed between
+<code class="docutils literal notranslate"><span class="pre">global_composition_0</span></code> and <code class="docutils literal notranslate"><span class="pre">global_composition_i</span></code> as
+<code class="docutils literal notranslate"><span class="pre">z</span> <span class="pre">=</span> <span class="pre">(1</span> <span class="pre">-</span> <span class="pre">alpha)</span> <span class="pre">*</span> <span class="pre">z0</span> <span class="pre">+</span> <span class="pre">alpha</span> <span class="pre">*</span> <span class="pre">zi</span></code>. Alpha is not generally the mole
+fraction of one component, and is not the phase amount <code class="docutils literal notranslate"><span class="pre">beta</span></code>.</p>
+<p>Inspect iteration counts, phase kinds, and critical-point arrays alongside
+the curve. A trace may stop at a numerical or user-specified limit; its last
+point is not automatically a physical endpoint. The points follow the
+continuation path, so a branch traced from the other end is not ordered by
+increasing temperature or pressure: keep the point order when plotting.</p>
+<p id="module-yaeos.envelopes">Envelopes Module.</p>
 <p>This module contains the classes that wrap the data structures used to
 represent different kinds of phase envelopes.</p>
 <dl class="py class">
@@ -426,15 +459,17 @@ Shape is (n_points,).</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="yaeos.envelopes.PXEnvelope.df">
 <span class="sig-name descname"><span class="pre">df</span></span><a class="headerlink" href="#yaeos.envelopes.PXEnvelope.df" title="Link to this definition"></a></dt>
-<dd><p>A DataFrame containing the data of the envelope. The columns are:
-- ‘alpha’: Molar fraction of the <cite>global_composition_i</cite>.
-- ‘P’: Pressures along the envelope.
-- ‘x_i^j’: Compositions of the main phases, where <cite>i</cite>
-is the component index and <cite>j</cite> is the phase index.
-- ‘w_i’: Compositions of the reference phase, where <cite>i</cite> is the
-component index.
-- ‘beta^j’: Molar fractions of the main phases, where <cite>j</cite>
-is the phase index.</p>
+<dd><p>A DataFrame containing the data of the envelope. The columns are:</p>
+<ul class="simple">
+<li><p>‘alpha’: Molar fraction of the <cite>global_composition_i</cite>.</p></li>
+<li><p>‘P’: Pressures along the envelope.</p></li>
+<li><p>‘x_i^j’: Compositions of the main phases, where <cite>i</cite>
+is the component index and <cite>j</cite> is the phase index.</p></li>
+<li><p>‘w_i’: Compositions of the reference phase, where <cite>i</cite> is the
+component index.</p></li>
+<li><p>‘beta^j’: Molar fractions of the main phases, where <cite>j</cite>
+is the phase index.</p></li>
+</ul>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.DataFrame</p>
@@ -597,7 +632,7 @@ Shape is (n_points,).</p>
 <dt class="sig sig-object py" id="yaeos.envelopes.TXEnvelope.critical_temperatures">
 <span class="sig-name descname"><span class="pre">critical_temperatures</span></span><a class="headerlink" href="#yaeos.envelopes.TXEnvelope.critical_temperatures" title="Link to this definition"></a></dt>
 <dd><p>The critical temperatures of the envelope.
-It’s shape is (n_critical_points,).</p>
+Its shape is (n_critical_points,).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>np.ndarray</p>
@@ -620,13 +655,17 @@ points, <span class="math notranslate nohighlight">\(\alpha\)</span>.  Shape is 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="yaeos.envelopes.TXEnvelope.df">
 <span class="sig-name descname"><span class="pre">df</span></span><a class="headerlink" href="#yaeos.envelopes.TXEnvelope.df" title="Link to this definition"></a></dt>
-<dd><p>A DataFrame containing the data of the envelope. The columns are: -
-‘alpha’: Molar fraction of the <cite>global_composition_i</cite>. - ‘T’:
-Temperatures along the envelope. - ‘x_i^j’: Compositions of the main
-phases, where <cite>i</cite> is the component index and <cite>j</cite> is the phase index. -
-‘w_i’: Compositions of the reference phase, where <cite>i</cite> is the component
-index. - ‘beta^j’: Molar fractions of the main phases, where <cite>j</cite> is the
-phase index.</p>
+<dd><p>A DataFrame containing the data of the envelope. The columns are:</p>
+<ul class="simple">
+<li><p>‘alpha’: Molar fraction of the <cite>global_composition_i</cite>.</p></li>
+<li><p>‘T’: Temperatures along the envelope.</p></li>
+<li><p>‘x_i^j’: Compositions of the main phases, where <cite>i</cite> is the
+component index and <cite>j</cite> is the phase index.</p></li>
+<li><p>‘w_i’: Compositions of the reference phase, where <cite>i</cite> is the
+component index.</p></li>
+<li><p>‘beta^j’: Molar fractions of the main phases, where <cite>j</cite> is the
+phase index.</p></li>
+</ul>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pd.DataFrame</p>
@@ -652,6 +691,7 @@ This can include line style, color, etc.</p>
 
 </dd></dl>
 
+</section>
 </section>
 
 

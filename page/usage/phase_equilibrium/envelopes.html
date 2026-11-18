@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../../../favicon.png">
 
     <title>Phase envelopes &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../../../css/local.css" rel="stylesheet">
     <link href="../../../css/pygments.css" rel="stylesheet">
+      <link href="../../../css/user.css" rel="stylesheet">
     <script src="../../../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -92,7 +93,7 @@
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb justify-content-end mb-0">
                 <li class="breadcrumb-item"><a href='../../index.html'>User documentation</a></li>
-                <li class="breadcrumb-item"><a href='../index.html'>Using yaeos</a></li>
+                <li class="breadcrumb-item"><a href='../index.html'>Getting started</a></li>
                 <li class="breadcrumb-item"><a href='index.html'>Phase Equilibrium</a></li>
               <li class="breadcrumb-item active" aria-current="page">Phase envelopes</li>
             </ol>
@@ -112,9 +113,10 @@
           </ul>
           <hr>
           <nav class="nav nav-pills flex-column">
-              <a class="nav-link" href="../index.html">Using yaeos</a>
+              <a class="nav-link" href="../index.html">Getting started</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../eos/index.html">Equations of State</a>
+                                <a class="nav-link" href="../fundamentals.html">Thermodynamics essentials</a>
+              <a class="nav-link" href="../eos/index.html">Equations of State</a>
                 <nav class="nav nav-pills flex-column">
                                 <a class="nav-link" href="../eos/cubics/index.html">Cubics</a>
                 <nav class="nav nav-pills flex-column">
@@ -122,27 +124,33 @@
               <a class="nav-link" href="../eos/cubics/mixing.html">Mixing Rules</a>
 
                 </nav>
+              <a class="nav-link" href="../eos/gerg2008.html">GERG2008</a>
+              <a class="nav-link" href="../eos/gerg2008_parameters.html">GERG2008 parameters</a>
+              <a class="nav-link" href="../eos/pc_saft.html">PC-SAFT</a>
 
                 </nav>
               <a class="nav-link" href="../excessmodels/index.html">Gibbs Excess Models</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../excessmodels/nrtl-hv.html">NRTL-HV</a>
-              <a class="nav-link" href="../excessmodels/nrtl.html">NRTL</a>
+                                <a class="nav-link" href="../excessmodels/nrtl.html">NRTL</a>
+              <a class="nav-link" href="../excessmodels/nrtl-hv.html">NRTL-HV</a>
+              <a class="nav-link" href="../excessmodels/uniquac.html">UNIQUAC</a>
               <a class="nav-link" href="../excessmodels/unifac_models/index.html">UNIFAC Models</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
+                                <a class="nav-link" href="../excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
+              <a class="nav-link" href="../excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
               <a class="nav-link" href="../excessmodels/unifac_models/psrk.html">UNIFAC-PSRK</a>
-              <a class="nav-link" href="../excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
 
                 </nav>
-              <a class="nav-link" href="../excessmodels/uniquac.html">UNIQUAC</a>
 
                 </nav>
               <a class="nav-link" href="index.html">Phase Equilibrium</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link active disabled" href="envelopes.html">Phase envelopes</a>
-              <a class="nav-link" href="flash.html">Flash calculations</a>
+                                <a class="nav-link" href="flash.html">Flash calculations</a>
               <a class="nav-link" href="saturation_points.html">Saturation Points</a>
+              <a class="nav-link active disabled" href="envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="stability.html">Stability analysis</a>
+              <a class="nav-link" href="critical.html">Critical points</a>
+              <a class="nav-link" href="multiphase.html">Multiphase flash</a>
 
                 </nav>
               <a class="nav-link" href="../newmodels/index.html">Adding your own models</a>
@@ -153,103 +161,272 @@
                 </nav>
 
                 </nav>
+              <a class="nav-link" href="../../python-api/index.html">Python-API</a>
+              <a class="nav-link" href="../../developer/index.html">Becoming a yaeos developer</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../developer/architecture.html">Architecture and repository map</a>
+              <a class="nav-link" href="../../developer/workflow.html">Developer workflow</a>
+              <a class="nav-link" href="../../developer/fortran.html">Working in the Fortran core</a>
+              <a class="nav-link" href="../../developer/numerics.html">Working on numerical algorithms</a>
+              <a class="nav-link" href="../../developer/c_interface.html">C interface layer</a>
+              <a class="nav-link" href="../../developer/python_interface.html">Python interface layer</a>
+              <a class="nav-link" href="../../developer/testing.html">Tests and numerical validation</a>
+              <a class="nav-link" href="../../developer/walkthrough.html">An end-to-end change</a>
+
+                </nav>
               <a class="nav-link" href="../../contributing/index.html">Contributing</a>
                 <nav class="nav nav-pills flex-column">
                                 <a class="nav-link" href="../../contributing/styleguide.html">Style guide</a>
 
                 </nav>
-              <a class="nav-link" href="../../python-api/index.html">Python-API</a>
           </nav>
         </div>
       </div>
 
     <div class="col-9" id='text'>
-      <h2 id="two-phase-envelopes">Two-phase envelopes</h2>
-<p>Two-phase envelopes show all the saturation points of a mixture, they can
-be seen as the boundary line of transition between monophasic regions to 
-two-phase equilibria regions.</p>
-<p>In <code>yaeos</code> it is possible to calculate two-phase of different kinds.</p>
+      <div class="toc">
 <ul>
-<li>Isoplets</li>
+<li><a href="#phase-envelopes">Phase envelopes</a></li>
+<li><a href="#theory">Theory</a><ul>
+<li><a href="#how-a-point-is-solved">How a point is solved</a></li>
 </ul>
-<h3 id="isoplets">Isoplets</h3>
-<p>Isoplets are the phase boundaries at constant composition 
-(the global composition) of the system. Here is a simple example with
-commentaries on how a phase boundary can be calculated:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">program </span><span class="n">phase_diagram</span>
-<span class="w">   </span><span class="c">!! Program for calculation of phase diagrams. </span>
-<span class="w">   </span><span class="k">use </span><span class="n">forsus</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">Substance</span><span class="p">,</span><span class="w"> </span><span class="n">forsus_dir</span><span class="p">,</span><span class="w"> </span><span class="n">forsus_default_dir</span>
-<span class="w">   </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
-<span class="w">      </span><span class="n">SoaveRedlichKwong</span><span class="p">,</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">,</span><span class="w"> </span><span class="n">PengRobinson78</span><span class="p">,</span><span class="w"> </span><span class="n">RKPR</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
-<span class="w">      </span><span class="n">EquilibriaState</span><span class="p">,</span><span class="w"> </span><span class="n">ArModel</span><span class="p">,</span><span class="w"> </span><span class="n">PTEnvel2</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
-<span class="w">      </span><span class="n">pt_envelope_2ph</span><span class="p">,</span><span class="w"> </span><span class="n">saturation_pressure</span><span class="p">,</span><span class="w"> </span><span class="n">saturation_temperature</span>
-<span class="w">   </span><span class="k">use </span><span class="n">yaeos__phase_equilibria_auxiliar</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">k_wilson</span>
-<span class="w">   </span><span class="k">implicit none</span>
-
-<span class="w">   </span><span class="c">! ===========================================================================</span>
-<span class="w">   </span><span class="c">! Variables definition</span>
-<span class="w">   </span><span class="c">! ---------------------------------------------------------------------------</span>
-<span class="w">   </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">nc</span><span class="o">=</span><span class="mi">2</span><span class="w">            </span>
-<span class="w">   </span><span class="k">class</span><span class="p">(</span><span class="n">ArModel</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="c">! Thermodynamic model to be used</span>
-<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">EquilibriaState</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">sat_point</span><span class="w">   </span><span class="c">! Init</span>
-<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">PTEnvel2</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">envelope</span><span class="w">           </span><span class="c">! PT Phase envelope</span>
-<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">tc</span><span class="p">(</span><span class="n">nc</span><span class="p">),</span><span class="w"> </span><span class="n">pc</span><span class="p">(</span><span class="n">nc</span><span class="p">),</span><span class="w"> </span><span class="n">w</span><span class="p">(</span><span class="n">nc</span><span class="p">)</span><span class="w">    </span><span class="c">! Component&#39;s critical constants</span>
-<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="n">nc</span><span class="p">)</span><span class="w">                    </span><span class="c">! Termodynamic variables</span>
-<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">Substance</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">sus</span><span class="p">(</span><span class="n">nc</span><span class="p">)</span><span class="w">           </span><span class="c">! Substances to use</span>
-<span class="w">   </span><span class="c">! ===========================================================================</span>
-
-<span class="w">   </span><span class="c">! forsus database directory</span>
-<span class="w">   </span><span class="n">forsus_dir</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;build/dependencies/forsus/&quot;</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="n">forsus_default_dir</span>
-
-<span class="w">   </span><span class="c">! Find the selected substances on the database and extract their</span>
-<span class="w">   </span><span class="c">! critical constants</span>
-<span class="w">   </span><span class="n">sus</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Substance</span><span class="p">(</span><span class="s2">&quot;methane&quot;</span><span class="p">)</span>
-<span class="w">   </span><span class="n">sus</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Substance</span><span class="p">(</span><span class="s2">&quot;n-hexane&quot;</span><span class="p">)</span>
-<span class="w">   </span><span class="k">call </span><span class="n">get_critical_constants</span><span class="p">(</span><span class="n">sus</span><span class="p">,</span><span class="w"> </span><span class="n">tc</span><span class="p">,</span><span class="w"> </span><span class="n">pc</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">)</span>
-
-<span class="w">   </span><span class="c">! Model definition</span>
-<span class="w">   </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span><span class="w"> </span><span class="n">pc</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">)</span>
-
-<span class="w">   </span><span class="c">! Composition vector</span>
-<span class="w">   </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.9_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.1_pr</span><span class="p">]</span>
-
-<span class="w">   </span><span class="c">! Calculate a dew point at low pressure to later </span>
-<span class="w">   </span><span class="c">! initialize the phase envelope</span>
-<span class="w">   </span><span class="n">sat_point</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">saturation_temperature</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="o">=</span><span class="mf">1._pr</span><span class="p">,</span><span class="w"> </span><span class="nb">kind</span><span class="o">=</span><span class="s2">&quot;dew&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">t0</span><span class="o">=</span><span class="mi">15</span><span class="mf">0._pr</span><span class="p">)</span>
-
-<span class="w">   </span><span class="c">! Calculate phase envelope</span>
-<span class="w">   </span><span class="n">envelope</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pt_envelope_2ph</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">sat_point</span><span class="p">)</span>
-
-<span class="w">   </span><span class="c">! Write the phase envelope to screen</span>
-<span class="w">   </span><span class="k">write</span><span class="p">(</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="n">envelope</span>
-
-<span class="k">contains</span>
-
-<span class="k">   subroutine </span><span class="n">get_critical_constants</span><span class="p">(</span><span class="n">subs</span><span class="p">,</span><span class="w"> </span><span class="n">tc_in</span><span class="p">,</span><span class="w"> </span><span class="n">pc_in</span><span class="p">,</span><span class="w"> </span><span class="n">w_in</span><span class="p">)</span>
-<span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">Substance</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">subs</span><span class="p">(:)</span>
-<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">tc_in</span><span class="p">(:),</span><span class="w"> </span><span class="n">pc_in</span><span class="p">(:),</span><span class="w"> </span><span class="n">w_in</span><span class="p">(:)</span>
-
-<span class="w">      </span><span class="n">tc_in</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">subs</span><span class="p">%</span><span class="k">critical</span><span class="p">%</span><span class="n">critical_temperature</span><span class="p">%</span><span class="k">value</span>
-<span class="k">      </span><span class="n">pc_in</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">subs</span><span class="p">%</span><span class="k">critical</span><span class="p">%</span><span class="n">critical_pressure</span><span class="p">%</span><span class="k">value</span><span class="o">/</span><span class="mf">1e5</span>
-<span class="w">      </span><span class="n">w_in</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">subs</span><span class="p">%</span><span class="k">critical</span><span class="p">%</span><span class="n">acentric_factor</span><span class="p">%</span><span class="k">value</span>
-<span class="k">   end subroutine</span>
-<span class="k">end program </span><span class="n">phase_diagram</span>
+</li>
+<li><a href="#pt_envelope_2ph">pt_envelope_2ph</a><ul>
+<li><a href="#example">Example</a></li>
+</ul>
+</li>
+<li><a href="#output">Output</a></li>
+<li><a href="#related-routines">Related routines</a></li>
+<li><a href="#practical-notes">Practical notes</a></li>
+</ul>
+</div>
+<h1 id="phase-envelopes">Phase envelopes</h1>
+<p>A phase envelope is the set of conditions at which a feed of <strong>fixed
+composition</strong> first splits into two phases. Below the boundary the feed is a
+single phase; on the boundary a second phase appears with an infinitesimal
+amount; across it, two phases coexist with finite amounts.</p>
+<p>Think of a fixed-composition mixture of methane and n-hexane. Lowering the
+pressure at constant temperature eventually makes the mixture split into a
+vapor and a liquid. The temperature and pressure at which that happens form
+the dew branch of the envelope. Raising the pressure instead makes the mixture
+split at the bubble branch. The two branches meet at the critical point, and
+together they form the closed curve that separates the single-phase region
+from the two-phase region.</p>
+<h1 id="theory">Theory</h1>
+<p>Along the envelope, the incipient phase is in equilibrium with the bulk phase,
+so the isofugacity condition and the saturation sum condition hold at every
+point. The envelope is traced by a <strong>continuation method</strong>: a predictor
+estimates the next point from the local tangent, and a corrector solves the
+saturation equations at the new condition. Reusing the previous point as the
+initial guess is what makes tracing a branch cheap and robust compared with
+solving each point independently.</p>
+<p>Isopleths are the same boundary viewed at constant global composition; they
+connect the bubble and dew branches through the critical point. The name
+comes from the Greek <em>isopleth</em>: a line of constant quantity.</p>
+<p>In <code>yaeos</code> it is possible to calculate two-phase envelopes of different kinds.</p>
+<ul>
+<li>Isopleths, at constant composition (this page).</li>
+<li>P-x and T-x envelopes, at constant pressure or temperature while the
+  composition changes, through <a href="../../../proc/px_envelope_2ph.html">px_envelope_2ph</a> and <a href="../../../proc/tx_envelope_2ph.html">tx_envelope_2ph</a>.</li>
+<li>Three-phase envelopes, through <a href="../../../proc/pt_envelope_3ph.html">pt_envelope_3ph</a>.</li>
+</ul>
+<h2 id="how-a-point-is-solved">How a point is solved</h2>
+<p>The solver works with the logarithm of the composition ratios between the two
+phases and with <script type="math/tex">\ln P</script> and <script type="math/tex">\ln T</script>. Working in logarithms keeps the
+variables positive and keeps the Newton steps well scaled over many orders of
+magnitude. At each point it solves the isofugacity equations</p>
+<p>
+<script type="math/tex; mode=display">
+   \ln y_i + \ln \hat{\phi}_i(y) - \ln z_i - \ln \hat{\phi}_i(z) = 0,
+</script>
+</p>
+<p>together with the normalization of the incipient phase
+<script type="math/tex">\sum_i (y_i - z_i) = 0</script> and the specification of one variable. The phase
+roots are selected from <code>first_point%kind</code>, which also decides which branch of
+the envelope is followed.</p>
+<h1 id="pt_envelope_2ph"><code>pt_envelope_2ph</code></h1>
+<div class="codehilite"><pre><span></span><code><span class="k">function </span><span class="n">pt_envelope_2ph</span><span class="p">(</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">   </span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">first_point</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">   </span><span class="n">points</span><span class="p">,</span><span class="w"> </span><span class="n">iterations</span><span class="p">,</span><span class="w"> </span><span class="n">delta_0</span><span class="p">,</span><span class="w"> </span><span class="n">specified_variable_0</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">   </span><span class="n">solver</span><span class="p">,</span><span class="w"> </span><span class="n">stop_conditions</span><span class="p">,</span><span class="w"> </span><span class="n">maximum_pressure</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">   </span><span class="p">)</span><span class="w"> </span><span class="k">result</span><span class="p">(</span><span class="n">envelopes</span><span class="p">)</span>
 </code></pre></div>
 
-<p>The output of the <code>write</code> command will be pre-formatted. Showing in tabular
-data with this</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Argument</th>
+<th style="text-align: left;">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>model</code></td>
+<td style="text-align: left;"><code>ArModel</code> used for the fugacity coefficients</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>z</code></td>
+<td style="text-align: left;">Overall composition of the isopleth (mole fractions)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>first_point</code></td>
+<td style="text-align: left;">Converged saturation point that starts the trace</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>points</code></td>
+<td style="text-align: left;">Maximum number of points, default 500</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>iterations</code></td>
+<td style="text-align: left;">Maximum Newton iterations per point, default 100</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>delta_0</code></td>
+<td style="text-align: left;">Initial continuation step, default 0.01</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>specified_variable_0</code></td>
+<td style="text-align: left;">Index of the initially specified variable</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>iterations</code>, <code>solver</code>, <code>stop_conditions</code>, <code>maximum_pressure</code></td>
+<td style="text-align: left;">Accepted for compatibility but <strong>not used</strong> by the current implementation</td>
+</tr>
+</tbody>
+</table>
+<p>The current <code>pt_envelope_2ph</code> delegates the trace to the multiphase routine
+<a href="../../../proc/pt_envelope.html">pt_envelope</a> with one main phase and forwards only <code>points</code>, <code>delta_0</code>,
+and <code>specified_variable_0</code>. In particular, <code>maximum_pressure</code> does not limit
+the trace; the internal limit of 2000 bar applies.</p>
+<p>The <code>first_point%kind</code> field selects the branches to use:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><code>kind</code></th>
+<th style="text-align: left;">Bulk phase root</th>
+<th style="text-align: left;">Incipient phase root</th>
+<th style="text-align: left;">Resulting branch</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>"bubble"</code></td>
+<td style="text-align: left;">liquid</td>
+<td style="text-align: left;">vapor</td>
+<td style="text-align: left;">Bubble branch</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>"dew"</code></td>
+<td style="text-align: left;">vapor</td>
+<td style="text-align: left;">liquid</td>
+<td style="text-align: left;">Dew branch</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>"liquid-liquid"</code></td>
+<td style="text-align: left;">liquid</td>
+<td style="text-align: left;">liquid</td>
+<td style="text-align: left;">Liquid-liquid branch</td>
+</tr>
+</tbody>
+</table>
+<p>The trace continues from <code>first_point</code> and, when it reaches a critical point,
+switches to the opposite branch. The <code>kind</code> of each saved point records which
+branch it belongs to.</p>
+<p>The continuation variable is adaptive: the solver picks the variable with the
+largest sensitivity at each step, and switches away from pressure or
+temperature near a critical point. <code>specified_variable_0</code> therefore sets the
+starting specification rather than fixing the path.</p>
+<h2 id="example">Example</h2>
+<div class="codehilite"><pre><span></span><code><span class="k">program </span><span class="n">phase_envelope_example</span>
+<span class="w">   </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">ArModel</span><span class="p">,</span><span class="w"> </span><span class="n">EquilibriumState</span><span class="p">,</span><span class="w"> </span><span class="n">PTEnvel2</span><span class="p">,</span><span class="w"> </span><span class="n">PengRobinson76</span>
+<span class="w">   </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">saturation_temperature</span><span class="p">,</span><span class="w"> </span><span class="n">pt_envelope_2ph</span>
+<span class="w">   </span><span class="k">implicit none</span>
+
+<span class="k">   class</span><span class="p">(</span><span class="n">ArModel</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">EquilibriumState</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">sat_point</span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">PTEnvel2</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">envelope</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">tc</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">pc</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">w</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">i</span>
+
+<span class="w">   </span><span class="n">tc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">19</span><span class="mf">0.564_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">50</span><span class="mf">7.6_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">pc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">4</span><span class="mf">5.99_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="mf">0.25_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.0115478_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.301261_pr</span><span class="p">]</span>
+
+<span class="w">   </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span><span class="w"> </span><span class="n">pc</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">)</span>
+
+<span class="w">   </span><span class="c">! Overall composition of the isopleth</span>
+<span class="w">   </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.9_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.1_pr</span><span class="p">]</span>
+
+<span class="w">   </span><span class="c">! Start from a dew point at low pressure</span>
+<span class="w">   </span><span class="n">sat_point</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">saturation_temperature</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="o">=</span><span class="mf">1.0_pr</span><span class="p">,</span><span class="w"> </span><span class="nb">kind</span><span class="o">=</span><span class="s2">&quot;dew&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">t0</span><span class="o">=</span><span class="mi">15</span><span class="mf">0.0_pr</span><span class="p">)</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">sat_point</span><span class="p">%</span><span class="nb">kind</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="s2">&quot;dew&quot;</span><span class="p">)</span><span class="w"> </span><span class="k">error stop</span><span class="w"> </span><span class="s2">&quot;The seed point did not converge&quot;</span>
+
+<span class="w">   </span><span class="c">! Continue the two-phase boundary</span>
+<span class="w">   </span><span class="n">envelope</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pt_envelope_2ph</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">sat_point</span><span class="p">)</span>
+
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Number of envelope points: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="n">envelope</span><span class="p">%</span><span class="n">points</span><span class="p">)</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">allocated</span><span class="p">(</span><span class="n">envelope</span><span class="p">%</span><span class="n">cps</span><span class="p">))</span><span class="w"> </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Critical points found: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="n">envelope</span><span class="p">%</span><span class="n">cps</span><span class="p">)</span>
+<span class="w">   </span><span class="k">do </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="n">envelope</span><span class="p">%</span><span class="n">points</span><span class="p">)</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">envelope</span><span class="p">%</span><span class="n">points</span><span class="p">(</span><span class="n">i</span><span class="p">)%</span><span class="nb">kind</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="n">envelope</span><span class="p">%</span><span class="n">points</span><span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">)%</span><span class="nb">kind</span><span class="p">)</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">         </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Branch change at point &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">i</span>
+<span class="w">   </span><span class="k">end do</span>
+<span class="k">end program </span><span class="n">phase_envelope_example</span>
+</code></pre></div>
+
+<p>With these parameters the calculation produces 122 points and one critical
+point. The first points are on the dew branch, the last ones on the bubble
+branch, and the critical point sits between them at about 253.8 K and
+177.3 bar. The figure below shows the resulting pressure-temperature boundary:</p>
+<p><img alt="Phase envelope" src="../../../media/phase_envelope.png"></p>
+<p>Note the parameters: they illustrate the API, they are not a validated
+description of the methane/n-hexane system.</p>
+<h1 id="output">Output</h1>
+<p>The result is a <a href="../../../type/ptenvel2.html">PTEnvel2</a> with two arrays:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>points</code></td>
+<td style="text-align: left;">Converged saturation states, in continuation order</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>cps</code></td>
+<td style="text-align: left;">Critical points detected along the branch (<code>T</code>, <code>P</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>Each entry of <code>points</code> is an <a href="../../../type/equilibriumstate.html">EquilibriumState</a> with <code>kind</code> (<code>"bubble"</code>,
+<code>"dew"</code>, or <code>"liquid-liquid"</code>), <code>T</code>, <code>P</code>, <code>x</code>, <code>y</code>, and <code>beta</code>. In the
+current implementation <code>x</code> is always the bulk phase (it equals the feed <code>z</code>)
+and <code>y</code> is always the incipient phase. For a dew point this is the opposite
+of the <a href="../../../proc/saturation_temperature.html">saturation_temperature</a>/<a href="../../../proc/saturation_pressure.html">saturation_pressure</a> convention, where
+<code>x</code> holds the incipient liquid. <code>beta</code> holds the fraction of the bulk phase
+(1 on the boundary), and <code>Vx</code>, <code>Vy</code>, and <code>iters</code> are not filled in, so do not
+read them.</p>
+<p>The <code>write</code> command produces a pre-formatted, sectioned file:</p>
 <div class="codehilite"><pre><span></span><code># PTEnvel2
 
 # kind of sat point
-kind T P [liquid-phase composition vector] [gas-phase composition vector]
+kind T P beta [phase-x composition vector] [phase-y composition vector]
 
 # other kind of sat point
-kind T P [liquid-phase composition vector] [gas-phase composition vector]
+kind T P beta [phase-x composition vector] [phase-y composition vector]
 
 # Critical
 T P
 </code></pre></div>
 
+<p>The current writer emits every point <strong>except the last one</strong>, so the file
+contains one row fewer than <code>size(envelope%points)</code>. The beta column is
+present in the data rows and precedes the composition vectors.</p>
 <p>Which when plotted with <code>gnuplot</code> with:</p>
 <div class="codehilite"><pre><span></span><code><span class="k">plot</span><span class="w"> </span><span class="s">&quot;outfile&quot;</span><span class="w"> </span>\
 <span class="w">        </span><span class="nb">index</span><span class="w"> </span><span class="s">&quot;dew&quot;</span><span class="w">      </span><span class="nb">u</span><span class="w"> </span><span class="mi">2</span><span class="o">:</span><span class="mi">3</span><span class="w"> </span><span class="nb">w</span><span class="w"> </span><span class="n">l</span><span class="w"> </span><span class="nb">title</span><span class="w"> </span><span class="s">&quot;Dew&quot;</span><span class="o">,</span><span class="w"> </span>\
@@ -258,7 +435,71 @@ T P
 </code></pre></div>
 
 <p>Gives the following plot:</p>
-<p><img alt="PTEnvel2" src="../figs/PTEnvel2.png"></p>
+<p><img alt="PTEnvel2" src="../../../media/PTEnvel2.png"></p>
+<h1 id="related-routines">Related routines</h1>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Routine</th>
+<th style="text-align: left;">Boundary traced</th>
+<th style="text-align: left;">Fixed quantity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><a href="../../../proc/pt_envelope_2ph.html">pt_envelope_2ph</a></td>
+<td style="text-align: left;">P-T at constant composition</td>
+<td style="text-align: left;">Composition</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="../../../proc/px_envelope_2ph.html">px_envelope_2ph</a></td>
+<td style="text-align: left;">P-x at constant temperature</td>
+<td style="text-align: left;">Temperature and a feed/injection pair</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="../../../proc/tx_envelope_2ph.html">tx_envelope_2ph</a></td>
+<td style="text-align: left;">T-x at constant pressure</td>
+<td style="text-align: left;">Pressure and a feed/injection pair</td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="../../../proc/pt_envelope_3ph.html">pt_envelope_3ph</a></td>
+<td style="text-align: left;">P-T for a three-phase line</td>
+<td style="text-align: left;">Composition and initial phase compositions</td>
+</tr>
+</tbody>
+</table>
+<p>The P-x and T-x routines take two compositions, <code>z0</code> (the main phase) and
+<code>z_injection</code> (the injected fluid), plus a mixing parameter <code>alpha0</code>. They are
+useful for injection and leaching processes, where the composition of one
+phase changes along the path.</p>
+<h1 id="practical-notes">Practical notes</h1>
+<ul>
+<li>Start from a converged saturation point of the same kind as the branch you
+  want to follow. A bad seed is the most common cause of a short or empty
+  envelope.</li>
+<li>Reuse the previous point when you need a single point rather than a whole
+  curve: a saturation calculation with the previous <code>y0</code> and pressure or
+  temperature as the initial guess is usually cheaper and more stable.</li>
+<li>The critical point is detected when the logarithm of the composition ratios
+  changes sign between two consecutive points; the crossing is interpolated and
+  the two phase kinds are swapped, which is what produces the branch change.
+  The interpolated point is reported in <code>cps</code>. If the trace crosses a critical
+  point without the sign change being detected, the branch change is missed.
+  Compare <code>size(cps)</code> with the number of branch changes you expect.</li>
+<li>Near a critical point the two phases become nearly identical and the solver
+  reduces its step size and jumps over the region. Points close to the critical
+  point are the least reliable ones in the set; treat them as indicative.</li>
+<li>The trace stops when the internal 2000 bar limit is reached, when the step size
+  collapses, when a point fails to converge, or when the requested number of
+  points is reached. A short envelope is not necessarily a wrong one.</li>
+<li>Check the branch labels and the phase fractions along the envelope. A
+  negative or inconsistent fraction means the trace left the physical branch.</li>
+<li>A liquid-liquid branch uses different root and step settings, and its
+  points are the least well tested part of the implementation. Verify each
+  point independently before using a liquid-liquid envelope.</li>
+<li>See <code>example/basics/4_phase_envelope.f90</code> for a complete runnable program,
+  including how to write the envelope to a file.</li>
+</ul>
     </div>
   </div>
       <hr>
@@ -269,14 +510,14 @@ T P
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

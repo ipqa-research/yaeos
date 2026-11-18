@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>MPEquilibriumState &ndash; yaeos </title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -135,15 +136,15 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../type/mpequilibriumstate.html#variable-p~92">P</a>
-            <a class="list-group-item" href="../type/mpequilibriumstate.html#variable-t~142">T</a>
-            <a class="list-group-item" href="../type/mpequilibriumstate.html#variable-betas~20">betas</a>
-            <a class="list-group-item" href="../type/mpequilibriumstate.html#variable-kind_w~21">kind_w</a>
-            <a class="list-group-item" href="../type/mpequilibriumstate.html#variable-kinds_x~20">kinds_x</a>
-            <a class="list-group-item" href="../type/mpequilibriumstate.html#variable-np~31">np</a>
-            <a class="list-group-item" href="../type/mpequilibriumstate.html#variable-w~45">w</a>
-            <a class="list-group-item" href="../type/mpequilibriumstate.html#variable-x_l~20">x_l</a>
-            <a class="list-group-item" href="../type/mpequilibriumstate.html#variable-z~66">z</a>
+            <a class="list-group-item" href="../type/mpequilibriumstate.html#variable-p~22">P</a>
+            <a class="list-group-item" href="../type/mpequilibriumstate.html#variable-t~30">T</a>
+            <a class="list-group-item" href="../type/mpequilibriumstate.html#variable-betas~11">betas</a>
+            <a class="list-group-item" href="../type/mpequilibriumstate.html#variable-kind_w~10">kind_w</a>
+            <a class="list-group-item" href="../type/mpequilibriumstate.html#variable-kinds_x~10">kinds_x</a>
+            <a class="list-group-item" href="../type/mpequilibriumstate.html#variable-np~18">np</a>
+            <a class="list-group-item" href="../type/mpequilibriumstate.html#variable-w~12">w</a>
+            <a class="list-group-item" href="../type/mpequilibriumstate.html#variable-x_l~11">x_l</a>
+            <a class="list-group-item" href="../type/mpequilibriumstate.html#variable-z~15">z</a>
         </div>
       </div>
     </div>
@@ -175,16 +176,18 @@
     <div class="col-md-9" id='text'>
       <h2 id="type-def-statement">
         type, public :: MPEquilibriumState</h2>
-    <h1 id="mpequilibriumstate"><code>MPEquilibriumState</code></h1>
-<p>Type to hold the state of a multiphase equilibrium calculation.</p>
+    <h1 id="mpequilibriumstate">MPEquilibriumState</h1>
+<p>Result of a multiphase equilibrium calculation.</p>
 <h1 id="description">Description</h1>
-<p>This type holds the results of a multiphase equilibrium calculation,
-including phase compositions, pressures, and temperatures.</p>
+<p>Holds the feed, conditions, main-phase compositions and kinds, plus
+a reference phase used in the generalized multiphase formulation.</p>
 <h1 id="examples">Examples</h1>
-<div class="codehilite"><pre><span></span><code>
+<div class="codehilite"><pre><span></span><code><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">phase</span>
+<span class="k">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pt_mp_flash</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">)</span>
+<span class="k">do </span><span class="n">phase</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="k">result</span><span class="p">%</span><span class="n">np</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="k">result</span><span class="p">%</span><span class="n">kinds_x</span><span class="p">(</span><span class="n">phase</span><span class="p">),</span><span class="w"> </span><span class="k">result</span><span class="p">%</span><span class="n">x_l</span><span class="p">(</span><span class="n">phase</span><span class="p">,</span><span class="w"> </span><span class="p">:)</span>
+<span class="k">end do</span>
 </code></pre></div>
-
-<h1 id="references">References</h1>
 <br>      <div class="card">
         <div class="card-header">
           <h3 class="card-title">Inherited by</h3>
@@ -193,35 +196,35 @@ including phase compositions, pressures, and temperatures.</p>
           <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: type~~mpequilibriumstate~~InheritedByGraph Pages: 1 -->
-<svg id="typempequilibriumstateInheritedByGraph" width="313pt" height="32pt"
- viewBox="0.00 0.00 313.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="type~~mpequilibriumstate~~InheritedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg id="typempequilibriumstateInheritedByGraph" width="310pt" height="32pt"
+ viewBox="0.00 0.00 310.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="type~~mpequilibriumstate~~InheritedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>type~~mpequilibriumstate~~InheritedByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 309,-28 309,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 306.04,-28.27 306.04,4 -4,4"/>
 <!-- type~mpequilibriumstate -->
 <g id="type~~mpequilibriumstate~~InheritedByGraph_node1" class="node">
 <title>type~mpequilibriumstate</title>
-<polygon fill="none" stroke="black" points="116,-24 0,-24 0,0 116,0 116,-24"/>
-<text text-anchor="middle" x="58" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">MPEquilibriumState</text>
+<polygon fill="none" stroke="black" points="115.02,-24.27 0,-24.27 0,0 115.02,0 115.02,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="57.51" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">MPEquilibriumState</text>
 </g>
 <!-- type~generalizedisozline -->
 <g id="type~~mpequilibriumstate~~InheritedByGraph_node2" class="node">
 <title>type~generalizedisozline</title>
 <g id="a_type~~mpequilibriumstate~~InheritedByGraph_node2"><a xlink:href="../type/generalizedisozline.html" xlink:title="GeneralizedIsoZLine">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="305,-24 183,-24 183,0 305,0 305,-24"/>
-<text text-anchor="middle" x="244" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">GeneralizedIsoZLine</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="302.04,-24.27 181.02,-24.27 181.02,0 302.04,0 302.04,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="241.53" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">GeneralizedIsoZLine</text>
 </a>
 </g>
 </g>
 <!-- type~generalizedisozline&#45;&gt;type~mpequilibriumstate -->
 <g id="type~~mpequilibriumstate~~InheritedByGraph_edge1" class="edge">
 <title>type~generalizedisozline&#45;&gt;type~mpequilibriumstate</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M182.75,-12C164.71,-12 144.81,-12 126.35,-12"/>
-<polygon fill="#000000" stroke="#000000" points="126.26,-8.5 116.26,-12 126.26,-15.5 126.26,-8.5"/>
-<text text-anchor="middle" x="149.5" y="-14.4" font-family="Helvetica,sans-Serif" font-size="9.50">points</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M180.68,-12.13C163.42,-12.13 144.47,-12.13 126.75,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="126.82,-8.64 116.82,-12.14 126.82,-15.64 126.82,-8.64"/>
+<text xml:space="preserve" text-anchor="middle" x="148.02" y="-14.36" font-family="Helvetica,sans-Serif" font-size="9.50">points</text>
 </g>
 </g>
 </svg>
@@ -240,25 +243,25 @@ including phase compositions, pressures, and temperatures.</p>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="186pt" height="32pt"
- viewBox="0.00 0.00 185.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="184pt" height="32pt"
+ viewBox="0.00 0.00 184.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 181.5,-28 181.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 179.88,-28.27 179.88,4 -4,4"/>
 <!-- Type -->
 <g id="node1" class="node">
 <title>Type</title>
-<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node2" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="177.5,-24 72.5,-24 72.5,0 177.5,0 177.5,-24"/>
-<text text-anchor="middle" x="125" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="175.88,-24.27 72.12,-24.27 72.12,0 175.88,0 175.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="124" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -290,7 +293,7 @@ said component(s).
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~92"></span>
+              <span class="anchor" id="variable-p~22"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -302,12 +305,12 @@ said component(s).
                 <td></td>
                 <td></td>
             <td>
-                <p>Pressure</p>
+                <p>Pressure [bar]</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~142"></span>
+              <span class="anchor" id="variable-t~30"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -319,12 +322,12 @@ said component(s).
                 <td></td>
                 <td></td>
             <td>
-                <p>Temperature</p>
+                <p>Temperature [K]</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-betas~20"></span>
+              <span class="anchor" id="variable-betas~11"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -336,12 +339,12 @@ said component(s).
                 <td></td>
                 <td></td>
             <td>
-                <p>Mole fractions of each phase</p>
+                <p>Phase fractions: <code>np</code> main phases followed by the reference phase</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kind_w~21"></span>
+              <span class="anchor" id="variable-kind_w~10"></span>
               character(len=14),
             </td>
               <td>public</td>
@@ -358,7 +361,7 @@ said component(s).
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kinds_x~20"></span>
+              <span class="anchor" id="variable-kinds_x~10"></span>
               character(len=14),
             </td>
               <td>public,</td>
@@ -375,7 +378,7 @@ said component(s).
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-np~31"></span>
+              <span class="anchor" id="variable-np~18"></span>
               integer,
             </td>
               <td>public</td>
@@ -387,12 +390,12 @@ said component(s).
                 <td></td>
                 <td></td>
             <td>
-                <p>Number of phases</p>
+                <p>Number of main phases (excluding the reference phase)</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-w~45"></span>
+              <span class="anchor" id="variable-w~12"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -409,7 +412,7 @@ said component(s).
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x_l~20"></span>
+              <span class="anchor" id="variable-x_l~11"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -421,12 +424,12 @@ said component(s).
                 <td></td>
                 <td></td>
             <td>
-                <p>Mole fractions of the main phases</p>
+                <p>Mole fractions of the main phases, shape <code>(np, nc)</code></p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z~66"></span>
+              <span class="anchor" id="variable-z~15"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -462,14 +465,14 @@ said component(s).
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

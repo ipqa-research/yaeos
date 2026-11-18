@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>solve_point &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,20 +94,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.3% of total for procedures.">58 statements</a>
+                 title=" 0.2% of total for procedures.">39 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/phase_envelopes_pt_mp.f90"> Source File</a>
+              <a href="../src/phase_envelopes_tx_mp.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/phase_envelopes_pt_mp.f90.html'>phase_envelopes_pt_mp.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_mp.html'>yaeos__equilibria_boundaries_phase_envelopes_mp</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/phase_envelopes_tx_mp.f90.html'>phase_envelopes_tx_mp.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_mp_tx.html'>yaeos__equilibria_boundaries_phase_envelopes_mp_tx</a></li>
             <li class="breadcrumb-item active" aria-current="page">solve_point</li>
           </ol>
         </nav>
@@ -135,19 +136,11 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/solve_point~2.html#variable-p~18">P</a>
-            <a class="list-group-item" href="../proc/solve_point~2.html#variable-t~22">T</a>
-            <a class="list-group-item" href="../proc/solve_point~2.html#variable-x0~2">X0</a>
-            <a class="list-group-item" href="../proc/solve_point~2.html#variable-betas~6">betas</a>
-            <a class="list-group-item" href="../proc/solve_point~2.html#variable-dx~8">dX</a>
-            <a class="list-group-item" href="../proc/solve_point~2.html#variable-i~27">i</a>
-            <a class="list-group-item" href="../proc/solve_point~2.html#variable-ibetas~2">iBetas</a>
-            <a class="list-group-item" href="../proc/solve_point~2.html#variable-ip~3">iP</a>
-            <a class="list-group-item" href="../proc/solve_point~2.html#variable-it~3">iT</a>
-            <a class="list-group-item" href="../proc/solve_point~2.html#variable-l~5">l</a>
-            <a class="list-group-item" href="../proc/solve_point~2.html#variable-nc~22">nc</a>
-            <a class="list-group-item" href="../proc/solve_point~2.html#variable-w~9">w</a>
-            <a class="list-group-item" href="../proc/solve_point~2.html#variable-x_l~6">x_l</a>
+            <a class="list-group-item" href="../proc/solve_point~2.html#variable-x0~6">X0</a>
+            <a class="list-group-item" href="../proc/solve_point~2.html#variable-dx~5">dX</a>
+            <a class="list-group-item" href="../proc/solve_point~2.html#variable-it~2">iT</a>
+            <a class="list-group-item" href="../proc/solve_point~2.html#variable-ia~5">ia</a>
+            <a class="list-group-item" href="../proc/solve_point~2.html#variable-nc~12">nc</a>
         </div>
       </div>
     </div>
@@ -177,7 +170,7 @@
     </div>
     
     <div class="col-md-9" id='text'>
-    <h2>private  subroutine solve_point(model, z, np, beta_w, kinds_x, kind_w, X, ns, S, dXdS, F, df, Vl, Vw, iters, max_iterations)  
+    <h2>private  subroutine solve_point(model, z0, zi, np, P, beta_w, kinds_x, kind_w, X, ns, S, dXdS, F, df, iters, max_iterations)  
 </h2>
         <div class="card mb-4">
       <h3 class="card-header card-title bg-light">Uses</h3>
@@ -185,126 +178,126 @@
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
-                  <li class="list-inline-item"><a href='../module/yaeos__math.html'>yaeos__math</a></li>
                   <li class="list-inline-item"><a href='http://fortranwiki.org/fortran/show/iso_fortran_env'>iso_fortran_env</a></li>
+                  <li class="list-inline-item"><a href='../module/yaeos__math.html'>yaeos__math</a></li>
               </ul>
             </li>
             <li class="list-group-item">
               <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: proc~~solve_point~2~~UsesGraph Pages: 1 -->
 <svg id="procsolve_point2UsesGraph" width="641pt" height="84pt"
- viewBox="0.00 0.00 641.00 84.08" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~solve_point~2~~UsesGraph" class="graph" transform="scale(0.73 0.73) rotate(0) translate(4 111.42)">
+ viewBox="0.00 0.00 641.00 84.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~solve_point~2~~UsesGraph" class="graph" transform="scale(0.731844 0.731844) rotate(0) translate(4 111.37)">
 <title>proc~~solve_point~2~~UsesGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-111.42 876,-111.42 876,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-111.37 871.87,-111.37 871.87,4 -4,4"/>
 <!-- proc~solve_point~2 -->
 <g id="proc~~solve_point~2~~UsesGraph_node1" class="node">
 <title>proc~solve_point~2</title>
-<polygon fill="none" stroke="black" points="872,-80.42 733,-80.42 733,-56.42 872,-56.42 872,-80.42"/>
-<text text-anchor="middle" x="802.5" y="-66.02" font-family="Helvetica,sans-Serif" font-size="10.50">PTEnvelMP%solve_point</text>
+<polygon fill="none" stroke="black" points="867.87,-80.51 728.1,-80.51 728.1,-56.24 867.87,-56.24 867.87,-80.51"/>
+<text xml:space="preserve" text-anchor="middle" x="797.99" y="-64.77" font-family="Helvetica,sans-Serif" font-size="10.50">TXEnvelMP%solve_point</text>
 </g>
 <!-- iso_fortran_env -->
 <g id="proc~~solve_point~2~~UsesGraph_node2" class="node">
 <title>iso_fortran_env</title>
 <g id="a_proc~~solve_point~2~~UsesGraph_node2"><a xlink:href="http://fortranwiki.org/fortran/show/iso_fortran_env" xlink:title="iso_fortran_env">
-<polygon fill="#337ab7" stroke="#337ab7" points="94,-99.42 0,-99.42 0,-75.42 94,-75.42 94,-99.42"/>
-<text text-anchor="middle" x="47" y="-85.02" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="93.27,-99.51 0,-99.51 0,-75.24 93.27,-75.24 93.27,-99.51"/>
+<text xml:space="preserve" text-anchor="middle" x="46.63" y="-83.77" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
 </a>
 </g>
 </g>
 <!-- proc~solve_point~2&#45;&gt;iso_fortran_env -->
 <g id="proc~~solve_point~2~~UsesGraph_edge1" class="edge">
 <title>proc~solve_point~2&#45;&gt;iso_fortran_env</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M744.01,-80.44C684.11,-91.9 587.41,-107.42 503,-107.42 503,-107.42 503,-107.42 329.5,-107.42 251.32,-107.42 161.23,-99.65 104.46,-93.8"/>
-<polygon fill="#000000" stroke="#000000" points="104.56,-90.29 94.25,-92.73 103.83,-97.25 104.56,-90.29"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M736.55,-80.98C676.6,-92.37 581.97,-107.37 499.2,-107.37 499.2,-107.37 499.2,-107.37 326.68,-107.37 249.66,-107.37 160.99,-99.7 104.65,-93.86"/>
+<polygon fill="#000000" stroke="#000000" points="105.3,-90.41 94.99,-92.84 104.57,-97.37 105.3,-90.41"/>
 </g>
 <!-- module~yaeos__math -->
 <g id="proc~~solve_point~2~~UsesGraph_node3" class="node">
 <title>module~yaeos__math</title>
 <g id="a_proc~~solve_point~2~~UsesGraph_node3"><a xlink:href="../module/yaeos__math.html" xlink:title="yaeos__math">
-<polygon fill="#337ab7" stroke="#337ab7" points="697,-60.42 615,-60.42 615,-36.42 697,-36.42 697,-60.42"/>
-<text text-anchor="middle" x="656" y="-46.02" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="692.1,-60.51 610.83,-60.51 610.83,-36.24 692.1,-36.24 692.1,-60.51"/>
+<text xml:space="preserve" text-anchor="middle" x="651.47" y="-44.77" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math</text>
 </a>
 </g>
 </g>
 <!-- proc~solve_point~2&#45;&gt;module~yaeos__math -->
 <g id="proc~~solve_point~2~~UsesGraph_edge2" class="edge">
 <title>proc~solve_point~2&#45;&gt;module~yaeos__math</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M732.64,-58.89C724.05,-57.7 715.4,-56.51 707.17,-55.37"/>
-<polygon fill="#000000" stroke="#000000" points="707.4,-51.86 697.01,-53.96 706.44,-58.8 707.4,-51.86"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M727.69,-58.78C719.51,-57.65 711.28,-56.51 703.43,-55.42"/>
+<polygon fill="#000000" stroke="#000000" points="704.11,-51.98 693.72,-54.08 703.15,-58.92 704.11,-51.98"/>
 </g>
 <!-- module~yaeos__constants -->
 <g id="proc~~solve_point~2~~UsesGraph_node4" class="node">
 <title>module~yaeos__constants</title>
 <g id="a_proc~~solve_point~2~~UsesGraph_node4"><a xlink:href="../module/yaeos__constants.html" xlink:title="yaeos__constants">
-<polygon fill="#337ab7" stroke="#337ab7" points="236,-79.42 130,-79.42 130,-55.42 236,-55.42 236,-79.42"/>
-<text text-anchor="middle" x="183" y="-65.02" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__constants</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="233.79,-79.51 129.27,-79.51 129.27,-55.24 233.79,-55.24 233.79,-79.51"/>
+<text xml:space="preserve" text-anchor="middle" x="181.53" y="-63.77" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__constants</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__math&#45;&gt;module~yaeos__constants -->
 <g id="proc~~solve_point~2~~UsesGraph_edge3" class="edge">
 <title>module~yaeos__math&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M614.93,-51.37C553.82,-55.8 433.66,-64.18 331.5,-69.42"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M610.35,-51.34C549.49,-55.77 430.15,-64.14 328.68,-69.37"/>
 </g>
 <!-- module~yaeos__math_continuation -->
 <g id="proc~~solve_point~2~~UsesGraph_node5" class="node">
 <title>module~yaeos__math_continuation</title>
 <g id="a_proc~~solve_point~2~~UsesGraph_node5"><a xlink:href="../module/yaeos__math_continuation.html" xlink:title="yaeos__math_continuation">
-<polygon fill="#337ab7" stroke="#337ab7" points="579,-41.42 425,-41.42 425,-17.42 579,-17.42 579,-41.42"/>
-<text text-anchor="middle" x="502" y="-27.02" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math_continuation</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="574.83,-41.51 421.56,-41.51 421.56,-17.24 574.83,-17.24 574.83,-41.51"/>
+<text xml:space="preserve" text-anchor="middle" x="498.2" y="-25.77" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math_continuation</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__math&#45;&gt;module~yaeos__math_continuation -->
 <g id="proc~~solve_point~2~~UsesGraph_edge4" class="edge">
 <title>module~yaeos__math&#45;&gt;module~yaeos__math_continuation</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M614.67,-43.38C606.68,-42.38 598.01,-41.3 589.16,-40.19"/>
-<polygon fill="#000000" stroke="#000000" points="589.46,-36.7 579.11,-38.94 588.59,-43.65 589.46,-36.7"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M610.72,-43.38C603.11,-42.42 594.87,-41.39 586.44,-40.33"/>
+<polygon fill="#000000" stroke="#000000" points="587.13,-36.89 576.77,-39.11 586.26,-43.83 587.13,-36.89"/>
 </g>
 <!-- module~yaeos__math_linalg -->
 <g id="proc~~solve_point~2~~UsesGraph_node6" class="node">
 <title>module~yaeos__math_linalg</title>
 <g id="a_proc~~solve_point~2~~UsesGraph_node6"><a xlink:href="../module/yaeos__math_linalg.html" xlink:title="yaeos__math_linalg">
-<polygon fill="#337ab7" stroke="#337ab7" points="389,-41.42 272,-41.42 272,-17.42 389,-17.42 389,-41.42"/>
-<text text-anchor="middle" x="330.5" y="-27.02" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math_linalg</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="385.56,-41.51 269.79,-41.51 269.79,-17.24 385.56,-17.24 385.56,-41.51"/>
+<text xml:space="preserve" text-anchor="middle" x="327.68" y="-25.77" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math_linalg</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__math&#45;&gt;module~yaeos__math_linalg -->
 <g id="proc~~solve_point~2~~UsesGraph_edge5" class="edge">
 <title>module~yaeos__math&#45;&gt;module~yaeos__math_linalg</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M637.87,-36.29C623.07,-26.6 600.71,-13.79 579,-8.42 513.26,7.82 435.05,-3.76 384.4,-15.15"/>
-<polygon fill="#000000" stroke="#000000" points="383.59,-11.74 374.64,-17.42 385.18,-18.56 383.59,-11.74"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M632.83,-35.85C618.11,-26.21 596.17,-13.67 574.83,-8.37 510.97,7.47 435.26,-3.21 384.83,-14.32"/>
+<polygon fill="#000000" stroke="#000000" points="384.28,-10.85 375.31,-16.5 385.84,-17.68 384.28,-10.85"/>
 </g>
 <!-- module~yaeos__constants&#45;&gt;iso_fortran_env -->
 <g id="proc~~solve_point~2~~UsesGraph_edge6" class="edge">
 <title>module~yaeos__constants&#45;&gt;iso_fortran_env</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.81,-75.21C121.45,-76.46 112.77,-77.76 104.32,-79.02"/>
-<polygon fill="#000000" stroke="#000000" points="103.54,-75.6 94.16,-80.53 104.57,-82.52 103.54,-75.6"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.15,-75.1C121.21,-76.3 112.96,-77.54 104.9,-78.75"/>
+<polygon fill="#000000" stroke="#000000" points="104.54,-75.27 95.17,-80.22 105.58,-82.19 104.54,-75.27"/>
 </g>
 <!-- module~yaeos__math_continuation&#45;&gt;module~yaeos__constants -->
 <g id="proc~~solve_point~2~~UsesGraph_edge7" class="edge">
 <title>module~yaeos__math_continuation&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M466.47,-41.44C432.59,-52.31 379.21,-66.97 331.5,-69.42"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M329.5,-69.42C302.22,-70.82 272.02,-70.68 246.24,-70.05"/>
-<polygon fill="#000000" stroke="#000000" points="246.31,-66.56 236.22,-69.78 246.12,-73.55 246.31,-66.56"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M461.26,-41.91C427.52,-52.72 375.37,-66.96 328.68,-69.37"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M326.68,-69.37C300.12,-70.74 270.79,-70.63 245.55,-70.03"/>
+<polygon fill="#000000" stroke="#000000" points="245.87,-66.54 235.78,-69.76 245.68,-73.53 245.87,-66.54"/>
 </g>
 <!-- module~yaeos__math_continuation&#45;&gt;module~yaeos__math_linalg -->
 <g id="proc~~solve_point~2~~UsesGraph_edge8" class="edge">
 <title>module~yaeos__math_continuation&#45;&gt;module~yaeos__math_linalg</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M424.68,-29.42C416.18,-29.42 407.57,-29.42 399.2,-29.42"/>
-<polygon fill="#000000" stroke="#000000" points="399.11,-25.92 389.11,-29.42 399.11,-32.92 399.11,-25.92"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M421.32,-29.37C413.33,-29.37 405.25,-29.37 397.35,-29.37"/>
+<polygon fill="#000000" stroke="#000000" points="397.47,-25.87 387.47,-29.37 397.47,-32.87 397.47,-25.87"/>
 </g>
 <!-- module~yaeos__math_linalg&#45;&gt;module~yaeos__constants -->
 <g id="proc~~solve_point~2~~UsesGraph_edge9" class="edge">
 <title>module~yaeos__math_linalg&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M283.46,-41.45C269.66,-45.05 254.37,-49.04 240.01,-52.8"/>
-<polygon fill="#000000" stroke="#000000" points="239.03,-49.43 230.24,-55.35 240.8,-56.21 239.03,-49.43"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M279.08,-41.92C266.9,-45.13 253.66,-48.62 241.01,-51.95"/>
+<polygon fill="#000000" stroke="#000000" points="240.32,-48.52 231.54,-54.45 242.1,-55.29 240.32,-48.52"/>
 </g>
 </g>
 </svg>
@@ -327,49 +320,49 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="518pt" height="32pt"
- viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="511pt" height="32pt"
+ viewBox="0.00 0.00 511.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 506.88,-28.27 506.88,4 -4,4"/>
 <!-- Module -->
 <g id="node1" class="node">
 <title>Module</title>
-<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
 </g>
 <!-- Submodule -->
 <g id="node2" class="node">
 <title>Submodule</title>
-<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
-<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="144.13,-24.27 71.87,-24.27 71.87,0 144.13,0 144.13,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="108" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
 </g>
 <!-- Subroutine -->
 <g id="node3" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
-<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="231.63,-24.27 162.37,-24.27 162.37,0 231.63,0 231.63,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="197" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node4" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
-<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="306.26,-24.27 249.74,-24.27 249.74,0 306.26,0 306.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="278" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Program -->
 <g id="node5" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
-<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="381.26,-24.27 324.74,-24.27 324.74,0 381.26,0 381.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="353" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node6" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
-<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="502.88,-24.27 399.12,-24.27 399.12,0 502.88,0 502.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="451" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -388,16 +381,14 @@ modules which it uses.
     </div>
 
 
-    <h1 id="solve_point">`solve_point</h1>
-<p>Solve a multiphase phase equilbiria at a fixed $T,P,\beta^w$</p>
+    <h1 id="solve_point">solve_point</h1>
+<p>Solve a point in the multiphase envelope.</p>
 <h1 id="description">Description</h1>
-<p>This subroutine uses the Newton method to solve the system of
-equations for the calculation of a multiphase phase eqiulibria point.
-To help with convergence, damping on the <script type="math/tex">\Delta X</script> at each step
-is done, avoiding divergence and undesired big steps.</p>
+<p>This subroutine solves a point of the system of equations for a
+multiphase isobaric line. It uses the Newton-Raphson method,.</p>
 
     <h3>Type Bound</h3>
-    <p><a href='../type/ptenvelmp.html'>PTEnvelMP</a></p>
+    <p><a href='../type/txenvelmp.html'>TXEnvelMP</a></p>
 
     <h3>Arguments</h3>
         <table class="table table-striped varlist">
@@ -412,7 +403,7 @@ is done, avoiding divergence and undesired big steps.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~12"></span>
+              <span class="anchor" id="variable-model~13"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -422,12 +413,12 @@ is done, avoiding divergence and undesired big steps.</p>
             <td>::</td>
             <td><strong>model</strong></td>
             <td>
-                <p>Model to use.</p>
+                <p>Model to use for the calculations.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z~11"></span>
+              <span class="anchor" id="variable-z0~9"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -435,14 +426,29 @@ is done, avoiding divergence and undesired big steps.</p>
               
             </td>
             <td>::</td>
-            <td><strong>z</strong>(:)</td>
+            <td><strong>z0</strong>(:)</td>
             <td>
-                <p>Mixture global composition.</p>
+                <p>Initial mixture composition.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-np~7"></span>
+              <span class="anchor" id="variable-zi~9"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>zi</strong>(:)</td>
+            <td>
+                <p>Second mixture composition.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-np~11"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -452,12 +458,27 @@ is done, avoiding divergence and undesired big steps.</p>
             <td>::</td>
             <td><strong>np</strong></td>
             <td>
-                <p>Number of main phases</p>
+                <p>Number of main phases.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-beta_w~5"></span>
+              <span class="anchor" id="variable-p~12"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>P</strong></td>
+            <td>
+                <p>Presure [bar].</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-beta_w~9"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -482,12 +503,12 @@ is done, avoiding divergence and undesired big steps.</p>
             <td>::</td>
             <td><strong>kinds_x</strong>(np)</td>
             <td>
-                <p>Kind of the main phases</p>
+                <p>Kinds of the main phases</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kind_w~8"></span>
+              <span class="anchor" id="variable-kind_w~7"></span>
               character(len=14),
             </td>
 <td>intent(in)</td>
@@ -502,7 +523,7 @@ is done, avoiding divergence and undesired big steps.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~19"></span>
+              <span class="anchor" id="variable-x~15"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -517,7 +538,7 @@ is done, avoiding divergence and undesired big steps.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns~10"></span>
+              <span class="anchor" id="variable-ns~16"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -532,7 +553,7 @@ is done, avoiding divergence and undesired big steps.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-s~9"></span>
+              <span class="anchor" id="variable-s~13"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -547,7 +568,7 @@ is done, avoiding divergence and undesired big steps.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dxds~5"></span>
+              <span class="anchor" id="variable-dxds~10"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -557,12 +578,12 @@ is done, avoiding divergence and undesired big steps.</p>
             <td>::</td>
             <td><strong>dXdS</strong>(size(X))</td>
             <td>
-                
+                <p>Tangent direction from the preceding continuation point.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-f~16"></span>
+              <span class="anchor" id="variable-f~9"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -577,7 +598,7 @@ is done, avoiding divergence and undesired big steps.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-df~8"></span>
+              <span class="anchor" id="variable-df~6"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -592,37 +613,7 @@ is done, avoiding divergence and undesired big steps.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vl~4"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Vl</strong>(np)</td>
-            <td>
-                <p>Main phases volumes</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-vw~4"></span>
-              real(kind=pr),
-            </td>
-<td>intent(out)</td>
-              <td></td>            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>Vw</strong></td>
-            <td>
-                <p>Reference phase volume</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-iters~5"></span>
+              <span class="anchor" id="variable-iters~9"></span>
               integer,
             </td>
 <td>intent(out)</td>
@@ -632,12 +623,12 @@ is done, avoiding divergence and undesired big steps.</p>
             <td>::</td>
             <td><strong>iters</strong></td>
             <td>
-                <p>Number of iterations to solve the current point</p>
+                <p>Number of iterations needed to converge the point.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-max_iterations~3"></span>
+              <span class="anchor" id="variable-max_iterations~5"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -647,7 +638,7 @@ is done, avoiding divergence and undesired big steps.</p>
             <td>::</td>
             <td><strong>max_iterations</strong></td>
             <td>
-                <p>Maximum number of iterations to solve the point</p>
+                <p>Maximum number of iterations to solve the point.</p>
             </td>
         </tr>
     </tbody>
@@ -662,175 +653,175 @@ is done, avoiding divergence and undesired big steps.</p>
   <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: proc~~solve_point~2~~CallsGraph Pages: 1 -->
-<svg id="procsolve_point2CallsGraph" width="641pt" height="97pt"
- viewBox="0.00 0.00 641.00 97.04" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~solve_point~2~~CallsGraph" class="graph" transform="scale(0.71 0.71) rotate(0) translate(4 133)">
+<svg id="procsolve_point2CallsGraph" width="641pt" height="143pt"
+ viewBox="0.00 0.00 641.00 143.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~solve_point~2~~CallsGraph" class="graph" transform="scale(0.796649 0.796649) rotate(0) translate(4 175.27)">
 <title>proc~~solve_point~2~~CallsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-133 901,-133 901,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-175.27 800.62,-175.27 800.62,4 -4,4"/>
 <!-- proc~solve_point~2 -->
 <g id="proc~~solve_point~2~~CallsGraph_node1" class="node">
 <title>proc~solve_point~2</title>
-<polygon fill="none" stroke="black" points="139,-87 0,-87 0,-63 139,-63 139,-87"/>
-<text text-anchor="middle" x="69.5" y="-72.6" font-family="Helvetica,sans-Serif" font-size="10.50">PTEnvelMP%solve_point</text>
-</g>
-<!-- proc~get_values_from_x -->
-<g id="proc~~solve_point~2~~CallsGraph_node2" class="node">
-<title>proc~get_values_from_x</title>
-<g id="a_proc~~solve_point~2~~CallsGraph_node2"><a xlink:href="../proc/get_values_from_x.html" xlink:title="PTEnvelMP%get_values_from_X">
-<polygon fill="#d9534f" stroke="#d9534f" points="354,-129 175,-129 175,-105 354,-105 354,-129"/>
-<text text-anchor="middle" x="264.5" y="-114.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PTEnvelMP%get_values_from_X</text>
-</a>
-</g>
-</g>
-<!-- proc~solve_point~2&#45;&gt;proc~get_values_from_x -->
-<g id="proc~~solve_point~2~~CallsGraph_edge1" class="edge">
-<title>proc~solve_point~2&#45;&gt;proc~get_values_from_x</title>
-<path fill="none" stroke="#000000" d="M125.81,-87.04C148.42,-91.96 174.74,-97.69 198.29,-102.81"/>
-<polygon fill="#000000" stroke="#000000" points="197.67,-106.26 208.19,-104.96 199.16,-99.42 197.67,-106.26"/>
-</g>
-<!-- proc~pt_f_np~2 -->
-<g id="proc~~solve_point~2~~CallsGraph_node3" class="node">
-<title>proc~pt_f_np~2</title>
-<g id="a_proc~~solve_point~2~~CallsGraph_node3"><a xlink:href="../proc/pt_f_np~2.html" xlink:title="pt_F_NP">
-<polygon fill="#d9534f" stroke="#d9534f" points="291.5,-87 237.5,-87 237.5,-63 291.5,-63 291.5,-87"/>
-<text text-anchor="middle" x="264.5" y="-72.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">pt_F_NP</text>
-</a>
-</g>
-</g>
-<!-- proc~solve_point~2&#45;&gt;proc~pt_f_np~2 -->
-<g id="proc~~solve_point~2~~CallsGraph_edge2" class="edge">
-<title>proc~solve_point~2&#45;&gt;proc~pt_f_np~2</title>
-<path fill="none" stroke="#000000" d="M139.09,-75C168.86,-75 202.5,-75 227.29,-75"/>
-<polygon fill="#000000" stroke="#000000" points="227.34,-78.5 237.34,-75 227.34,-71.5 227.34,-78.5"/>
+<polygon fill="none" stroke="black" points="139.77,-150.27 0,-150.27 0,-126 139.77,-126 139.77,-150.27"/>
+<text xml:space="preserve" text-anchor="middle" x="69.88" y="-134.53" font-family="Helvetica,sans-Serif" font-size="10.50">TXEnvelMP%solve_point</text>
 </g>
 <!-- proc~solve_system -->
-<g id="proc~~solve_point~2~~CallsGraph_node4" class="node">
+<g id="proc~~solve_point~2~~CallsGraph_node2" class="node">
 <title>proc~solve_system</title>
-<g id="a_proc~~solve_point~2~~CallsGraph_node4"><a xlink:href="../proc/solve_system.html" xlink:title="solve_system">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="306,-45 223,-45 223,-21 306,-21 306,-45"/>
-<text text-anchor="middle" x="264.5" y="-30.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">solve_system</text>
+<g id="a_proc~~solve_point~2~~CallsGraph_node2"><a xlink:href="../proc/solve_system.html" xlink:title="solve_system">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="257.79,-171.27 175.77,-171.27 175.77,-147 257.79,-147 257.79,-171.27"/>
+<text xml:space="preserve" text-anchor="middle" x="216.78" y="-155.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">solve_system</text>
 </a>
 </g>
 </g>
 <!-- proc~solve_point~2&#45;&gt;proc~solve_system -->
-<g id="proc~~solve_point~2~~CallsGraph_edge3" class="edge">
+<g id="proc~~solve_point~2~~CallsGraph_edge1" class="edge">
 <title>proc~solve_point~2&#45;&gt;proc~solve_system</title>
-<path fill="none" stroke="#000000" d="M125.81,-62.96C153.26,-56.99 186.2,-49.82 212.97,-44"/>
-<polygon fill="#000000" stroke="#000000" points="213.88,-47.38 222.91,-41.83 212.39,-40.54 213.88,-47.38"/>
+<path fill="none" stroke="#000000" d="M139.94,-148.14C148.16,-149.34 156.45,-150.54 164.37,-151.68"/>
+<polygon fill="#000000" stroke="#000000" points="163.76,-155.13 174.16,-153.1 164.77,-148.2 163.76,-155.13"/>
+</g>
+<!-- proc~tx_f_np -->
+<g id="proc~~solve_point~2~~CallsGraph_node3" class="node">
+<title>proc~tx_f_np</title>
+<g id="a_proc~~solve_point~2~~CallsGraph_node3"><a xlink:href="../proc/tx_f_np.html" xlink:title="tx_F_NP">
+<polygon fill="#d9534f" stroke="#d9534f" points="243.78,-129.27 189.78,-129.27 189.78,-105 243.78,-105 243.78,-129.27"/>
+<text xml:space="preserve" text-anchor="middle" x="216.78" y="-113.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">tx_F_NP</text>
+</a>
+</g>
+</g>
+<!-- proc~solve_point~2&#45;&gt;proc~tx_f_np -->
+<g id="proc~~solve_point~2~~CallsGraph_edge2" class="edge">
+<title>proc~solve_point~2&#45;&gt;proc~tx_f_np</title>
+<path fill="none" stroke="#000000" d="M139.94,-128.13C153.17,-126.21 166.55,-124.27 178.31,-122.57"/>
+<polygon fill="#000000" stroke="#000000" points="178.57,-126.06 187.97,-121.17 177.57,-119.14 178.57,-126.06"/>
+</g>
+<!-- none~dgesv -->
+<g id="proc~~solve_point~2~~CallsGraph_node4" class="node">
+<title>none~dgesv</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="374.55,-171.27 320.55,-171.27 320.55,-147 374.55,-147 374.55,-171.27"/>
+<text xml:space="preserve" text-anchor="middle" x="347.55" y="-155.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dgesv</text>
+</g>
+<!-- proc~solve_system&#45;&gt;none~dgesv -->
+<g id="proc~~solve_point~2~~CallsGraph_edge3" class="edge">
+<title>proc~solve_system&#45;&gt;none~dgesv</title>
+<path fill="none" stroke="#000000" d="M258.17,-159.13C274.43,-159.13 293.08,-159.13 309.04,-159.13"/>
+<polygon fill="#000000" stroke="#000000" points="308.6,-162.64 318.6,-159.14 308.6,-155.64 308.6,-162.64"/>
+</g>
+<!-- proc~get_z -->
+<g id="proc~~solve_point~2~~CallsGraph_node5" class="node">
+<title>proc~get_z</title>
+<g id="a_proc~~solve_point~2~~CallsGraph_node5"><a xlink:href="../proc/get_z.html" xlink:title="get_z">
+<polygon fill="#d9534f" stroke="#d9534f" points="374.55,-129.27 320.55,-129.27 320.55,-105 374.55,-105 374.55,-129.27"/>
+<text xml:space="preserve" text-anchor="middle" x="347.55" y="-113.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_z</text>
+</a>
+</g>
+</g>
+<!-- proc~tx_f_np&#45;&gt;proc~get_z -->
+<g id="proc~~solve_point~2~~CallsGraph_edge4" class="edge">
+<title>proc~tx_f_np&#45;&gt;proc~get_z</title>
+<path fill="none" stroke="#000000" d="M244.15,-117.14C262.81,-117.14 288.11,-117.14 308.9,-117.14"/>
+<polygon fill="#000000" stroke="#000000" points="308.7,-120.64 318.7,-117.14 308.7,-113.64 308.7,-120.64"/>
 </g>
 <!-- proc~lnphi_pt -->
 <g id="proc~~solve_point~2~~CallsGraph_node6" class="node">
 <title>proc~lnphi_pt</title>
 <g id="a_proc~~solve_point~2~~CallsGraph_node6"><a xlink:href="../proc/lnphi_pt.html" xlink:title="ArModel%lnphi_pt">
-<polygon fill="#d9534f" stroke="#d9534f" points="499,-87 390,-87 390,-63 499,-63 499,-87"/>
-<text text-anchor="middle" x="444.5" y="-72.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%lnphi_pt</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="401.31,-87.27 293.79,-87.27 293.79,-63 401.31,-63 401.31,-87.27"/>
+<text xml:space="preserve" text-anchor="middle" x="347.55" y="-71.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%lnphi_pt</text>
 </a>
 </g>
 </g>
-<!-- proc~pt_f_np~2&#45;&gt;proc~lnphi_pt -->
-<g id="proc~~solve_point~2~~CallsGraph_edge4" class="edge">
-<title>proc~pt_f_np~2&#45;&gt;proc~lnphi_pt</title>
-<path fill="none" stroke="#000000" d="M291.76,-75C314.88,-75 349.47,-75 379.79,-75"/>
-<polygon fill="#000000" stroke="#000000" points="379.89,-78.5 389.89,-75 379.89,-71.5 379.89,-78.5"/>
-</g>
-<!-- none~dgesv -->
-<g id="proc~~solve_point~2~~CallsGraph_node5" class="node">
-<title>none~dgesv</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="471.5,-45 417.5,-45 417.5,-21 471.5,-21 471.5,-45"/>
-<text text-anchor="middle" x="444.5" y="-30.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dgesv</text>
-</g>
-<!-- proc~solve_system&#45;&gt;none~dgesv -->
+<!-- proc~tx_f_np&#45;&gt;proc~lnphi_pt -->
 <g id="proc~~solve_point~2~~CallsGraph_edge5" class="edge">
-<title>proc~solve_system&#45;&gt;none~dgesv</title>
-<path fill="none" stroke="#000000" d="M306.34,-33C336.78,-33 377.98,-33 407.25,-33"/>
-<polygon fill="#000000" stroke="#000000" points="407.46,-36.5 417.46,-33 407.46,-29.5 407.46,-36.5"/>
+<title>proc~tx_f_np&#45;&gt;proc~lnphi_pt</title>
+<path fill="none" stroke="#000000" d="M244.15,-108.53C259.45,-103.54 279.23,-97.09 297.31,-91.2"/>
+<polygon fill="#000000" stroke="#000000" points="298.14,-94.61 306.56,-88.18 295.97,-87.95 298.14,-94.61"/>
 </g>
 <!-- proc~lnphi_vt -->
 <g id="proc~~solve_point~2~~CallsGraph_node7" class="node">
 <title>proc~lnphi_vt</title>
 <g id="a_proc~~solve_point~2~~CallsGraph_node7"><a xlink:href="../proc/lnphi_vt.html" xlink:title="ArModel%lnphi_vt">
-<polygon fill="#d9534f" stroke="#d9534f" points="643,-108 535,-108 535,-84 643,-84 643,-108"/>
-<text text-anchor="middle" x="589" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%lnphi_vt</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="544.08,-108.27 437.31,-108.27 437.31,-84 544.08,-84 544.08,-108.27"/>
+<text xml:space="preserve" text-anchor="middle" x="490.69" y="-92.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%lnphi_vt</text>
 </a>
 </g>
 </g>
 <!-- proc~lnphi_pt&#45;&gt;proc~lnphi_vt -->
 <g id="proc~~solve_point~2~~CallsGraph_edge6" class="edge">
 <title>proc~lnphi_pt&#45;&gt;proc~lnphi_vt</title>
-<path fill="none" stroke="#000000" d="M499.37,-82.94C507.76,-84.17 516.48,-85.46 525.05,-86.72"/>
-<polygon fill="#000000" stroke="#000000" points="524.59,-90.19 535,-88.19 525.61,-83.27 524.59,-90.19"/>
+<path fill="none" stroke="#000000" d="M401.51,-83.01C409.38,-84.19 417.56,-85.4 425.63,-86.6"/>
+<polygon fill="#000000" stroke="#000000" points="425.01,-90.05 435.41,-88.06 426.04,-83.12 425.01,-90.05"/>
 </g>
-<!-- proc~volume~3 -->
+<!-- proc~volume~2 -->
 <g id="proc~~solve_point~2~~CallsGraph_node8" class="node">
-<title>proc~volume~3</title>
-<g id="a_proc~~solve_point~2~~CallsGraph_node8"><a xlink:href="../proc/volume~3.html" xlink:title="ArModel%volume">
-<polygon fill="#d9534f" stroke="#d9534f" points="642,-66 536,-66 536,-42 642,-42 642,-66"/>
-<text text-anchor="middle" x="589" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%volume</text>
+<title>proc~volume~2</title>
+<g id="a_proc~~solve_point~2~~CallsGraph_node8"><a xlink:href="../proc/volume~2.html" xlink:title="ArModel%volume">
+<polygon fill="#d9534f" stroke="#d9534f" points="543.33,-66.27 438.06,-66.27 438.06,-42 543.33,-42 543.33,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="490.69" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%volume</text>
 </a>
 </g>
 </g>
-<!-- proc~lnphi_pt&#45;&gt;proc~volume~3 -->
+<!-- proc~lnphi_pt&#45;&gt;proc~volume~2 -->
 <g id="proc~~solve_point~2~~CallsGraph_edge7" class="edge">
-<title>proc~lnphi_pt&#45;&gt;proc~volume~3</title>
-<path fill="none" stroke="#000000" d="M499.37,-67.06C508.08,-65.78 517.15,-64.44 526.03,-63.13"/>
-<polygon fill="#000000" stroke="#000000" points="526.55,-66.59 535.94,-61.67 525.53,-59.67 526.55,-66.59"/>
+<title>proc~lnphi_pt&#45;&gt;proc~volume~2</title>
+<path fill="none" stroke="#000000" d="M401.51,-67.26C409.68,-66.04 418.19,-64.77 426.56,-63.53"/>
+<polygon fill="#000000" stroke="#000000" points="426.97,-67.01 436.35,-62.07 425.94,-60.08 426.97,-67.01"/>
 </g>
 <!-- residual_helmholtz -->
 <g id="proc~~solve_point~2~~CallsGraph_node11" class="node">
 <title>residual_helmholtz</title>
-<polygon fill="#777777" stroke="#777777" points="791,-108 679,-108 679,-84 791,-84 791,-108"/>
-<text text-anchor="middle" x="735" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">residual_helmholtz</text>
+<polygon fill="#777777" stroke="#777777" points="691.35,-108.27 580.08,-108.27 580.08,-84 691.35,-84 691.35,-108.27"/>
+<text xml:space="preserve" text-anchor="middle" x="635.71" y="-92.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">residual_helmholtz</text>
 </g>
 <!-- proc~lnphi_vt&#45;&gt;residual_helmholtz -->
 <g id="proc~~solve_point~2~~CallsGraph_edge8" class="edge">
 <title>proc~lnphi_vt&#45;&gt;residual_helmholtz</title>
-<path fill="none" stroke="#000000" d="M643.21,-96C651.41,-96 659.97,-96 668.4,-96"/>
-<polygon fill="#000000" stroke="#000000" points="668.6,-99.5 678.6,-96 668.6,-92.5 668.6,-99.5"/>
+<path fill="none" stroke="#000000" d="M544.54,-96.14C552.24,-96.14 560.25,-96.14 568.18,-96.14"/>
+<polygon fill="#000000" stroke="#000000" points="568.17,-99.64 578.17,-96.14 568.17,-92.64 568.17,-99.64"/>
 </g>
 <!-- get_v0 -->
 <g id="proc~~solve_point~2~~CallsGraph_node9" class="node">
 <title>get_v0</title>
-<polygon fill="#777777" stroke="#777777" points="762,-66 708,-66 708,-42 762,-42 762,-66"/>
-<text text-anchor="middle" x="735" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_v0</text>
+<polygon fill="#777777" stroke="#777777" points="662.71,-66.27 608.71,-66.27 608.71,-42 662.71,-42 662.71,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="635.71" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_v0</text>
 </g>
-<!-- proc~volume~3&#45;&gt;get_v0 -->
+<!-- proc~volume~2&#45;&gt;get_v0 -->
 <g id="proc~~solve_point~2~~CallsGraph_edge9" class="edge">
-<title>proc~volume~3&#45;&gt;get_v0</title>
-<path fill="none" stroke="#000000" d="M642.39,-54C660.6,-54 680.62,-54 697.29,-54"/>
-<polygon fill="#000000" stroke="#000000" points="697.7,-57.5 707.7,-54 697.7,-50.5 697.7,-57.5"/>
+<title>proc~volume~2&#45;&gt;get_v0</title>
+<path fill="none" stroke="#000000" d="M543.73,-54.13C561.47,-54.13 580.94,-54.13 597.3,-54.13"/>
+<polygon fill="#000000" stroke="#000000" points="597.08,-57.64 607.08,-54.14 597.08,-50.64 597.08,-57.64"/>
 </g>
 <!-- interface~newton -->
 <g id="proc~~solve_point~2~~CallsGraph_node10" class="node">
 <title>interface~newton</title>
 <g id="a_proc~~solve_point~2~~CallsGraph_node10"><a xlink:href="../interface/newton.html" xlink:title="newton">
-<polygon fill="#a7506f" stroke="#a7506f" points="762,-24 708,-24 708,0 762,0 762,-24"/>
-<text text-anchor="middle" x="735" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">newton</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="662.71,-24.27 608.71,-24.27 608.71,0 662.71,0 662.71,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="635.71" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">newton</text>
 </a>
 </g>
 </g>
-<!-- proc~volume~3&#45;&gt;interface~newton -->
+<!-- proc~volume~2&#45;&gt;interface~newton -->
 <g id="proc~~solve_point~2~~CallsGraph_edge10" class="edge">
-<title>proc~volume~3&#45;&gt;interface~newton</title>
-<path fill="none" stroke="#000000" d="M631.26,-41.96C652.31,-35.83 677.67,-28.43 697.92,-22.52"/>
-<polygon fill="#000000" stroke="#000000" points="699.09,-25.83 707.71,-19.67 697.13,-19.11 699.09,-25.83"/>
+<title>proc~volume~2&#45;&gt;interface~newton</title>
+<path fill="none" stroke="#000000" d="M534.61,-41.53C554.69,-35.64 578.38,-28.68 597.67,-23.01"/>
+<polygon fill="#000000" stroke="#000000" points="598.4,-26.45 607,-20.27 596.42,-19.73 598.4,-26.45"/>
 </g>
 <!-- proc~newton_1d -->
 <g id="proc~~solve_point~2~~CallsGraph_node12" class="node">
 <title>proc~newton_1d</title>
 <g id="a_proc~~solve_point~2~~CallsGraph_node12"><a xlink:href="../proc/newton_1d.html" xlink:title="newton_1d">
-<polygon fill="#d9534f" stroke="#d9534f" points="897,-24 827,-24 827,0 897,0 897,-24"/>
-<text text-anchor="middle" x="862" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">newton_1d</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="796.62,-24.27 727.35,-24.27 727.35,0 796.62,0 796.62,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="761.98" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">newton_1d</text>
 </a>
 </g>
 </g>
 <!-- interface~newton&#45;&gt;proc~newton_1d -->
 <g id="proc~~solve_point~2~~CallsGraph_edge11" class="edge">
 <title>interface~newton&#45;&gt;proc~newton_1d</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M762.2,-12C777.96,-12 798.42,-12 816.63,-12"/>
-<polygon fill="#000000" stroke="#000000" points="816.75,-15.5 826.75,-12 816.75,-8.5 816.75,-15.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M663.07,-12.13C678.38,-12.13 698.09,-12.13 715.81,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="715.59,-15.64 725.59,-12.14 715.59,-8.64 715.59,-15.64"/>
 </g>
 </g>
 </svg>
@@ -853,55 +844,55 @@ is done, avoiding divergence and undesired big steps.</p>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
 <svg width="641pt" height="28pt"
- viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
 <!-- Subroutine -->
 <g id="node1" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node2" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Interface -->
 <g id="node3" class="node">
 <title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
 </g>
 <!-- Type Bound Procedure -->
 <g id="node4" class="node">
 <title>Type Bound Procedure</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
-<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
 </g>
 <!-- Unknown Procedure Type -->
 <g id="node5" class="node">
 <title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
-<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
 </g>
 <!-- Program -->
 <g id="node6" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node7" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
-<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -925,64 +916,34 @@ implementation in a submodule of an interface in a parent module.
   <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: proc~~solve_point~2~~CalledByGraph Pages: 1 -->
-<svg id="procsolve_point2CalledByGraph" width="491pt" height="32pt"
- viewBox="0.00 0.00 491.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~solve_point~2~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg id="procsolve_point2CalledByGraph" width="260pt" height="32pt"
+ viewBox="0.00 0.00 260.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~solve_point~2~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>proc~~solve_point~2~~CalledByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 487,-28 487,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 255.79,-28.27 255.79,4 -4,4"/>
 <!-- proc~solve_point~2 -->
 <g id="proc~~solve_point~2~~CalledByGraph_node1" class="node">
 <title>proc~solve_point~2</title>
-<polygon fill="none" stroke="black" points="483,-24 344,-24 344,0 483,0 483,-24"/>
-<text text-anchor="middle" x="413.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">PTEnvelMP%solve_point</text>
+<polygon fill="none" stroke="black" points="251.79,-24.27 112.02,-24.27 112.02,0 251.79,0 251.79,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="181.9" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">TXEnvelMP%solve_point</text>
 </g>
-<!-- proc~pt_envelope -->
+<!-- proc~tx_envelope -->
 <g id="proc~~solve_point~2~~CalledByGraph_node2" class="node">
-<title>proc~pt_envelope</title>
-<g id="a_proc~~solve_point~2~~CalledByGraph_node2"><a xlink:href="../proc/pt_envelope.html" xlink:title="pt_envelope">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="308,-24 230,-24 230,0 308,0 308,-24"/>
-<text text-anchor="middle" x="269" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">pt_envelope</text>
+<title>proc~tx_envelope</title>
+<g id="a_proc~~solve_point~2~~CalledByGraph_node2"><a xlink:href="../proc/tx_envelope.html" xlink:title="tx_envelope">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="76.02,-24.27 0,-24.27 0,0 76.02,0 76.02,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="38.01" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">tx_envelope</text>
 </a>
 </g>
 </g>
-<!-- proc~pt_envelope&#45;&gt;proc~solve_point~2 -->
+<!-- proc~tx_envelope&#45;&gt;proc~solve_point~2 -->
 <g id="proc~~solve_point~2~~CalledByGraph_edge1" class="edge">
-<title>proc~pt_envelope&#45;&gt;proc~solve_point~2</title>
-<path fill="none" stroke="#000000" d="M308.19,-12C316.21,-12 324.96,-12 333.86,-12"/>
-<polygon fill="#000000" stroke="#000000" points="333.95,-15.5 343.95,-12 333.95,-8.5 333.95,-15.5"/>
-</g>
-<!-- proc~pt_envelope_2ph -->
-<g id="proc~~solve_point~2~~CalledByGraph_node3" class="node">
-<title>proc~pt_envelope_2ph</title>
-<g id="a_proc~~solve_point~2~~CalledByGraph_node3"><a xlink:href="../proc/pt_envelope_2ph.html" xlink:title="pt_envelope_2ph">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="194,-24 91,-24 91,0 194,0 194,-24"/>
-<text text-anchor="middle" x="142.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">pt_envelope_2ph</text>
-</a>
-</g>
-</g>
-<!-- proc~pt_envelope_2ph&#45;&gt;proc~pt_envelope -->
-<g id="proc~~solve_point~2~~CalledByGraph_edge2" class="edge">
-<title>proc~pt_envelope_2ph&#45;&gt;proc~pt_envelope</title>
-<path fill="none" stroke="#000000" d="M194.14,-12C202.47,-12 211.09,-12 219.37,-12"/>
-<polygon fill="#000000" stroke="#000000" points="219.63,-15.5 229.63,-12 219.63,-8.5 219.63,-15.5"/>
-</g>
-<!-- proc~find_hpl -->
-<g id="proc~~solve_point~2~~CalledByGraph_node4" class="node">
-<title>proc~find_hpl</title>
-<g id="a_proc~~solve_point~2~~CalledByGraph_node4"><a xlink:href="../proc/find_hpl.html" xlink:title="find_hpl">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="55,-24 0,-24 0,0 55,0 55,-24"/>
-<text text-anchor="middle" x="27.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">find_hpl</text>
-</a>
-</g>
-</g>
-<!-- proc~find_hpl&#45;&gt;proc~pt_envelope_2ph -->
-<g id="proc~~solve_point~2~~CalledByGraph_edge3" class="edge">
-<title>proc~find_hpl&#45;&gt;proc~pt_envelope_2ph</title>
-<path fill="none" stroke="#000000" d="M55.28,-12C63.06,-12 71.88,-12 80.85,-12"/>
-<polygon fill="#000000" stroke="#000000" points="80.99,-15.5 90.99,-12 80.99,-8.5 80.99,-15.5"/>
+<title>proc~tx_envelope&#45;&gt;proc~solve_point~2</title>
+<path fill="none" stroke="#000000" d="M76.29,-12.13C83.8,-12.13 91.96,-12.13 100.31,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="100.24,-15.64 110.24,-12.14 100.24,-8.64 100.24,-15.64"/>
 </g>
 </g>
 </svg>
@@ -1001,55 +962,55 @@ implementation in a submodule of an interface in a parent module.
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
 <svg width="641pt" height="28pt"
- viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
 <!-- Subroutine -->
 <g id="node1" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node2" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Interface -->
 <g id="node3" class="node">
 <title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
 </g>
 <!-- Type Bound Procedure -->
 <g id="node4" class="node">
 <title>Type Bound Procedure</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
-<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
 </g>
 <!-- Unknown Procedure Type -->
 <g id="node5" class="node">
 <title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
-<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
 </g>
 <!-- Program -->
 <g id="node6" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node7" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
-<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -1082,41 +1043,7 @@ implementation in a submodule of an interface in a parent module.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~18"></span>
-              real(kind=pr),
-            </td>
-              <td>private</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>P</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                <p>Pressure</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-t~22"></span>
-              real(kind=pr),
-            </td>
-              <td>private</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>T</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                <p>Temperature</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-x0~2"></span>
+              <span class="anchor" id="variable-x0~6"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -1128,30 +1055,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                <p>Initial value of <script type="math/tex">X</script>
-</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-betas~6"></span>
-              real(kind=pr),
-            </td>
-              <td>private</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>betas</strong>(np)</td>
-                <td></td>
-                <td></td>
-            <td>
-                <p>Mole fraction of each main phase</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-dx~8"></span>
+              <span class="anchor" id="variable-dx~5"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -1163,64 +1072,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                <p>Newton step <script type="math/tex">\Delta X</script>
-</p>
+                
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-i~27"></span>
-              integer,
-            </td>
-              <td>private</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>i</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                <p>Indexing variable</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-ibetas~2"></span>
-              integer,
-            </td>
-              <td>private</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>iBetas</strong>(np)</td>
-                <td></td>
-                <td></td>
-            <td>
-                <p>Index of beta variables</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-ip~3"></span>
-              integer,
-            </td>
-              <td>private</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>iP</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                <p>Pressure variable index</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-it~3"></span>
+              <span class="anchor" id="variable-it~2"></span>
               integer,
             </td>
               <td>private</td>
@@ -1232,12 +1089,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                <p>Temperature variable index</p>
+                <p>Index of the temperature variable in the vector X</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-l~5"></span>
+              <span class="anchor" id="variable-ia~5"></span>
               integer,
             </td>
               <td>private</td>
@@ -1245,16 +1102,16 @@ implementation in a submodule of an interface in a parent module.
               
             </td>
             <td>::</td>
-            <td><strong>l</strong></td>
+            <td><strong>ia</strong></td>
                 <td></td>
                 <td></td>
             <td>
-                <p>Phase index</p>
+                <p>Index of the <script type="math/tex">\alpha</script> variable in the vector X</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~22"></span>
+              <span class="anchor" id="variable-nc~12"></span>
               integer,
             </td>
               <td>private</td>
@@ -1266,41 +1123,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                <p>NUmber of components</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-w~9"></span>
-              real(kind=pr),
-            </td>
-              <td>private</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>w</strong>(size(z))</td>
-                <td></td>
-                <td></td>
-            <td>
-                <p>Composition of reference phase</p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-x_l~6"></span>
-              real(kind=pr),
-            </td>
-              <td>private</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>x_l</strong>(np,size(z))</td>
-                <td></td>
-                <td></td>
-            <td>
-                <p>Composition of the main phases</p>
+                <p>Number of components in the mixture.</p>
             </td>
         </tr>
     </tbody>
@@ -1329,14 +1152,14 @@ implementation in a submodule of an interface in a parent module.
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>CMR_aijk &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.3% of total for procedures.">43 statements</a>
+                 title=" 0.2% of total for procedures.">47 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -105,7 +106,7 @@
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/base.f90~2.html'>base.f90</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/base.f90~4.html'>base.f90</a></li>
                 <li class="breadcrumb-item"><a href='../module/yaeos__models_ar_cubic_mixing_base.html'>yaeos__models_ar_cubic_mixing_base</a></li>
             <li class="breadcrumb-item active" aria-current="page">CMR_aijk</li>
           </ol>
@@ -138,10 +139,10 @@
             <a class="list-group-item" href="../proc/cmr_aijk.html#variable-aaa">aaa</a>
             <a class="list-group-item" href="../proc/cmr_aijk.html#variable-aijk_3">aijk_3</a>
             <a class="list-group-item" href="../proc/cmr_aijk.html#variable-daaadt">daaadt</a>
-            <a class="list-group-item" href="../proc/cmr_aijk.html#variable-i~77">i</a>
-            <a class="list-group-item" href="../proc/cmr_aijk.html#variable-j~47">j</a>
-            <a class="list-group-item" href="../proc/cmr_aijk.html#variable-l~16">l</a>
-            <a class="list-group-item" href="../proc/cmr_aijk.html#variable-nc~66">nc</a>
+            <a class="list-group-item" href="../proc/cmr_aijk.html#variable-i~130">i</a>
+            <a class="list-group-item" href="../proc/cmr_aijk.html#variable-j~72">j</a>
+            <a class="list-group-item" href="../proc/cmr_aijk.html#variable-l~28">l</a>
+            <a class="list-group-item" href="../proc/cmr_aijk.html#variable-nc~108">nc</a>
             <a class="list-group-item" href="../proc/cmr_aijk.html#variable-third">third</a>
         </div>
       </div>
@@ -178,6 +179,10 @@
 
     <h1 id="cmr_aijk"><code>CMR_aijk</code></h1>
 <p>Calculate the <script type="math/tex">a_{ijk}</script> tensor of the CMR.</p>
+<h1 id="description">Description</h1>
+<p>
+<script type="math/tex">a_{ijk} = (a_i a_j a_k)^{1/3}(1 - k_{ijk})</script>, symmetric in its
+three indices, together with its first two temperature derivatives.</p>
 
 
     <h3>Arguments</h3>
@@ -193,7 +198,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-ai~10"></span>
+              <span class="anchor" id="variable-ai~12"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -204,13 +209,13 @@
             <td><strong>ai</strong>(:)</td>
             <td>
                 <p>
-<script type="math/tex">\a_i</script>
+<script type="math/tex">a_i</script>
 </p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-daidt~10"></span>
+              <span class="anchor" id="variable-daidt~11"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -221,13 +226,13 @@
             <td><strong>daidt</strong>(:)</td>
             <td>
                 <p>
-<script type="math/tex"> \frac{d\a_i}{dT} </script>
+<script type="math/tex"> \frac{da_i}{dT} </script>
 </p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-daidt2~10"></span>
+              <span class="anchor" id="variable-daidt2~11"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -238,13 +243,13 @@
             <td><strong>daidt2</strong>(:)</td>
             <td>
                 <p>
-<script type="math/tex"> \frac{d^2\a_i}{dT^2} </script>
+<script type="math/tex"> \frac{d^2a_i}{dT^2} </script>
 </p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-k~21"></span>
+              <span class="anchor" id="variable-k~23"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -254,7 +259,8 @@
             <td>::</td>
             <td><strong>k</strong>(:,:,:)</td>
             <td>
-                <p>k_{ijk} matrix</p>
+                <p>
+<script type="math/tex">k_{ijk}</script> tensor</p>
             </td>
         </tr>
         <tr>
@@ -293,7 +299,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~26"></span>
+              <span class="anchor" id="variable-a~39"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -309,7 +315,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dadt~5"></span>
+              <span class="anchor" id="variable-dadt~12"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -325,7 +331,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dadt2~5"></span>
+              <span class="anchor" id="variable-dadt2~12"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -336,7 +342,7 @@
             <td><strong>dadt2</strong>(:,:,:)</td>
             <td>
                 <p>
-<script type="math/tex">\frac{d^2a_{ijk}{dT^2}</script> matrix</p>
+<script type="math/tex">\frac{d^2a_{ijk}}{dT^2}</script> matrix</p>
             </td>
         </tr>
     </tbody>
@@ -351,64 +357,64 @@
   <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: proc~~cmr_aijk~~CalledByGraph Pages: 1 -->
-<svg id="proccmr_aijkCalledByGraph" width="347pt" height="74pt"
- viewBox="0.00 0.00 347.00 74.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~cmr_aijk~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 70)">
+<svg id="proccmr_aijkCalledByGraph" width="343pt" height="74pt"
+ viewBox="0.00 0.00 343.00 74.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~cmr_aijk~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 70.27)">
 <title>proc~~cmr_aijk~~CalledByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-70 343,-70 343,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-70.27 339.31,-70.27 339.31,4 -4,4"/>
 <!-- proc~cmr_aijk -->
 <g id="proc~~cmr_aijk~~CalledByGraph_node1" class="node">
 <title>proc~cmr_aijk</title>
-<polygon fill="none" stroke="black" points="339,-45 278,-45 278,-21 339,-21 339,-45"/>
-<text text-anchor="middle" x="308.5" y="-30.6" font-family="Helvetica,sans-Serif" font-size="10.50">CMR_aijk</text>
+<polygon fill="none" stroke="black" points="335.31,-45.27 275.79,-45.27 275.79,-21 335.31,-21 335.31,-45.27"/>
+<text xml:space="preserve" text-anchor="middle" x="305.55" y="-29.53" font-family="Helvetica,sans-Serif" font-size="10.50">CMR_aijk</text>
 </g>
 <!-- proc~kijk_constant -->
 <g id="proc~~cmr_aijk~~CalledByGraph_node2" class="node">
 <title>proc~kijk_constant</title>
 <g id="a_proc~~cmr_aijk~~CalledByGraph_node2"><a xlink:href="../proc/kijk_constant.html" xlink:title="CMR%kijk_constant">
-<polygon fill="#d9534f" stroke="#d9534f" points="233.5,-66 118.5,-66 118.5,-42 233.5,-42 233.5,-66"/>
-<text text-anchor="middle" x="176" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CMR%kijk_constant</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="231.54,-66.27 117.27,-66.27 117.27,-42 231.54,-42 231.54,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="174.41" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CMR%kijk_constant</text>
 </a>
 </g>
 </g>
 <!-- proc~kijk_constant&#45;&gt;proc~cmr_aijk -->
 <g id="proc~~cmr_aijk~~CalledByGraph_edge1" class="edge">
 <title>proc~kijk_constant&#45;&gt;proc~cmr_aijk</title>
-<path fill="none" stroke="#000000" d="M233.86,-44.85C245.31,-43.01 257.11,-41.11 267.82,-39.38"/>
-<polygon fill="#000000" stroke="#000000" points="268.39,-42.84 277.71,-37.79 267.28,-35.93 268.39,-42.84"/>
+<path fill="none" stroke="#000000" d="M231.67,-44.99C242.64,-43.2 253.93,-41.37 264.25,-39.69"/>
+<polygon fill="#000000" stroke="#000000" points="264.62,-43.17 273.92,-38.11 263.49,-36.27 264.62,-43.17"/>
 </g>
 <!-- proc~kijk_exp_tdep -->
 <g id="proc~~cmr_aijk~~CalledByGraph_node3" class="node">
 <title>proc~kijk_exp_tdep</title>
 <g id="a_proc~~cmr_aijk~~CalledByGraph_node3"><a xlink:href="../proc/kijk_exp_tdep.html" xlink:title="CMRTD%kijk_exp_tdep">
-<polygon fill="#d9534f" stroke="#d9534f" points="242,-24 110,-24 110,0 242,0 242,-24"/>
-<text text-anchor="middle" x="176" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CMRTD%kijk_exp_tdep</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="239.79,-24.27 109.02,-24.27 109.02,0 239.79,0 239.79,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="174.41" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CMRTD%kijk_exp_tdep</text>
 </a>
 </g>
 </g>
 <!-- proc~kijk_exp_tdep&#45;&gt;proc~cmr_aijk -->
 <g id="proc~~cmr_aijk~~CalledByGraph_edge2" class="edge">
 <title>proc~kijk_exp_tdep&#45;&gt;proc~cmr_aijk</title>
-<path fill="none" stroke="#000000" d="M242.25,-22.5C251.03,-23.91 259.81,-25.33 267.96,-26.64"/>
-<polygon fill="#000000" stroke="#000000" points="267.46,-30.1 277.89,-28.23 268.57,-23.19 267.46,-30.1"/>
+<path fill="none" stroke="#000000" d="M239.98,-22.63C248.27,-23.98 256.56,-25.33 264.3,-26.59"/>
+<polygon fill="#000000" stroke="#000000" points="263.64,-30.03 274.07,-28.18 264.76,-23.12 263.64,-30.03"/>
 </g>
 <!-- proc~dmix -->
 <g id="proc~~cmr_aijk~~CalledByGraph_node4" class="node">
 <title>proc~dmix</title>
 <g id="a_proc~~cmr_aijk~~CalledByGraph_node4"><a xlink:href="../proc/dmix.html" xlink:title="CMR%Dmix">
-<polygon fill="#d9534f" stroke="#d9534f" points="74,-66 0,-66 0,-42 74,-42 74,-66"/>
-<text text-anchor="middle" x="37" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CMR%Dmix</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="73.02,-66.27 0,-66.27 0,-42 73.02,-42 73.02,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="36.51" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CMR%Dmix</text>
 </a>
 </g>
 </g>
 <!-- proc~dmix&#45;&gt;proc~kijk_constant -->
 <g id="proc~~cmr_aijk~~CalledByGraph_edge3" class="edge">
 <title>proc~dmix&#45;&gt;proc~kijk_constant</title>
-<path fill="none" stroke="#000000" d="M74.35,-54C84.78,-54 96.48,-54 108.13,-54"/>
-<polygon fill="#000000" stroke="#000000" points="108.31,-57.5 118.31,-54 108.31,-50.5 108.31,-57.5"/>
+<path fill="none" stroke="#000000" d="M73.21,-54.13C83.24,-54.13 94.49,-54.13 105.72,-54.13"/>
+<polygon fill="#000000" stroke="#000000" points="105.4,-57.64 115.4,-54.14 105.4,-50.64 105.4,-57.64"/>
 </g>
 </g>
 </svg>
@@ -427,55 +433,55 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
 <svg width="641pt" height="28pt"
- viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
 <!-- Subroutine -->
 <g id="node1" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node2" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Interface -->
 <g id="node3" class="node">
 <title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
 </g>
 <!-- Type Bound Procedure -->
 <g id="node4" class="node">
 <title>Type Bound Procedure</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
-<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
 </g>
 <!-- Unknown Procedure Type -->
 <g id="node5" class="node">
 <title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
-<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
 </g>
 <!-- Program -->
 <g id="node6" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node7" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
-<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -559,7 +565,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-i~77"></span>
+              <span class="anchor" id="variable-i~130"></span>
               integer,
             </td>
               <td>public</td>
@@ -571,12 +577,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Loop index <code>i</code>.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-j~47"></span>
+              <span class="anchor" id="variable-j~72"></span>
               integer,
             </td>
               <td>public</td>
@@ -588,12 +594,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Loop index <code>j</code>.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-l~16"></span>
+              <span class="anchor" id="variable-l~28"></span>
               integer,
             </td>
               <td>public</td>
@@ -605,12 +611,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Loop index <code>l</code>.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~66"></span>
+              <span class="anchor" id="variable-nc~108"></span>
               integer,
             </td>
               <td>public</td>
@@ -622,7 +628,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Number of components.</p>
             </td>
         </tr>
         <tr>
@@ -668,14 +674,14 @@ parameter
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

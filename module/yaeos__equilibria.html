@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>yaeos__equilibria &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.1% of total for modules and submodules.">20 statements</a>
+                 title=" 0.1% of total for modules and submodules.">21 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -154,1043 +155,1119 @@
     </div>
 
     <div class="col-md-9" id='text'>
-      <p>Module to handle phase equilibria calculations.</p>
+      <h1 id="phase-equilibrium-api">Phase-equilibrium API</h1>
+<p>Public entry points for stability, saturation, flash, critical-point, and
+binary three-phase calculations.</p>
+<h1 id="description">Description</h1>
+<p>This façade re-exports the principal equilibrium result types and
+calculation routines from their implementation modules. Importing
+<code>yaeos</code> is usually more convenient; this module is useful when a client
+wants only the equilibrium API.</p>
+<h1 id="examples">Examples</h1>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos__equilibria</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">EquilibriumState</span><span class="p">,</span><span class="w"> </span><span class="n">flash</span>
+<span class="k">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flash</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">p_spec</span><span class="o">=</span><span class="n">P</span><span class="p">)</span>
+</code></pre></div>
 <br>          <div class="card mb-4">
       <h3 class="card-header card-title bg-light">Uses</h3>
       <div class="card-body">
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
-                  <li class="list-inline-item"><a href='yaeos__equilibria_boundaries_phase_envelopes_pt.html'>yaeos__equilibria_boundaries_phase_envelopes_pt</a></li>
-                  <li class="list-inline-item"><a href='yaeos__equilibria_boundaries_phase_envelopes_mp_tx.html'>yaeos__equilibria_boundaries_phase_envelopes_mp_tx</a></li>
-                  <li class="list-inline-item"><a href='yaeos__equilibria_boundaries_phase_envelopes_tx.html'>yaeos__equilibria_boundaries_phase_envelopes_tx</a></li>
                   <li class="list-inline-item"><a href='yaeos__equilibria_boundaries_phase_envelopes_px.html'>yaeos__equilibria_boundaries_phase_envelopes_px</a></li>
-                  <li class="list-inline-item"><a href='yaeos__equilibria_equilibrium_state.html'>yaeos__equilibria_equilibrium_state</a></li>
-                  <li class="list-inline-item"><a href='yaeos__equilibria_boundaries_pure_saturation.html'>yaeos__equilibria_boundaries_pure_saturation</a></li>
                   <li class="list-inline-item"><a href='yaeos__equilibria_boundaries_generalized_isopleths.html'>yaeos__equilibria_boundaries_generalized_isopleths</a></li>
-                  <li class="list-inline-item"><a href='yaeos__equilibria_boundaries_phase_envelopes_px3.html'>yaeos__equilibria_boundaries_phase_envelopes_px3</a></li>
                   <li class="list-inline-item"><a href='yaeos__equilibria_boundaries_phase_envelopes_mp.html'>yaeos__equilibria_boundaries_phase_envelopes_mp</a></li>
-                  <li class="list-inline-item"><a href='yaeos__equilibria_boundaries_phase_envelopes_pt3.html'>yaeos__equilibria_boundaries_phase_envelopes_pt3</a></li>
-                  <li class="list-inline-item"><a href='yaeos__equilibria_flash.html'>yaeos__equilibria_flash</a></li>
+                  <li class="list-inline-item"><a href='yaeos__equilibria_boundaries_phase_envelopes_px3.html'>yaeos__equilibria_boundaries_phase_envelopes_px3</a></li>
+                  <li class="list-inline-item"><a href='yaeos__equilibria_equilibrium_state.html'>yaeos__equilibria_equilibrium_state</a></li>
+                  <li class="list-inline-item"><a href='yaeos__equilibria_boundaries_phase_envelopes_tx.html'>yaeos__equilibria_boundaries_phase_envelopes_tx</a></li>
                   <li class="list-inline-item"><a href='yaeos__equilibria_binaries.html'>yaeos__equilibria_binaries</a></li>
-                  <li class="list-inline-item"><a href='yaeos__equilibria_auxiliar.html'>yaeos__equilibria_auxiliar</a></li>
-                  <li class="list-inline-item"><a href='yaeos__equilibria_saturation_points.html'>yaeos__equilibria_saturation_points</a></li>
-                  <li class="list-inline-item"><a href='yaeos__equilibria_stability.html'>yaeos__equilibria_stability</a></li>
-                  <li class="list-inline-item"><a href='yaeos__equilibria_multiphase_flash.html'>yaeos__equilibria_multiphase_flash</a></li>
+                  <li class="list-inline-item"><a href='yaeos__equilibria_boundaries_pure_saturation.html'>yaeos__equilibria_boundaries_pure_saturation</a></li>
+                  <li class="list-inline-item"><a href='yaeos__equilibria_boundaries_phase_envelopes_pt.html'>yaeos__equilibria_boundaries_phase_envelopes_pt</a></li>
+                  <li class="list-inline-item"><a href='yaeos__equilibria_flash_second_order.html'>yaeos__equilibria_flash_second_order</a></li>
                   <li class="list-inline-item"><a href='yaeos__equilibria_critical.html'>yaeos__equilibria_critical</a></li>
+                  <li class="list-inline-item"><a href='yaeos__equilibria_boundaries_phase_envelopes_mp_tx.html'>yaeos__equilibria_boundaries_phase_envelopes_mp_tx</a></li>
+                  <li class="list-inline-item"><a href='yaeos__equilibria_flash.html'>yaeos__equilibria_flash</a></li>
+                  <li class="list-inline-item"><a href='yaeos__equilibria_stability.html'>yaeos__equilibria_stability</a></li>
+                  <li class="list-inline-item"><a href='yaeos__equilibria_auxiliar.html'>yaeos__equilibria_auxiliar</a></li>
+                  <li class="list-inline-item"><a href='yaeos__equilibria_boundaries_phase_envelopes_pt3.html'>yaeos__equilibria_boundaries_phase_envelopes_pt3</a></li>
+                  <li class="list-inline-item"><a href='yaeos__equilibria_saturation_points.html'>yaeos__equilibria_saturation_points</a></li>
                   <li class="list-inline-item"><a href='yaeos__equilibria_boundaries_phase_envelopes_mp_px.html'>yaeos__equilibria_boundaries_phase_envelopes_mp_px</a></li>
+                  <li class="list-inline-item"><a href='yaeos__equilibria_multiphase_flash.html'>yaeos__equilibria_multiphase_flash</a></li>
               </ul>
             </li>
             <li class="list-group-item">
               <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: module~~yaeos__equilibria~~UsesGraph Pages: 1 -->
-<svg id="moduleyaeos__equilibriaUsesGraph" width="641pt" height="380pt"
- viewBox="0.00 0.00 641.00 380.36" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="module~~yaeos__equilibria~~UsesGraph" class="graph" transform="scale(0.34 0.34) rotate(0) translate(4 1108)">
+<svg id="moduleyaeos__equilibriaUsesGraph" width="641pt" height="494pt"
+ viewBox="0.00 0.00 641.00 494.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~yaeos__equilibria~~UsesGraph" class="graph" transform="scale(0.341879 0.341879) rotate(0) translate(4 1441.78)">
 <title>module~~yaeos__equilibria~~UsesGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-1108 1870,-1108 1870,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-1441.78 1870.93,-1441.78 1870.93,4 -4,4"/>
 <!-- module~yaeos__equilibria -->
 <g id="module~~yaeos__equilibria~~UsesGraph_node1" class="node">
 <title>module~yaeos__equilibria</title>
-<polygon fill="none" stroke="black" points="1866,-484 1761,-484 1761,-460 1866,-460 1866,-484"/>
-<text text-anchor="middle" x="1813.5" y="-469.6" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__equilibria</text>
+<polygon fill="none" stroke="black" points="1866.93,-678.27 1763.16,-678.27 1763.16,-654 1866.93,-654 1866.93,-678.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1815.05" y="-662.53" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__equilibria</text>
 </g>
 <!-- module~yaeos__equilibria_auxiliar -->
 <g id="module~~yaeos__equilibria~~UsesGraph_node2" class="node">
 <title>module~yaeos__equilibria_auxiliar</title>
 <g id="a_module~~yaeos__equilibria~~UsesGraph_node2"><a xlink:href="../module/yaeos__equilibria_auxiliar.html" xlink:title="yaeos__equilibria_auxiliar">
-<polygon fill="#337ab7" stroke="#337ab7" points="1319,-284 1169,-284 1169,-260 1319,-260 1319,-284"/>
-<text text-anchor="middle" x="1244" y="-269.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_auxiliar</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="1011.5,-1148.27 862.73,-1148.27 862.73,-1124 1011.5,-1124 1011.5,-1148.27"/>
+<text xml:space="preserve" text-anchor="middle" x="937.11" y="-1132.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_auxiliar</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_auxiliar -->
 <g id="module~~yaeos__equilibria~~UsesGraph_edge1" class="edge">
 <title>module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_auxiliar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1578.5,-272C1535.5,-253.16 1413.16,-258.19 1329.25,-264.41"/>
-<polygon fill="#000000" stroke="#000000" points="1328.92,-260.92 1319.22,-265.17 1329.45,-267.9 1328.92,-260.92"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1585.03,-1018.13C1506.09,-1059.12 1493.26,-1084.97 1408.89,-1113.13 1343.87,-1134.84 1323.5,-1122.23 1256.38,-1136.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1254.38,-1136.13C1177.29,-1152.11 1087.33,-1150.19 1023.11,-1145.41"/>
+<polygon fill="#000000" stroke="#000000" points="1023.58,-1141.94 1013.34,-1144.64 1023.03,-1148.91 1023.58,-1141.94"/>
 </g>
 <!-- module~yaeos__equilibria_binaries -->
 <g id="module~~yaeos__equilibria~~UsesGraph_node3" class="node">
 <title>module~yaeos__equilibria_binaries</title>
 <g id="a_module~~yaeos__equilibria~~UsesGraph_node3"><a xlink:href="../module/yaeos__equilibria_binaries.html" xlink:title="yaeos__equilibria_binaries">
-<polygon fill="#337ab7" stroke="#337ab7" points="1320.5,-806 1167.5,-806 1167.5,-782 1320.5,-782 1320.5,-806"/>
-<text text-anchor="middle" x="1244" y="-791.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_binaries</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="1331.27,-864.27 1179.5,-864.27 1179.5,-840 1331.27,-840 1331.27,-864.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1255.38" y="-848.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_binaries</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_binaries -->
 <g id="module~~yaeos__equilibria~~UsesGraph_edge2" class="edge">
 <title>module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_binaries</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1578.5,-794C1491.25,-853.14 1359.44,-828.17 1290.57,-808.81"/>
-<polygon fill="#000000" stroke="#000000" points="1291.46,-805.42 1280.88,-806 1289.51,-812.14 1291.46,-805.42"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1585.03,-1018.13C1495.3,-1065.37 1501.77,-913.81 1408.89,-873.13 1388.37,-864.15 1364.93,-858.79 1342.69,-855.66"/>
+<polygon fill="#000000" stroke="#000000" points="1343.4,-852.22 1333.04,-854.44 1342.52,-859.16 1343.4,-852.22"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_generalized_isopleths -->
 <g id="module~~yaeos__equilibria~~UsesGraph_node4" class="node">
 <title>module~yaeos__equilibria_boundaries_generalized_isopleths</title>
 <g id="a_module~~yaeos__equilibria~~UsesGraph_node4"><a xlink:href="../module/yaeos__equilibria_boundaries_generalized_isopleths.html" xlink:title="yaeos__equilibria_boundaries_generalized_isopleths">
-<polygon fill="#337ab7" stroke="#337ab7" points="1725,-442 1434,-442 1434,-418 1725,-418 1725,-442"/>
-<text text-anchor="middle" x="1579.5" y="-427.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_boundaries_generalized_isopleths</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="1400.27,-948.27 1110.5,-948.27 1110.5,-924 1400.27,-924 1400.27,-948.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1255.38" y="-932.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_boundaries_generalized_isopleths</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_boundaries_generalized_isopleths -->
 <g id="module~~yaeos__equilibria~~UsesGraph_edge3" class="edge">
 <title>module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_boundaries_generalized_isopleths</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1765.9,-459.98C1752.73,-456.81 1738.35,-453.57 1725,-451 1711.14,-448.34 1696.48,-445.84 1682.02,-443.56"/>
-<polygon fill="#000000" stroke="#000000" points="1682.47,-440.09 1672.06,-442.02 1681.4,-447.01 1682.47,-440.09"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1585.03,-1018.13C1511.72,-1056.73 1489.45,-976.43 1408.89,-957.13 1398.86,-954.73 1388.39,-952.58 1377.83,-950.65"/>
+<polygon fill="#000000" stroke="#000000" points="1378.77,-947.26 1368.31,-948.98 1377.56,-954.15 1378.77,-947.26"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_mp -->
 <g id="module~~yaeos__equilibria~~UsesGraph_node5" class="node">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_mp</title>
 <g id="a_module~~yaeos__equilibria~~UsesGraph_node5"><a xlink:href="../module/yaeos__equilibria_boundaries_phase_envelopes_mp.html" xlink:title="yaeos__equilibria_boundaries_phase_envelopes_mp">
-<polygon fill="#337ab7" stroke="#337ab7" points="1389,-906 1099,-906 1099,-882 1389,-882 1389,-906"/>
-<text text-anchor="middle" x="1244" y="-891.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_boundaries_phase_envelopes_mp</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="1399.89,-465.27 1110.87,-465.27 1110.87,-441 1399.89,-441 1399.89,-465.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1255.38" y="-449.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_boundaries_phase_envelopes_mp</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_boundaries_phase_envelopes_mp -->
 <g id="module~~yaeos__equilibria~~UsesGraph_edge4" class="edge">
 <title>module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_boundaries_phase_envelopes_mp</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1578.5,-794C1508.76,-841.28 1416.08,-866.72 1346.13,-880.09"/>
-<polygon fill="#000000" stroke="#000000" points="1345.17,-876.7 1335.98,-881.97 1346.45,-883.59 1345.17,-876.7"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1585.03,-432.13C1566.86,-421.23 1459.51,-430 1372.37,-439.31"/>
+<polygon fill="#000000" stroke="#000000" points="1372.11,-435.82 1362.55,-440.37 1372.86,-442.78 1372.11,-435.82"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_mp_px -->
 <g id="module~~yaeos__equilibria~~UsesGraph_node6" class="node">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_mp_px</title>
 <g id="a_module~~yaeos__equilibria~~UsesGraph_node6"><a xlink:href="../module/yaeos__equilibria_boundaries_phase_envelopes_mp_px.html" xlink:title="yaeos__equilibria_boundaries_phase_envelopes_mp_px">
-<polygon fill="#337ab7" stroke="#337ab7" points="1398,-1104 1090,-1104 1090,-1080 1398,-1080 1398,-1104"/>
-<text text-anchor="middle" x="1244" y="-1089.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_boundaries_phase_envelopes_mp_px</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="1408.89,-24.27 1101.87,-24.27 1101.87,0 1408.89,0 1408.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1255.38" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_boundaries_phase_envelopes_mp_px</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_boundaries_phase_envelopes_mp_px -->
 <g id="module~~yaeos__equilibria~~UsesGraph_edge5" class="edge">
 <title>module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_boundaries_phase_envelopes_mp_px</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1578.5,-794C1456.87,-876.45 1522.12,-992.34 1398,-1071 1395.51,-1072.58 1392.94,-1074.06 1390.32,-1075.46"/>
-<polygon fill="#000000" stroke="#000000" points="1388.69,-1072.36 1381.2,-1079.84 1391.73,-1078.66 1388.69,-1072.36"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1805.54,-653.52C1778.5,-614.4 1690.16,-494.03 1587.03,-432.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1585.03,-432.13C1418.82,-332.38 1563.68,-149.82 1408.89,-33.13 1407.72,-32.25 1406.53,-31.4 1405.32,-30.57"/>
+<polygon fill="#000000" stroke="#000000" points="1407.38,-27.72 1397.01,-25.54 1403.75,-33.71 1407.38,-27.72"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_mp_tx -->
 <g id="module~~yaeos__equilibria~~UsesGraph_node7" class="node">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_mp_tx</title>
 <g id="a_module~~yaeos__equilibria~~UsesGraph_node7"><a xlink:href="../module/yaeos__equilibria_boundaries_phase_envelopes_mp_tx.html" xlink:title="yaeos__equilibria_boundaries_phase_envelopes_mp_tx">
-<polygon fill="#337ab7" stroke="#337ab7" points="1396.5,-1062 1091.5,-1062 1091.5,-1038 1396.5,-1038 1396.5,-1062"/>
-<text text-anchor="middle" x="1244" y="-1047.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_boundaries_phase_envelopes_mp_tx</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="1407.39,-564.27 1103.37,-564.27 1103.37,-540 1407.39,-540 1407.39,-564.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1255.38" y="-548.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_boundaries_phase_envelopes_mp_tx</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_boundaries_phase_envelopes_mp_tx -->
 <g id="module~~yaeos__equilibria~~UsesGraph_edge6" class="edge">
 <title>module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_boundaries_phase_envelopes_mp_tx</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1578.5,-794C1469.49,-867.9 1511.89,-962.86 1398,-1029 1394.95,-1030.77 1391.81,-1032.41 1388.6,-1033.94"/>
-<polygon fill="#000000" stroke="#000000" points="1387.16,-1030.75 1379.37,-1037.93 1389.94,-1037.18 1387.16,-1030.75"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1585.03,-432.13C1510.66,-387.5 1490.7,-487.34 1408.89,-516.13 1385.08,-524.52 1358.49,-531.55 1334.27,-537.11"/>
+<polygon fill="#000000" stroke="#000000" points="1333.8,-533.63 1324.8,-539.24 1335.33,-540.46 1333.8,-533.63"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_pt -->
 <g id="module~~yaeos__equilibria~~UsesGraph_node8" class="node">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_pt</title>
 <g id="a_module~~yaeos__equilibria~~UsesGraph_node8"><a xlink:href="../module/yaeos__equilibria_boundaries_phase_envelopes_pt.html" xlink:title="yaeos__equilibria_boundaries_phase_envelopes_pt">
-<polygon fill="#337ab7" stroke="#337ab7" points="1721,-644 1438,-644 1438,-620 1721,-620 1721,-644"/>
-<text text-anchor="middle" x="1579.5" y="-629.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_boundaries_phase_envelopes_pt</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="1727.16,-678.27 1444.89,-678.27 1444.89,-654 1727.16,-654 1727.16,-678.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1586.03" y="-662.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_boundaries_phase_envelopes_pt</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_boundaries_phase_envelopes_pt -->
 <g id="module~~yaeos__equilibria~~UsesGraph_edge7" class="edge">
 <title>module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_boundaries_phase_envelopes_pt</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1795.06,-484.03C1754.59,-511.94 1654.09,-581.25 1606.4,-614.14"/>
-<polygon fill="#000000" stroke="#000000" points="1604.39,-611.28 1598.14,-619.83 1608.36,-617.04 1604.39,-611.28"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1762.81,-666.13C1755.35,-666.13 1747.37,-666.13 1739.08,-666.13"/>
+<polygon fill="#000000" stroke="#000000" points="1739.11,-662.64 1729.11,-666.14 1739.11,-669.64 1739.11,-662.64"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_pt3 -->
 <g id="module~~yaeos__equilibria~~UsesGraph_node9" class="node">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_pt3</title>
 <g id="a_module~~yaeos__equilibria~~UsesGraph_node9"><a xlink:href="../module/yaeos__equilibria_boundaries_phase_envelopes_pt3.html" xlink:title="yaeos__equilibria_boundaries_phase_envelopes_pt3">
-<polygon fill="#337ab7" stroke="#337ab7" points="1389,-726 1099,-726 1099,-702 1389,-702 1389,-726"/>
-<text text-anchor="middle" x="1244" y="-711.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_boundaries_phase_envelopes_pt3</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="1399.89,-423.27 1110.87,-423.27 1110.87,-399 1399.89,-399 1399.89,-423.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1255.38" y="-407.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_boundaries_phase_envelopes_pt3</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_boundaries_phase_envelopes_pt3 -->
 <g id="module~~yaeos__equilibria~~UsesGraph_edge8" class="edge">
 <title>module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_boundaries_phase_envelopes_pt3</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1578.5,-794C1509.19,-840.98 1479.54,-759.05 1398,-740 1378.47,-735.44 1357.37,-731.33 1337.25,-727.8"/>
-<polygon fill="#000000" stroke="#000000" points="1337.6,-724.31 1327.16,-726.06 1336.42,-731.21 1337.6,-724.31"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1585.03,-432.13C1508.95,-386.47 1404.33,-388.46 1333.73,-397.1"/>
+<polygon fill="#000000" stroke="#000000" points="1333.67,-393.58 1324.2,-398.34 1334.57,-400.52 1333.67,-393.58"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_px -->
 <g id="module~~yaeos__equilibria~~UsesGraph_node10" class="node">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_px</title>
 <g id="a_module~~yaeos__equilibria~~UsesGraph_node10"><a xlink:href="../module/yaeos__equilibria_boundaries_phase_envelopes_px.html" xlink:title="yaeos__equilibria_boundaries_phase_envelopes_px">
-<polygon fill="#337ab7" stroke="#337ab7" points="1387,-948 1101,-948 1101,-924 1387,-924 1387,-948"/>
-<text text-anchor="middle" x="1244" y="-933.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_boundaries_phase_envelopes_px</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="1397.64,-381.27 1113.12,-381.27 1113.12,-357 1397.64,-357 1397.64,-381.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1255.38" y="-365.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_boundaries_phase_envelopes_px</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_boundaries_phase_envelopes_px -->
 <g id="module~~yaeos__equilibria~~UsesGraph_edge9" class="edge">
 <title>module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_boundaries_phase_envelopes_px</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1578.5,-794C1498.56,-848.19 1488.27,-880.66 1398,-915 1391.77,-917.37 1385.31,-919.48 1378.72,-921.35"/>
-<polygon fill="#000000" stroke="#000000" points="1377.75,-917.99 1368.98,-923.93 1379.54,-924.75 1377.75,-917.99"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1585.03,-432.13C1532.5,-400.61 1467.48,-384.36 1409.17,-376.16"/>
+<polygon fill="#000000" stroke="#000000" points="1409.86,-372.72 1399.49,-374.87 1408.94,-379.66 1409.86,-372.72"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_px3 -->
 <g id="module~~yaeos__equilibria~~UsesGraph_node11" class="node">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_px3</title>
 <g id="a_module~~yaeos__equilibria~~UsesGraph_node11"><a xlink:href="../module/yaeos__equilibria_boundaries_phase_envelopes_px3.html" xlink:title="yaeos__equilibria_boundaries_phase_envelopes_px3">
-<polygon fill="#337ab7" stroke="#337ab7" points="1390,-1020 1098,-1020 1098,-996 1390,-996 1390,-1020"/>
-<text text-anchor="middle" x="1244" y="-1005.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_boundaries_phase_envelopes_px3</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="1401.02,-507.27 1109.75,-507.27 1109.75,-483 1401.02,-483 1401.02,-507.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1255.38" y="-491.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_boundaries_phase_envelopes_px3</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_boundaries_phase_envelopes_px3 -->
 <g id="module~~yaeos__equilibria~~UsesGraph_edge10" class="edge">
 <title>module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_boundaries_phase_envelopes_px3</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1578.5,-794C1489.03,-854.65 1491.36,-902.53 1398,-957 1370.42,-973.09 1337.04,-984.97 1308.51,-993.19"/>
-<polygon fill="#000000" stroke="#000000" points="1307.33,-989.89 1298.64,-995.95 1309.21,-996.63 1307.33,-989.89"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1585.03,-432.13C1516.02,-390.72 1487.99,-459.3 1408.89,-474.13 1396.06,-476.54 1382.58,-478.79 1369.16,-480.86"/>
+<polygon fill="#000000" stroke="#000000" points="1368.78,-477.38 1359.41,-482.33 1369.82,-484.3 1368.78,-477.38"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_tx -->
 <g id="module~~yaeos__equilibria~~UsesGraph_node12" class="node">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_tx</title>
 <g id="a_module~~yaeos__equilibria~~UsesGraph_node12"><a xlink:href="../module/yaeos__equilibria_boundaries_phase_envelopes_tx.html" xlink:title="yaeos__equilibria_boundaries_phase_envelopes_tx">
-<polygon fill="#337ab7" stroke="#337ab7" points="1385.5,-684 1102.5,-684 1102.5,-660 1385.5,-660 1385.5,-684"/>
-<text text-anchor="middle" x="1244" y="-669.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_boundaries_phase_envelopes_tx</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="1396.14,-66.27 1114.62,-66.27 1114.62,-42 1396.14,-42 1396.14,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1255.38" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_boundaries_phase_envelopes_tx</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_boundaries_phase_envelopes_tx -->
 <g id="module~~yaeos__equilibria~~UsesGraph_edge11" class="edge">
 <title>module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_boundaries_phase_envelopes_tx</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1808.29,-484.22C1797.46,-514.59 1766.6,-595.22 1725,-653 1672.57,-725.82 1654.77,-743.65 1580.5,-794"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1578.5,-794C1502.41,-845.58 1485.17,-722.2 1398,-693 1390.58,-690.51 1382.87,-688.32 1375.02,-686.39"/>
-<polygon fill="#000000" stroke="#000000" points="1375.55,-682.92 1365.02,-684.08 1373.97,-689.74 1375.55,-682.92"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1585.03,-432.13C1427.87,-337.81 1306.72,-142.58 1268.82,-76.53"/>
+<polygon fill="#000000" stroke="#000000" points="1271.99,-75.04 1264.01,-68.06 1265.9,-78.49 1271.99,-75.04"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_pure_saturation -->
 <g id="module~~yaeos__equilibria~~UsesGraph_node13" class="node">
 <title>module~yaeos__equilibria_boundaries_pure_saturation</title>
 <g id="a_module~~yaeos__equilibria~~UsesGraph_node13"><a xlink:href="../module/yaeos__equilibria_boundaries_pure_saturation.html" xlink:title="yaeos__equilibria_boundaries_pure_saturation">
-<polygon fill="#337ab7" stroke="#337ab7" points="1373.5,-444 1114.5,-444 1114.5,-420 1373.5,-420 1373.5,-444"/>
-<text text-anchor="middle" x="1244" y="-429.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_boundaries_pure_saturation</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="1065.87,-950.27 808.35,-950.27 808.35,-926 1065.87,-926 1065.87,-950.27"/>
+<text xml:space="preserve" text-anchor="middle" x="937.11" y="-934.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_boundaries_pure_saturation</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_boundaries_pure_saturation -->
 <g id="module~~yaeos__equilibria~~UsesGraph_edge12" class="edge">
 <title>module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_boundaries_pure_saturation</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1766.37,-484.03C1753.08,-487.23 1738.52,-490.5 1725,-493 1661.31,-504.8 1645.04,-506.52 1580.5,-512"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1578.5,-512C1467.51,-521.42 1340.63,-474.35 1280.36,-448.32"/>
-<polygon fill="#000000" stroke="#000000" points="1281.49,-444.99 1270.93,-444.18 1278.68,-451.4 1281.49,-444.99"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1585.03,-1018.13C1537.36,-1042.92 1151.24,-1020.32 1101.87,-999.13 1081.36,-990.34 1085.6,-974.56 1065.87,-964.13 1058.49,-960.24 1050.6,-956.93 1042.48,-954.11"/>
+<polygon fill="#000000" stroke="#000000" points="1043.73,-950.83 1033.14,-951.14 1041.61,-957.51 1043.73,-950.83"/>
 </g>
 <!-- module~yaeos__equilibria_critical -->
 <g id="module~~yaeos__equilibria~~UsesGraph_node14" class="node">
 <title>module~yaeos__equilibria_critical</title>
 <g id="a_module~~yaeos__equilibria~~UsesGraph_node14"><a xlink:href="../module/yaeos__equilibria_critical.html" xlink:title="yaeos__equilibria_critical">
-<polygon fill="#337ab7" stroke="#337ab7" points="1317,-604 1171,-604 1171,-580 1317,-580 1317,-604"/>
-<text text-anchor="middle" x="1244" y="-589.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_critical</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="1327.89,-906.27 1182.87,-906.27 1182.87,-882 1327.89,-882 1327.89,-906.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1255.38" y="-890.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_critical</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_critical -->
 <g id="module~~yaeos__equilibria~~UsesGraph_edge13" class="edge">
 <title>module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_critical</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1578.5,-512C1472.91,-520.96 1352.94,-556.13 1289.63,-576.73"/>
-<polygon fill="#000000" stroke="#000000" points="1288.37,-573.46 1279.96,-579.91 1290.55,-580.11 1288.37,-573.46"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1585.03,-1018.13C1504.78,-1060.38 1494.59,-944.78 1408.89,-915.13 1387.07,-907.59 1362.6,-902.74 1339.76,-899.63"/>
+<polygon fill="#000000" stroke="#000000" points="1340.21,-896.16 1329.85,-898.39 1339.34,-903.11 1340.21,-896.16"/>
 </g>
 <!-- module~yaeos__equilibria_equilibrium_state -->
 <g id="module~~yaeos__equilibria~~UsesGraph_node15" class="node">
 <title>module~yaeos__equilibria_equilibrium_state</title>
 <g id="a_module~~yaeos__equilibria~~UsesGraph_node15"><a xlink:href="../module/yaeos__equilibria_equilibrium_state.html" xlink:title="yaeos__equilibria_equilibrium_state">
-<polygon fill="#337ab7" stroke="#337ab7" points="1047.5,-752 845.5,-752 845.5,-728 1047.5,-728 1047.5,-752"/>
-<text text-anchor="middle" x="946.5" y="-737.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_equilibrium_state</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="1037.75,-718.27 836.48,-718.27 836.48,-694 1037.75,-694 1037.75,-718.27"/>
+<text xml:space="preserve" text-anchor="middle" x="937.11" y="-702.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_equilibrium_state</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_equilibrium_state -->
 <g id="module~~yaeos__equilibria~~UsesGraph_edge14" class="edge">
 <title>module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_equilibrium_state</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1578.5,-794C1574.64,-796.62 1249.47,-752.67 1245,-754"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1810.75,-678.77C1795.99,-732.51 1730.19,-942.76 1587.03,-1018.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1585.03,-1018.13C1484,-1071.32 1506.34,-890.63 1408.89,-831.13 1297.52,-763.14 1149.37,-731.7 1049.24,-717.45"/>
+<polygon fill="#000000" stroke="#000000" points="1049.77,-713.99 1039.38,-716.09 1048.81,-720.92 1049.77,-713.99"/>
 </g>
 <!-- module~yaeos__equilibria_flash -->
 <g id="module~~yaeos__equilibria~~UsesGraph_node16" class="node">
 <title>module~yaeos__equilibria_flash</title>
 <g id="a_module~~yaeos__equilibria~~UsesGraph_node16"><a xlink:href="../module/yaeos__equilibria_flash.html" xlink:title="yaeos__equilibria_flash">
-<polygon fill="#337ab7" stroke="#337ab7" points="1647.5,-244 1511.5,-244 1511.5,-220 1647.5,-220 1647.5,-244"/>
-<text text-anchor="middle" x="1579.5" y="-229.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_flash</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="1322.64,-1250.27 1188.12,-1250.27 1188.12,-1226 1322.64,-1226 1322.64,-1250.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1255.38" y="-1234.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_flash</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_flash -->
 <g id="module~~yaeos__equilibria~~UsesGraph_edge15" class="edge">
 <title>module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_flash</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1811.5,-459.95C1807.75,-423.16 1791.15,-311.53 1725,-258 1706.19,-242.78 1681.46,-235.27 1657.78,-231.85"/>
-<polygon fill="#000000" stroke="#000000" points="1658.07,-228.36 1647.72,-230.62 1657.22,-235.31 1658.07,-228.36"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1585.03,-1018.13C1486.26,-1070.13 1505.3,-1140.9 1408.89,-1197.13 1386.09,-1210.43 1358.88,-1219.53 1333.79,-1225.7"/>
+<polygon fill="#000000" stroke="#000000" points="1333.24,-1222.23 1324.29,-1227.91 1334.82,-1229.05 1333.24,-1222.23"/>
+</g>
+<!-- module~yaeos__equilibria_flash_second_order -->
+<g id="module~~yaeos__equilibria~~UsesGraph_node17" class="node">
+<title>module~yaeos__equilibria_flash_second_order</title>
+<g id="a_module~~yaeos__equilibria~~UsesGraph_node17"><a xlink:href="../module/yaeos__equilibria_flash_second_order.html" xlink:title="yaeos__equilibria_flash_second_order">
+<polygon fill="#337ab7" stroke="#337ab7" points="1361.64,-1188.27 1149.12,-1188.27 1149.12,-1164 1361.64,-1164 1361.64,-1188.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1255.38" y="-1172.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_flash_second_order</text>
+</a>
+</g>
+</g>
+<!-- module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_flash_second_order -->
+<g id="module~~yaeos__equilibria~~UsesGraph_edge16" class="edge">
+<title>module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_flash_second_order</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1585.03,-1018.13C1498.46,-1063.71 1498.76,-1111.5 1408.89,-1150.13 1397.53,-1155.02 1385.33,-1158.98 1372.96,-1162.21"/>
+<polygon fill="#000000" stroke="#000000" points="1372.42,-1158.74 1363.52,-1164.49 1374.07,-1165.54 1372.42,-1158.74"/>
 </g>
 <!-- module~yaeos__equilibria_multiphase_flash -->
-<g id="module~~yaeos__equilibria~~UsesGraph_node17" class="node">
+<g id="module~~yaeos__equilibria~~UsesGraph_node18" class="node">
 <title>module~yaeos__equilibria_multiphase_flash</title>
-<g id="a_module~~yaeos__equilibria~~UsesGraph_node17"><a xlink:href="../module/yaeos__equilibria_multiphase_flash.html" xlink:title="yaeos__equilibria_multiphase_flash">
-<polygon fill="#337ab7" stroke="#337ab7" points="1344,-524 1144,-524 1144,-500 1344,-500 1344,-524"/>
-<text text-anchor="middle" x="1244" y="-509.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_multiphase_flash</text>
+<g id="a_module~~yaeos__equilibria~~UsesGraph_node18"><a xlink:href="../module/yaeos__equilibria_multiphase_flash.html" xlink:title="yaeos__equilibria_multiphase_flash">
+<polygon fill="#337ab7" stroke="#337ab7" points="1354.89,-990.27 1155.87,-990.27 1155.87,-966 1354.89,-966 1354.89,-990.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1255.38" y="-974.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_multiphase_flash</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_multiphase_flash -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge16" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge17" class="edge">
 <title>module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_multiphase_flash</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1578.5,-512C1503.89,-518.33 1419.54,-518.27 1354.35,-516.65"/>
-<polygon fill="#000000" stroke="#000000" points="1354.14,-513.14 1344.05,-516.38 1353.96,-520.14 1354.14,-513.14"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1585.03,-1018.13C1574.69,-1023.58 1444.84,-1005.96 1351.5,-992.39"/>
+<polygon fill="#000000" stroke="#000000" points="1352.21,-988.95 1341.81,-990.97 1351.2,-995.88 1352.21,-988.95"/>
 </g>
 <!-- module~yaeos__equilibria_saturation_points -->
-<g id="module~~yaeos__equilibria~~UsesGraph_node18" class="node">
+<g id="module~~yaeos__equilibria~~UsesGraph_node19" class="node">
 <title>module~yaeos__equilibria_saturation_points</title>
-<g id="a_module~~yaeos__equilibria~~UsesGraph_node18"><a xlink:href="../module/yaeos__equilibria_saturation_points.html" xlink:title="yaeos__equilibria_saturation_points">
-<polygon fill="#337ab7" stroke="#337ab7" points="1680.5,-484 1478.5,-484 1478.5,-460 1680.5,-460 1680.5,-484"/>
-<text text-anchor="middle" x="1579.5" y="-469.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_saturation_points</text>
+<g id="a_module~~yaeos__equilibria~~UsesGraph_node19"><a xlink:href="../module/yaeos__equilibria_saturation_points.html" xlink:title="yaeos__equilibria_saturation_points">
+<polygon fill="#337ab7" stroke="#337ab7" points="1355.64,-1070.27 1155.12,-1070.27 1155.12,-1046 1355.64,-1046 1355.64,-1070.27"/>
+<text xml:space="preserve" text-anchor="middle" x="1255.38" y="-1054.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_saturation_points</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_saturation_points -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge17" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge18" class="edge">
 <title>module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_saturation_points</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1760.72,-472C1739.95,-472 1715.16,-472 1690.71,-472"/>
-<polygon fill="#000000" stroke="#000000" points="1690.64,-468.5 1680.64,-472 1690.64,-475.5 1690.64,-468.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1585.03,-1018.13C1518.44,-1053.19 1434,-1062.85 1367.39,-1063.92"/>
+<polygon fill="#000000" stroke="#000000" points="1367.49,-1060.42 1357.52,-1064.01 1367.55,-1067.42 1367.49,-1060.42"/>
 </g>
 <!-- module~yaeos__equilibria_stability -->
-<g id="module~~yaeos__equilibria~~UsesGraph_node19" class="node">
+<g id="module~~yaeos__equilibria~~UsesGraph_node20" class="node">
 <title>module~yaeos__equilibria_stability</title>
-<g id="a_module~~yaeos__equilibria~~UsesGraph_node19"><a xlink:href="../module/yaeos__equilibria_stability.html" xlink:title="yaeos__equilibria_stability">
-<polygon fill="#337ab7" stroke="#337ab7" points="1319.5,-204 1168.5,-204 1168.5,-180 1319.5,-180 1319.5,-204"/>
-<text text-anchor="middle" x="1244" y="-189.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_stability</text>
+<g id="a_module~~yaeos__equilibria~~UsesGraph_node20"><a xlink:href="../module/yaeos__equilibria_stability.html" xlink:title="yaeos__equilibria_stability">
+<polygon fill="#337ab7" stroke="#337ab7" points="1012.25,-1190.27 861.98,-1190.27 861.98,-1166 1012.25,-1166 1012.25,-1190.27"/>
+<text xml:space="preserve" text-anchor="middle" x="937.11" y="-1174.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_stability</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_stability -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge18" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge19" class="edge">
 <title>module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_stability</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1803.04,-459.81C1774.24,-423.7 1683.27,-317.03 1580.5,-272"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1578.5,-272C1519.17,-246.01 1497.19,-267.23 1434,-253 1381.97,-241.29 1323.82,-221.46 1285.93,-207.6"/>
-<polygon fill="#000000" stroke="#000000" points="1286.88,-204.21 1276.28,-204.03 1284.45,-210.78 1286.88,-204.21"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1254.38,-1136.13C1187.49,-1150 1169.58,-1146.16 1101.87,-1155.13 1076.57,-1158.49 1049.1,-1162.28 1024.01,-1165.81"/>
+<polygon fill="#000000" stroke="#000000" points="1023.58,-1162.34 1014.17,-1167.2 1024.56,-1169.27 1023.58,-1162.34"/>
 </g>
 <!-- module~yaeos__constants -->
-<g id="module~~yaeos__equilibria~~UsesGraph_node23" class="node">
+<g id="module~~yaeos__equilibria~~UsesGraph_node24" class="node">
 <title>module~yaeos__constants</title>
-<g id="a_module~~yaeos__equilibria~~UsesGraph_node23"><a xlink:href="../module/yaeos__constants.html" xlink:title="yaeos__constants">
-<polygon fill="#337ab7" stroke="#337ab7" points="236,-44 130,-44 130,-20 236,-20 236,-44"/>
-<text text-anchor="middle" x="183" y="-29.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__constants</text>
+<g id="a_module~~yaeos__equilibria~~UsesGraph_node24"><a xlink:href="../module/yaeos__constants.html" xlink:title="yaeos__constants">
+<polygon fill="#337ab7" stroke="#337ab7" points="233.79,-1032.27 129.27,-1032.27 129.27,-1008 233.79,-1008 233.79,-1032.27"/>
+<text xml:space="preserve" text-anchor="middle" x="181.53" y="-1016.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__constants</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_auxiliar&#45;&gt;module~yaeos__constants -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge19" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge20" class="edge">
 <title>module~yaeos__equilibria_auxiliar&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M945.5,-312C898.67,-324.71 878.01,-307.14 839,-336 769.07,-387.74 828.46,-496.44 742,-506"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M740,-506C573.68,-524.39 500.86,-601.56 363.5,-506"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M862.29,-1134.13C842.89,-1130.35 823.25,-1123.18 808.35,-1110.13 771.55,-1077.91 807.64,-1040.01 772.35,-1006.13 745.64,-980.5 726.94,-995.94 692.59,-982.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M690.59,-982.13C656.24,-968.33 643.39,-975.75 610.83,-958.13 553.79,-927.26 564,-866.91 499.2,-864.13"/>
 </g>
 <!-- module~yaeos__models_ar -->
-<g id="module~~yaeos__equilibria~~UsesGraph_node29" class="node">
+<g id="module~~yaeos__equilibria~~UsesGraph_node30" class="node">
 <title>module~yaeos__models_ar</title>
-<g id="a_module~~yaeos__equilibria~~UsesGraph_node29"><a xlink:href="../module/yaeos__models_ar.html" xlink:title="yaeos__models_ar">
-<polygon fill="#337ab7" stroke="#337ab7" points="1001.5,-558 891.5,-558 891.5,-534 1001.5,-534 1001.5,-558"/>
-<text text-anchor="middle" x="946.5" y="-543.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar</text>
+<g id="a_module~~yaeos__equilibria~~UsesGraph_node30"><a xlink:href="../module/yaeos__models_ar.html" xlink:title="yaeos__models_ar">
+<polygon fill="#337ab7" stroke="#337ab7" points="746.1,-836.27 637.08,-836.27 637.08,-812 746.1,-812 746.1,-836.27"/>
+<text xml:space="preserve" text-anchor="middle" x="691.59" y="-820.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_auxiliar&#45;&gt;module~yaeos__models_ar -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge20" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge21" class="edge">
 <title>module~yaeos__equilibria_auxiliar&#45;&gt;module~yaeos__models_ar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1168.78,-269.06C1141.21,-271.66 1111.46,-279.36 1090,-298 1050.21,-332.57 1078.72,-364.45 1054,-411 1030,-456.2 990.38,-501.41 966.82,-526.34"/>
-<polygon fill="#000000" stroke="#000000" points="964.17,-524.05 959.78,-533.7 969.23,-528.89 964.17,-524.05"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M886.97,-1123.55C859.59,-1113.98 827.3,-1097.93 808.35,-1072.13 749.17,-991.58 837.37,-926.05 772.35,-850.13 767.98,-845.03 762.6,-840.92 756.7,-837.62"/>
+<polygon fill="#000000" stroke="#000000" points="758.31,-834.51 747.77,-833.42 755.33,-840.84 758.31,-834.51"/>
 </g>
 <!-- module~yaeos__models_base -->
-<g id="module~~yaeos__equilibria~~UsesGraph_node30" class="node">
+<g id="module~~yaeos__equilibria~~UsesGraph_node31" class="node">
 <title>module~yaeos__models_base</title>
-<g id="a_module~~yaeos__equilibria~~UsesGraph_node30"><a xlink:href="../module/yaeos__models_base.html" xlink:title="yaeos__models_base">
-<polygon fill="#337ab7" stroke="#337ab7" points="803,-302 679,-302 679,-278 803,-278 803,-302"/>
-<text text-anchor="middle" x="741" y="-287.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_base</text>
+<g id="a_module~~yaeos__equilibria~~UsesGraph_node31"><a xlink:href="../module/yaeos__models_base.html" xlink:title="yaeos__models_base">
+<polygon fill="#337ab7" stroke="#337ab7" points="559.83,-1032.27 436.56,-1032.27 436.56,-1008 559.83,-1008 559.83,-1032.27"/>
+<text xml:space="preserve" text-anchor="middle" x="498.2" y="-1016.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_base</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_auxiliar&#45;&gt;module~yaeos__models_base -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge21" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge22" class="edge">
 <title>module~yaeos__equilibria_auxiliar&#45;&gt;module~yaeos__models_base</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1168.77,-276.66C1108.36,-281.73 1021.32,-291.97 947.5,-312"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M945.5,-312C893.06,-326.23 830.67,-315.62 788.92,-304.76"/>
-<polygon fill="#000000" stroke="#000000" points="789.6,-301.31 779.03,-302.08 787.77,-308.07 789.6,-301.31"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M690.59,-982.13C637.43,-960.78 570.99,-984.21 532.01,-1002.59"/>
+<polygon fill="#000000" stroke="#000000" points="530.58,-999.39 523.14,-1006.93 533.66,-1005.68 530.58,-999.39"/>
 </g>
 <!-- module~yaeos__equilibria_binaries&#45;&gt;module~yaeos__equilibria_equilibrium_state -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge23" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge24" class="edge">
 <title>module~yaeos__equilibria_binaries&#45;&gt;module~yaeos__equilibria_equilibrium_state</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1169.78,-781.95C1144.48,-777.68 1115.97,-772.76 1090,-768 1066.24,-763.65 1040.3,-758.63 1017.14,-754.06"/>
-<polygon fill="#000000" stroke="#000000" points="1017.55,-750.57 1007.06,-752.06 1016.19,-757.43 1017.55,-750.57"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1179.38,-854.22C1152.41,-851.39 1123.36,-843.77 1101.87,-826.13 1067.28,-797.76 1100,-761.05 1065.87,-732.13 1060.49,-727.57 1054.52,-723.74 1048.19,-720.52"/>
+<polygon fill="#000000" stroke="#000000" points="1049.92,-717.46 1039.36,-716.57 1047.06,-723.85 1049.92,-717.46"/>
 </g>
 <!-- module~yaeos__equilibria_binaries&#45;&gt;module~yaeos__constants -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge22" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge23" class="edge">
 <title>module~yaeos__equilibria_binaries&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1200.1,-806.12C1141.86,-823.1 1035,-856.19 947.5,-894"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M945.5,-894C896.22,-915.3 881.95,-918.79 839,-951 789.72,-987.96 802.65,-1060.76 742,-1050"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M740,-1050C648.85,-1033.82 658.34,-949.09 567,-934"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M936.11,-746.13C887.85,-720.23 745.64,-770.51 692.59,-784.13"/>
 </g>
 <!-- module~yaeos__math -->
-<g id="module~~yaeos__equilibria~~UsesGraph_node26" class="node">
+<g id="module~~yaeos__equilibria~~UsesGraph_node27" class="node">
 <title>module~yaeos__math</title>
-<g id="a_module~~yaeos__equilibria~~UsesGraph_node26"><a xlink:href="../module/yaeos__math.html" xlink:title="yaeos__math">
-<polygon fill="#337ab7" stroke="#337ab7" points="782,-946 700,-946 700,-922 782,-922 782,-946"/>
-<text text-anchor="middle" x="741" y="-931.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math</text>
+<g id="a_module~~yaeos__equilibria~~UsesGraph_node27"><a xlink:href="../module/yaeos__math.html" xlink:title="yaeos__math">
+<polygon fill="#337ab7" stroke="#337ab7" points="732.23,-336.27 650.96,-336.27 650.96,-312 732.23,-312 732.23,-336.27"/>
+<text xml:space="preserve" text-anchor="middle" x="691.59" y="-320.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_binaries&#45;&gt;module~yaeos__math -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge24" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge25" class="edge">
 <title>module~yaeos__equilibria_binaries&#45;&gt;module~yaeos__math</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1167.42,-787.37C1081.15,-783.57 939.08,-789.12 839,-853 814.37,-868.72 825.4,-889.24 803,-908 798.75,-911.56 793.95,-914.69 788.94,-917.45"/>
-<polygon fill="#000000" stroke="#000000" points="787.19,-914.41 779.8,-921.99 790.31,-920.68 787.19,-914.41"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1179.24,-851.54C1153.01,-848.3 1124.5,-841.1 1101.87,-826.13 1077.19,-809.82 1090.41,-786.66 1065.87,-770.13 1017.94,-737.87 989.02,-773.46 938.11,-746.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M936.11,-746.13C885.53,-718.99 851.53,-764.96 808.35,-727.13 749.36,-675.46 707.66,-425.27 695.94,-347.35"/>
+<polygon fill="#000000" stroke="#000000" points="699.46,-347.26 694.54,-337.88 692.54,-348.28 699.46,-347.26"/>
 </g>
 <!-- module~yaeos__equilibria_binaries&#45;&gt;module~yaeos__models_ar -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge25" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge26" class="edge">
 <title>module~yaeos__equilibria_binaries&#45;&gt;module~yaeos__models_ar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1191.1,-781.94C1159.6,-772.79 1119.86,-757.82 1090,-735 1068.53,-718.59 1070.18,-707.64 1054,-686 1021.99,-643.18 983.96,-593.46 963.11,-566.3"/>
-<polygon fill="#000000" stroke="#000000" points="965.84,-564.11 956.97,-558.31 960.29,-568.37 965.84,-564.11"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1179.2,-848.39C1068.25,-842.86 862.51,-832.6 757.66,-827.38"/>
+<polygon fill="#000000" stroke="#000000" points="757.98,-823.89 747.82,-826.89 757.63,-830.88 757.98,-823.89"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_generalized_isopleths&#45;&gt;module~yaeos__equilibria_equilibrium_state -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge27" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge28" class="edge">
 <title>module~yaeos__equilibria_boundaries_generalized_isopleths&#45;&gt;module~yaeos__equilibria_equilibrium_state</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1444.64,-442.05C1440.85,-444.68 1437.29,-447.65 1434,-451 1344.86,-541.78 1488.08,-645.15 1398,-735 1349.49,-783.39 1310.68,-734.48 1245,-754"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1116.02,-923.52C1111.09,-921.07 1106.35,-918.29 1101.87,-915.13 1073.59,-895.22 1085.69,-874.48 1065.87,-846.13 1033.37,-799.66 986.72,-752.31 959.71,-726.32"/>
+<polygon fill="#000000" stroke="#000000" points="962.42,-724.07 952.77,-719.71 957.59,-729.14 962.42,-724.07"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_generalized_isopleths&#45;&gt;module~yaeos__equilibria_stability -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge28" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge29" class="edge">
 <title>module~yaeos__equilibria_boundaries_generalized_isopleths&#45;&gt;module~yaeos__equilibria_stability</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1566.29,-417.82C1526.11,-377.77 1400.49,-252.61 1398,-251 1367.81,-231.45 1330.16,-216.83 1299.76,-207.03"/>
-<polygon fill="#000000" stroke="#000000" points="1300.76,-203.68 1290.17,-204.02 1298.66,-210.35 1300.76,-203.68"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1112.37,-948.64C1108.66,-951.17 1105.15,-953.99 1101.87,-957.13 1036.7,-1019.67 1130.22,-1093.76 1065.87,-1157.13 1054.35,-1168.48 1039.23,-1175.1 1023.43,-1178.77"/>
+<polygon fill="#000000" stroke="#000000" points="1023.08,-1175.27 1013.91,-1180.58 1024.38,-1182.15 1023.08,-1175.27"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_generalized_isopleths&#45;&gt;module~yaeos__constants -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge26" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge27" class="edge">
 <title>module~yaeos__equilibria_boundaries_generalized_isopleths&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1560.16,-417.86C1528.5,-397.51 1460.93,-356.7 1398,-336 1332.62,-314.49 1313.76,-308.88 1245,-312"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1243,-312C1176.86,-315 1010.75,-330.43 947.5,-350"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M945.5,-350C899.57,-364.21 879.59,-343.23 839,-369 776.01,-408.98 815,-490.6 742,-506"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1162.14,-948.76C1070.82,-961.2 943.76,-978.34 938.11,-978.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M936.11,-978.13C826.9,-974.22 795.66,-980.45 692.59,-944.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M690.59,-944.13C656.22,-932.03 644.84,-938.21 610.83,-925.13 558.06,-904.85 555.68,-866.55 499.2,-864.13"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_generalized_isopleths&#45;&gt;module~yaeos__math -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge29" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge30" class="edge">
 <title>module~yaeos__equilibria_boundaries_generalized_isopleths&#45;&gt;module~yaeos__math</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1484.83,-442.01C1456.89,-445.57 1426.21,-449.46 1398,-453 1273.72,-468.58 931.8,-440.89 839,-525 824.19,-538.43 763.65,-828.62 746.53,-911.86"/>
-<polygon fill="#000000" stroke="#000000" points="743.07,-911.28 744.49,-921.78 749.93,-912.69 743.07,-911.28"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1124.36,-923.52C1116.61,-921.15 1109.06,-918.38 1101.87,-915.13 1082.62,-906.45 1083.53,-895.7 1065.87,-884.13 959.6,-814.54 889.29,-858.04 808.35,-760.13 702.91,-632.58 692.66,-418.53 692.3,-347.69"/>
+<polygon fill="#000000" stroke="#000000" points="695.8,-348.05 692.32,-338.04 688.8,-348.04 695.8,-348.05"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_generalized_isopleths&#45;&gt;module~yaeos__models_ar -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge30" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge31" class="edge">
 <title>module~yaeos__equilibria_boundaries_generalized_isopleths&#45;&gt;module~yaeos__models_ar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1243,-312C1174.24,-315.12 1145.23,-294.93 1090,-336 1060.33,-358.06 1073.57,-379.63 1054,-411 1026.77,-454.65 987.93,-500.72 965.46,-526.16"/>
-<polygon fill="#000000" stroke="#000000" points="962.81,-523.87 958.77,-533.67 968.04,-528.53 962.81,-523.87"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1136.81,-923.53C1055.05,-914.51 957.39,-903.11 938.11,-898.13"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_mp&#45;&gt;module~yaeos__equilibria_equilibrium_state -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge33" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge34" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_mp&#45;&gt;module~yaeos__equilibria_equilibrium_state</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1219.38,-881.88C1189.3,-866.42 1135.73,-838.84 1090,-815 1051.91,-795.14 1008.22,-772.11 979.36,-756.86"/>
-<polygon fill="#000000" stroke="#000000" points="980.65,-753.58 970.18,-752.01 977.38,-759.77 980.65,-753.58"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1112.35,-465.62C1108.65,-468.15 1105.14,-470.98 1101.87,-474.13 1034.97,-538.66 1130.67,-613.51 1065.87,-680.13 1060.74,-685.41 1054.86,-689.76 1048.5,-693.34"/>
+<polygon fill="#000000" stroke="#000000" points="1046.98,-690.19 1039.5,-697.69 1050.03,-696.49 1046.98,-690.19"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_mp&#45;&gt;module~yaeos__constants -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge31" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge32" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_mp&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1098.65,-883.39C1037.77,-881.09 974.75,-882.22 947.5,-894"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1140.94,-440.55C1127.68,-438.19 1114.41,-435.4 1101.87,-432.13 914.69,-383.35 885.48,-298.58 692.59,-284.13"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_auxiliar -->
-<g id="module~~yaeos__equilibria~~UsesGraph_node24" class="node">
+<g id="module~~yaeos__equilibria~~UsesGraph_node25" class="node">
 <title>module~yaeos__equilibria_boundaries_auxiliar</title>
-<g id="a_module~~yaeos__equilibria~~UsesGraph_node24"><a xlink:href="../module/yaeos__equilibria_boundaries_auxiliar.html" xlink:title="yaeos__equilibria_boundaries_auxiliar">
-<polygon fill="#337ab7" stroke="#337ab7" points="1054,-984 839,-984 839,-960 1054,-960 1054,-984"/>
-<text text-anchor="middle" x="946.5" y="-969.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_boundaries_auxiliar</text>
+<g id="a_module~~yaeos__equilibria~~UsesGraph_node25"><a xlink:href="../module/yaeos__equilibria_boundaries_auxiliar.html" xlink:title="yaeos__equilibria_boundaries_auxiliar">
+<polygon fill="#337ab7" stroke="#337ab7" points="1044.12,-296.27 830.1,-296.27 830.1,-272 1044.12,-272 1044.12,-296.27"/>
+<text xml:space="preserve" text-anchor="middle" x="937.11" y="-280.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_boundaries_auxiliar</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_mp&#45;&gt;module~yaeos__equilibria_boundaries_auxiliar -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge32" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge33" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_mp&#45;&gt;module~yaeos__equilibria_boundaries_auxiliar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1131.64,-906.04C1117.52,-908.51 1103.35,-911.47 1090,-915 1051.7,-925.13 1009.81,-942.72 981.43,-955.69"/>
-<polygon fill="#000000" stroke="#000000" points="979.96,-952.52 972.35,-959.89 982.9,-958.87 979.96,-952.52"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1115,-440.57C1110.41,-438.1 1106.01,-435.29 1101.87,-432.13 1069.57,-407.51 1093.72,-377.7 1065.87,-348.13 1045.48,-326.49 1016.17,-311.08 990.77,-300.82"/>
+<polygon fill="#000000" stroke="#000000" points="992.16,-297.6 981.57,-297.27 989.64,-304.14 992.16,-297.6"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_mp&#45;&gt;module~yaeos__math -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge34" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge35" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_mp&#45;&gt;module~yaeos__math</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1196.6,-881.93C1119.79,-864.22 962.47,-837.64 839,-880 819.83,-886.58 820.47,-897.72 803,-908 797.07,-911.49 790.58,-914.77 784.12,-917.75"/>
-<polygon fill="#000000" stroke="#000000" points="782.48,-914.64 774.74,-921.88 785.3,-921.05 782.48,-914.64"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1110.5,-459.89C1055.67,-458.96 993.15,-453.59 938.11,-438.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M936.11,-438.13C855.22,-415.43 767.7,-368.3 722.86,-342.32"/>
+<polygon fill="#000000" stroke="#000000" points="724.88,-339.45 714.49,-337.41 721.35,-345.49 724.88,-339.45"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_mp&#45;&gt;module~yaeos__models_ar -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge35" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge36" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_mp&#45;&gt;module~yaeos__models_ar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1198.85,-881.89C1164.39,-870.21 1117.83,-849.2 1090,-815 1052.43,-768.83 1080.49,-739.3 1054,-686 1030.45,-638.62 990,-591.25 966.31,-565.58"/>
-<polygon fill="#000000" stroke="#000000" points="968.64,-562.94 959.25,-558.03 963.52,-567.72 968.64,-562.94"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1114.52,-465.72C1110.1,-468.2 1105.86,-470.99 1101.87,-474.13 1067.38,-501.31 1097.69,-535.88 1065.87,-566.13 978.41,-649.27 890.17,-563.44 808.35,-652.13 763.03,-701.26 817.84,-749.18 772.35,-798.13 767.84,-802.99 762.42,-806.94 756.54,-810.15"/>
+<polygon fill="#000000" stroke="#000000" points="755.29,-806.87 747.69,-814.26 758.24,-813.22 755.29,-806.87"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_mp_px&#45;&gt;module~yaeos__equilibria_equilibrium_state -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge38" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge39" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_mp_px&#45;&gt;module~yaeos__equilibria_equilibrium_state</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1101.23,-1079.92C1097.26,-1077.29 1093.5,-1074.33 1090,-1071 1027.41,-1011.46 1089.09,-958.94 1054,-880 1032.53,-831.7 991.4,-784.71 967.02,-759.34"/>
-<polygon fill="#000000" stroke="#000000" points="969.52,-756.89 960.03,-752.18 964.51,-761.78 969.52,-756.89"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1111.23,-24.61C1107.9,-27.16 1104.77,-29.99 1101.87,-33.13 1004.27,-139.01 1160.04,-571.19 1065.87,-680.13 1060.8,-686 1054.79,-690.77 1048.2,-694.61"/>
+<polygon fill="#000000" stroke="#000000" points="1046.9,-691.35 1039.51,-698.95 1050.02,-697.62 1046.9,-691.35"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_mp_px&#45;&gt;module~yaeos__constants -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge36" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge37" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_mp_px&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M945.5,-1088C855.82,-1067.45 832.59,-1066.08 742,-1050"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1161.47,-24.75C1072.21,-36.83 949.26,-53.34 938.11,-54.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M936.11,-54.13C786.84,-64.83 734.69,-57.14 610.83,-141.13 549.46,-182.76 573.08,-258.83 499.2,-265.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M497.2,-265.13C422.46,-270 389.13,-220.92 328.68,-265.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M326.68,-265.13C204.56,-354.44 185.68,-877.82 182.96,-996.3"/>
+<polygon fill="#000000" stroke="#000000" points="179.47,-996.01 182.76,-1006.08 186.47,-996.16 179.47,-996.01"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_mp_px&#45;&gt;module~yaeos__equilibria_boundaries_auxiliar -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge37" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge38" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_mp_px&#45;&gt;module~yaeos__equilibria_boundaries_auxiliar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1112.32,-1079.92C1104.61,-1077.42 1097.11,-1074.47 1090,-1071 1069.94,-1061.22 1071.68,-1049.62 1054,-1036 1030.52,-1017.92 1001.57,-1000.81 979.79,-988.84"/>
-<polygon fill="#000000" stroke="#000000" points="981.38,-985.73 970.92,-984.04 978.05,-991.88 981.38,-985.73"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1112.42,-24.7C1108.7,-27.21 1105.17,-30.01 1101.87,-33.13 1040.45,-91.36 1116.98,-152.67 1065.87,-220.13 1048.83,-242.63 1021.71,-257.77 996.83,-267.65"/>
+<polygon fill="#000000" stroke="#000000" points="995.9,-264.26 987.76,-271.04 998.35,-270.82 995.9,-264.26"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_mp_px&#45;&gt;module~yaeos__math -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge39" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge40" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_mp_px&#45;&gt;module~yaeos__math</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1089.69,-1102.15C1043.5,-1101.95 993.01,-1098.43 947.5,-1088"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M945.5,-1088C862.34,-1068.95 789.14,-991.42 757.98,-954.17"/>
-<polygon fill="#000000" stroke="#000000" points="760.35,-951.55 751.31,-946.04 754.94,-955.99 760.35,-951.55"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1122.56,-24.75C1115.42,-27.14 1108.48,-29.91 1101.87,-33.13 1081.82,-42.92 1084.16,-55.35 1065.87,-68.13 961.75,-140.91 892.56,-97.03 808.35,-192.13 775.37,-229.38 807.75,-263.17 772.35,-298.13 764.35,-306.04 753.91,-311.54 743.24,-315.37"/>
+<polygon fill="#000000" stroke="#000000" points="742.53,-311.93 734.01,-318.22 744.6,-318.61 742.53,-311.93"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_mp_px&#45;&gt;module~yaeos__models_ar -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge40" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge41" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_mp_px&#45;&gt;module~yaeos__models_ar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1100.18,-1079.87C1096.56,-1077.24 1093.15,-1074.29 1090,-1071 1030.56,-1008.94 1085.22,-766.06 1054,-686 1034.9,-637.01 993.31,-590.58 968.13,-565.44"/>
-<polygon fill="#000000" stroke="#000000" points="970.48,-562.84 960.88,-558.34 965.58,-567.84 970.48,-562.84"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1113.93,-24.63C1109.7,-27.14 1105.66,-29.96 1101.87,-33.13 1062.1,-66.43 1099.92,-105.02 1065.87,-144.13 1024.43,-191.74 979.99,-158.92 938.11,-206.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M936.11,-206.13C894.85,-252.65 843.93,-212.14 808.35,-263.13 740.17,-360.86 845.54,-704.11 772.35,-798.13 768.17,-803.51 762.85,-807.79 756.95,-811.19"/>
+<polygon fill="#000000" stroke="#000000" points="755.47,-808.02 747.95,-815.48 758.48,-814.34 755.47,-808.02"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_mp_tx&#45;&gt;module~yaeos__equilibria_equilibrium_state -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge43" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge44" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_mp_tx&#45;&gt;module~yaeos__equilibria_equilibrium_state</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1101.78,-1037.9C1097.63,-1035.28 1093.68,-1032.33 1090,-1029 1039.46,-983.31 1083.25,-941.53 1054,-880 1031.41,-832.46 990.96,-785.48 966.95,-759.85"/>
-<polygon fill="#000000" stroke="#000000" points="969.2,-757.14 959.77,-752.3 964.13,-761.96 969.2,-757.14"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1234.29,-564.58C1204.8,-583.02 1148.23,-618.99 1101.87,-652.13 1085.38,-663.92 1084.29,-671.67 1065.87,-680.13 1057.05,-684.19 1047.61,-687.61 1037.99,-690.51"/>
+<polygon fill="#000000" stroke="#000000" points="1037.23,-687.08 1028.54,-693.14 1039.11,-693.83 1037.23,-687.08"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_mp_tx&#45;&gt;module~yaeos__constants -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge41" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge42" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_mp_tx&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1091.31,-1044.97C1045.07,-1044.79 994.14,-1045.95 947.5,-1050"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1103.15,-540.03C1050.47,-539 991.27,-541.44 938.11,-552.13"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_mp_tx&#45;&gt;module~yaeos__equilibria_boundaries_auxiliar -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge42" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge43" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_mp_tx&#45;&gt;module~yaeos__equilibria_boundaries_auxiliar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1114.14,-1037.89C1105.82,-1035.41 1097.7,-1032.47 1090,-1029 1070.75,-1020.32 1072.78,-1007.66 1054,-998 1045.58,-993.67 1036.42,-990.04 1027.11,-987"/>
-<polygon fill="#000000" stroke="#000000" points="1027.98,-983.61 1017.39,-984.05 1025.94,-990.31 1027.98,-983.61"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1143.58,-539.54C1128.38,-534.11 1113.89,-526.57 1101.87,-516.13 1068.71,-487.35 1089.06,-461.42 1065.87,-424.13 1036.08,-376.23 988.89,-329.7 960.97,-304.19"/>
+<polygon fill="#000000" stroke="#000000" points="963.52,-301.78 953.75,-297.68 958.83,-306.98 963.52,-301.78"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_mp_tx&#45;&gt;module~yaeos__math -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge44" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge45" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_mp_tx&#45;&gt;module~yaeos__math</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1117.79,-1037.95C1018.68,-1027.37 888.92,-1010.91 839,-993 812.09,-983.35 784.54,-965.69 765.71,-952.21"/>
-<polygon fill="#000000" stroke="#000000" points="767.59,-949.25 757.46,-946.16 763.45,-954.89 767.59,-949.25"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1102.91,-541.29C1012.4,-529.38 897.98,-504.42 808.35,-452.13 762.94,-425.65 725.4,-375.34 706.27,-346.31"/>
+<polygon fill="#000000" stroke="#000000" points="709.24,-344.46 700.9,-337.93 703.35,-348.24 709.24,-344.46"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_mp_tx&#45;&gt;module~yaeos__models_ar -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge45" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge46" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_mp_tx&#45;&gt;module~yaeos__models_ar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1100.23,-1037.83C1096.6,-1035.21 1093.17,-1032.27 1090,-1029 1036.68,-973.95 1082.25,-757.25 1054,-686 1034.52,-636.86 992.69,-590.17 967.64,-565.08"/>
-<polygon fill="#000000" stroke="#000000" points="970.04,-562.52 960.45,-558.01 965.13,-567.51 970.04,-562.52"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1212.55,-564.71C1151.14,-583.72 1033.56,-622.25 938.11,-666.13"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_pt&#45;&gt;module~yaeos__equilibria_auxiliar -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge47" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge48" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_pt&#45;&gt;module~yaeos__equilibria_auxiliar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1550.74,-619.87C1517.18,-603.65 1461.76,-571.57 1434,-526 1380.62,-438.39 1470.11,-370.97 1398,-298 1380.03,-279.81 1354.35,-271.54 1329.16,-268.32"/>
-<polygon fill="#000000" stroke="#000000" points="1329.47,-264.84 1319.17,-267.3 1328.76,-271.8 1329.47,-264.84"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1579.86,-678.72C1551.71,-747.25 1417.81,-1072.44 1408.89,-1079.13 1393.67,-1090.57 1154.63,-1115.24 1023.18,-1128.05"/>
+<polygon fill="#000000" stroke="#000000" points="1023.09,-1124.54 1013.48,-1128.99 1023.77,-1131.51 1023.09,-1124.54"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_pt&#45;&gt;module~yaeos__equilibria_boundaries_phase_envelopes_mp -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge48" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge49" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_pt&#45;&gt;module~yaeos__equilibria_boundaries_phase_envelopes_mp</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1566.84,-644.03C1528.41,-683.65 1407.66,-807.89 1398,-815 1362.22,-841.34 1316.41,-863.72 1284.28,-877.86"/>
-<polygon fill="#000000" stroke="#000000" points="1282.56,-874.8 1274.78,-881.98 1285.35,-881.22 1282.56,-874.8"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1577.86,-653.53C1557.04,-618.22 1492.63,-518.01 1408.89,-474.13 1406,-472.62 1403.05,-471.21 1400.03,-469.88"/>
+<polygon fill="#000000" stroke="#000000" points="1401.58,-466.73 1390.99,-466.28 1398.98,-473.23 1401.58,-466.73"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_pt&#45;&gt;module~yaeos__equilibria_equilibrium_state -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge49" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge50" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_pt&#45;&gt;module~yaeos__equilibria_equilibrium_state</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1562.15,-644.34C1531.68,-666.62 1463.39,-713.25 1398,-735 1332.98,-756.62 1310.68,-734.48 1245,-754"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1254.38,-666.13C1170.84,-666.22 1075.87,-680.11 1011.98,-691.5"/>
+<polygon fill="#000000" stroke="#000000" points="1011.53,-688.02 1002.31,-693.25 1012.77,-694.91 1011.53,-688.02"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_pt&#45;&gt;module~yaeos__constants -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge46" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge47" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_pt&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1437.67,-631.84C1288.56,-630.33 1046.53,-624.05 839,-601 795.5,-596.17 785.72,-585.96 742,-584"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M740,-584C663.11,-583.29 641.72,-600.16 567,-582"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M565,-582C471.99,-559.39 441.2,-561.89 363.5,-506"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M690.59,-746.13C653.94,-740.89 643.39,-752.52 610.83,-770.13 553.79,-801.01 564,-866.91 499.2,-864.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M497.2,-864.13C422.37,-860.93 390.89,-822.44 328.68,-864.13"/>
 </g>
 <!-- module~yaeos__math_continuation -->
-<g id="module~~yaeos__equilibria~~UsesGraph_node27" class="node">
+<g id="module~~yaeos__equilibria~~UsesGraph_node28" class="node">
 <title>module~yaeos__math_continuation</title>
-<g id="a_module~~yaeos__equilibria~~UsesGraph_node27"><a xlink:href="../module/yaeos__math_continuation.html" xlink:title="yaeos__math_continuation">
-<polygon fill="#337ab7" stroke="#337ab7" points="643,-634 489,-634 489,-610 643,-610 643,-634"/>
-<text text-anchor="middle" x="566" y="-619.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math_continuation</text>
+<g id="a_module~~yaeos__equilibria~~UsesGraph_node28"><a xlink:href="../module/yaeos__math_continuation.html" xlink:title="yaeos__math_continuation">
+<polygon fill="#337ab7" stroke="#337ab7" points="574.83,-317.27 421.56,-317.27 421.56,-293 574.83,-293 574.83,-317.27"/>
+<text xml:space="preserve" text-anchor="middle" x="498.2" y="-301.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math_continuation</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_pt&#45;&gt;module~yaeos__math_continuation -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge50" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge51" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_pt&#45;&gt;module~yaeos__math_continuation</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M740,-584C694.15,-581.94 642.95,-595.2 608.23,-606.62"/>
-<polygon fill="#000000" stroke="#000000" points="606.8,-603.41 598.45,-609.93 609.04,-610.04 606.8,-603.41"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1444.69,-666.07C1386.44,-666.06 1318.14,-666.07 1256.38,-666.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1254.38,-666.13C1056.05,-666.34 995.26,-585.8 808.35,-652.13 745.89,-674.3 758.36,-754.32 692.59,-746.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M690.59,-746.13C509.87,-720.26 498.25,-416.63 498.69,-328.79"/>
+<polygon fill="#000000" stroke="#000000" points="502.19,-329.01 498.81,-318.97 495.19,-328.93 502.19,-329.01"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_pt&#45;&gt;module~yaeos__models_ar -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge51" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge52" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_pt&#45;&gt;module~yaeos__models_ar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1550.69,-619.96C1515.78,-605.47 1453.7,-581.75 1398,-571 1262.43,-544.83 1099.97,-542.85 1011.92,-544.15"/>
-<polygon fill="#000000" stroke="#000000" points="1011.76,-540.65 1001.82,-544.32 1011.88,-547.65 1011.76,-540.65"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1254.38,-666.13C1184.1,-666.21 1001.97,-636.78 938.11,-666.13"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_pt3&#45;&gt;module~yaeos__equilibria_equilibrium_state -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge53" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge54" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_pt3&#45;&gt;module~yaeos__equilibria_equilibrium_state</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1106.49,-726.01C1090.24,-727.44 1073.81,-728.89 1057.99,-730.28"/>
-<polygon fill="#000000" stroke="#000000" points="1057.34,-726.82 1047.69,-731.18 1057.95,-733.79 1057.34,-726.82"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1111.91,-423.73C1108.36,-426.23 1105,-429.03 1101.87,-432.13 1022.83,-510.6 1142.37,-599.18 1065.87,-680.13 1060.65,-685.66 1054.6,-690.19 1048.02,-693.88"/>
+<polygon fill="#000000" stroke="#000000" points="1046.89,-690.53 1039.42,-698.04 1049.94,-696.83 1046.89,-690.53"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_pt3&#45;&gt;module~yaeos__constants -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge52" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge53" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_pt3&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1152.26,-701.96C1079.49,-693.73 983.72,-686.53 947.5,-700"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M945.5,-700C900.44,-716.76 885.4,-706.38 839,-719 730.28,-748.57 450.82,-966.21 363.5,-895"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M361.5,-895C225.29,-784.49 190.68,-179.37 184.94,-54.53"/>
-<polygon fill="#000000" stroke="#000000" points="188.43,-54.11 184.49,-44.28 181.43,-54.42 188.43,-54.11"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1113.44,-398.62C1109.37,-396.11 1105.5,-393.29 1101.87,-390.13 1057.6,-351.64 1112.67,-298.51 1065.87,-263.13 974.57,-194.12 922.34,-252.88 808.35,-263.13 756.27,-267.82 744.73,-288.1 692.59,-284.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M690.59,-284.13C605.36,-277.51 584.37,-257.87 499.2,-265.13"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_pt3&#45;&gt;module~yaeos__math -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge54" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge55" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_pt3&#45;&gt;module~yaeos__math</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M945.5,-700C900.44,-716.76 873.96,-685.99 839,-719 788.83,-766.36 835.94,-809.38 803,-870 793.53,-887.42 778.09,-903.56 765.11,-915.27"/>
-<polygon fill="#000000" stroke="#000000" points="762.66,-912.76 757.42,-921.96 767.26,-918.04 762.66,-912.76"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1160.37,-398.54C1141.01,-395.84 1120.77,-392.96 1101.87,-390.13 972.89,-370.86 821.45,-345.8 743.96,-332.81"/>
+<polygon fill="#000000" stroke="#000000" points="744.56,-329.36 734.12,-331.16 743.4,-336.26 744.56,-329.36"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_pt3&#45;&gt;module~yaeos__models_ar -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge55" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge56" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_pt3&#45;&gt;module~yaeos__models_ar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1111.42,-701.9C1104.01,-699.39 1096.82,-696.45 1090,-693 1031.16,-663.21 982.75,-599.38 960.57,-566.5"/>
-<polygon fill="#000000" stroke="#000000" points="963.45,-564.52 955.02,-558.1 957.61,-568.38 963.45,-564.52"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1132.72,-423.71C1122.17,-426.06 1111.76,-428.84 1101.87,-432.13 1084.51,-437.93 1082.31,-444.08 1065.87,-452.13 954.1,-506.87 884.58,-463.76 808.35,-562.13 743.36,-646 840.99,-717.23 772.35,-798.13 768,-803.26 762.64,-807.38 756.75,-810.69"/>
+<polygon fill="#000000" stroke="#000000" points="755.38,-807.47 747.83,-814.9 758.37,-813.8 755.38,-807.47"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_px&#45;&gt;module~yaeos__equilibria_equilibrium_state -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge58" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge59" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_px&#45;&gt;module~yaeos__equilibria_equilibrium_state</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1102.79,-923.94C1098.3,-921.32 1094.01,-918.36 1090,-915 1050.23,-881.72 1086.27,-844.6 1054,-804 1037.09,-782.72 1011.02,-766.89 988.91,-756.29"/>
-<polygon fill="#000000" stroke="#000000" points="990.27,-753.06 979.72,-752.07 987.35,-759.42 990.27,-753.06"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1112.79,-380.96C1108.91,-383.66 1105.25,-386.71 1101.87,-390.13 1010.65,-482.58 1154.09,-584.82 1065.87,-680.13 1060.7,-685.72 1054.7,-690.28 1048.15,-694"/>
+<polygon fill="#000000" stroke="#000000" points="1047.02,-690.65 1039.58,-698.19 1050.1,-696.94 1047.02,-690.65"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_px&#45;&gt;module~yaeos__constants -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge56" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge57" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_px&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1203.33,-948.09C1172.23,-957.84 1128,-972.31 1090,-987 1025.41,-1011.98 1016.49,-1044.02 947.5,-1050"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M945.5,-1050C855.39,-1057.82 831.05,-1065.8 742,-1050"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1246.47,-356.92C1223.55,-322.79 1153.11,-226.67 1065.87,-192.13 959.45,-150.01 920.09,-167.35 808.35,-192.13 752.93,-204.43 747.55,-231.91 692.59,-246.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M690.59,-246.13C607.4,-265.81 584.37,-257.87 499.2,-265.13"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_px&#45;&gt;module~yaeos__equilibria_boundaries_auxiliar -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge57" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge58" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_px&#45;&gt;module~yaeos__equilibria_boundaries_auxiliar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1144.19,-948.04C1115.98,-951.48 1085.08,-955.24 1056.3,-958.75"/>
-<polygon fill="#000000" stroke="#000000" points="1055.72,-955.29 1046.21,-959.97 1056.56,-962.24 1055.72,-955.29"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1218.21,-356.6C1180.49,-343.81 1119.5,-323.95 1065.87,-310.13 1050.38,-306.14 1033.7,-302.38 1017.67,-299.01"/>
+<polygon fill="#000000" stroke="#000000" points="1018.68,-295.65 1008.18,-297.05 1017.27,-302.5 1018.68,-295.65"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_px&#45;&gt;module~yaeos__math_continuation -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge59" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge60" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_px&#45;&gt;module~yaeos__math_continuation</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1112.32,-923.92C1104.61,-921.42 1097.11,-918.47 1090,-915 1069.94,-905.22 1072.04,-893.13 1054,-880 1012.74,-849.97 702.03,-690.81 599.63,-638.6"/>
-<polygon fill="#000000" stroke="#000000" points="601.16,-635.46 590.66,-634.03 597.98,-641.69 601.16,-635.46"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M690.59,-246.13C641.26,-258.9 585.7,-276.39 547.2,-289"/>
+<polygon fill="#000000" stroke="#000000" points="546.15,-285.66 537.75,-292.11 548.35,-292.31 546.15,-285.66"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_px&#45;&gt;module~yaeos__models_ar -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge60" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge61" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_px&#45;&gt;module~yaeos__models_ar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1100.77,-923.84C1096.96,-921.22 1093.35,-918.29 1090,-915 1016.44,-842.86 1094.42,-780.77 1054,-686 1033.26,-637.38 991.88,-590.5 967.25,-565.24"/>
-<polygon fill="#000000" stroke="#000000" points="969.71,-562.75 960.19,-558.12 964.74,-567.68 969.71,-562.75"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1168.58,-356.52C1066.53,-346.9 898.67,-349.04 808.35,-448.13 755.68,-505.92 821.46,-737.29 772.35,-798.13 768.07,-803.44 762.7,-807.67 756.76,-811.04"/>
+<polygon fill="#000000" stroke="#000000" points="755.27,-807.88 747.72,-815.31 758.26,-814.21 755.27,-807.88"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_px3&#45;&gt;module~yaeos__equilibria_equilibrium_state -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge63" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge64" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_px3&#45;&gt;module~yaeos__equilibria_equilibrium_state</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1168.23,-995.89C1141.07,-988.42 1111.75,-976.37 1090,-957 1061.79,-931.87 1073.55,-912.33 1054,-880 1026.48,-834.49 987.12,-786.11 964.76,-759.82"/>
-<polygon fill="#000000" stroke="#000000" points="967.3,-757.41 958.13,-752.1 961.99,-761.97 967.3,-757.41"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1138.82,-507.65C1125.09,-513.18 1112.29,-520.77 1101.87,-531.13 1053.57,-579.18 1114.91,-632.84 1065.87,-680.13 1060.63,-685.19 1054.69,-689.38 1048.31,-692.85"/>
+<polygon fill="#000000" stroke="#000000" points="1046.88,-689.66 1039.33,-697.08 1049.87,-695.99 1046.88,-689.66"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_px3&#45;&gt;module~yaeos__constants -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge61" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge62" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_px3&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1154.39,-1020.01C1133.28,-1022.91 1110.84,-1026.03 1090,-1029 1026.62,-1038.02 1011.28,-1044.47 947.5,-1050"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1179.45,-507.76C1115.27,-518.79 1020.43,-535.58 938.11,-552.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M936.11,-552.13C880.11,-563.4 862.34,-547.49 808.35,-566.13 571.12,-648.06 532.61,-717.84 328.68,-864.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M326.68,-864.13C270.6,-901.72 221.01,-965.32 197.31,-998.51"/>
+<polygon fill="#000000" stroke="#000000" points="194.56,-996.34 191.68,-1006.54 200.29,-1000.36 194.56,-996.34"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_px3&#45;&gt;module~yaeos__equilibria_boundaries_auxiliar -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge62" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge63" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_px3&#45;&gt;module~yaeos__equilibria_boundaries_auxiliar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1144.19,-995.96C1115.98,-992.52 1085.08,-988.76 1056.3,-985.25"/>
-<polygon fill="#000000" stroke="#000000" points="1056.56,-981.76 1046.21,-984.03 1055.72,-988.71 1056.56,-981.76"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1118.81,-482.65C1112.93,-480.2 1107.25,-477.37 1101.87,-474.13 1078.41,-460.01 1083.13,-445.4 1065.87,-424.13 1029.91,-379.84 984.05,-331.32 958.2,-304.62"/>
+<polygon fill="#000000" stroke="#000000" points="960.78,-302.25 951.3,-297.52 955.76,-307.13 960.78,-302.25"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_px3&#45;&gt;module~yaeos__math -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge64" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge65" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_px3&#45;&gt;module~yaeos__math</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1211.46,-995.95C1174.38,-982.39 1110.71,-960.95 1054,-951 962.83,-935.01 854.59,-932.78 792.53,-933.07"/>
-<polygon fill="#000000" stroke="#000000" points="792.21,-929.58 782.24,-933.15 792.26,-936.58 792.21,-929.58"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1154.53,-482.55C1136.94,-480 1118.84,-477.16 1101.87,-474.13 1028.51,-461.04 1009.86,-458.28 938.11,-438.13"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_px3&#45;&gt;module~yaeos__models_ar -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge65" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge66" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_px3&#45;&gt;module~yaeos__models_ar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1153.68,-995.98C1129.73,-988.5 1106.05,-976.43 1090,-957 1012.61,-863.33 1100.33,-798.32 1054,-686 1033.84,-637.13 992.26,-590.34 967.43,-565.16"/>
-<polygon fill="#000000" stroke="#000000" points="969.86,-562.64 960.31,-558.06 964.92,-567.6 969.86,-562.64"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1147.11,-507.73C1130.82,-513.1 1115.07,-520.63 1101.87,-531.13 1073.57,-553.66 1091.53,-578.64 1065.87,-604.13 1021.1,-648.62 995.45,-639.77 938.11,-666.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M936.11,-666.13C883.95,-690.12 852.07,-647.93 808.35,-685.13 768.21,-719.29 809.5,-760.74 772.35,-798.13 767.75,-802.77 762.31,-806.58 756.47,-809.71"/>
+<polygon fill="#000000" stroke="#000000" points="755.34,-806.37 747.72,-813.73 758.27,-812.73 755.34,-806.37"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_tx&#45;&gt;module~yaeos__equilibria_equilibrium_state -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge68" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge69" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_tx&#45;&gt;module~yaeos__equilibria_equilibrium_state</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1122.1,-684.06C1111.11,-686.51 1100.26,-689.46 1090,-693 1072.49,-699.04 1071.18,-707.06 1054,-714 1043.11,-718.4 1031.28,-722.19 1019.59,-725.4"/>
-<polygon fill="#000000" stroke="#000000" points="1018.62,-722.04 1009.84,-727.97 1020.4,-728.81 1018.62,-722.04"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1245.73,-66.58C1218.96,-105.81 1137.19,-231.16 1101.87,-348.13 1080.42,-419.18 1115.86,-625.28 1065.87,-680.13 1060.7,-685.81 1054.65,-690.44 1048.05,-694.2"/>
+<polygon fill="#000000" stroke="#000000" points="1046.84,-690.9 1039.39,-698.44 1049.91,-697.19 1046.84,-690.9"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_tx&#45;&gt;module~yaeos__constants -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge66" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge67" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_tx&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1102.49,-662.93C1024.68,-657.22 926.31,-648.86 839,-638 795.64,-632.61 785.18,-628.66 742,-622"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M740,-622C720.41,-619.64 586.17,-586.66 567,-582"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1114.5,-49.84C1059.46,-49.27 995.75,-50 938.11,-54.13"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_tx&#45;&gt;module~yaeos__equilibria_boundaries_auxiliar -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge67" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge68" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_tx&#45;&gt;module~yaeos__equilibria_boundaries_auxiliar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1102.46,-683.11C1098.03,-685.98 1093.85,-689.26 1090,-693 1020.49,-760.49 1108.53,-827.92 1054,-908 1039.07,-929.92 1013.92,-945.55 991.81,-955.87"/>
-<polygon fill="#000000" stroke="#000000" points="990.28,-952.72 982.56,-959.97 993.12,-959.12 990.28,-952.72"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1242.51,-66.6C1214.05,-96.01 1138.91,-170.89 1065.87,-220.13 1038.3,-238.72 1004.58,-255.39 978.7,-267.05"/>
+<polygon fill="#000000" stroke="#000000" points="977.6,-263.71 969.87,-270.97 980.44,-270.11 977.6,-263.71"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_tx&#45;&gt;module~yaeos__math_continuation -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge69" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge70" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_tx&#45;&gt;module~yaeos__math_continuation</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M740,-622C711.98,-617.68 681.09,-616.54 653.27,-616.83"/>
-<polygon fill="#000000" stroke="#000000" points="653.11,-613.34 643.17,-617 653.23,-620.34 653.11,-613.34"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1114.19,-63.2C974.25,-78.6 759.21,-120.12 610.83,-232.13 589.83,-247.99 596.18,-263.76 574.83,-279.13 570.16,-282.5 565.02,-285.45 559.69,-288.04"/>
+<polygon fill="#000000" stroke="#000000" points="558.41,-284.78 550.65,-291.99 561.21,-291.2 558.41,-284.78"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_phase_envelopes_tx&#45;&gt;module~yaeos__models_ar -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge70" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge71" class="edge">
 <title>module~yaeos__equilibria_boundaries_phase_envelopes_tx&#45;&gt;module~yaeos__models_ar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1209.6,-659.9C1178.41,-648.43 1130.71,-630.39 1090,-613 1052.17,-596.84 1009.57,-576.52 980.89,-562.53"/>
-<polygon fill="#000000" stroke="#000000" points="982.24,-559.29 971.72,-558.04 979.16,-565.58 982.24,-559.29"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1228.08,-66.69C1152.42,-102.83 939.44,-204.64 938.11,-206.13"/>
 </g>
 <!-- linear_interpolation_module -->
-<g id="module~~yaeos__equilibria~~UsesGraph_node22" class="node">
+<g id="module~~yaeos__equilibria~~UsesGraph_node23" class="node">
 <title>linear_interpolation_module</title>
-<polygon fill="#337ab7" stroke="#337ab7" points="1028,-402 865,-402 865,-378 1028,-378 1028,-402"/>
-<text text-anchor="middle" x="946.5" y="-387.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">linear_interpolation_module</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="772.35,-916.27 610.83,-916.27 610.83,-892 772.35,-892 772.35,-916.27"/>
+<text xml:space="preserve" text-anchor="middle" x="691.59" y="-900.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">linear_interpolation_module</text>
 </g>
 <!-- module~yaeos__equilibria_boundaries_pure_saturation&#45;&gt;linear_interpolation_module -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge71" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge72" class="edge">
 <title>module~yaeos__equilibria_boundaries_pure_saturation&#45;&gt;linear_interpolation_module</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1154.39,-419.99C1133.28,-417.09 1110.84,-413.97 1090,-411 1073.24,-408.61 1055.37,-406.02 1038.16,-403.5"/>
-<polygon fill="#000000" stroke="#000000" points="1038.52,-400.01 1028.12,-402.02 1037.5,-406.94 1038.52,-400.01"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M845.78,-925.52C825.66,-922.71 804.31,-919.73 784.14,-916.92"/>
+<polygon fill="#000000" stroke="#000000" points="784.63,-913.45 774.24,-915.54 783.66,-920.38 784.63,-913.45"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_pure_saturation&#45;&gt;module~yaeos__constants -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge72" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge73" class="edge">
 <title>module~yaeos__equilibria_boundaries_pure_saturation&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1114.26,-421.47C1105.82,-418.62 1097.65,-415.17 1090,-411 1068.42,-399.23 1075.34,-381.2 1054,-369 1012.26,-345.14 993.43,-335.79 947.5,-350"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M690.59,-864.13C654.85,-841.08 541.69,-865.95 499.2,-864.13"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_pure_saturation&#45;&gt;module~yaeos__math_continuation -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge73" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge74" class="edge">
 <title>module~yaeos__equilibria_boundaries_pure_saturation&#45;&gt;module~yaeos__math_continuation</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M740,-544C712.45,-554.46 704.66,-555.51 679,-570 661.82,-579.71 660.53,-586.93 643,-596 635.43,-599.92 627.15,-603.44 618.92,-606.54"/>
-<polygon fill="#000000" stroke="#000000" points="617.57,-603.31 609.34,-609.99 619.93,-609.9 617.57,-603.31"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M846.37,-925.56C833.29,-922.11 820.23,-917.72 808.35,-912.13 789.76,-903.39 790.8,-892.18 772.35,-883.13 739.63,-867.09 723.73,-883.06 692.59,-864.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M690.59,-864.13C659.45,-845.21 636.21,-871.29 610.83,-845.13 537.21,-769.27 507.53,-422.42 500.77,-328.59"/>
+<polygon fill="#000000" stroke="#000000" points="504.27,-328.55 500.08,-318.82 497.29,-329.04 504.27,-328.55"/>
 </g>
 <!-- module~yaeos__math_linalg -->
-<g id="module~~yaeos__equilibria~~UsesGraph_node28" class="node">
+<g id="module~~yaeos__equilibria~~UsesGraph_node29" class="node">
 <title>module~yaeos__math_linalg</title>
-<g id="a_module~~yaeos__equilibria~~UsesGraph_node28"><a xlink:href="../module/yaeos__math_linalg.html" xlink:title="yaeos__math_linalg">
-<polygon fill="#337ab7" stroke="#337ab7" points="421,-596 304,-596 304,-572 421,-572 421,-596"/>
-<text text-anchor="middle" x="362.5" y="-581.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math_linalg</text>
+<g id="a_module~~yaeos__equilibria~~UsesGraph_node29"><a xlink:href="../module/yaeos__math_linalg.html" xlink:title="yaeos__math_linalg">
+<polygon fill="#337ab7" stroke="#337ab7" points="385.56,-597.27 269.79,-597.27 269.79,-573 385.56,-573 385.56,-597.27"/>
+<text xml:space="preserve" text-anchor="middle" x="327.68" y="-581.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math_linalg</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_boundaries_pure_saturation&#45;&gt;module~yaeos__math_linalg -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge74" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge75" class="edge">
 <title>module~yaeos__equilibria_boundaries_pure_saturation&#45;&gt;module~yaeos__math_linalg</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1176.75,-419.97C1091.96,-408.18 943.55,-400.04 839,-463 813.33,-478.46 826.09,-500.9 803,-520 780.55,-538.57 769.24,-533.66 742,-544"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M740,-544C637.02,-581.55 508.44,-587.15 431.31,-586.5"/>
-<polygon fill="#000000" stroke="#000000" points="431.28,-583 421.24,-586.37 431.2,-590 431.28,-583"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M690.59,-864.13C659.45,-845.21 643,-862.26 610.83,-845.13 492.04,-781.89 385.01,-656.54 345.17,-606.5"/>
+<polygon fill="#000000" stroke="#000000" points="347.98,-604.41 339.05,-598.72 342.48,-608.74 347.98,-604.41"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_pure_saturation&#45;&gt;module~yaeos__models_ar -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge75" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge76" class="edge">
 <title>module~yaeos__equilibria_boundaries_pure_saturation&#45;&gt;module~yaeos__models_ar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1211.65,-444.09C1180.72,-456.01 1132.1,-474.76 1090,-491 1055.7,-504.23 1016.75,-519.27 988.25,-530.27"/>
-<polygon fill="#000000" stroke="#000000" points="986.7,-527.11 978.63,-533.98 989.22,-533.64 986.7,-527.11"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M833.4,-925.5C824.49,-922 815.98,-917.61 808.35,-912.13 782.47,-893.55 797.13,-870.17 772.35,-850.13 767.61,-846.3 762.28,-843.02 756.69,-840.23"/>
+<polygon fill="#000000" stroke="#000000" points="758.36,-837.14 747.8,-836.3 755.53,-843.54 758.36,-837.14"/>
 </g>
 <!-- module~yaeos__equilibria_critical&#45;&gt;module~yaeos__equilibria_equilibrium_state -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge77" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge78" class="edge">
 <title>module~yaeos__equilibria_critical&#45;&gt;module~yaeos__equilibria_equilibrium_state</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1186.12,-604C1154.99,-612.85 1117.31,-627.53 1090,-651 1065.54,-672.02 1079.76,-694.6 1054,-714 1048.91,-717.83 1043.33,-721.11 1037.48,-723.9"/>
-<polygon fill="#000000" stroke="#000000" points="1035.91,-720.77 1028.09,-727.92 1038.66,-727.21 1035.91,-720.77"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1182.41,-899.5C1154.56,-897.95 1124.11,-891.33 1101.87,-873.13 1064.34,-842.43 1097.89,-806.55 1065.87,-770.13 1046.59,-748.21 1018.04,-732.92 992.81,-722.79"/>
+<polygon fill="#000000" stroke="#000000" points="994.24,-719.6 983.65,-719.31 991.75,-726.14 994.24,-719.6"/>
 </g>
 <!-- module~yaeos__equilibria_critical&#45;&gt;module~yaeos__constants -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge76" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge77" class="edge">
 <title>module~yaeos__equilibria_critical&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1170.64,-602.63C1086.75,-611.64 946.29,-616.26 839,-567 818.15,-557.43 822.1,-542.71 803,-530 778.74,-513.86 770.5,-499.97 742,-506"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1182.44,-885.39C1156.92,-881.98 1128.06,-877.78 1101.87,-873.13 918.58,-840.64 871.79,-733.73 692.59,-784.13"/>
 </g>
 <!-- module~yaeos__equilibria_critical&#45;&gt;module~yaeos__models_ar -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge78" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge79" class="edge">
 <title>module~yaeos__equilibria_critical&#45;&gt;module~yaeos__models_ar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1170.71,-580.75C1122.16,-573.19 1058.75,-563.32 1011.93,-556.03"/>
-<polygon fill="#000000" stroke="#000000" points="1012.32,-552.55 1001.9,-554.47 1011.24,-559.46 1012.32,-552.55"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1182.45,-905.63C1117.5,-913.53 1019.86,-919.22 938.11,-898.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M936.11,-898.13C880.16,-883.71 861.86,-895.93 808.35,-874.13 790.54,-866.88 789.65,-858.53 772.35,-850.13 765.05,-846.6 757.16,-843.37 749.27,-840.48"/>
+<polygon fill="#000000" stroke="#000000" points="750.59,-837.23 740,-837.25 748.29,-843.85 750.59,-837.23"/>
 </g>
 <!-- module~yaeos__equilibria_equilibrium_state&#45;&gt;module~yaeos__constants -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge79" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge80" class="edge">
 <title>module~yaeos__equilibria_equilibrium_state&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M897.71,-752.03C877.5,-759.13 855,-769.96 839,-786 810.32,-814.76 833.66,-843.36 803,-870 782.49,-887.82 593.79,-938.5 567,-934"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M565,-934C475,-919.13 434.19,-952.65 363.5,-895"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M847.14,-718.72C833.81,-722.17 820.48,-726.56 808.35,-732.13 789.93,-740.6 790.36,-750.83 772.35,-760.13 739.46,-777.12 728.23,-774.11 692.59,-784.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M690.59,-784.13C655.51,-794 644.84,-790.06 610.83,-803.13 558.06,-823.42 555.68,-866.55 499.2,-864.13"/>
 </g>
 <!-- module~yaeos__equilibria_flash&#45;&gt;module~yaeos__equilibria_auxiliar -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge82" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge83" class="edge">
 <title>module~yaeos__equilibria_flash&#45;&gt;module~yaeos__equilibria_auxiliar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1511.41,-240.05C1458.93,-246.34 1385.64,-255.13 1329.21,-261.9"/>
-<polygon fill="#000000" stroke="#000000" points="1328.75,-258.43 1319.23,-263.1 1329.58,-265.38 1328.75,-258.43"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1187.99,-1228.89C1159.93,-1222.87 1127.81,-1213.05 1101.87,-1197.13 1081.48,-1184.63 1086.85,-1168.61 1065.87,-1157.13 1052.7,-1149.93 1037.7,-1145.06 1022.73,-1141.79"/>
+<polygon fill="#000000" stroke="#000000" points="1023.83,-1138.44 1013.35,-1139.97 1022.5,-1145.31 1023.83,-1138.44"/>
 </g>
 <!-- module~yaeos__equilibria_flash&#45;&gt;module~yaeos__equilibria_equilibrium_state -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge83" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge84" class="edge">
 <title>module~yaeos__equilibria_flash&#45;&gt;module~yaeos__equilibria_equilibrium_state</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1511.3,-227.28C1483.44,-229.11 1453.21,-236.71 1434,-258 1362.79,-336.93 1471.33,-658.04 1398,-735 1350.73,-784.61 1310.68,-734.48 1245,-754"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1243,-754C1163.77,-777.55 1067.37,-765.96 1006.7,-754.1"/>
-<polygon fill="#000000" stroke="#000000" points="1007.04,-750.6 996.54,-752.05 1005.65,-757.46 1007.04,-750.6"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1187.62,-1236.6C1157.04,-1232.27 1122.99,-1221.64 1101.87,-1197.13 1056.16,-1144.1 1091.09,-949.45 1065.87,-884.13 1041.18,-820.19 987.94,-758.06 958.58,-726.89"/>
+<polygon fill="#000000" stroke="#000000" points="961.12,-724.48 951.68,-719.68 956.07,-729.32 961.12,-724.48"/>
 </g>
 <!-- iso_fortran_env -->
-<g id="module~~yaeos__equilibria~~UsesGraph_node21" class="node">
+<g id="module~~yaeos__equilibria~~UsesGraph_node22" class="node">
 <title>iso_fortran_env</title>
-<g id="a_module~~yaeos__equilibria~~UsesGraph_node21"><a xlink:href="http://fortranwiki.org/fortran/show/iso_fortran_env" xlink:title="iso_fortran_env">
-<polygon fill="#337ab7" stroke="#337ab7" points="94,-24 0,-24 0,0 94,0 94,-24"/>
-<text text-anchor="middle" x="47" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
+<g id="a_module~~yaeos__equilibria~~UsesGraph_node22"><a xlink:href="http://fortranwiki.org/fortran/show/iso_fortran_env" xlink:title="iso_fortran_env">
+<polygon fill="#337ab7" stroke="#337ab7" points="93.27,-1211.27 0,-1211.27 0,-1187 93.27,-1187 93.27,-1211.27"/>
+<text xml:space="preserve" text-anchor="middle" x="46.63" y="-1195.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_flash&#45;&gt;iso_fortran_env -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge80" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge81" class="edge">
 <title>module~yaeos__equilibria_flash&#45;&gt;iso_fortran_env</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1568.27,-219.86C1542.98,-190.9 1474.02,-118.15 1398,-91 1050.09,33.25 935.99,-90.09 567,-72"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M565,-72C542.19,-71.08 386.06,-35.47 363.5,-32"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M361.5,-32C305.6,-23.41 292.36,-15.68 236,-11 189.05,-7.1 177.11,-10.71 130,-11 121.8,-11.05 113.14,-11.13 104.64,-11.22"/>
-<polygon fill="#000000" stroke="#000000" points="104.36,-7.72 94.4,-11.34 104.44,-14.72 104.36,-7.72"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M326.68,-1378.13C236.29,-1318.6 128.13,-1249.95 77.08,-1217.69"/>
+<polygon fill="#000000" stroke="#000000" points="78.97,-1214.75 68.64,-1212.37 75.23,-1220.67 78.97,-1214.75"/>
 </g>
 <!-- module~yaeos__equilibria_flash&#45;&gt;module~yaeos__constants -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge81" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge82" class="edge">
 <title>module~yaeos__equilibria_flash&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M361.5,-32C323.68,-26.19 280.8,-26.01 246.66,-27.37"/>
-<polygon fill="#000000" stroke="#000000" points="246.19,-23.89 236.36,-27.84 246.5,-30.88 246.19,-23.89"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M936.11,-1378.13C668.11,-1410.67 572.58,-1493.87 328.68,-1378.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M326.68,-1378.13C209.71,-1301.1 187.65,-1111.19 183.49,-1044.09"/>
+<polygon fill="#000000" stroke="#000000" points="187,-1044.02 182.97,-1034.22 180.01,-1044.39 187,-1044.02"/>
 </g>
 <!-- module~yaeos__equilibria_rachford_rice -->
-<g id="module~~yaeos__equilibria~~UsesGraph_node25" class="node">
+<g id="module~~yaeos__equilibria~~UsesGraph_node26" class="node">
 <title>module~yaeos__equilibria_rachford_rice</title>
-<g id="a_module~~yaeos__equilibria~~UsesGraph_node25"><a xlink:href="../module/yaeos__equilibria_rachford_rice.html" xlink:title="yaeos__equilibria_rachford_rice">
-<polygon fill="#337ab7" stroke="#337ab7" points="453,-84 272,-84 272,-60 453,-60 453,-84"/>
-<text text-anchor="middle" x="362.5" y="-69.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_rachford_rice</text>
+<g id="a_module~~yaeos__equilibria~~UsesGraph_node26"><a xlink:href="../module/yaeos__equilibria_rachford_rice.html" xlink:title="yaeos__equilibria_rachford_rice">
+<polygon fill="#337ab7" stroke="#337ab7" points="1027.25,-1270.27 846.98,-1270.27 846.98,-1246 1027.25,-1246 1027.25,-1270.27"/>
+<text xml:space="preserve" text-anchor="middle" x="937.11" y="-1254.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_rachford_rice</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_flash&#45;&gt;module~yaeos__equilibria_rachford_rice -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge84" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge85" class="edge">
 <title>module~yaeos__equilibria_flash&#45;&gt;module~yaeos__equilibria_rachford_rice</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M565,-72C531.97,-70.38 495.87,-69.96 463.46,-70.07"/>
-<polygon fill="#000000" stroke="#000000" points="463.05,-66.57 453.07,-70.12 463.09,-73.57 463.05,-66.57"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1187.69,-1242.35C1144.48,-1245.08 1087.39,-1248.69 1038.72,-1251.77"/>
+<polygon fill="#000000" stroke="#000000" points="1038.78,-1248.26 1029.02,-1252.39 1039.22,-1255.25 1038.78,-1248.26"/>
 </g>
 <!-- module~yaeos__equilibria_flash&#45;&gt;module~yaeos__models_ar -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge85" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge86" class="edge">
 <title>module~yaeos__equilibria_flash&#45;&gt;module~yaeos__models_ar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1511.13,-224.94C1392.3,-214.01 1152.13,-199.28 1090,-251 1033.98,-297.63 1085.35,-345.2 1054,-411 1031.99,-457.2 991.69,-502.07 967.48,-526.67"/>
-<polygon fill="#000000" stroke="#000000" points="964.82,-524.37 960.22,-533.92 969.77,-529.32 964.82,-524.37"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1230.78,-1250.69C1177.41,-1277.34 1043.87,-1334.31 938.11,-1298.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M936.11,-1298.13C881.79,-1279.55 847.62,-1321 808.35,-1279.13 742.9,-1209.36 831.74,-925.14 772.35,-850.13 768.12,-844.8 762.78,-840.54 756.86,-837.15"/>
+<polygon fill="#000000" stroke="#000000" points="758.38,-833.99 747.84,-832.87 755.38,-840.32 758.38,-833.99"/>
 </g>
 <!-- module~yaeos__equilibria_flash&#45;&gt;module~yaeos__models_base -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge86" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge87" class="edge">
 <title>module~yaeos__equilibria_flash&#45;&gt;module~yaeos__models_base</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1243,-152C1174.56,-148.56 1154.69,-148.4 1090,-171 1072.3,-177.18 1071.46,-186.17 1054,-193 963.25,-228.51 927.61,-195.45 839,-236 820.57,-244.44 820.47,-253.72 803,-264 797.07,-267.49 790.58,-270.77 784.12,-273.75"/>
-<polygon fill="#000000" stroke="#000000" points="782.48,-270.64 774.74,-277.88 785.3,-277.05 782.48,-270.64"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1239.93,-1250.54C1209.82,-1275.65 1137.23,-1332.35 1065.87,-1359.13 1012.13,-1379.31 995.07,-1371.01 938.11,-1378.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M936.11,-1378.13C879.15,-1385.26 862.34,-1378.65 808.35,-1359.13 711.75,-1324.22 680.71,-1314.42 610.83,-1239.13 555.24,-1179.24 520.35,-1086.41 506.3,-1043.43"/>
+<polygon fill="#000000" stroke="#000000" points="509.71,-1042.61 503.35,-1034.14 503.04,-1044.73 509.71,-1042.61"/>
 </g>
 <!-- module~yaeos__models_ge -->
-<g id="module~~yaeos__equilibria~~UsesGraph_node31" class="node">
+<g id="module~~yaeos__equilibria~~UsesGraph_node32" class="node">
 <title>module~yaeos__models_ge</title>
-<g id="a_module~~yaeos__equilibria~~UsesGraph_node31"><a xlink:href="../module/yaeos__models_ge.html" xlink:title="yaeos__models_ge">
-<polygon fill="#337ab7" stroke="#337ab7" points="1002.5,-184 890.5,-184 890.5,-160 1002.5,-160 1002.5,-184"/>
-<text text-anchor="middle" x="946.5" y="-169.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ge</text>
+<g id="a_module~~yaeos__equilibria~~UsesGraph_node32"><a xlink:href="../module/yaeos__models_ge.html" xlink:title="yaeos__models_ge">
+<polygon fill="#337ab7" stroke="#337ab7" points="747.23,-1230.27 635.96,-1230.27 635.96,-1206 747.23,-1206 747.23,-1230.27"/>
+<text xml:space="preserve" text-anchor="middle" x="691.59" y="-1214.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ge</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_flash&#45;&gt;module~yaeos__models_ge -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge87" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge88" class="edge">
 <title>module~yaeos__equilibria_flash&#45;&gt;module~yaeos__models_ge</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1549.01,-219.97C1513.7,-206.05 1452.5,-183.46 1398,-171 1331.2,-155.73 1313.44,-155.44 1245,-152"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1243,-152C1163.75,-148.02 1072.66,-156.1 1012.81,-163.16"/>
-<polygon fill="#000000" stroke="#000000" points="1012.26,-159.7 1002.75,-164.37 1013.09,-166.65 1012.26,-159.7"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M936.11,-1298.13C881.79,-1279.55 859.8,-1304.59 808.35,-1279.13 788.35,-1269.24 791.45,-1255.67 772.35,-1244.13 766.46,-1240.58 760.03,-1237.45 753.45,-1234.71"/>
+<polygon fill="#000000" stroke="#000000" points="755.06,-1231.58 744.47,-1231.26 752.55,-1238.11 755.06,-1231.58"/>
 </g>
 <!-- module~yaeos__solvers_pressure_equality -->
-<g id="module~~yaeos__equilibria~~UsesGraph_node32" class="node">
+<g id="module~~yaeos__equilibria~~UsesGraph_node33" class="node">
 <title>module~yaeos__solvers_pressure_equality</title>
-<g id="a_module~~yaeos__equilibria~~UsesGraph_node32"><a xlink:href="../module/yaeos__solvers_pressure_equality.html" xlink:title="yaeos__solvers_pressure_equality">
-<polygon fill="#337ab7" stroke="#337ab7" points="1339,-124 1149,-124 1149,-100 1339,-100 1339,-124"/>
-<text text-anchor="middle" x="1244" y="-109.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__solvers_pressure_equality</text>
+<g id="a_module~~yaeos__equilibria~~UsesGraph_node33"><a xlink:href="../module/yaeos__solvers_pressure_equality.html" xlink:title="yaeos__solvers_pressure_equality">
+<polygon fill="#337ab7" stroke="#337ab7" points="1031.75,-1350.27 842.48,-1350.27 842.48,-1326 1031.75,-1326 1031.75,-1350.27"/>
+<text xml:space="preserve" text-anchor="middle" x="937.11" y="-1334.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__solvers_pressure_equality</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_flash&#45;&gt;module~yaeos__solvers_pressure_equality -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge88" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge89" class="edge">
 <title>module~yaeos__equilibria_flash&#45;&gt;module~yaeos__solvers_pressure_equality</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1560.13,-219.94C1528.43,-199.72 1460.8,-159.1 1398,-138 1382.56,-132.81 1365.88,-128.62 1349.41,-125.25"/>
-<polygon fill="#000000" stroke="#000000" points="1349.68,-121.74 1339.19,-123.26 1348.34,-128.61 1349.68,-121.74"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1226.8,-1250.71C1190.54,-1266.84 1124.54,-1294.79 1065.87,-1312.13 1051.95,-1316.25 1036.98,-1319.94 1022.36,-1323.15"/>
+<polygon fill="#000000" stroke="#000000" points="1021.81,-1319.69 1012.76,-1325.2 1023.27,-1326.53 1021.81,-1319.69"/>
+</g>
+<!-- module~yaeos__equilibria_flash_second_order&#45;&gt;module~yaeos__equilibria_auxiliar -->
+<g id="module~~yaeos__equilibria~~UsesGraph_edge91" class="edge">
+<title>module~yaeos__equilibria_flash_second_order&#45;&gt;module~yaeos__equilibria_auxiliar</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1154.74,-1163.53C1112.46,-1158.19 1063.68,-1152.02 1023.12,-1146.89"/>
+<polygon fill="#000000" stroke="#000000" points="1023.77,-1143.44 1013.41,-1145.66 1022.9,-1150.39 1023.77,-1143.44"/>
+</g>
+<!-- module~yaeos__equilibria_flash_second_order&#45;&gt;module~yaeos__equilibria_equilibrium_state -->
+<g id="module~~yaeos__equilibria~~UsesGraph_edge92" class="edge">
+<title>module~yaeos__equilibria_flash_second_order&#45;&gt;module~yaeos__equilibria_equilibrium_state</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1148.97,-1175.91C1131.27,-1171.26 1114.56,-1163.27 1101.87,-1150.13 1060.42,-1107.24 1087.91,-939.56 1065.87,-884.13 1040.54,-820.44 987.56,-758.21 958.41,-726.95"/>
+<polygon fill="#000000" stroke="#000000" points="960.99,-724.58 951.57,-719.73 955.9,-729.39 960.99,-724.58"/>
+</g>
+<!-- module~yaeos__equilibria_flash_second_order&#45;&gt;module~yaeos__equilibria_stability -->
+<g id="module~~yaeos__equilibria~~UsesGraph_edge94" class="edge">
+<title>module~yaeos__equilibria_flash_second_order&#45;&gt;module~yaeos__equilibria_stability</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1148.63,-1176.8C1107.93,-1177.06 1062.02,-1177.35 1023.48,-1177.6"/>
+<polygon fill="#000000" stroke="#000000" points="1023.78,-1174.09 1013.8,-1177.66 1023.83,-1181.09 1023.78,-1174.09"/>
+</g>
+<!-- module~yaeos__equilibria_flash_second_order&#45;&gt;module~yaeos__constants -->
+<g id="module~~yaeos__equilibria~~UsesGraph_edge90" class="edge">
+<title>module~yaeos__equilibria_flash_second_order&#45;&gt;module~yaeos__constants</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M936.11,-1218.13C878.77,-1220.86 864.99,-1227.79 808.35,-1237.13 756.76,-1245.65 744.84,-1256.01 692.59,-1258.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M690.59,-1258.13C605.6,-1261.59 582.26,-1276.48 499.2,-1258.13"/>
+</g>
+<!-- module~yaeos__equilibria_flash_second_order&#45;&gt;module~yaeos__equilibria_rachford_rice -->
+<g id="module~~yaeos__equilibria~~UsesGraph_edge93" class="edge">
+<title>module~yaeos__equilibria_flash_second_order&#45;&gt;module~yaeos__equilibria_rachford_rice</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1200.57,-1188.75C1171.13,-1196.12 1134.18,-1206.12 1101.87,-1217.13 1085.46,-1222.73 1082.44,-1227.05 1065.87,-1232.13 1052.25,-1236.32 1037.6,-1240.01 1023.25,-1243.21"/>
+<polygon fill="#000000" stroke="#000000" points="1022.88,-1239.71 1013.84,-1245.24 1024.36,-1246.55 1022.88,-1239.71"/>
+</g>
+<!-- module~yaeos__equilibria_flash_second_order&#45;&gt;module~yaeos__models_ar -->
+<g id="module~~yaeos__equilibria~~UsesGraph_edge95" class="edge">
+<title>module~yaeos__equilibria_flash_second_order&#45;&gt;module~yaeos__models_ar</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1148.74,-1166.68C1132.51,-1162.83 1116.36,-1157.5 1101.87,-1150.13 1081.98,-1140.03 1085.13,-1126.4 1065.87,-1115.13 962.86,-1054.9 888.46,-1127.58 808.35,-1039.13 750.94,-975.76 828.86,-914.31 772.35,-850.13 767.91,-845.09 762.48,-841.02 756.56,-837.74"/>
+<polygon fill="#000000" stroke="#000000" points="758.15,-834.62 747.6,-833.56 755.19,-840.96 758.15,-834.62"/>
+</g>
+<!-- module~yaeos__equilibria_flash_second_order&#45;&gt;module~yaeos__models_base -->
+<g id="module~~yaeos__equilibria~~UsesGraph_edge96" class="edge">
+<title>module~yaeos__equilibria_flash_second_order&#45;&gt;module~yaeos__models_base</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1180.53,-1188.77C1116.61,-1199.02 1021.57,-1212.65 938.11,-1218.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M936.11,-1218.13C763.8,-1229.46 583.98,-1092.54 521.86,-1040.09"/>
+<polygon fill="#000000" stroke="#000000" points="524.27,-1037.54 514.39,-1033.7 519.71,-1042.86 524.27,-1037.54"/>
+</g>
+<!-- module~yaeos__equilibria_flash_second_order&#45;&gt;module~yaeos__models_ge -->
+<g id="module~~yaeos__equilibria~~UsesGraph_edge97" class="edge">
+<title>module~yaeos__equilibria_flash_second_order&#45;&gt;module~yaeos__models_ge</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M936.11,-1218.13C876.16,-1222.07 807.73,-1221.64 758.7,-1220.47"/>
+<polygon fill="#000000" stroke="#000000" points="758.9,-1216.98 748.82,-1220.22 758.72,-1223.98 758.9,-1216.98"/>
 </g>
 <!-- module~yaeos__equilibria_multiphase_flash&#45;&gt;module~yaeos__equilibria_equilibrium_state -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge90" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge99" class="edge">
 <title>module~yaeos__equilibria_multiphase_flash&#45;&gt;module~yaeos__equilibria_equilibrium_state</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1173.47,-524C1143.92,-532.47 1111.42,-546.81 1090,-571 1046.55,-620.07 1100.51,-667.82 1054,-714 1050.64,-717.33 1046.93,-720.26 1042.97,-722.84"/>
-<polygon fill="#000000" stroke="#000000" points="1040.93,-719.97 1033.93,-727.93 1044.36,-726.07 1040.93,-719.97"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1155.47,-978.63C1136.37,-974.98 1117.48,-968.39 1101.87,-957.13 1072.53,-935.98 1084.48,-915.16 1065.87,-884.13 1030.25,-824.76 980.69,-759.82 955.02,-727.26"/>
+<polygon fill="#000000" stroke="#000000" points="958.05,-725.44 949.1,-719.78 952.57,-729.79 958.05,-725.44"/>
 </g>
 <!-- module~yaeos__equilibria_multiphase_flash&#45;&gt;module~yaeos__constants -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge89" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge98" class="edge">
 <title>module~yaeos__equilibria_multiphase_flash&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1156.42,-499.99C1055.71,-488.54 884.99,-476.93 742,-506"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1155.7,-979.95C1093.29,-980.65 1010.95,-980.75 938.11,-978.13"/>
 </g>
 <!-- module~yaeos__equilibria_multiphase_flash&#45;&gt;module~yaeos__models_ar -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge91" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge100" class="edge">
 <title>module~yaeos__equilibria_multiphase_flash&#45;&gt;module~yaeos__models_ar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1143.78,-523.42C1100.22,-528.43 1050.34,-534.17 1011.75,-538.61"/>
-<polygon fill="#000000" stroke="#000000" points="1011.23,-535.14 1001.7,-539.76 1012.03,-542.1 1011.23,-535.14"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1155.62,-974.79C1137.02,-971.36 1118.28,-965.83 1101.87,-957.13 1080.74,-945.93 1086.94,-928.45 1065.87,-917.13 1015.29,-889.98 993.7,-912.47 938.11,-898.13"/>
 </g>
 <!-- module~yaeos__equilibria_saturation_points&#45;&gt;module~yaeos__equilibria_auxiliar -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge94" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge103" class="edge">
 <title>module~yaeos__equilibria_saturation_points&#45;&gt;module~yaeos__equilibria_auxiliar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1478.24,-473.15C1461.91,-469.18 1446.33,-462.31 1434,-451 1382.51,-403.79 1448.92,-345.82 1398,-298 1379.62,-280.74 1354.22,-272.62 1329.4,-269.27"/>
-<polygon fill="#000000" stroke="#000000" points="1329.52,-265.76 1319.19,-268.15 1328.75,-272.72 1329.52,-265.76"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1154.88,-1068.34C1136.82,-1072.08 1118.47,-1077.17 1101.87,-1084.13 1083.67,-1091.77 1083.95,-1102.21 1065.87,-1110.13 1052.41,-1116.04 1037.55,-1120.62 1022.88,-1124.17"/>
+<polygon fill="#000000" stroke="#000000" points="1022.18,-1120.74 1013.19,-1126.35 1023.72,-1127.57 1022.18,-1120.74"/>
 </g>
 <!-- module~yaeos__equilibria_saturation_points&#45;&gt;module~yaeos__equilibria_equilibrium_state -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge95" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge104" class="edge">
 <title>module~yaeos__equilibria_saturation_points&#45;&gt;module~yaeos__equilibria_equilibrium_state</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1478.36,-473.47C1461.72,-478.03 1446,-485.67 1434,-498 1359.7,-574.36 1474.35,-660.7 1398,-735 1348.89,-782.79 1310.68,-734.48 1245,-754"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1185.69,-1045.51C1156.37,-1036.92 1123.89,-1022.66 1101.87,-999.13 1065.26,-960.04 1089.79,-932.05 1065.87,-884.13 1035.1,-822.49 983.92,-758.97 956.61,-727.09"/>
+<polygon fill="#000000" stroke="#000000" points="959.45,-725.02 950.25,-719.75 954.15,-729.6 959.45,-725.02"/>
 </g>
 <!-- ieee_arithmetic -->
-<g id="module~~yaeos__equilibria~~UsesGraph_node20" class="node">
+<g id="module~~yaeos__equilibria~~UsesGraph_node21" class="node">
 <title>ieee_arithmetic</title>
-<g id="a_module~~yaeos__equilibria~~UsesGraph_node20"><a xlink:href="http://fortranwiki.org/fortran/show/ieee_arithmetic" xlink:title="ieee_arithmetic">
-<polygon fill="#337ab7" stroke="#337ab7" points="1292,-402 1196,-402 1196,-378 1292,-378 1292,-402"/>
-<text text-anchor="middle" x="1244" y="-387.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ieee_arithmetic</text>
+<g id="a_module~~yaeos__equilibria~~UsesGraph_node21"><a xlink:href="http://fortranwiki.org/fortran/show/ieee_arithmetic" xlink:title="ieee_arithmetic">
+<polygon fill="#337ab7" stroke="#337ab7" points="984.5,-1030.27 889.73,-1030.27 889.73,-1006 984.5,-1006 984.5,-1030.27"/>
+<text xml:space="preserve" text-anchor="middle" x="937.11" y="-1014.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ieee_arithmetic</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_saturation_points&#45;&gt;ieee_arithmetic -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge92" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge101" class="edge">
 <title>module~yaeos__equilibria_saturation_points&#45;&gt;ieee_arithmetic</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1478.44,-466.7C1462.98,-463.3 1447.64,-458.29 1434,-451 1412.91,-439.72 1419.13,-422.2 1398,-411 1368.86,-395.56 1332.4,-390.11 1302.38,-388.61"/>
-<polygon fill="#000000" stroke="#000000" points="1302.18,-385.1 1292.06,-388.24 1301.93,-392.1 1302.18,-385.1"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1154.74,-1045.53C1102.44,-1038.92 1040.2,-1031.05 995.89,-1025.44"/>
+<polygon fill="#000000" stroke="#000000" points="996.6,-1022 986.24,-1024.22 995.72,-1028.95 996.6,-1022"/>
 </g>
 <!-- module~yaeos__equilibria_saturation_points&#45;&gt;module~yaeos__constants -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge93" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge102" class="edge">
 <title>module~yaeos__equilibria_saturation_points&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1478.36,-470.87C1462.39,-467.05 1446.91,-460.83 1434,-451 1402.33,-426.89 1429.92,-392.78 1398,-369 1343.05,-328.06 1313.51,-351.05 1245,-350"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1243,-350C1111.68,-347.99 1072.97,-311.18 947.5,-350"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1154.69,-1065.29C1040.95,-1071.5 863.54,-1074.67 808.35,-1039.13 778.6,-1019.98 799.48,-990.84 772.35,-968.13 743.96,-944.37 727.01,-957.77 692.59,-944.13"/>
 </g>
 <!-- module~yaeos__equilibria_saturation_points&#45;&gt;module~yaeos__models_ar -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge96" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge105" class="edge">
 <title>module~yaeos__equilibria_saturation_points&#45;&gt;module~yaeos__models_ar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1243,-350C1174.49,-348.95 1149.86,-335.65 1090,-369 1085.66,-371.42 999.86,-479.7 963.53,-525.69"/>
-<polygon fill="#000000" stroke="#000000" points="960.61,-523.74 957.16,-533.76 966.1,-528.08 960.61,-523.74"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1191.07,-1045.59C1160.96,-1036.88 1126.28,-1022.49 1101.87,-999.13 1073.11,-971.62 1097.5,-941.3 1065.87,-917.13 1020.25,-882.28 993.7,-912.47 938.11,-898.13"/>
 </g>
 <!-- module~yaeos__equilibria_stability&#45;&gt;module~yaeos__constants -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge97" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge106" class="edge">
 <title>module~yaeos__equilibria_stability&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1168.41,-195.57C1143.13,-198.14 1114.99,-202.53 1090,-210 1072.86,-215.12 1070.9,-222.14 1054,-228 1008.33,-243.83 995.33,-243.03 947.5,-250"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M945.5,-250C856,-263.05 823.82,-211.46 742,-250"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M861.72,-1175.69C843.28,-1172.52 824.26,-1166.89 808.35,-1157.13 785.31,-1143.01 789.45,-1129.06 772.35,-1108.13 738.96,-1067.26 739.47,-1044.4 692.59,-1020.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M690.59,-1020.13C657.71,-1003.12 641.78,-1016.44 610.83,-996.13 546.58,-953.99 575.96,-867.42 499.2,-864.13"/>
 </g>
 <!-- module~yaeos__equilibria_stability&#45;&gt;module~yaeos__models_ar -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge98" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge107" class="edge">
 <title>module~yaeos__equilibria_stability&#45;&gt;module~yaeos__models_ar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1168.33,-187.65C1140.37,-189.99 1110.45,-197.87 1090,-218 1027.81,-279.2 1090.07,-331.55 1054,-411 1032.95,-457.36 992.68,-501.86 968.14,-526.41"/>
-<polygon fill="#000000" stroke="#000000" points="965.45,-524.15 960.77,-533.66 970.36,-529.14 965.45,-524.15"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M861.58,-1181.46C841.82,-1178.55 822.17,-1171.6 808.35,-1157.13 713.48,-1057.78 859.39,-956.42 772.35,-850.13 767.93,-844.74 762.37,-840.45 756.25,-837.04"/>
+<polygon fill="#000000" stroke="#000000" points="758.18,-834.08 747.64,-833.03 755.22,-840.43 758.18,-834.08"/>
 </g>
 <!-- module~yaeos__equilibria_stability&#45;&gt;module~yaeos__models_base -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge99" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge108" class="edge">
 <title>module~yaeos__equilibria_stability&#45;&gt;module~yaeos__models_base</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M945.5,-250C898.37,-256.87 845.6,-267.32 805.62,-275.82"/>
-<polygon fill="#000000" stroke="#000000" points="804.78,-272.42 795.74,-277.93 806.25,-279.26 804.78,-272.42"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M690.59,-1020.13C651.91,-1000.12 602.67,-1000.6 563.82,-1005.83"/>
+<polygon fill="#000000" stroke="#000000" points="563.51,-1002.34 554.14,-1007.28 564.55,-1009.26 563.51,-1002.34"/>
 </g>
 <!-- module~yaeos__equilibria_stability&#45;&gt;module~yaeos__models_ge -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge100" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge109" class="edge">
 <title>module~yaeos__equilibria_stability&#45;&gt;module~yaeos__models_ge</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1168.43,-186.95C1120.59,-183.71 1059.05,-179.55 1013.07,-176.44"/>
-<polygon fill="#000000" stroke="#000000" points="1013.13,-172.93 1002.92,-175.75 1012.66,-179.92 1013.13,-172.93"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M861.72,-1190.35C828.82,-1195.76 790.44,-1202.06 758.57,-1207.3"/>
+<polygon fill="#000000" stroke="#000000" points="758.38,-1203.78 749.08,-1208.86 759.52,-1210.69 758.38,-1203.78"/>
 </g>
 <!-- module~yaeos__constants&#45;&gt;iso_fortran_env -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge101" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge110" class="edge">
 <title>module~yaeos__constants&#45;&gt;iso_fortran_env</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.81,-24.21C121.45,-22.96 112.77,-21.67 104.32,-20.41"/>
-<polygon fill="#000000" stroke="#000000" points="104.57,-16.9 94.16,-18.89 103.54,-23.83 104.57,-16.9"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M171.19,-1032.72C148.73,-1062.96 91.54,-1140 63.55,-1177.7"/>
+<polygon fill="#000000" stroke="#000000" points="60.85,-1175.47 57.7,-1185.58 66.47,-1179.64 60.85,-1175.47"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_auxiliar&#45;&gt;module~yaeos__constants -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge102" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge111" class="edge">
 <title>module~yaeos__equilibria_boundaries_auxiliar&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M922.88,-984.09C877.89,-1007.57 778.42,-1056.46 742,-1050"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M829.9,-287.57C787.18,-288.06 737.49,-287.5 692.59,-284.13"/>
 </g>
 <!-- module~yaeos__equilibria_boundaries_auxiliar&#45;&gt;module~yaeos__math -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge103" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge112" class="edge">
 <title>module~yaeos__equilibria_boundaries_auxiliar&#45;&gt;module~yaeos__math</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M881.11,-959.98C852.3,-954.6 818.86,-948.35 791.98,-943.33"/>
-<polygon fill="#000000" stroke="#000000" points="792.5,-939.87 782.02,-941.47 791.21,-946.75 792.5,-939.87"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M859.39,-296.74C821.57,-302.95 776.99,-310.27 743.44,-315.78"/>
+<polygon fill="#000000" stroke="#000000" points="743.3,-312.26 734,-317.33 744.43,-319.17 743.3,-312.26"/>
 </g>
 <!-- module~yaeos__equilibria_rachford_rice&#45;&gt;module~yaeos__constants -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge104" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge113" class="edge">
 <title>module~yaeos__equilibria_rachford_rice&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M308.24,-60C288.67,-55.59 266.35,-50.56 246.07,-45.99"/>
-<polygon fill="#000000" stroke="#000000" points="246.83,-42.57 236.3,-43.79 245.29,-49.4 246.83,-42.57"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M846.73,-1256.4C800.67,-1255.94 743.6,-1256.06 692.59,-1258.13"/>
 </g>
 <!-- module~yaeos__math&#45;&gt;module~yaeos__constants -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge105" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge114" class="edge">
 <title>module~yaeos__math&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M699.83,-937.75C664.57,-940.15 612.02,-941.57 567,-934"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M650.68,-311.61C637.9,-307.47 623.72,-302.74 610.83,-298.13 562.11,-280.73 550.75,-260.74 499.2,-265.13"/>
 </g>
 <!-- module~yaeos__math&#45;&gt;module~yaeos__math_continuation -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge106" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge115" class="edge">
 <title>module~yaeos__math&#45;&gt;module~yaeos__math_continuation</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M732.48,-921.87C720.77,-902.87 697.58,-864.87 679,-832 640.55,-763.98 597.79,-681.86 578.07,-643.59"/>
-<polygon fill="#000000" stroke="#000000" points="581.04,-641.72 573.36,-634.42 574.82,-644.92 581.04,-641.72"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M650.47,-320.15C631.81,-318.3 608.83,-316.02 586.47,-313.8"/>
+<polygon fill="#000000" stroke="#000000" points="587.02,-310.34 576.72,-312.83 586.33,-317.3 587.02,-310.34"/>
 </g>
 <!-- module~yaeos__math&#45;&gt;module~yaeos__math_linalg -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge107" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge116" class="edge">
 <title>module~yaeos__math&#45;&gt;module~yaeos__math_linalg</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M727.04,-921.95C671.5,-870.32 453.28,-667.46 384.43,-603.46"/>
-<polygon fill="#000000" stroke="#000000" points="386.5,-600.6 376.8,-596.36 381.74,-605.73 386.5,-600.6"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M673.13,-336.72C614.61,-378.93 425.08,-515.61 355.02,-566.13"/>
+<polygon fill="#000000" stroke="#000000" points="353.25,-563.1 347.18,-571.79 357.34,-568.78 353.25,-563.1"/>
 </g>
 <!-- module~yaeos__math_continuation&#45;&gt;module~yaeos__constants -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge108" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge117" class="edge">
 <title>module~yaeos__math_continuation&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M519.83,-609.97C509.34,-606.25 498.47,-601.62 489,-596 470.34,-584.92 470.22,-576.21 453,-563 415.59,-534.29 402.38,-532.68 363.5,-506"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M458.04,-292.58C411.6,-278.18 339.11,-257.5 328.68,-265.13"/>
 </g>
 <!-- module~yaeos__math_continuation&#45;&gt;module~yaeos__math_linalg -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge109" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge118" class="edge">
 <title>module~yaeos__math_continuation&#45;&gt;module~yaeos__math_linalg</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M501.24,-609.98C478.85,-605.75 453.62,-600.99 430.93,-596.72"/>
-<polygon fill="#000000" stroke="#000000" points="431.51,-593.27 421.04,-594.85 430.22,-600.14 431.51,-593.27"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M489.74,-317.53C463.59,-360.98 375.82,-506.8 342.06,-562.89"/>
+<polygon fill="#000000" stroke="#000000" points="339.18,-560.9 337.02,-571.27 345.17,-564.51 339.18,-560.9"/>
 </g>
 <!-- module~yaeos__math_linalg&#45;&gt;module~yaeos__constants -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge110" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge119" class="edge">
 <title>module~yaeos__math_linalg&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M334.81,-571.98C314.3,-561.31 287.02,-543.73 272,-520 221.55,-440.29 192.99,-139.4 185.81,-54.46"/>
-<polygon fill="#000000" stroke="#000000" points="189.29,-54.04 184.97,-44.36 182.31,-54.62 189.29,-54.04"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M322.52,-597.68C302.58,-657.84 216.69,-917.04 190.29,-996.73"/>
+<polygon fill="#000000" stroke="#000000" points="187,-995.5 187.18,-1006.1 193.65,-997.71 187,-995.5"/>
 </g>
 <!-- module~yaeos__models_ar&#45;&gt;module~yaeos__constants -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge111" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge120" class="edge">
 <title>module~yaeos__models_ar&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M892.99,-533.98C837.76,-521.61 756.83,-504.36 742,-506"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M656.1,-836.73C618.1,-849.32 554.99,-866.52 499.2,-864.13"/>
 </g>
 <!-- module~yaeos__models_ar&#45;&gt;module~yaeos__models_base -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge112" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge121" class="edge">
 <title>module~yaeos__models_ar&#45;&gt;module~yaeos__models_base</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M935.96,-534C903.72,-493.44 798.61,-361.21 758.11,-310.27"/>
-<polygon fill="#000000" stroke="#000000" points="760.72,-307.93 751.76,-302.28 755.24,-312.28 760.72,-307.93"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M636.62,-836.2C627.47,-839.74 618.47,-844.3 610.83,-850.13 558.93,-889.79 523.75,-960.9 508.22,-997.3"/>
+<polygon fill="#000000" stroke="#000000" points="505.04,-995.84 504.45,-1006.42 511.51,-998.51 505.04,-995.84"/>
 </g>
 <!-- module~yaeos__substance -->
-<g id="module~~yaeos__equilibria~~UsesGraph_node33" class="node">
+<g id="module~~yaeos__equilibria~~UsesGraph_node34" class="node">
 <title>module~yaeos__substance</title>
-<g id="a_module~~yaeos__equilibria~~UsesGraph_node33"><a xlink:href="../module/yaeos__substance.html" xlink:title="yaeos__substance">
-<polygon fill="#337ab7" stroke="#337ab7" points="620.5,-478 511.5,-478 511.5,-454 620.5,-454 620.5,-478"/>
-<text text-anchor="middle" x="566" y="-463.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__substance</text>
+<g id="a_module~~yaeos__equilibria~~UsesGraph_node34"><a xlink:href="../module/yaeos__substance.html" xlink:title="yaeos__substance">
+<polygon fill="#337ab7" stroke="#337ab7" points="381.44,-1032.27 273.92,-1032.27 273.92,-1008 381.44,-1008 381.44,-1032.27"/>
+<text xml:space="preserve" text-anchor="middle" x="327.68" y="-1016.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__substance</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__models_base&#45;&gt;module~yaeos__substance -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge113" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge122" class="edge">
 <title>module~yaeos__models_base&#45;&gt;module~yaeos__substance</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M728.11,-302.1C698.73,-331.99 622.48,-409.56 586.43,-446.24"/>
-<polygon fill="#000000" stroke="#000000" points="583.49,-444.23 578.97,-453.82 588.48,-449.14 583.49,-444.23"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M436.36,-1020.13C422.3,-1020.13 407.29,-1020.13 393.08,-1020.13"/>
+<polygon fill="#000000" stroke="#000000" points="393.41,-1016.64 383.41,-1020.14 393.41,-1023.64 393.41,-1016.64"/>
 </g>
 <!-- module~yaeos__models_ge&#45;&gt;module~yaeos__constants -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge114" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge123" class="edge">
 <title>module~yaeos__models_ge&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M890.23,-176.52C873.41,-179.03 855.12,-182.93 839,-189 791.33,-206.93 788.72,-229.74 742,-250"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M655.41,-1230.7C617.36,-1243.06 554.67,-1259.85 499.2,-1258.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M497.2,-1258.13C355.11,-1253.73 236.59,-1100.05 196.81,-1042.02"/>
+<polygon fill="#000000" stroke="#000000" points="199.84,-1040.25 191.36,-1033.91 194.04,-1044.16 199.84,-1040.25"/>
 </g>
 <!-- module~yaeos__models_ge&#45;&gt;module~yaeos__models_base -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge115" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge124" class="edge">
 <title>module~yaeos__models_ge&#45;&gt;module~yaeos__models_base</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M890.5,-176.55C872.67,-180.22 853.71,-186.69 839,-198 812.51,-218.37 827.74,-241.54 803,-264 799.16,-267.49 794.77,-270.56 790.16,-273.24"/>
-<polygon fill="#000000" stroke="#000000" points="788.36,-270.23 781.09,-277.94 791.58,-276.45 788.36,-270.23"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M635.77,-1205.78C626.9,-1202.28 618.22,-1197.81 610.83,-1192.13 558.61,-1152.02 523.57,-1080.07 508.15,-1043.24"/>
+<polygon fill="#000000" stroke="#000000" points="511.4,-1041.95 504.4,-1034 504.92,-1044.59 511.4,-1041.95"/>
 </g>
 <!-- module~yaeos__solvers_pressure_equality&#45;&gt;module~yaeos__constants -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge116" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge125" class="edge">
 <title>module~yaeos__solvers_pressure_equality&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1148.74,-103.37C1063.63,-99.58 937.06,-104.12 839,-151 783.42,-177.57 798.52,-225.49 742,-250"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M740,-250C713.99,-261.39 704.28,-256.06 679,-269 639.97,-288.98 399.65,-530.81 363.5,-506"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M361.5,-506C205.09,-397.18 186.3,-132.64 184.21,-54.25"/>
-<polygon fill="#000000" stroke="#000000" points="187.71,-54 184.01,-44.07 180.71,-54.14 187.71,-54"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M847.91,-1325.52C759.14,-1312 618.62,-1288.34 499.2,-1258.13"/>
 </g>
 <!-- module~yaeos__solvers_pressure_equality&#45;&gt;module~yaeos__models_ar -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge117" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge126" class="edge">
 <title>module~yaeos__solvers_pressure_equality&#45;&gt;module~yaeos__models_ar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1148.68,-109.58C1126.79,-113.6 1105.42,-121.99 1090,-138 1047.54,-182.07 1077.8,-354.63 1054,-411 1034.2,-457.9 993.51,-502.23 968.56,-526.59"/>
-<polygon fill="#000000" stroke="#000000" points="965.86,-524.33 961.06,-533.78 970.7,-529.39 965.86,-524.33"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M842.25,-1333.76C829.34,-1329.26 817.42,-1322.4 808.35,-1312.13 740.15,-1234.98 836.03,-931.06 772.35,-850.13 768.14,-844.78 762.8,-840.52 756.9,-837.12"/>
+<polygon fill="#000000" stroke="#000000" points="758.41,-833.97 747.88,-832.84 755.41,-840.29 758.41,-833.97"/>
 </g>
 <!-- module~yaeos__substance&#45;&gt;module~yaeos__constants -->
-<g id="module~~yaeos__equilibria~~UsesGraph_edge118" class="edge">
+<g id="module~~yaeos__equilibria~~UsesGraph_edge127" class="edge">
 <title>module~yaeos__substance&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M521.58,-478C466.31,-492.77 376.4,-514.85 363.5,-506"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M273.82,-1020.13C264.57,-1020.13 254.86,-1020.13 245.36,-1020.13"/>
+<polygon fill="#000000" stroke="#000000" points="245.45,-1016.64 235.45,-1020.14 245.45,-1023.64 245.45,-1016.64"/>
 </g>
 </g>
 </svg>
@@ -1213,49 +1290,49 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="518pt" height="32pt"
- viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="511pt" height="32pt"
+ viewBox="0.00 0.00 511.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 506.88,-28.27 506.88,4 -4,4"/>
 <!-- Module -->
 <g id="node1" class="node">
 <title>Module</title>
-<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
 </g>
 <!-- Submodule -->
 <g id="node2" class="node">
 <title>Submodule</title>
-<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
-<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="144.13,-24.27 71.87,-24.27 71.87,0 144.13,0 144.13,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="108" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
 </g>
 <!-- Subroutine -->
 <g id="node3" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
-<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="231.63,-24.27 162.37,-24.27 162.37,0 231.63,0 231.63,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="197" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node4" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
-<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="306.26,-24.27 249.74,-24.27 249.74,0 306.26,0 306.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="278" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Program -->
 <g id="node5" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
-<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="381.26,-24.27 324.74,-24.27 324.74,0 381.26,0 381.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="353" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node6" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
-<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="502.88,-24.27 399.12,-24.27 399.12,0 502.88,0 502.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="451" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -1281,34 +1358,34 @@ modules which it uses.
               <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: module~~yaeos__equilibria~~UsedByGraph Pages: 1 -->
-<svg id="moduleyaeos__equilibriaUsedByGraph" width="203pt" height="32pt"
- viewBox="0.00 0.00 203.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="module~~yaeos__equilibria~~UsedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg id="moduleyaeos__equilibriaUsedByGraph" width="202pt" height="32pt"
+ viewBox="0.00 0.00 202.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~yaeos__equilibria~~UsedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>module~~yaeos__equilibria~~UsedByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 199,-28 199,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 197.77,-28.27 197.77,4 -4,4"/>
 <!-- module~yaeos__equilibria -->
 <g id="module~~yaeos__equilibria~~UsedByGraph_node1" class="node">
 <title>module~yaeos__equilibria</title>
-<polygon fill="none" stroke="black" points="105,-24 0,-24 0,0 105,0 105,-24"/>
-<text text-anchor="middle" x="52.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__equilibria</text>
+<polygon fill="none" stroke="black" points="103.77,-24.27 0,-24.27 0,0 103.77,0 103.77,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="51.88" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__equilibria</text>
 </g>
 <!-- module~yaeos -->
 <g id="module~~yaeos__equilibria~~UsedByGraph_node2" class="node">
 <title>module~yaeos</title>
 <g id="a_module~~yaeos__equilibria~~UsedByGraph_node2"><a xlink:href="../module/yaeos.html" xlink:title="yaeos">
-<polygon fill="#337ab7" stroke="#337ab7" points="195,-24 141,-24 141,0 195,0 195,-24"/>
-<text text-anchor="middle" x="168" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="193.77,-24.27 139.77,-24.27 139.77,0 193.77,0 193.77,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="166.77" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos&#45;&gt;module~yaeos__equilibria -->
 <g id="module~~yaeos__equilibria~~UsedByGraph_edge1" class="edge">
 <title>module~yaeos&#45;&gt;module~yaeos__equilibria</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M140.96,-12C133.26,-12 124.47,-12 115.51,-12"/>
-<polygon fill="#000000" stroke="#000000" points="115.37,-8.5 105.37,-12 115.37,-15.5 115.37,-8.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M139.3,-12.13C132.05,-12.13 123.86,-12.13 115.48,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="115.54,-8.64 105.54,-12.14 115.54,-15.64 115.54,-8.64"/>
 </g>
 </g>
 </svg>
@@ -1327,49 +1404,49 @@ modules which it uses.
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="518pt" height="32pt"
- viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="511pt" height="32pt"
+ viewBox="0.00 0.00 511.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 506.88,-28.27 506.88,4 -4,4"/>
 <!-- Module -->
 <g id="node1" class="node">
 <title>Module</title>
-<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
 </g>
 <!-- Submodule -->
 <g id="node2" class="node">
 <title>Submodule</title>
-<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
-<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="144.13,-24.27 71.87,-24.27 71.87,0 144.13,0 144.13,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="108" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
 </g>
 <!-- Subroutine -->
 <g id="node3" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
-<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="231.63,-24.27 162.37,-24.27 162.37,0 231.63,0 231.63,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="197" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node4" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
-<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="306.26,-24.27 249.74,-24.27 249.74,0 306.26,0 306.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="278" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Program -->
 <g id="node5" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
-<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="381.26,-24.27 324.74,-24.27 324.74,0 381.26,0 381.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="353" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node6" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
-<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="502.88,-24.27 399.12,-24.27 399.12,0 502.88,0 502.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="451" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -1410,14 +1487,14 @@ modules which it uses.
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

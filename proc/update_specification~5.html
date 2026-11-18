@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>update_specification &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,20 +94,20 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.2% of total for procedures.">33 statements</a>
+                 title=" 0.1% of total for procedures.">18 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
               <i class="fa fa-code"></i>
-              <a href="../src/phase_envelopes_pt_3ph.f90"> Source File</a>
+              <a href="../src/phase_envelopes_px_3ph.f90"> Source File</a>
             </li>
         </ul>
       </div>
       <div class="col">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb justify-content-end mb-0">
-                <li class="breadcrumb-item"><a href='../sourcefile/phase_envelopes_pt_3ph.f90.html'>phase_envelopes_pt_3ph.f90</a></li>
-                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_pt3.html'>yaeos__equilibria_boundaries_phase_envelopes_pt3</a></li>
+                <li class="breadcrumb-item"><a href='../sourcefile/phase_envelopes_px_3ph.f90.html'>phase_envelopes_px_3ph.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_boundaries_phase_envelopes_px3.html'>yaeos__equilibria_boundaries_phase_envelopes_px3</a></li>
             <li class="breadcrumb-item active" aria-current="page">update_specification</li>
           </ol>
         </nav>
@@ -135,12 +136,8 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/update_specification~5.html#variable-dfds~18">dFdS</a>
-            <a class="list-group-item" href="../proc/update_specification~5.html#variable-first_set~2">first_set</a>
-            <a class="list-group-item" href="../proc/update_specification~5.html#variable-i~146">i</a>
-            <a class="list-group-item" href="../proc/update_specification~5.html#variable-idx~4">idx</a>
-            <a class="list-group-item" href="../proc/update_specification~5.html#variable-nc~130">nc</a>
-            <a class="list-group-item" href="../proc/update_specification~5.html#variable-second_set~2">second_set</a>
+            <a class="list-group-item" href="../proc/update_specification~5.html#variable-dfds~17">dFdS</a>
+            <a class="list-group-item" href="../proc/update_specification~5.html#variable-nc~114">nc</a>
         </div>
       </div>
     </div>
@@ -174,6 +171,11 @@
 </h2>
     
 
+    <h1 id="update_specification">update_specification</h1>
+<p>Select a continuation variable using the local tangent and update the step.</p>
+<h1 id="description">Description</h1>
+<p>Solves the tangent system, selects the unknown with the largest
+sensitivity, and rescales the continuation direction and step.</p>
 
 
     <h3>Arguments</h3>
@@ -189,7 +191,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-its~28"></span>
+              <span class="anchor" id="variable-its~30"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -199,12 +201,12 @@
             <td>::</td>
             <td><strong>its</strong></td>
             <td>
-                
+                <p>Corrector iteration count at the current point.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~79"></span>
+              <span class="anchor" id="variable-x~75"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -214,12 +216,12 @@
             <td>::</td>
             <td><strong>X</strong>(:)</td>
             <td>
-                
+                <p>Current packed equilibrium unknowns.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-df~31"></span>
+              <span class="anchor" id="variable-df~30"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -229,12 +231,12 @@
             <td>::</td>
             <td><strong>dF</strong>(:,:)</td>
             <td>
-                
+                <p>Current residual Jacobian.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dxds~29"></span>
+              <span class="anchor" id="variable-dxds~27"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -244,12 +246,12 @@
             <td>::</td>
             <td><strong>dXdS</strong>(:)</td>
             <td>
-                
+                <p>Tangent vector; normalized on return.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns~65"></span>
+              <span class="anchor" id="variable-ns~61"></span>
               integer,
             </td>
 <td>intent(inout)</td>
@@ -259,12 +261,12 @@
             <td>::</td>
             <td><strong>ns</strong></td>
             <td>
-                
+                <p>Index of the selected specification variable.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ds~29"></span>
+              <span class="anchor" id="variable-ds~27"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -274,7 +276,7 @@
             <td>::</td>
             <td><strong>dS</strong></td>
             <td>
-                
+                <p>Signed continuation step, updated in place.</p>
             </td>
         </tr>
     </tbody>
@@ -289,46 +291,46 @@
   <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: proc~~update_specification~5~~CallsGraph Pages: 1 -->
-<svg id="procupdate_specification5CallsGraph" width="340pt" height="32pt"
- viewBox="0.00 0.00 340.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~update_specification~5~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg id="procupdate_specification5CallsGraph" width="338pt" height="32pt"
+ viewBox="0.00 0.00 338.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~update_specification~5~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>proc~~update_specification~5~~CallsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 336,-28 336,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 333.79,-28.27 333.79,4 -4,4"/>
 <!-- proc~update_specification~5 -->
 <g id="proc~~update_specification~5~~CallsGraph_node1" class="node">
 <title>proc~update_specification~5</title>
-<polygon fill="none" stroke="black" points="123,-24 0,-24 0,0 123,0 123,-24"/>
-<text text-anchor="middle" x="61.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">update_specification</text>
+<polygon fill="none" stroke="black" points="121.77,-24.27 0,-24.27 0,0 121.77,0 121.77,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="60.88" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">update_specification</text>
 </g>
 <!-- proc~solve_system -->
 <g id="proc~~update_specification~5~~CallsGraph_node2" class="node">
 <title>proc~solve_system</title>
 <g id="a_proc~~update_specification~5~~CallsGraph_node2"><a xlink:href="../proc/solve_system.html" xlink:title="solve_system">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="242,-24 159,-24 159,0 242,0 242,-24"/>
-<text text-anchor="middle" x="200.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">solve_system</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="239.79,-24.27 157.77,-24.27 157.77,0 239.79,0 239.79,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="198.78" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">solve_system</text>
 </a>
 </g>
 </g>
 <!-- proc~update_specification~5&#45;&gt;proc~solve_system -->
 <g id="proc~~update_specification~5~~CallsGraph_edge1" class="edge">
 <title>proc~update_specification~5&#45;&gt;proc~solve_system</title>
-<path fill="none" stroke="#000000" d="M123.39,-12C131.83,-12 140.43,-12 148.66,-12"/>
-<polygon fill="#000000" stroke="#000000" points="148.85,-15.5 158.85,-12 148.85,-8.5 148.85,-15.5"/>
+<path fill="none" stroke="#000000" d="M121.89,-12.13C130.01,-12.13 138.28,-12.13 146.24,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="146.1,-15.64 156.1,-12.14 146.1,-8.64 146.1,-15.64"/>
 </g>
 <!-- none~dgesv -->
 <g id="proc~~update_specification~5~~CallsGraph_node3" class="node">
 <title>none~dgesv</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="332,-24 278,-24 278,0 332,0 332,-24"/>
-<text text-anchor="middle" x="305" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dgesv</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="329.79,-24.27 275.79,-24.27 275.79,0 329.79,0 329.79,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="302.79" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dgesv</text>
 </g>
 <!-- proc~solve_system&#45;&gt;none~dgesv -->
 <g id="proc~~update_specification~5~~CallsGraph_edge2" class="edge">
 <title>proc~solve_system&#45;&gt;none~dgesv</title>
-<path fill="none" stroke="#000000" d="M242.01,-12C250.51,-12 259.42,-12 267.75,-12"/>
-<polygon fill="#000000" stroke="#000000" points="267.92,-15.5 277.92,-12 267.92,-8.5 267.92,-15.5"/>
+<path fill="none" stroke="#000000" d="M240.1,-12.13C248.01,-12.13 256.28,-12.13 264.11,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="264.02,-15.64 274.02,-12.14 264.02,-8.64 264.02,-15.64"/>
 </g>
 </g>
 </svg>
@@ -347,55 +349,55 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
 <svg width="641pt" height="28pt"
- viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
 <!-- Subroutine -->
 <g id="node1" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node2" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Interface -->
 <g id="node3" class="node">
 <title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
 </g>
 <!-- Type Bound Procedure -->
 <g id="node4" class="node">
 <title>Type Bound Procedure</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
-<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
 </g>
 <!-- Unknown Procedure Type -->
 <g id="node5" class="node">
 <title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
-<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
 </g>
 <!-- Program -->
 <g id="node6" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node7" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
-<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -419,34 +421,34 @@ implementation in a submodule of an interface in a parent module.
   <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: proc~~update_specification~5~~CalledByGraph Pages: 1 -->
 <svg id="procupdate_specification5CalledByGraph" width="270pt" height="32pt"
  viewBox="0.00 0.00 270.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~update_specification~5~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<g id="proc~~update_specification~5~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>proc~~update_specification~5~~CalledByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 266,-28 266,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 266.29,-28.27 266.29,4 -4,4"/>
 <!-- proc~update_specification~5 -->
 <g id="proc~~update_specification~5~~CalledByGraph_node1" class="node">
 <title>proc~update_specification~5</title>
-<polygon fill="none" stroke="black" points="262,-24 139,-24 139,0 262,0 262,-24"/>
-<text text-anchor="middle" x="200.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">update_specification</text>
+<polygon fill="none" stroke="black" points="262.29,-24.27 140.52,-24.27 140.52,0 262.29,0 262.29,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="201.41" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">update_specification</text>
 </g>
-<!-- proc~pt_envelope_3ph -->
+<!-- proc~px_envelope_3ph -->
 <g id="proc~~update_specification~5~~CalledByGraph_node2" class="node">
-<title>proc~pt_envelope_3ph</title>
-<g id="a_proc~~update_specification~5~~CalledByGraph_node2"><a xlink:href="../proc/pt_envelope_3ph.html" xlink:title="pt_envelope_3ph">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="103,-24 0,-24 0,0 103,0 103,-24"/>
-<text text-anchor="middle" x="51.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">pt_envelope_3ph</text>
+<title>proc~px_envelope_3ph</title>
+<g id="a_proc~~update_specification~5~~CalledByGraph_node2"><a xlink:href="../proc/px_envelope_3ph.html" xlink:title="px_envelope_3ph">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="104.52,-24.27 0,-24.27 0,0 104.52,0 104.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="52.26" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">px_envelope_3ph</text>
 </a>
 </g>
 </g>
-<!-- proc~pt_envelope_3ph&#45;&gt;proc~update_specification~5 -->
+<!-- proc~px_envelope_3ph&#45;&gt;proc~update_specification~5 -->
 <g id="proc~~update_specification~5~~CalledByGraph_edge1" class="edge">
-<title>proc~pt_envelope_3ph&#45;&gt;proc~update_specification~5</title>
-<path fill="none" stroke="#000000" d="M103.09,-12C111.39,-12 120.12,-12 128.79,-12"/>
-<polygon fill="#000000" stroke="#000000" points="128.93,-15.5 138.93,-12 128.93,-8.5 128.93,-15.5"/>
+<title>proc~px_envelope_3ph&#45;&gt;proc~update_specification~5</title>
+<path fill="none" stroke="#000000" d="M104.72,-12.13C112.5,-12.13 120.63,-12.13 128.74,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="128.62,-15.64 138.62,-12.14 128.62,-8.64 128.62,-15.64"/>
 </g>
 </g>
 </svg>
@@ -465,55 +467,55 @@ implementation in a submodule of an interface in a parent module.
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
 <svg width="641pt" height="28pt"
- viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
 <!-- Subroutine -->
 <g id="node1" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node2" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Interface -->
 <g id="node3" class="node">
 <title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
 </g>
 <!-- Type Bound Procedure -->
 <g id="node4" class="node">
 <title>Type Bound Procedure</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
-<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
 </g>
 <!-- Unknown Procedure Type -->
 <g id="node5" class="node">
 <title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
-<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
 </g>
 <!-- Program -->
 <g id="node6" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node7" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
-<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -546,7 +548,7 @@ implementation in a submodule of an interface in a parent module.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-dfds~18"></span>
+              <span class="anchor" id="variable-dfds~17"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -563,58 +565,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-first_set~2"></span>
-              integer,
-            </td>
-              <td>private</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>first_set</strong>((size(X)-3)/2)</td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-i~146"></span>
-              integer,
-            </td>
-              <td>private</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>i</strong></td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-idx~4"></span>
-              integer,
-            </td>
-              <td>private</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>idx</strong>((size(X)-3)/2)</td>
-                <td></td>
-                <td></td>
-            <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-nc~130"></span>
+              <span class="anchor" id="variable-nc~114"></span>
               integer,
             </td>
               <td>private</td>
@@ -626,24 +577,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <span class="anchor" id="variable-second_set~2"></span>
-              integer,
-            </td>
-              <td>private</td>
-            <td>
-              
-            </td>
-            <td>::</td>
-            <td><strong>second_set</strong>((size(X)-3)/2)</td>
-                <td></td>
-                <td></td>
-            <td>
-                
+                <p>Number of components.</p>
             </td>
         </tr>
     </tbody>
@@ -672,14 +606,14 @@ implementation in a submodule of an interface in a parent module.
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

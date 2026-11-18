@@ -5,15 +5,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.tools.writers &mdash; yaeos 4.5.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+  <title>yaeos.tools.writers &mdash; yaeos 4.5.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=a284863f"></script>
+      <script src="../../../_static/documentation_options.js?v=06fc0226"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -88,12 +88,12 @@
   <h1>Source code for yaeos.tools.writers</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Module tool: write data to either files or strings in various formats.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 
 <div class="viewcode-block" id="fmatrix_as_str">
 <a class="viewcode-back" href="../../../tools/writers.html#yaeos.tools.writers.fmatrix_as_str">[docs]</a>
-<span class="k">def</span> <span class="nf">fmatrix_as_str</span><span class="p">(</span><span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">array_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">fmatrix_as_str</span><span class="p">(</span><span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">array_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert 2D array into its equivalent representation in Fortran code.</span>
 
 <span class="sd">    Parameters</span>
@@ -103,6 +103,11 @@
 <span class="sd">        precision variable `pr`</span>
 <span class="sd">    array_name: str</span>
 <span class="sd">        Name that the variable should have in the Fortran side</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        Fortran assignment lines, one per matrix row.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">array_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
@@ -121,7 +126,7 @@
 
 <div class="viewcode-block" id="f3dmatrix_as_str">
 <a class="viewcode-back" href="../../../tools/writers.html#yaeos.tools.writers.f3dmatrix_as_str">[docs]</a>
-<span class="k">def</span> <span class="nf">f3dmatrix_as_str</span><span class="p">(</span><span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">array_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">f3dmatrix_as_str</span><span class="p">(</span><span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">array_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert 3D array into its equivalent representation in Fortran code.</span>
 
 <span class="sd">    Parameters</span>
@@ -131,6 +136,12 @@
 <span class="sd">        precision variable `pr`</span>
 <span class="sd">    array_name: str</span>
 <span class="sd">        Name that the variable should have in the Fortran side</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        Fortran assignment lines, one per element. Unlike the 1D and 2D</span>
+<span class="sd">        writers, values are written without the ``_pr`` suffix.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">array_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
@@ -146,7 +157,7 @@
 
 <div class="viewcode-block" id="f1darray_as_str">
 <a class="viewcode-back" href="../../../tools/writers.html#yaeos.tools.writers.f1darray_as_str">[docs]</a>
-<span class="k">def</span> <span class="nf">f1darray_as_str</span><span class="p">(</span><span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">array_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">f1darray_as_str</span><span class="p">(</span><span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">array_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert 1D array into its equivalent representation in Fortran code.</span>
 
 <span class="sd">    Parameters</span>
@@ -156,6 +167,11 @@
 <span class="sd">        precision variable `pr`</span>
 <span class="sd">    array_name: str</span>
 <span class="sd">        Name that the variable should have in the Fortran side</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        Fortran assignment line.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">array_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">array_name</span><span class="si">}</span><span class="s2"> = [&quot;</span>
     <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>

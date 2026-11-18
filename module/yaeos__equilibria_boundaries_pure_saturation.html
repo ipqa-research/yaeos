@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>yaeos__equilibria_boundaries_pure_saturation &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 1.1% of total for modules and submodules.">198 statements</a>
+                 title=" 1.1% of total for modules and submodules.">217 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -169,7 +170,7 @@
       </a>
       <div id="subs-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../module/yaeos__equilibria_boundaries_pure_saturation.html#proc-solve_point">solve_point</a>
+            <a class="list-group-item" href="../module/yaeos__equilibria_boundaries_pure_saturation.html#proc-solve_point~6">solve_point</a>
         </div>
       </div>
     </div>
@@ -188,17 +189,26 @@
     </div>
 
     <div class="col-md-9" id='text'>
-      
+      <h1 id="pure-component-saturation-lines">Pure-component saturation lines</h1>
+<h1 id="description">Description</h1>
+<p>Calculation and interpolation of the saturation line of a pure
+component. <a href="../proc/pure_saturation_line.html">pure_saturation_line</a> traces the line from the critical
+point down to a specified pressure or temperature, and <a href="../type/purepsat.html">PurePsat</a>
+stores and interpolates the result.</p>
+<h1 id="examples">Examples</h1>
+<div class="codehilite"><pre><span></span><code><span class="n">line</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pure_saturation_line</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">component</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">minP</span><span class="o">=</span><span class="mf">0.1_pr</span><span class="p">,</span><span class="w"> </span><span class="n">minT</span><span class="o">=</span><span class="mi">10</span><span class="mf">0.0_pr</span><span class="p">)</span>
+<span class="n">Tsat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">line</span><span class="p">%</span><span class="n">get_T</span><span class="p">(</span><span class="n">P</span><span class="o">=</span><span class="mf">1.0_pr</span><span class="p">)</span>
+</code></pre></div>
 <br>          <div class="card mb-4">
       <h3 class="card-header card-title bg-light">Uses</h3>
       <div class="card-body">
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
+                  <li class="list-inline-item"><a href='yaeos__constants.html'>yaeos__constants</a></li>
+                  <li class="list-inline-item"><a href='yaeos__math_linalg.html'>yaeos__math_linalg</a></li>
                   <li class="list-inline-item">linear_interpolation_module</li>
                   <li class="list-inline-item"><a href='yaeos__math_continuation.html'>yaeos__math_continuation</a></li>
-                  <li class="list-inline-item"><a href='yaeos__math_linalg.html'>yaeos__math_linalg</a></li>
-                  <li class="list-inline-item"><a href='yaeos__constants.html'>yaeos__constants</a></li>
                   <li class="list-inline-item"><a href='yaeos__models_ar.html'>yaeos__models_ar</a></li>
               </ul>
             </li>
@@ -206,165 +216,165 @@
               <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph Pages: 1 -->
-<svg id="moduleyaeos__equilibria_boundaries_pure_saturationUsesGraph" width="641pt" height="118pt"
- viewBox="0.00 0.00 641.00 118.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph" class="graph" transform="scale(0.61 0.61) rotate(0) translate(4 188)">
+<svg id="moduleyaeos__equilibria_boundaries_pure_saturationUsesGraph" width="641pt" height="119pt"
+ viewBox="0.00 0.00 641.00 119.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph" class="graph" transform="scale(0.618953 0.618953) rotate(0) translate(4 188.27)">
 <title>module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-188 1039,-188 1039,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-188.27 1031.62,-188.27 1031.62,4 -4,4"/>
 <!-- module~yaeos__equilibria_boundaries_pure_saturation -->
 <g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph_node1" class="node">
 <title>module~yaeos__equilibria_boundaries_pure_saturation</title>
-<polygon fill="none" stroke="black" points="1035,-104 776,-104 776,-80 1035,-80 1035,-104"/>
-<text text-anchor="middle" x="905.5" y="-89.6" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__equilibria_boundaries_pure_saturation</text>
+<polygon fill="none" stroke="black" points="1027.62,-104.27 770.1,-104.27 770.1,-80 1027.62,-80 1027.62,-104.27"/>
+<text xml:space="preserve" text-anchor="middle" x="898.86" y="-88.53" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__equilibria_boundaries_pure_saturation</text>
 </g>
 <!-- linear_interpolation_module -->
 <g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph_node2" class="node">
 <title>linear_interpolation_module</title>
-<polygon fill="#337ab7" stroke="#337ab7" points="740,-184 577,-184 577,-160 740,-160 740,-184"/>
-<text text-anchor="middle" x="658.5" y="-169.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">linear_interpolation_module</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="734.1,-184.27 572.58,-184.27 572.58,-160 734.1,-160 734.1,-184.27"/>
+<text xml:space="preserve" text-anchor="middle" x="653.34" y="-168.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">linear_interpolation_module</text>
 </g>
 <!-- module~yaeos__equilibria_boundaries_pure_saturation&#45;&gt;linear_interpolation_module -->
 <g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph_edge1" class="edge">
 <title>module~yaeos__equilibria_boundaries_pure_saturation&#45;&gt;linear_interpolation_module</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M867.93,-104.06C834.6,-115.04 784.02,-131.67 740,-146 729.2,-149.52 717.58,-153.28 706.62,-156.82"/>
-<polygon fill="#000000" stroke="#000000" points="705.23,-153.6 696.78,-160 707.38,-160.26 705.23,-153.6"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M859.82,-104.72C826.64,-115.69 777.2,-132.01 734.1,-146.13 724.24,-149.37 713.69,-152.81 703.6,-156.11"/>
+<polygon fill="#000000" stroke="#000000" points="702.75,-152.7 694.33,-159.13 704.92,-159.36 702.75,-152.7"/>
 </g>
 <!-- module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph_node3" class="node">
 <title>module~yaeos__constants</title>
 <g id="a_module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph_node3"><a xlink:href="../module/yaeos__constants.html" xlink:title="yaeos__constants">
-<polygon fill="#337ab7" stroke="#337ab7" points="236,-74 130,-74 130,-50 236,-50 236,-74"/>
-<text text-anchor="middle" x="183" y="-59.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__constants</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="233.79,-74.27 129.27,-74.27 129.27,-50 233.79,-50 233.79,-74.27"/>
+<text xml:space="preserve" text-anchor="middle" x="181.53" y="-58.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__constants</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_boundaries_pure_saturation&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph_edge2" class="edge">
 <title>module~yaeos__equilibria_boundaries_pure_saturation&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M844.11,-104.05C761.85,-119.01 609.94,-141.47 480,-132"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M834.67,-104.77C752.23,-119.73 603.44,-141.5 475.94,-132.13"/>
 </g>
 <!-- module~yaeos__math_continuation -->
 <g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph_node4" class="node">
 <title>module~yaeos__math_continuation</title>
 <g id="a_module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph_node4"><a xlink:href="../module/yaeos__math_continuation.html" xlink:title="yaeos__math_continuation">
-<polygon fill="#337ab7" stroke="#337ab7" points="735.5,-104 581.5,-104 581.5,-80 735.5,-80 735.5,-104"/>
-<text text-anchor="middle" x="658.5" y="-89.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math_continuation</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="729.97,-104.27 576.7,-104.27 576.7,-80 729.97,-80 729.97,-104.27"/>
+<text xml:space="preserve" text-anchor="middle" x="653.34" y="-88.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math_continuation</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_boundaries_pure_saturation&#45;&gt;module~yaeos__math_continuation -->
 <g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph_edge3" class="edge">
 <title>module~yaeos__equilibria_boundaries_pure_saturation&#45;&gt;module~yaeos__math_continuation</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M775.9,-92C765.7,-92 755.55,-92 745.74,-92"/>
-<polygon fill="#000000" stroke="#000000" points="745.66,-88.5 735.66,-92 745.66,-95.5 745.66,-88.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M769.68,-92.13C760.26,-92.13 750.88,-92.13 741.78,-92.13"/>
+<polygon fill="#000000" stroke="#000000" points="741.94,-88.64 731.94,-92.14 741.94,-95.64 741.94,-88.64"/>
 </g>
 <!-- module~yaeos__math_linalg -->
 <g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph_node5" class="node">
 <title>module~yaeos__math_linalg</title>
 <g id="a_module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph_node5"><a xlink:href="../module/yaeos__math_linalg.html" xlink:title="yaeos__math_linalg">
-<polygon fill="#337ab7" stroke="#337ab7" points="537.5,-104 420.5,-104 420.5,-80 537.5,-80 537.5,-104"/>
-<text text-anchor="middle" x="479" y="-89.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math_linalg</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="532.83,-104.27 417.06,-104.27 417.06,-80 532.83,-80 532.83,-104.27"/>
+<text xml:space="preserve" text-anchor="middle" x="474.94" y="-88.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math_linalg</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_boundaries_pure_saturation&#45;&gt;module~yaeos__math_linalg -->
 <g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph_edge4" class="edge">
 <title>module~yaeos__equilibria_boundaries_pure_saturation&#45;&gt;module~yaeos__math_linalg</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M829.88,-79.99C763.4,-71.01 663.53,-61.74 577,-71 563.62,-72.43 549.38,-74.94 536.04,-77.74"/>
-<polygon fill="#000000" stroke="#000000" points="535.07,-74.37 526.05,-79.93 536.57,-81.21 535.07,-74.37"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M819.16,-79.52C753.18,-70.75 656.56,-62.12 572.58,-71.13 560.43,-72.44 547.56,-74.64 535.31,-77.15"/>
+<polygon fill="#000000" stroke="#000000" points="534.8,-73.67 525.76,-79.19 536.27,-80.52 534.8,-73.67"/>
 </g>
 <!-- module~yaeos__models_ar -->
 <g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph_node6" class="node">
 <title>module~yaeos__models_ar</title>
 <g id="a_module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph_node6"><a xlink:href="../module/yaeos__models_ar.html" xlink:title="yaeos__models_ar">
-<polygon fill="#337ab7" stroke="#337ab7" points="713.5,-24 603.5,-24 603.5,0 713.5,0 713.5,-24"/>
-<text text-anchor="middle" x="658.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="707.85,-24.27 598.83,-24.27 598.83,0 707.85,0 707.85,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="653.34" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_boundaries_pure_saturation&#45;&gt;module~yaeos__models_ar -->
 <g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph_edge5" class="edge">
 <title>module~yaeos__equilibria_boundaries_pure_saturation&#45;&gt;module~yaeos__models_ar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M867.93,-79.94C834.6,-68.96 784.02,-52.33 740,-38 729.2,-34.48 717.58,-30.72 706.62,-27.18"/>
-<polygon fill="#000000" stroke="#000000" points="707.38,-23.74 696.78,-24 705.23,-30.4 707.38,-23.74"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M859.82,-79.55C826.64,-68.58 777.2,-52.26 734.1,-38.13 724.24,-34.9 713.69,-31.46 703.6,-28.16"/>
+<polygon fill="#000000" stroke="#000000" points="704.92,-24.91 694.33,-25.14 702.75,-31.57 704.92,-24.91"/>
 </g>
 <!-- iso_fortran_env -->
 <g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph_node7" class="node">
 <title>iso_fortran_env</title>
 <g id="a_module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph_node7"><a xlink:href="http://fortranwiki.org/fortran/show/iso_fortran_env" xlink:title="iso_fortran_env">
-<polygon fill="#337ab7" stroke="#337ab7" points="94,-74 0,-74 0,-50 94,-50 94,-74"/>
-<text text-anchor="middle" x="47" y="-59.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="93.27,-74.27 0,-74.27 0,-50 93.27,-50 93.27,-74.27"/>
+<text xml:space="preserve" text-anchor="middle" x="46.63" y="-58.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__constants&#45;&gt;iso_fortran_env -->
 <g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph_edge6" class="edge">
 <title>module~yaeos__constants&#45;&gt;iso_fortran_env</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.81,-62C121.45,-62 112.77,-62 104.32,-62"/>
-<polygon fill="#000000" stroke="#000000" points="104.16,-58.5 94.16,-62 104.16,-65.5 104.16,-58.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.15,-62.13C121.3,-62.13 113.15,-62.13 105.18,-62.13"/>
+<polygon fill="#000000" stroke="#000000" points="105.19,-58.64 95.19,-62.14 105.19,-65.64 105.19,-58.64"/>
 </g>
 <!-- module~yaeos__math_continuation&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph_edge7" class="edge">
 <title>module~yaeos__math_continuation&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M616.81,-104.06C573.02,-116.52 506.15,-133.91 480,-132"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M478,-132C408.97,-126.97 396.34,-99.12 327.5,-92"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M609.92,-104.76C566.4,-117.18 501.55,-134.02 475.94,-132.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M473.94,-132.13C405.39,-127.1 392.91,-99.28 324.55,-92.13"/>
 </g>
 <!-- module~yaeos__math_continuation&#45;&gt;module~yaeos__math_linalg -->
 <g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph_edge8" class="edge">
 <title>module~yaeos__math_continuation&#45;&gt;module~yaeos__math_linalg</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M581.45,-92C570.33,-92 558.93,-92 547.98,-92"/>
-<polygon fill="#000000" stroke="#000000" points="547.65,-88.5 537.65,-92 547.65,-95.5 547.65,-88.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M576.25,-92.13C565.75,-92.13 555.02,-92.13 544.66,-92.13"/>
+<polygon fill="#000000" stroke="#000000" points="544.67,-88.64 534.67,-92.14 544.67,-95.64 544.67,-88.64"/>
 </g>
 <!-- module~yaeos__math_linalg&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph_edge9" class="edge">
 <title>module~yaeos__math_linalg&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M420.33,-94.77C392.25,-95.42 358.04,-95.16 327.5,-92"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M416.69,-94.92C388.82,-95.56 354.86,-95.3 324.55,-92.13"/>
 </g>
 <!-- module~yaeos__models_ar&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph_edge10" class="edge">
 <title>module~yaeos__models_ar&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M608.41,-24.01C516.9,-46.38 329.27,-92.18 327.5,-92"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M325.5,-92C296.74,-88.9 265.2,-82.51 239.22,-76.43"/>
-<polygon fill="#000000" stroke="#000000" points="239.73,-72.95 229.19,-74.03 238.1,-79.76 239.73,-72.95"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M601.09,-24.76C509.33,-47.34 326.3,-92.32 324.55,-92.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M322.55,-92.13C295.44,-89.16 265.85,-83.23 240.89,-77.42"/>
+<polygon fill="#000000" stroke="#000000" points="241.78,-74.03 231.24,-75.12 240.16,-80.84 241.78,-74.03"/>
 </g>
 <!-- module~yaeos__models_base -->
 <g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph_node8" class="node">
 <title>module~yaeos__models_base</title>
 <g id="a_module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph_node8"><a xlink:href="../module/yaeos__models_base.html" xlink:title="yaeos__models_base">
-<polygon fill="#337ab7" stroke="#337ab7" points="541,-24 417,-24 417,0 541,0 541,-24"/>
-<text text-anchor="middle" x="479" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_base</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="536.58,-24.27 413.31,-24.27 413.31,0 536.58,0 536.58,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="474.94" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_base</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__models_ar&#45;&gt;module~yaeos__models_base -->
 <g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph_edge11" class="edge">
 <title>module~yaeos__models_ar&#45;&gt;module~yaeos__models_base</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M603.28,-12C586.83,-12 568.51,-12 551.12,-12"/>
-<polygon fill="#000000" stroke="#000000" points="551.02,-8.5 541.02,-12 551.02,-15.5 551.02,-8.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M598.46,-12.13C582.65,-12.13 565.1,-12.13 548.34,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="548.41,-8.64 538.41,-12.14 548.41,-15.64 548.41,-8.64"/>
 </g>
 <!-- module~yaeos__substance -->
 <g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph_node9" class="node">
 <title>module~yaeos__substance</title>
 <g id="a_module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph_node9"><a xlink:href="../module/yaeos__substance.html" xlink:title="yaeos__substance">
-<polygon fill="#337ab7" stroke="#337ab7" points="381,-44 272,-44 272,-20 381,-20 381,-44"/>
-<text text-anchor="middle" x="326.5" y="-29.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__substance</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="377.31,-44.27 269.79,-44.27 269.79,-20 377.31,-20 377.31,-44.27"/>
+<text xml:space="preserve" text-anchor="middle" x="323.55" y="-28.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__substance</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__models_base&#45;&gt;module~yaeos__substance -->
 <g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph_edge12" class="edge">
 <title>module~yaeos__models_base&#45;&gt;module~yaeos__substance</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M416.79,-20.13C408.45,-21.24 399.89,-22.38 391.51,-23.49"/>
-<polygon fill="#000000" stroke="#000000" points="390.86,-20.05 381.41,-24.84 391.78,-26.99 390.86,-20.05"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M413.18,-20.27C405.16,-21.34 396.93,-22.45 388.85,-23.53"/>
+<polygon fill="#000000" stroke="#000000" points="388.54,-20.04 379.09,-24.83 389.47,-26.98 388.54,-20.04"/>
 </g>
 <!-- module~yaeos__substance&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsesGraph_edge13" class="edge">
 <title>module~yaeos__substance&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M271.6,-43.43C263.29,-45.19 254.66,-47.02 246.19,-48.82"/>
-<polygon fill="#000000" stroke="#000000" points="245.4,-45.4 236.35,-50.9 246.86,-52.25 245.4,-45.4"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M269.61,-43.48C261.63,-45.19 253.33,-46.97 245.16,-48.72"/>
+<polygon fill="#000000" stroke="#000000" points="244.67,-45.24 235.63,-50.76 246.14,-52.09 244.67,-45.24"/>
 </g>
 </g>
 </svg>
@@ -387,49 +397,49 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="518pt" height="32pt"
- viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="511pt" height="32pt"
+ viewBox="0.00 0.00 511.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 506.88,-28.27 506.88,4 -4,4"/>
 <!-- Module -->
 <g id="node1" class="node">
 <title>Module</title>
-<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
 </g>
 <!-- Submodule -->
 <g id="node2" class="node">
 <title>Submodule</title>
-<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
-<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="144.13,-24.27 71.87,-24.27 71.87,0 144.13,0 144.13,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="108" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
 </g>
 <!-- Subroutine -->
 <g id="node3" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
-<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="231.63,-24.27 162.37,-24.27 162.37,0 231.63,0 231.63,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="197" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node4" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
-<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="306.26,-24.27 249.74,-24.27 249.74,0 306.26,0 306.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="278" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Program -->
 <g id="node5" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
-<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="381.26,-24.27 324.74,-24.27 324.74,0 381.26,0 381.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="353" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node6" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
-<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="502.88,-24.27 399.12,-24.27 399.12,0 502.88,0 502.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="451" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -455,79 +465,79 @@ modules which it uses.
               <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: module~~yaeos__equilibria_boundaries_pure_saturation~~UsedByGraph Pages: 1 -->
-<svg id="moduleyaeos__equilibria_boundaries_pure_saturationUsedByGraph" width="526pt" height="116pt"
- viewBox="0.00 0.00 526.00 116.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 112)">
+<svg id="moduleyaeos__equilibria_boundaries_pure_saturationUsedByGraph" width="523pt" height="116pt"
+ viewBox="0.00 0.00 523.00 116.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 112.27)">
 <title>module~~yaeos__equilibria_boundaries_pure_saturation~~UsedByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-112 522,-112 522,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-112.27 519.04,-112.27 519.04,4 -4,4"/>
 <!-- module~yaeos__equilibria_boundaries_pure_saturation -->
 <g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsedByGraph_node1" class="node">
 <title>module~yaeos__equilibria_boundaries_pure_saturation</title>
-<polygon fill="none" stroke="black" points="259,-66 0,-66 0,-42 259,-42 259,-66"/>
-<text text-anchor="middle" x="129.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__equilibria_boundaries_pure_saturation</text>
+<polygon fill="none" stroke="black" points="257.52,-66.27 0,-66.27 0,-42 257.52,-42 257.52,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="128.76" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__equilibria_boundaries_pure_saturation</text>
 </g>
 <!-- module~yaeos__equilibria -->
 <g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsedByGraph_node2" class="node">
 <title>module~yaeos__equilibria</title>
 <g id="a_module~~yaeos__equilibria_boundaries_pure_saturation~~UsedByGraph_node2"><a xlink:href="../module/yaeos__equilibria.html" xlink:title="yaeos__equilibria">
-<polygon fill="#337ab7" stroke="#337ab7" points="414,-108 309,-108 309,-84 414,-84 414,-108"/>
-<text text-anchor="middle" x="361.5" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="411.16,-108.27 307.39,-108.27 307.39,-84 411.16,-84 411.16,-108.27"/>
+<text xml:space="preserve" text-anchor="middle" x="359.28" y="-92.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_boundaries_pure_saturation -->
 <g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsedByGraph_edge1" class="edge">
 <title>module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_boundaries_pure_saturation</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M308.88,-86.57C278.76,-81.07 240.19,-74.03 206.63,-67.9"/>
-<polygon fill="#000000" stroke="#000000" points="206.85,-64.39 196.39,-66.03 205.6,-71.27 206.85,-64.39"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M307,-86.71C278.27,-81.43 241.83,-74.73 209.47,-68.78"/>
+<polygon fill="#000000" stroke="#000000" points="210.17,-65.35 199.7,-66.99 208.9,-72.24 210.17,-65.35"/>
 </g>
 <!-- proc~estimate_critical_point -->
 <g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsedByGraph_node3" class="node">
 <title>proc~estimate_critical_point</title>
 <g id="a_module~~yaeos__equilibria_boundaries_pure_saturation~~UsedByGraph_node3"><a xlink:href="../proc/estimate_critical_point.html" xlink:title="estimate_critical_point">
-<polygon fill="#d9534f" stroke="#d9534f" points="428,-66 295,-66 295,-42 428,-42 428,-66"/>
-<text text-anchor="middle" x="361.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">estimate_critical_point</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="425.04,-66.27 293.52,-66.27 293.52,-42 425.04,-42 425.04,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="359.28" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">estimate_critical_point</text>
 </a>
 </g>
 </g>
 <!-- proc~estimate_critical_point&#45;&gt;module~yaeos__equilibria_boundaries_pure_saturation -->
 <g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsedByGraph_edge2" class="edge">
 <title>proc~estimate_critical_point&#45;&gt;module~yaeos__equilibria_boundaries_pure_saturation</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M294.9,-54C286.7,-54 278.09,-54 269.28,-54"/>
-<polygon fill="#000000" stroke="#000000" points="269.26,-50.5 259.26,-54 269.26,-57.5 269.26,-50.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M293.1,-54.13C285.39,-54.13 277.31,-54.13 269.05,-54.13"/>
+<polygon fill="#000000" stroke="#000000" points="269.21,-50.64 259.21,-54.14 269.21,-57.64 269.21,-50.64"/>
 </g>
 <!-- proc~refit_rkpr_k -->
 <g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsedByGraph_node4" class="node">
 <title>proc~refit_rkpr_k</title>
 <g id="a_module~~yaeos__equilibria_boundaries_pure_saturation~~UsedByGraph_node4"><a xlink:href="../proc/refit_rkpr_k.html" xlink:title="refit_rkpr_k">
-<polygon fill="#d9534f" stroke="#d9534f" points="397.5,-24 325.5,-24 325.5,0 397.5,0 397.5,-24"/>
-<text text-anchor="middle" x="361.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">refit_rkpr_k</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="394.66,-24.27 323.89,-24.27 323.89,0 394.66,0 394.66,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="359.28" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">refit_rkpr_k</text>
 </a>
 </g>
 </g>
 <!-- proc~refit_rkpr_k&#45;&gt;module~yaeos__equilibria_boundaries_pure_saturation -->
 <g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsedByGraph_edge3" class="edge">
 <title>proc~refit_rkpr_k&#45;&gt;module~yaeos__equilibria_boundaries_pure_saturation</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M325.32,-18.42C293.76,-24.19 246.39,-32.84 206.26,-40.17"/>
-<polygon fill="#000000" stroke="#000000" points="205.43,-36.76 196.23,-42 206.69,-43.64 205.43,-36.76"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M323.57,-18.51C293.39,-24.06 248.51,-32.31 209.54,-39.47"/>
+<polygon fill="#000000" stroke="#000000" points="209.15,-35.99 199.95,-41.24 210.41,-42.87 209.15,-35.99"/>
 </g>
 <!-- module~yaeos -->
 <g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsedByGraph_node5" class="node">
 <title>module~yaeos</title>
 <g id="a_module~~yaeos__equilibria_boundaries_pure_saturation~~UsedByGraph_node5"><a xlink:href="../module/yaeos.html" xlink:title="yaeos">
-<polygon fill="#337ab7" stroke="#337ab7" points="518,-108 464,-108 464,-84 518,-84 518,-108"/>
-<text text-anchor="middle" x="491" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="515.04,-108.27 461.04,-108.27 461.04,-84 515.04,-84 515.04,-108.27"/>
+<text xml:space="preserve" text-anchor="middle" x="488.04" y="-92.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos&#45;&gt;module~yaeos__equilibria -->
 <g id="module~~yaeos__equilibria_boundaries_pure_saturation~~UsedByGraph_edge4" class="edge">
 <title>module~yaeos&#45;&gt;module~yaeos__equilibria</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M463.89,-96C452.34,-96 438.22,-96 424.24,-96"/>
-<polygon fill="#000000" stroke="#000000" points="424.11,-92.5 414.11,-96 424.11,-99.5 424.11,-92.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M460.78,-96.14C449.67,-96.14 436.22,-96.14 422.82,-96.14"/>
+<polygon fill="#000000" stroke="#000000" points="423.14,-92.64 413.14,-96.14 423.14,-99.64 423.14,-92.64"/>
 </g>
 </g>
 </svg>
@@ -546,49 +556,49 @@ modules which it uses.
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="518pt" height="32pt"
- viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="511pt" height="32pt"
+ viewBox="0.00 0.00 511.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 506.88,-28.27 506.88,4 -4,4"/>
 <!-- Module -->
 <g id="node1" class="node">
 <title>Module</title>
-<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
 </g>
 <!-- Submodule -->
 <g id="node2" class="node">
 <title>Submodule</title>
-<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
-<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="144.13,-24.27 71.87,-24.27 71.87,0 144.13,0 144.13,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="108" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
 </g>
 <!-- Subroutine -->
 <g id="node3" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
-<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="231.63,-24.27 162.37,-24.27 162.37,0 231.63,0 231.63,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="197" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node4" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
-<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="306.26,-24.27 249.74,-24.27 249.74,0 306.26,0 306.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="278" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Program -->
 <g id="node5" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
-<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="381.26,-24.27 324.74,-24.27 324.74,0 381.26,0 381.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="353" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node6" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
-<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="502.88,-24.27 399.12,-24.27 399.12,0 502.88,0 502.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="451" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -625,7 +635,9 @@ modules which it uses.
       </h3>
     </div>
     <div class="card-body">
-      
+      <p>Saturation line of a pure component. Contains the saturation
+temperatures, pressures, and phase volumes, together with linear
+interpolators for <code>get_T</code> and <code>get_P</code>.</p><a href="../type/purepsat.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
         <h4>Components</h4>
           <table class="table table-striped varlist">
@@ -640,7 +652,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~11"></span>
+              <span class="anchor" id="variable-p~76"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -652,12 +664,12 @@ modules which it uses.
                 <td></td>
                 <td></td>
             <td>
-<p>Pressure [Pa]</p>
+<p>Pressure [bar]</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~14"></span>
+              <span class="anchor" id="variable-t~111"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -674,7 +686,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vx"></span>
+              <span class="anchor" id="variable-vx~9"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -691,7 +703,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vy~2"></span>
+              <span class="anchor" id="variable-vy~15"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -720,7 +732,7 @@ modules which it uses.
                 <td></td>
                 <td></td>
             <td>
-
+<p>Interpolates pressure as a function of temperature.</p>
             </td>
         </tr>
         <tr>
@@ -737,7 +749,7 @@ modules which it uses.
                 <td></td>
                 <td></td>
             <td>
-
+<p>Interpolates temperature as a function of pressure.</p>
             </td>
         </tr>
     </tbody>
@@ -774,7 +786,7 @@ modules which it uses.
 </h3></div>
     <div class="card-body">
           
-  <p>Get the saturation pressure for a given temperature.</p><a href="../proc/get_p.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+  <p>Interpolate the saturation pressure at a requested temperature.</p><a href="../proc/get_p.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -799,12 +811,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>pt</strong></td>
             <td>
-
+<p>Stored saturation data and interpolator.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~18"></span>
+              <span class="anchor" id="variable-t~115"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -814,7 +826,7 @@ modules which it uses.
             <td>::</td>
             <td><strong>T</strong></td>
             <td>
-
+<p>Temperature [K].</p>
             </td>
         </tr>
     </tbody>
@@ -859,12 +871,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>pt</strong></td>
             <td>
-
+<p>Stored saturation data and interpolator.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~13"></span>
+              <span class="anchor" id="variable-p~78"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -874,7 +886,7 @@ modules which it uses.
             <td>::</td>
             <td><strong>P</strong></td>
             <td>
-
+<p>Pressure [bar].</p>
             </td>
         </tr>
     </tbody>
@@ -909,7 +921,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~8"></span>
+              <span class="anchor" id="variable-model~62"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -919,12 +931,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>model</strong></td>
             <td>
-<p>Thermodyanmic model</p>
+<p>Thermodynamic model</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-component"></span>
+              <span class="anchor" id="variable-component~2"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -954,7 +966,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-mint"></span>
+              <span class="anchor" id="variable-mint~2"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -985,11 +997,11 @@ modules which it uses.
         <section>
           <h2>Subroutines</h2>
               <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-solve_point"></span> <h3>public  subroutine <a href='../proc/solve_point.html'>solve_point</a>(model, ncomp, nc, X, ns, S, F, dF, dFdS, its)  
+    <div class="card-header codesum"><span class="anchor" id="proc-solve_point~6"></span> <h3>public  subroutine <a href='../proc/solve_point~6.html'>solve_point</a>(model, ncomp, nc, X, ns, S, F, dF, dFdS, its)  
 </h3></div>
     <div class="card-body">
           
-  <p>Solve a saturation point for a pure component.</p><a href="../proc/solve_point.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+  <p>Solve a saturation point for a pure component.</p><a href="../proc/solve_point~6.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -1004,7 +1016,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~9"></span>
+              <span class="anchor" id="variable-model~63"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -1019,7 +1031,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ncomp~3"></span>
+              <span class="anchor" id="variable-ncomp~6"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -1034,7 +1046,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~18"></span>
+              <span class="anchor" id="variable-nc~99"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -1049,7 +1061,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~14"></span>
+              <span class="anchor" id="variable-x~66"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -1059,13 +1071,13 @@ modules which it uses.
             <td>::</td>
             <td><strong>X</strong>(4)</td>
             <td>
-<p>Variables <script type="math/tex">[ln V_z, lnV_y, lnP, lnT]</script>
+<p>Variables <script type="math/tex">[\ln V_z, \ln V_y, \ln P, \ln T]</script>
 </p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns~6"></span>
+              <span class="anchor" id="variable-ns~54"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -1075,12 +1087,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>ns</strong></td>
             <td>
-<p>Variable index to solve. If the</p>
+<p>Index of the specified variable (see <script type="math/tex">g(X, ns)</script> above).</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-s~5"></span>
+              <span class="anchor" id="variable-s~46"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1095,7 +1107,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-f~8"></span>
+              <span class="anchor" id="variable-f~42"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1110,7 +1122,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-df~3"></span>
+              <span class="anchor" id="variable-df~24"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1125,7 +1137,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dfds~3"></span>
+              <span class="anchor" id="variable-dfds~14"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1140,7 +1152,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-its~2"></span>
+              <span class="anchor" id="variable-its~26"></span>
               integer,
             </td>
 <td>intent(out)</td>
@@ -1176,14 +1188,14 @@ modules which it uses.
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>LLVVarEnum &ndash; yaeos </title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title="<p> 1.9% of total for derived types.</p>Including implementation: 12 statements,  0.1% of total for derived types.">12 statements</a>
+                 title="<p> 1.8% of total for derived types.</p>Including implementation: 12 statements,  0.1% of total for derived types.">12 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -135,10 +136,10 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../type/llvvarenum.html#variable-t~107">T</a>
-            <a class="list-group-item" href="../type/llvvarenum.html#variable-vw~9">Vw</a>
+            <a class="list-group-item" href="../type/llvvarenum.html#variable-t~91">T</a>
+            <a class="list-group-item" href="../type/llvvarenum.html#variable-vw~11">Vw</a>
             <a class="list-group-item" href="../type/llvvarenum.html#variable-vx~7">Vx</a>
-            <a class="list-group-item" href="../type/llvvarenum.html#variable-vy~16">Vy</a>
+            <a class="list-group-item" href="../type/llvvarenum.html#variable-vy~13">Vy</a>
             <a class="list-group-item" href="../type/llvvarenum.html#variable-w1~2">w1</a>
             <a class="list-group-item" href="../type/llvvarenum.html#variable-w2">w2</a>
             <a class="list-group-item" href="../type/llvvarenum.html#variable-x1~4">x1</a>
@@ -176,7 +177,13 @@
     <div class="col-md-9" id='text'>
       <h2 id="type-def-statement">
         type, private :: LLVVarEnum</h2>
-    
+    <p>Indices of the binary LLV unknown vector used by the solver.</p>
+<h1 id="description">Description</h1>
+<p>Named offsets identify the (logarithmic) phase mole amounts, phase
+volumes, and temperature in the packed nonlinear-solver vector.</p>
+<h1 id="examples">Examples</h1>
+<div class="codehilite"><pre><span></span><code><span class="n">X</span><span class="p">(</span><span class="n">llv_vars</span><span class="p">%</span><span class="n">Vx</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">log</span><span class="p">(</span><span class="n">Vx</span><span class="p">)</span>
+</code></pre></div>
     <br>
 
     <section>
@@ -193,7 +200,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~107"></span>
+              <span class="anchor" id="variable-t~91"></span>
               integer,
             </td>
               <td>public</td>
@@ -205,12 +212,13 @@
 <td> =</td>
                 <td>10</td>
             <td>
-                
+                <p>
+<script type="math/tex">\ln T</script> (<script type="math/tex">T</script> in K).</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vw~9"></span>
+              <span class="anchor" id="variable-vw~11"></span>
               integer,
             </td>
               <td>public</td>
@@ -222,7 +230,8 @@
 <td> =</td>
                 <td>9</td>
             <td>
-                
+                <p>
+<script type="math/tex">\ln V</script> of vapor phase w (<script type="math/tex">V</script> in L).</p>
             </td>
         </tr>
         <tr>
@@ -239,12 +248,13 @@
 <td> =</td>
                 <td>7</td>
             <td>
-                
+                <p>
+<script type="math/tex">\ln V</script> of liquid phase x (<script type="math/tex">V</script> in L).</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vy~16"></span>
+              <span class="anchor" id="variable-vy~13"></span>
               integer,
             </td>
               <td>public</td>
@@ -256,7 +266,8 @@
 <td> =</td>
                 <td>8</td>
             <td>
-                
+                <p>
+<script type="math/tex">\ln V</script> of liquid phase y (<script type="math/tex">V</script> in L).</p>
             </td>
         </tr>
         <tr>
@@ -273,7 +284,8 @@
 <td> =</td>
                 <td>5</td>
             <td>
-                
+                <p>
+<script type="math/tex">\ln</script> of component-1 amount in vapor phase w.</p>
             </td>
         </tr>
         <tr>
@@ -290,7 +302,8 @@
 <td> =</td>
                 <td>6</td>
             <td>
-                
+                <p>
+<script type="math/tex">\ln</script> of component-2 amount in vapor phase w.</p>
             </td>
         </tr>
         <tr>
@@ -307,7 +320,8 @@
 <td> =</td>
                 <td>1</td>
             <td>
-                
+                <p>
+<script type="math/tex">\ln</script> of component-1 amount in liquid phase x.</p>
             </td>
         </tr>
         <tr>
@@ -324,7 +338,8 @@
 <td> =</td>
                 <td>2</td>
             <td>
-                
+                <p>
+<script type="math/tex">\ln</script> of component-2 amount in liquid phase x.</p>
             </td>
         </tr>
         <tr>
@@ -341,7 +356,8 @@
 <td> =</td>
                 <td>3</td>
             <td>
-                
+                <p>
+<script type="math/tex">\ln</script> of component-1 amount in liquid phase y.</p>
             </td>
         </tr>
         <tr>
@@ -358,7 +374,8 @@
 <td> =</td>
                 <td>4</td>
             <td>
-                
+                <p>
+<script type="math/tex">\ln</script> of component-2 amount in liquid phase y.</p>
             </td>
         </tr>
     </tbody>
@@ -382,14 +399,14 @@
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

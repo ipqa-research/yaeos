@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>newton_solve &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.3% of total for procedures.">48 statements</a>
+                 title=" 0.3% of total for procedures.">58 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -135,16 +136,16 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/newton_solve.html#variable-j~9">J</a>
+            <a class="list-group-item" href="../proc/newton_solve.html#variable-j~2">J</a>
             <a class="list-group-item" href="../proc/newton_solve.html#variable-jp">Jp</a>
-            <a class="list-group-item" href="../proc/newton_solve.html#variable-alpha~2">alpha</a>
-            <a class="list-group-item" href="../proc/newton_solve.html#variable-dx~3">dx</a>
-            <a class="list-group-item" href="../proc/newton_solve.html#variable-f~7">f</a>
-            <a class="list-group-item" href="../proc/newton_solve.html#variable-f_norm~4">f_norm</a>
+            <a class="list-group-item" href="../proc/newton_solve.html#variable-alpha~18">alpha</a>
+            <a class="list-group-item" href="../proc/newton_solve.html#variable-dx~7">dx</a>
+            <a class="list-group-item" href="../proc/newton_solve.html#variable-f~11">f</a>
+            <a class="list-group-item" href="../proc/newton_solve.html#variable-f_norm">f_norm</a>
             <a class="list-group-item" href="../proc/newton_solve.html#variable-ftrial">ftrial</a>
             <a class="list-group-item" href="../proc/newton_solve.html#variable-grad_phi_p">grad_phi_p</a>
-            <a class="list-group-item" href="../proc/newton_solve.html#variable-k~16">k</a>
-            <a class="list-group-item" href="../proc/newton_solve.html#variable-n~42">n</a>
+            <a class="list-group-item" href="../proc/newton_solve.html#variable-k~6">k</a>
+            <a class="list-group-item" href="../proc/newton_solve.html#variable-n~29">n</a>
             <a class="list-group-item" href="../proc/newton_solve.html#variable-phi_trial">phi_trial</a>
             <a class="list-group-item" href="../proc/newton_solve.html#variable-phi_x">phi_x</a>
             <a class="list-group-item" href="../proc/newton_solve.html#variable-xtrial">xtrial</a>
@@ -181,6 +182,15 @@
 </h2>
     
 
+    <h1 id="newton_solve">newton_solve</h1>
+<p>Solve a nonlinear system by damped Newton iteration.</p>
+<h1 id="description">Description</h1>
+<p>Forms the Newton direction from <script type="math/tex">J\,dx=-F</script>, then applies
+backtracking to reduce the squared-residual merit function. <code>info=0</code>
+indicates residual convergence (max-norm below <code>tol</code>); <code>info=1</code>
+indicates the iteration limit.</p>
+<h1 id="examples">Examples</h1>
+<p>See the module-level callback example.</p>
 
 
     <h3>Arguments</h3>
@@ -215,7 +225,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~22"></span>
+              <span class="anchor" id="variable-x~16"></span>
               real(kind=dp),
             </td>
 <td>intent(in)</td>
@@ -225,12 +235,12 @@
             <td>::</td>
             <td><strong>x</strong>(:)</td>
             <td>
-                
+                <p>Current unknown vector.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-f~6"></span>
+              <span class="anchor" id="variable-f~10"></span>
               real(kind=dp),
             </td>
 <td>intent(out)</td>
@@ -240,12 +250,12 @@
             <td>::</td>
             <td><strong>f</strong>(:)</td>
             <td>
-                
+                <p>Residual vector.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-j~8"></span>
+              <span class="anchor" id="variable-j"></span>
               real(kind=dp),
             </td>
 <td>intent(out)</td>
@@ -255,7 +265,7 @@
             <td>::</td>
             <td><strong>J</strong>(:,:)</td>
             <td>
-                
+                <p>Residual Jacobian.</p>
             </td>
         </tr>
     </tbody>
@@ -266,7 +276,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~23"></span>
+              <span class="anchor" id="variable-x~17"></span>
               real(kind=dp),
             </td>
 <td>intent(inout)</td>
@@ -276,12 +286,12 @@
             <td>::</td>
             <td><strong>x</strong>(:)</td>
             <td>
-                
+                <p>Initial guess; last iterate on return.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tol~7"></span>
+              <span class="anchor" id="variable-tol~8"></span>
               real(kind=dp),
             </td>
 <td>intent(in)</td>
@@ -291,7 +301,7 @@
             <td>::</td>
             <td><strong>tol</strong></td>
             <td>
-                
+                <p>Absolute residual convergence tolerance.</p>
             </td>
         </tr>
         <tr>
@@ -306,12 +316,12 @@
             <td>::</td>
             <td><strong>max_iter</strong></td>
             <td>
-                
+                <p>Maximum Newton iterations.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-its~10"></span>
+              <span class="anchor" id="variable-its~7"></span>
               integer,
             </td>
 <td>intent(out)</td>
@@ -321,12 +331,12 @@
             <td>::</td>
             <td><strong>its</strong></td>
             <td>
-                
+                <p>Iteration count at termination.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-info~9"></span>
+              <span class="anchor" id="variable-info~3"></span>
               integer,
             </td>
 <td>intent(out)</td>
@@ -336,7 +346,7 @@
             <td>::</td>
             <td><strong>info</strong></td>
             <td>
-                
+                <p>0 = converged (max-norm of residuals below <code>tol</code>), 1 = iteration limit reached</p>
             </td>
         </tr>
     </tbody>
@@ -351,46 +361,46 @@
   <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: proc~~newton_solve~~CallsGraph Pages: 1 -->
-<svg id="procnewton_solveCallsGraph" width="302pt" height="32pt"
- viewBox="0.00 0.00 302.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~newton_solve~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg id="procnewton_solveCallsGraph" width="300pt" height="32pt"
+ viewBox="0.00 0.00 300.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~newton_solve~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>proc~~newton_solve~~CallsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 298,-28 298,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 295.54,-28.27 295.54,4 -4,4"/>
 <!-- proc~newton_solve -->
 <g id="proc~~newton_solve~~CallsGraph_node1" class="node">
 <title>proc~newton_solve</title>
-<polygon fill="none" stroke="black" points="85,-24 0,-24 0,0 85,0 85,-24"/>
-<text text-anchor="middle" x="42.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">newton_solve</text>
+<polygon fill="none" stroke="black" points="83.52,-24.27 0,-24.27 0,0 83.52,0 83.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="41.76" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">newton_solve</text>
 </g>
 <!-- proc~solve_system -->
 <g id="proc~~newton_solve~~CallsGraph_node2" class="node">
 <title>proc~solve_system</title>
 <g id="a_proc~~newton_solve~~CallsGraph_node2"><a xlink:href="../proc/solve_system.html" xlink:title="solve_system">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="204,-24 121,-24 121,0 204,0 204,-24"/>
-<text text-anchor="middle" x="162.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">solve_system</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="201.54,-24.27 119.52,-24.27 119.52,0 201.54,0 201.54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="160.53" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">solve_system</text>
 </a>
 </g>
 </g>
 <!-- proc~newton_solve&#45;&gt;proc~solve_system -->
 <g id="proc~~newton_solve~~CallsGraph_edge1" class="edge">
 <title>proc~newton_solve&#45;&gt;proc~solve_system</title>
-<path fill="none" stroke="#000000" d="M85.1,-12C93.31,-12 102.01,-12 110.49,-12"/>
-<polygon fill="#000000" stroke="#000000" points="110.67,-15.5 120.67,-12 110.67,-8.5 110.67,-15.5"/>
+<path fill="none" stroke="#000000" d="M83.93,-12.13C91.6,-12.13 99.72,-12.13 107.67,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="107.61,-15.64 117.61,-12.14 107.61,-8.64 107.61,-15.64"/>
 </g>
 <!-- none~dgesv -->
 <g id="proc~~newton_solve~~CallsGraph_node3" class="node">
 <title>none~dgesv</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="294,-24 240,-24 240,0 294,0 294,-24"/>
-<text text-anchor="middle" x="267" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dgesv</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="291.54,-24.27 237.54,-24.27 237.54,0 291.54,0 291.54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="264.54" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dgesv</text>
 </g>
 <!-- proc~solve_system&#45;&gt;none~dgesv -->
 <g id="proc~~newton_solve~~CallsGraph_edge2" class="edge">
 <title>proc~solve_system&#45;&gt;none~dgesv</title>
-<path fill="none" stroke="#000000" d="M204.01,-12C212.51,-12 221.42,-12 229.75,-12"/>
-<polygon fill="#000000" stroke="#000000" points="229.92,-15.5 239.92,-12 229.92,-8.5 229.92,-15.5"/>
+<path fill="none" stroke="#000000" d="M201.85,-12.13C209.76,-12.13 218.03,-12.13 225.86,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="225.77,-15.64 235.77,-12.14 225.77,-8.64 225.77,-15.64"/>
 </g>
 </g>
 </svg>
@@ -409,55 +419,55 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
 <svg width="641pt" height="28pt"
- viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
 <!-- Subroutine -->
 <g id="node1" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node2" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Interface -->
 <g id="node3" class="node">
 <title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
 </g>
 <!-- Type Bound Procedure -->
 <g id="node4" class="node">
 <title>Type Bound Procedure</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
-<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
 </g>
 <!-- Unknown Procedure Type -->
 <g id="node5" class="node">
 <title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
-<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
 </g>
 <!-- Program -->
 <g id="node6" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node7" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
-<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -490,7 +500,7 @@ implementation in a submodule of an interface in a parent module.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-j~9"></span>
+              <span class="anchor" id="variable-j~2"></span>
               real(kind=dp),
             </td>
               <td>public</td>
@@ -502,7 +512,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Jacobian matrix</p>
             </td>
         </tr>
         <tr>
@@ -524,7 +534,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-alpha~2"></span>
+              <span class="anchor" id="variable-alpha~18"></span>
               real(kind=dp),
             </td>
               <td>public</td>
@@ -536,12 +546,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Backtracking step length</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dx~3"></span>
+              <span class="anchor" id="variable-dx~7"></span>
               real(kind=dp),
             </td>
               <td>public</td>
@@ -558,7 +568,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-f~7"></span>
+              <span class="anchor" id="variable-f~11"></span>
               real(kind=dp),
             </td>
               <td>public</td>
@@ -570,12 +580,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Residual or scalar equation value.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-f_norm~4"></span>
+              <span class="anchor" id="variable-f_norm"></span>
               real(kind=dp),
             </td>
               <td>public</td>
@@ -626,7 +636,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-k~16"></span>
+              <span class="anchor" id="variable-k~6"></span>
               integer,
             </td>
               <td>public</td>
@@ -638,12 +648,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Loop/index or term index.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~42"></span>
+              <span class="anchor" id="variable-n~29"></span>
               integer,
             </td>
               <td>public</td>
@@ -655,7 +665,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Number of unknowns</p>
             </td>
         </tr>
         <tr>
@@ -735,14 +745,14 @@ implementation in a submodule of an interface in a parent module.
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

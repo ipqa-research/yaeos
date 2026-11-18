@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>yaeos__equilibria_boundaries_generalized_isopleths &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 1.5% of total for modules and submodules.">270 statements</a>
+                 title=" 1.5% of total for modules and submodules.">300 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -134,7 +135,7 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../module/yaeos__equilibria_boundaries_generalized_isopleths.html#variable-mint~2">minT</a>
+            <a class="list-group-item" href="../module/yaeos__equilibria_boundaries_generalized_isopleths.html#variable-mint">minT</a>
         </div>
       </div>
     </div>
@@ -198,19 +199,30 @@
     </div>
 
     <div class="col-md-9" id='text'>
-      <p>Calculation of isoplethic phase equilibria lines.</p>
-<p>This module contains the subroutines to calculate any kind of phase
-equilibria lines with constant composition.</p>
+      <h1 id="generalized-multiphase-isopleths">Generalized multiphase isopleths</h1>
+<p>Continuation of multiphase equilibrium states at fixed overall composition.</p>
+<h1 id="description">Description</h1>
+<p>The module initializes a multiphase state, applies stability checks when
+requested, and continues the generalized isopleth through pressure,
+temperature, or another selected specification. The result stores
+converged <code>MPEquilibriumState</code> points and stability metadata.</p>
+<h1 id="examples">Examples</h1>
+<div class="codehilite"><pre><span></span><code><span class="n">line</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">create_generalized_isoz_line</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">nc</span><span class="p">,</span><span class="w"> </span><span class="n">np</span><span class="p">,</span><span class="w"> </span><span class="n">nstab</span><span class="p">,</span><span class="w"> </span><span class="n">kinds_x</span><span class="p">,</span><span class="w"> </span><span class="n">kind_w</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">   </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">x_l0</span><span class="p">,</span><span class="w"> </span><span class="n">w0</span><span class="p">,</span><span class="w"> </span><span class="n">betas0</span><span class="p">,</span><span class="w"> </span><span class="n">P0</span><span class="p">,</span><span class="w"> </span><span class="n">T0</span><span class="p">,</span><span class="w"> </span><span class="n">spec_variable</span><span class="p">,</span><span class="w"> </span><span class="n">spec_variable_value</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">   </span><span class="n">ns0</span><span class="p">,</span><span class="w"> </span><span class="n">S0</span><span class="p">,</span><span class="w"> </span><span class="n">dS0</span><span class="p">,</span><span class="w"> </span><span class="n">ws_stab</span><span class="o">=</span><span class="n">ws_stab</span><span class="p">)</span>
+</code></pre></div>
+
+<p>For a standard two-phase line, use the dedicated phase-envelope routines.</p>
 <br>          <div class="card mb-4">
       <h3 class="card-header card-title bg-light">Uses</h3>
       <div class="card-body">
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
-                  <li class="list-inline-item"><a href='yaeos__math.html'>yaeos__math</a></li>
-                  <li class="list-inline-item"><a href='yaeos__equilibria_equilibrium_state.html'>yaeos__equilibria_equilibrium_state</a></li>
-                  <li class="list-inline-item"><a href='yaeos__equilibria_stability.html'>yaeos__equilibria_stability</a></li>
                   <li class="list-inline-item"><a href='yaeos__constants.html'>yaeos__constants</a></li>
+                  <li class="list-inline-item"><a href='yaeos__math.html'>yaeos__math</a></li>
+                  <li class="list-inline-item"><a href='yaeos__equilibria_stability.html'>yaeos__equilibria_stability</a></li>
+                  <li class="list-inline-item"><a href='yaeos__equilibria_equilibrium_state.html'>yaeos__equilibria_equilibrium_state</a></li>
                   <li class="list-inline-item"><a href='yaeos__models_ar.html'>yaeos__models_ar</a></li>
               </ul>
             </li>
@@ -218,257 +230,257 @@ equilibria lines with constant composition.</p>
               <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph Pages: 1 -->
 <svg id="moduleyaeos__equilibria_boundaries_generalized_isoplethsUsesGraph" width="641pt" height="121pt"
- viewBox="0.00 0.00 641.00 120.65" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph" class="graph" transform="scale(0.49 0.49) rotate(0) translate(4 240.68)">
+ viewBox="0.00 0.00 641.00 121.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph" class="graph" transform="scale(0.495693 0.495693) rotate(0) translate(4 240.66)">
 <title>module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-240.68 1296,-240.68 1296,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-240.66 1289.14,-240.66 1289.14,4 -4,4"/>
 <!-- module~yaeos__equilibria_boundaries_generalized_isopleths -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_node1" class="node">
 <title>module~yaeos__equilibria_boundaries_generalized_isopleths</title>
-<polygon fill="none" stroke="black" points="1292,-177 1001,-177 1001,-153 1292,-153 1292,-177"/>
-<text text-anchor="middle" x="1146.5" y="-162.6" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__equilibria_boundaries_generalized_isopleths</text>
+<polygon fill="none" stroke="black" points="1285.14,-177.11 995.37,-177.11 995.37,-152.84 1285.14,-152.84 1285.14,-177.11"/>
+<text xml:space="preserve" text-anchor="middle" x="1140.26" y="-161.37" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__equilibria_boundaries_generalized_isopleths</text>
 </g>
 <!-- module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_node2" class="node">
 <title>module~yaeos__constants</title>
 <g id="a_module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_node2"><a xlink:href="../module/yaeos__constants.html" xlink:title="yaeos__constants">
-<polygon fill="#337ab7" stroke="#337ab7" points="236,-119 130,-119 130,-95 236,-95 236,-119"/>
-<text text-anchor="middle" x="183" y="-104.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__constants</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="233.79,-119.11 129.27,-119.11 129.27,-94.84 233.79,-94.84 233.79,-119.11"/>
+<text xml:space="preserve" text-anchor="middle" x="181.53" y="-103.37" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__constants</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_boundaries_generalized_isopleths&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_edge1" class="edge">
 <title>module~yaeos__equilibria_boundaries_generalized_isopleths&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1101.36,-177.09C1065.04,-186.53 1012.07,-199.17 965,-206 835.86,-224.73 802.32,-218.26 672,-225"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1093.42,-177.54C1057.29,-186.93 1005.49,-199.26 959.37,-205.97 830.72,-224.7 797.3,-218.24 667.47,-224.97"/>
 </g>
 <!-- module~yaeos__equilibria_equilibrium_state -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_node3" class="node">
 <title>module~yaeos__equilibria_equilibrium_state</title>
 <g id="a_module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_node3"><a xlink:href="../module/yaeos__equilibria_equilibrium_state.html" xlink:title="yaeos__equilibria_equilibrium_state">
-<polygon fill="#337ab7" stroke="#337ab7" points="965,-197 763,-197 763,-173 965,-173 965,-197"/>
-<text text-anchor="middle" x="864" y="-182.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_equilibrium_state</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="959.37,-197.11 758.1,-197.11 758.1,-172.84 959.37,-172.84 959.37,-197.11"/>
+<text xml:space="preserve" text-anchor="middle" x="858.74" y="-181.37" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_equilibrium_state</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_boundaries_generalized_isopleths&#45;&gt;module~yaeos__equilibria_equilibrium_state -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_edge2" class="edge">
 <title>module~yaeos__equilibria_boundaries_generalized_isopleths&#45;&gt;module~yaeos__equilibria_equilibrium_state</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1000.73,-175.32C992.16,-175.93 983.61,-176.54 975.21,-177.14"/>
-<polygon fill="#000000" stroke="#000000" points="974.78,-173.66 965.05,-177.86 975.28,-180.64 974.78,-173.66"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M994.99,-175.29C987.01,-175.87 979.05,-176.44 971.21,-177"/>
+<polygon fill="#000000" stroke="#000000" points="971.06,-173.5 961.33,-177.7 971.56,-180.48 971.06,-173.5"/>
 </g>
 <!-- module~yaeos__equilibria_stability -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_node4" class="node">
 <title>module~yaeos__equilibria_stability</title>
 <g id="a_module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_node4"><a xlink:href="../module/yaeos__equilibria_stability.html" xlink:title="yaeos__equilibria_stability">
-<polygon fill="#337ab7" stroke="#337ab7" points="939.5,-79 788.5,-79 788.5,-55 939.5,-55 939.5,-79"/>
-<text text-anchor="middle" x="864" y="-64.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_stability</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="933.87,-79.11 783.6,-79.11 783.6,-54.84 933.87,-54.84 933.87,-79.11"/>
+<text xml:space="preserve" text-anchor="middle" x="858.74" y="-63.37" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria_stability</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_boundaries_generalized_isopleths&#45;&gt;module~yaeos__equilibria_stability -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_edge3" class="edge">
 <title>module~yaeos__equilibria_boundaries_generalized_isopleths&#45;&gt;module~yaeos__equilibria_stability</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1111.11,-152.98C1060.32,-135.24 965.26,-102.02 909.31,-82.48"/>
-<polygon fill="#000000" stroke="#000000" points="910.27,-79.11 899.68,-79.11 907.96,-85.71 910.27,-79.11"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1103.28,-152.36C1052.97,-134.72 961.53,-102.66 906.14,-83.24"/>
+<polygon fill="#000000" stroke="#000000" points="907.59,-80.04 897,-80.04 905.27,-86.65 907.59,-80.04"/>
 </g>
 <!-- module~yaeos__math -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_node5" class="node">
 <title>module~yaeos__math</title>
 <g id="a_module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_node5"><a xlink:href="../module/yaeos__math.html" xlink:title="yaeos__math">
-<polygon fill="#337ab7" stroke="#337ab7" points="712,-161 630,-161 630,-137 712,-137 712,-161"/>
-<text text-anchor="middle" x="671" y="-146.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="707.1,-161.11 625.83,-161.11 625.83,-136.84 707.1,-136.84 707.1,-161.11"/>
+<text xml:space="preserve" text-anchor="middle" x="666.47" y="-145.37" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_boundaries_generalized_isopleths&#45;&gt;module~yaeos__math -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_edge4" class="edge">
 <title>module~yaeos__equilibria_boundaries_generalized_isopleths&#45;&gt;module~yaeos__math</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M863,-145C815.55,-141.23 761.28,-142.94 722.74,-145.18"/>
-<polygon fill="#000000" stroke="#000000" points="722.08,-141.71 712.31,-145.81 722.51,-148.7 722.08,-141.71"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M857.74,-144.97C810.72,-141.22 756.99,-142.9 718.64,-145.12"/>
+<polygon fill="#000000" stroke="#000000" points="718.53,-141.62 708.77,-145.72 718.96,-148.6 718.53,-141.62"/>
 </g>
 <!-- module~yaeos__models_ar -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_node6" class="node">
 <title>module~yaeos__models_ar</title>
 <g id="a_module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_node6"><a xlink:href="../module/yaeos__models_ar.html" xlink:title="yaeos__models_ar">
-<polygon fill="#337ab7" stroke="#337ab7" points="726,-119 616,-119 616,-95 726,-95 726,-119"/>
-<text text-anchor="middle" x="671" y="-104.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="720.98,-119.11 611.96,-119.11 611.96,-94.84 720.98,-94.84 720.98,-119.11"/>
+<text xml:space="preserve" text-anchor="middle" x="666.47" y="-103.37" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_boundaries_generalized_isopleths&#45;&gt;module~yaeos__models_ar -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_edge5" class="edge">
 <title>module~yaeos__equilibria_boundaries_generalized_isopleths&#45;&gt;module~yaeos__models_ar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1000.97,-155.14C957.27,-152.04 909.17,-148.5 865,-145"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M863,-145C816.59,-141.31 764.85,-130.6 726.94,-121.48"/>
-<polygon fill="#000000" stroke="#000000" points="727.66,-118.05 717.12,-119.08 726,-124.85 727.66,-118.05"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M995.23,-155.12C951.68,-152.02 903.75,-148.48 859.74,-144.97"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M857.74,-144.97C812.66,-141.38 762.53,-131.1 725.05,-122.14"/>
+<polygon fill="#000000" stroke="#000000" points="726.35,-118.86 715.81,-119.89 724.7,-125.66 726.35,-118.86"/>
 </g>
 <!-- iso_fortran_env -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_node7" class="node">
 <title>iso_fortran_env</title>
 <g id="a_module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_node7"><a xlink:href="http://fortranwiki.org/fortran/show/iso_fortran_env" xlink:title="iso_fortran_env">
-<polygon fill="#337ab7" stroke="#337ab7" points="94,-119 0,-119 0,-95 94,-95 94,-119"/>
-<text text-anchor="middle" x="47" y="-104.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="93.27,-119.11 0,-119.11 0,-94.84 93.27,-94.84 93.27,-119.11"/>
+<text xml:space="preserve" text-anchor="middle" x="46.63" y="-103.37" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__constants&#45;&gt;iso_fortran_env -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_edge6" class="edge">
 <title>module~yaeos__constants&#45;&gt;iso_fortran_env</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.81,-107C121.45,-107 112.77,-107 104.32,-107"/>
-<polygon fill="#000000" stroke="#000000" points="104.16,-103.5 94.16,-107 104.16,-110.5 104.16,-103.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.15,-106.97C121.3,-106.97 113.15,-106.97 105.18,-106.97"/>
+<polygon fill="#000000" stroke="#000000" points="105.19,-103.47 95.19,-106.97 105.19,-110.47 105.19,-103.47"/>
 </g>
 <!-- module~yaeos__equilibria_equilibrium_state&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_edge7" class="edge">
 <title>module~yaeos__equilibria_equilibrium_state&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M813.99,-197.06C766.91,-208.32 699.07,-223.6 672,-225"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M670,-225C595.88,-228.83 576.77,-216.81 503,-225"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M806.7,-197.57C759.91,-208.77 694.01,-223.6 667.47,-224.97"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M665.47,-224.97C591.67,-228.8 572.64,-216.78 499.2,-224.97"/>
 </g>
 <!-- module~yaeos__equilibria_stability&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_edge8" class="edge">
 <title>module~yaeos__equilibria_stability&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M843.19,-54.87C817.49,-39.93 770.78,-15.36 727,-6 678.32,4.42 664.56,-1.39 615,-6 564.57,-10.68 553.56,-24.02 503,-27"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M501,-27C398.93,-30.47 368.13,-11.51 272,-46 246.29,-55.22 221.1,-73.96 204.3,-88.24"/>
-<polygon fill="#000000" stroke="#000000" points="201.99,-85.62 196.77,-94.84 206.6,-90.89 201.99,-85.62"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M837.53,-54.59C811.82,-39.62 765.52,-15.29 722.1,-5.97 673.75,4.4 660.07,-1.38 610.83,-5.97 560.56,-10.66 549.59,-23.99 499.2,-26.97"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M497.2,-26.97C395.84,-30.57 365.18,-11.51 269.79,-45.97 244.85,-54.98 220.47,-73.05 203.84,-87.19"/>
+<polygon fill="#000000" stroke="#000000" points="201.79,-84.33 196.59,-93.56 206.41,-89.59 201.79,-84.33"/>
 </g>
 <!-- module~yaeos__equilibria_stability&#45;&gt;module~yaeos__models_ar -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_edge9" class="edge">
 <title>module~yaeos__equilibria_stability&#45;&gt;module~yaeos__models_ar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M805.69,-79C783.77,-83.59 758.64,-88.85 736.12,-93.57"/>
-<polygon fill="#000000" stroke="#000000" points="735.39,-90.15 726.32,-95.62 736.82,-97 735.39,-90.15"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M797.79,-79.57C777.02,-83.94 753.64,-88.86 732.47,-93.31"/>
+<polygon fill="#000000" stroke="#000000" points="731.85,-89.86 722.79,-95.34 733.29,-96.71 731.85,-89.86"/>
 </g>
 <!-- module~yaeos__models_base -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_node10" class="node">
 <title>module~yaeos__models_base</title>
 <g id="a_module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_node10"><a xlink:href="../module/yaeos__models_base.html" xlink:title="yaeos__models_base">
-<polygon fill="#337ab7" stroke="#337ab7" points="564,-79 440,-79 440,-55 564,-55 564,-79"/>
-<text text-anchor="middle" x="502" y="-64.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_base</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="559.83,-79.11 436.56,-79.11 436.56,-54.84 559.83,-54.84 559.83,-79.11"/>
+<text xml:space="preserve" text-anchor="middle" x="498.2" y="-63.37" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_base</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_stability&#45;&gt;module~yaeos__models_base -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_edge10" class="edge">
 <title>module~yaeos__equilibria_stability&#45;&gt;module~yaeos__models_base</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M788.41,-67C725.49,-67 636.05,-67 574.13,-67"/>
-<polygon fill="#000000" stroke="#000000" points="574.05,-63.5 564.05,-67 574.05,-70.5 574.05,-63.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M783.45,-66.97C721.27,-66.97 633.08,-66.97 571.47,-66.97"/>
+<polygon fill="#000000" stroke="#000000" points="571.8,-63.47 561.8,-66.97 571.8,-70.47 571.8,-63.47"/>
 </g>
 <!-- module~yaeos__models_ge -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_node11" class="node">
 <title>module~yaeos__models_ge</title>
 <g id="a_module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_node11"><a xlink:href="../module/yaeos__models_ge.html" xlink:title="yaeos__models_ge">
-<polygon fill="#337ab7" stroke="#337ab7" points="727,-39 615,-39 615,-15 727,-15 727,-39"/>
-<text text-anchor="middle" x="671" y="-24.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ge</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="722.1,-39.11 610.83,-39.11 610.83,-14.84 722.1,-14.84 722.1,-39.11"/>
+<text xml:space="preserve" text-anchor="middle" x="666.47" y="-23.37" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ge</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria_stability&#45;&gt;module~yaeos__models_ge -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_edge11" class="edge">
 <title>module~yaeos__equilibria_stability&#45;&gt;module~yaeos__models_ge</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M805.69,-55C784.16,-50.49 759.52,-45.33 737.31,-40.67"/>
-<polygon fill="#000000" stroke="#000000" points="737.8,-37.2 727.3,-38.58 736.37,-44.05 737.8,-37.2"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M797.79,-54.37C777.39,-50.08 754.47,-45.26 733.6,-40.88"/>
+<polygon fill="#000000" stroke="#000000" points="734.57,-37.5 724.06,-38.87 733.13,-44.35 734.57,-37.5"/>
 </g>
 <!-- module~yaeos__math&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_edge12" class="edge">
 <title>module~yaeos__math&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M654.09,-161.15C636.57,-174 607.13,-194.03 579,-206 546.96,-219.63 537.6,-221.15 503,-225"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M501,-225C426.13,-233.31 403.91,-245.77 331.5,-225"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M648.98,-161.6C631.46,-174.46 602.52,-194.14 574.83,-205.97 542.96,-219.59 533.64,-221.13 499.2,-224.97"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M497.2,-224.97C422.76,-233.27 400.63,-245.76 328.68,-224.97"/>
 </g>
 <!-- module~yaeos__math_continuation -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_node8" class="node">
 <title>module~yaeos__math_continuation</title>
 <g id="a_module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_node8"><a xlink:href="../module/yaeos__math_continuation.html" xlink:title="yaeos__math_continuation">
-<polygon fill="#337ab7" stroke="#337ab7" points="579,-197 425,-197 425,-173 579,-173 579,-197"/>
-<text text-anchor="middle" x="502" y="-182.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math_continuation</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="574.83,-197.11 421.56,-197.11 421.56,-172.84 574.83,-172.84 574.83,-197.11"/>
+<text xml:space="preserve" text-anchor="middle" x="498.2" y="-181.37" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math_continuation</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__math&#45;&gt;module~yaeos__math_continuation -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_edge13" class="edge">
 <title>module~yaeos__math&#45;&gt;module~yaeos__math_continuation</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M630,-157.62C611.67,-161.57 589.47,-166.36 568.78,-170.82"/>
-<polygon fill="#000000" stroke="#000000" points="567.81,-167.44 558.77,-172.97 569.29,-174.29 567.81,-167.44"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M625.64,-157.6C608.45,-161.32 587.84,-165.78 568.29,-170.01"/>
+<polygon fill="#000000" stroke="#000000" points="567.77,-166.54 558.74,-172.08 569.25,-173.39 567.77,-166.54"/>
 </g>
 <!-- module~yaeos__math_linalg -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_node9" class="node">
 <title>module~yaeos__math_linalg</title>
 <g id="a_module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_node9"><a xlink:href="../module/yaeos__math_linalg.html" xlink:title="yaeos__math_linalg">
-<polygon fill="#337ab7" stroke="#337ab7" points="389,-159 272,-159 272,-135 389,-135 389,-159"/>
-<text text-anchor="middle" x="330.5" y="-144.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math_linalg</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="385.56,-159.11 269.79,-159.11 269.79,-134.84 385.56,-134.84 385.56,-159.11"/>
+<text xml:space="preserve" text-anchor="middle" x="327.68" y="-143.37" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__math_linalg</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__math&#45;&gt;module~yaeos__math_linalg -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_edge14" class="edge">
 <title>module~yaeos__math&#45;&gt;module~yaeos__math_linalg</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M629.84,-148.76C573.04,-148.42 468.47,-147.81 399.46,-147.4"/>
-<polygon fill="#000000" stroke="#000000" points="399.14,-143.9 389.12,-147.34 399.1,-150.9 399.14,-143.9"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M625.51,-148.74C569.22,-148.4 465.81,-147.79 397.14,-147.38"/>
+<polygon fill="#000000" stroke="#000000" points="397.54,-143.88 387.52,-147.32 397.5,-150.88 397.54,-143.88"/>
 </g>
 <!-- module~yaeos__models_ar&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_edge15" class="edge">
 <title>module~yaeos__models_ar&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M615.66,-107C524.73,-107 342.27,-107 246.28,-107"/>
-<polygon fill="#000000" stroke="#000000" points="246.15,-103.5 236.15,-107 246.15,-110.5 246.15,-103.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M611.47,-106.97C521.36,-106.97 340.79,-106.97 245.21,-106.97"/>
+<polygon fill="#000000" stroke="#000000" points="245.5,-103.47 235.5,-106.97 245.5,-110.47 245.5,-103.47"/>
 </g>
 <!-- module~yaeos__models_ar&#45;&gt;module~yaeos__models_base -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_edge16" class="edge">
 <title>module~yaeos__models_ar&#45;&gt;module~yaeos__models_base</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M619.89,-95C602.06,-90.72 581.79,-85.87 563.2,-81.42"/>
-<polygon fill="#000000" stroke="#000000" points="563.9,-77.98 553.36,-79.06 562.27,-84.79 563.9,-77.98"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M613.31,-94.43C597.14,-90.54 579.14,-86.21 562.31,-82.16"/>
+<polygon fill="#000000" stroke="#000000" points="563.46,-78.83 552.92,-79.9 561.82,-85.64 563.46,-78.83"/>
 </g>
 <!-- module~yaeos__math_continuation&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_edge17" class="edge">
 <title>module~yaeos__math_continuation&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M467.39,-197.03C425.61,-211.28 356.71,-232.23 331.5,-225"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M329.5,-225C272.88,-208.76 223.54,-156.43 199.53,-127.21"/>
-<polygon fill="#000000" stroke="#000000" points="202.16,-124.9 193.17,-119.29 196.7,-129.28 202.16,-124.9"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M462.33,-197.51C420.66,-211.75 353.45,-232.13 328.68,-224.97"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M326.68,-224.97C270.88,-208.85 222.44,-157.29 198.49,-127.94"/>
+<polygon fill="#000000" stroke="#000000" points="201.49,-126.1 192.53,-120.45 196.01,-130.45 201.49,-126.1"/>
 </g>
 <!-- module~yaeos__math_continuation&#45;&gt;module~yaeos__math_linalg -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_edge18" class="edge">
 <title>module~yaeos__math_continuation&#45;&gt;module~yaeos__math_linalg</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M447.37,-172.97C430.75,-169.25 412.27,-165.11 395.05,-161.24"/>
-<polygon fill="#000000" stroke="#000000" points="395.6,-157.78 385.07,-159.01 394.06,-164.61 395.6,-157.78"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M441.55,-172.42C426.81,-169.1 410.75,-165.48 395.49,-162.04"/>
+<polygon fill="#000000" stroke="#000000" points="396.55,-158.69 386.03,-159.91 395.01,-165.52 396.55,-158.69"/>
 </g>
 <!-- module~yaeos__math_linalg&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_edge19" class="edge">
 <title>module~yaeos__math_linalg&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M285.85,-135C270.66,-130.82 253.46,-126.09 237.57,-121.72"/>
-<polygon fill="#000000" stroke="#000000" points="238.45,-118.33 227.88,-119.06 236.59,-125.08 238.45,-118.33"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M281.46,-134.43C267.78,-130.63 252.58,-126.41 238.29,-122.45"/>
+<polygon fill="#000000" stroke="#000000" points="239.61,-119.18 229.04,-119.88 237.74,-125.93 239.61,-119.18"/>
 </g>
 <!-- module~yaeos__substance -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_node12" class="node">
 <title>module~yaeos__substance</title>
 <g id="a_module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_node12"><a xlink:href="../module/yaeos__substance.html" xlink:title="yaeos__substance">
-<polygon fill="#337ab7" stroke="#337ab7" points="385,-79 276,-79 276,-55 385,-55 385,-79"/>
-<text text-anchor="middle" x="330.5" y="-64.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__substance</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="381.44,-79.11 273.92,-79.11 273.92,-54.84 381.44,-54.84 381.44,-79.11"/>
+<text xml:space="preserve" text-anchor="middle" x="327.68" y="-63.37" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__substance</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__models_base&#45;&gt;module~yaeos__substance -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_edge20" class="edge">
 <title>module~yaeos__models_base&#45;&gt;module~yaeos__substance</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M439.81,-67C425.38,-67 409.97,-67 395.44,-67"/>
-<polygon fill="#000000" stroke="#000000" points="395.03,-63.5 385.03,-67 395.03,-70.5 395.03,-63.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M436.36,-66.97C422.3,-66.97 407.29,-66.97 393.08,-66.97"/>
+<polygon fill="#000000" stroke="#000000" points="393.41,-63.47 383.41,-66.97 393.41,-70.47 393.41,-63.47"/>
 </g>
 <!-- module~yaeos__models_ge&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_edge21" class="edge">
 <title>module~yaeos__models_ge&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M614.67,-25.36C582.12,-24.81 540.19,-24.8 503,-27"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M610.37,-25.34C577.97,-24.79 536.22,-24.78 499.2,-26.97"/>
 </g>
 <!-- module~yaeos__models_ge&#45;&gt;module~yaeos__models_base -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_edge22" class="edge">
 <title>module~yaeos__models_ge&#45;&gt;module~yaeos__models_base</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M619.89,-39C602.06,-43.27 581.79,-48.12 563.2,-52.58"/>
-<polygon fill="#000000" stroke="#000000" points="562.27,-49.2 553.36,-54.93 563.9,-56.01 562.27,-49.2"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M613.31,-39.52C597.14,-43.41 579.14,-47.74 562.31,-51.79"/>
+<polygon fill="#000000" stroke="#000000" points="561.82,-48.31 552.92,-54.05 563.46,-55.11 561.82,-48.31"/>
 </g>
 <!-- module~yaeos__substance&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsesGraph_edge23" class="edge">
 <title>module~yaeos__substance&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M285.85,-79C270.66,-83.17 253.46,-87.9 237.57,-92.27"/>
-<polygon fill="#000000" stroke="#000000" points="236.59,-88.91 227.88,-94.93 238.45,-95.66 236.59,-88.91"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M281.46,-79.52C267.78,-83.32 252.58,-87.53 238.29,-91.5"/>
+<polygon fill="#000000" stroke="#000000" points="237.74,-88.02 229.04,-94.07 239.61,-94.76 237.74,-88.02"/>
 </g>
 </g>
 </svg>
@@ -491,49 +503,49 @@ equilibria lines with constant composition.</p>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="518pt" height="32pt"
- viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="511pt" height="32pt"
+ viewBox="0.00 0.00 511.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 506.88,-28.27 506.88,4 -4,4"/>
 <!-- Module -->
 <g id="node1" class="node">
 <title>Module</title>
-<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
 </g>
 <!-- Submodule -->
 <g id="node2" class="node">
 <title>Submodule</title>
-<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
-<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="144.13,-24.27 71.87,-24.27 71.87,0 144.13,0 144.13,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="108" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
 </g>
 <!-- Subroutine -->
 <g id="node3" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
-<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="231.63,-24.27 162.37,-24.27 162.37,0 231.63,0 231.63,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="197" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node4" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
-<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="306.26,-24.27 249.74,-24.27 249.74,0 306.26,0 306.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="278" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Program -->
 <g id="node5" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
-<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="381.26,-24.27 324.74,-24.27 324.74,0 381.26,0 381.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="353" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node6" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
-<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="502.88,-24.27 399.12,-24.27 399.12,0 502.88,0 502.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="451" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -559,49 +571,49 @@ modules which it uses.
               <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsedByGraph Pages: 1 -->
-<svg id="moduleyaeos__equilibria_boundaries_generalized_isoplethsUsedByGraph" width="530pt" height="32pt"
- viewBox="0.00 0.00 530.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg id="moduleyaeos__equilibria_boundaries_generalized_isoplethsUsedByGraph" width="528pt" height="32pt"
+ viewBox="0.00 0.00 528.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsedByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 526,-28 526,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 523.54,-28.27 523.54,4 -4,4"/>
 <!-- module~yaeos__equilibria_boundaries_generalized_isopleths -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsedByGraph_node1" class="node">
 <title>module~yaeos__equilibria_boundaries_generalized_isopleths</title>
-<polygon fill="none" stroke="black" points="291,-24 0,-24 0,0 291,0 291,-24"/>
-<text text-anchor="middle" x="145.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__equilibria_boundaries_generalized_isopleths</text>
+<polygon fill="none" stroke="black" points="289.77,-24.27 0,-24.27 0,0 289.77,0 289.77,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="144.88" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__equilibria_boundaries_generalized_isopleths</text>
 </g>
 <!-- module~yaeos__equilibria -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsedByGraph_node2" class="node">
 <title>module~yaeos__equilibria</title>
 <g id="a_module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsedByGraph_node2"><a xlink:href="../module/yaeos__equilibria.html" xlink:title="yaeos__equilibria">
-<polygon fill="#337ab7" stroke="#337ab7" points="432,-24 327,-24 327,0 432,0 432,-24"/>
-<text text-anchor="middle" x="379.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="429.54,-24.27 325.77,-24.27 325.77,0 429.54,0 429.54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="377.65" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__equilibria</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_boundaries_generalized_isopleths -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsedByGraph_edge1" class="edge">
 <title>module~yaeos__equilibria&#45;&gt;module~yaeos__equilibria_boundaries_generalized_isopleths</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M326.72,-12C318.77,-12 310.22,-12 301.33,-12"/>
-<polygon fill="#000000" stroke="#000000" points="301.16,-8.5 291.16,-12 301.16,-15.5 301.16,-8.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M325.44,-12.13C317.87,-12.13 309.76,-12.13 301.32,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="301.57,-8.64 291.57,-12.14 301.57,-15.64 301.57,-8.64"/>
 </g>
 <!-- module~yaeos -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsedByGraph_node3" class="node">
 <title>module~yaeos</title>
 <g id="a_module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsedByGraph_node3"><a xlink:href="../module/yaeos.html" xlink:title="yaeos">
-<polygon fill="#337ab7" stroke="#337ab7" points="522,-24 468,-24 468,0 522,0 522,-24"/>
-<text text-anchor="middle" x="495" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="519.54,-24.27 465.54,-24.27 465.54,0 519.54,0 519.54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="492.54" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos&#45;&gt;module~yaeos__equilibria -->
 <g id="module~~yaeos__equilibria_boundaries_generalized_isopleths~~UsedByGraph_edge2" class="edge">
 <title>module~yaeos&#45;&gt;module~yaeos__equilibria</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M467.96,-12C460.26,-12 451.47,-12 442.51,-12"/>
-<polygon fill="#000000" stroke="#000000" points="442.37,-8.5 432.37,-12 442.37,-15.5 442.37,-8.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M465.07,-12.13C457.82,-12.13 449.63,-12.13 441.25,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="441.31,-8.64 431.31,-12.14 441.31,-15.64 441.31,-8.64"/>
 </g>
 </g>
 </svg>
@@ -620,49 +632,49 @@ modules which it uses.
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="518pt" height="32pt"
- viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="511pt" height="32pt"
+ viewBox="0.00 0.00 511.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 506.88,-28.27 506.88,4 -4,4"/>
 <!-- Module -->
 <g id="node1" class="node">
 <title>Module</title>
-<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
 </g>
 <!-- Submodule -->
 <g id="node2" class="node">
 <title>Submodule</title>
-<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
-<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="144.13,-24.27 71.87,-24.27 71.87,0 144.13,0 144.13,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="108" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
 </g>
 <!-- Subroutine -->
 <g id="node3" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
-<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="231.63,-24.27 162.37,-24.27 162.37,0 231.63,0 231.63,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="197" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node4" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
-<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="306.26,-24.27 249.74,-24.27 249.74,0 306.26,0 306.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="278" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Program -->
 <g id="node5" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
-<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="381.26,-24.27 324.74,-24.27 324.74,0 381.26,0 381.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="353" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node6" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
-<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="502.88,-24.27 399.12,-24.27 399.12,0 502.88,0 502.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="451" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -697,7 +709,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-mint~2"></span>
+              <span class="anchor" id="variable-mint"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -709,7 +721,7 @@ parameter
 <td> =</td>
                 <td>100</td>
             <td>
-                <p>Mininimum temperature to make calculations</p>
+                <p>Minimum temperature [K]; tracing stops below it.</p>
             </td>
         </tr>
     </tbody>
@@ -733,7 +745,7 @@ parameter
       </h3>
     </div>
     <div class="card-body">
-      
+      <p>Stored points and stability status for a multiphase isopleth.</p><a href="../type/generalizedisozline.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
         <h4>Components</h4>
           <table class="table table-striped varlist">
@@ -760,7 +772,7 @@ parameter
 <td> =</td>
                 <td>.false.</td>
             <td>
-
+<p>Reserved flag; currently never set by <a href="../proc/create_generalized_isoz_line.html">create_generalized_isoz_line</a>.</p>
             </td>
         </tr>
         <tr>
@@ -777,12 +789,12 @@ parameter
 <td> =</td>
                 <td>.false.</td>
             <td>
-
+<p><code>.true.</code> if a trial composition gave <script type="math/tex">tm < -0.01</script>, which stops the line.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-points~14"></span>
+              <span class="anchor" id="variable-points~10"></span>
               type(<a href='../type/mpequilibriumstate.html'>MPEquilibriumState</a>),
             </td>
               <td>public,</td>
@@ -794,7 +806,7 @@ parameter
                 <td></td>
                 <td></td>
             <td>
-
+<p>Converged multiphase states along the line.</p>
             </td>
         </tr>
         <tr>
@@ -811,7 +823,7 @@ parameter
                 <td></td>
                 <td></td>
             <td>
-
+<p>Trial composition with the lowest <script type="math/tex">tm</script>; allocated only when <code>found_unstability</code>.</p>
             </td>
         </tr>
     </tbody>
@@ -833,8 +845,7 @@ parameter
 </h3></div>
     <div class="card-body">
           
-  <p>Create a new generalized line.
-This function initializes a new instance of the GeneralizedLine type.</p>
+  <p>Start a generalized multiphase isopleth from an existing phase state.</p><a href="../proc/create_generalized_isoz_line.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -849,7 +860,7 @@ This function initializes a new instance of the GeneralizedLine type.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~67"></span>
+              <span class="anchor" id="variable-model~40"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -859,12 +870,12 @@ This function initializes a new instance of the GeneralizedLine type.</p>
             <td>::</td>
             <td><strong>model</strong></td>
             <td>
-
+<p>EOS used for phase properties.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~106"></span>
+              <span class="anchor" id="variable-nc~70"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -874,12 +885,12 @@ This function initializes a new instance of the GeneralizedLine type.</p>
             <td>::</td>
             <td><strong>nc</strong></td>
             <td>
-
+<p>Number of components; must equal <code>size(z)</code>.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-np~21"></span>
+              <span class="anchor" id="variable-np~30"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -889,7 +900,7 @@ This function initializes a new instance of the GeneralizedLine type.</p>
             <td>::</td>
             <td><strong>np</strong></td>
             <td>
-
+<p>Number of main phases in the initial state.</p>
             </td>
         </tr>
         <tr>
@@ -904,12 +915,12 @@ This function initializes a new instance of the GeneralizedLine type.</p>
             <td>::</td>
             <td><strong>nstab</strong></td>
             <td>
-
+<p>Number of stability trial compositions supplied.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kinds_x~15"></span>
+              <span class="anchor" id="variable-kinds_x~19"></span>
               character(len=14),
             </td>
 <td>intent(in)</td>
@@ -919,12 +930,12 @@ This function initializes a new instance of the GeneralizedLine type.</p>
             <td>::</td>
             <td><strong>kinds_x</strong>(np)</td>
             <td>
-
+<p>Phase kind for each main phase.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kind_w~16"></span>
+              <span class="anchor" id="variable-kind_w~19"></span>
               character(len=14),
             </td>
 <td>intent(in)</td>
@@ -934,12 +945,12 @@ This function initializes a new instance of the GeneralizedLine type.</p>
             <td>::</td>
             <td><strong>kind_w</strong></td>
             <td>
-
+<p>Kind of the reference phase.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z~47"></span>
+              <span class="anchor" id="variable-z~43"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -949,7 +960,7 @@ This function initializes a new instance of the GeneralizedLine type.</p>
             <td>::</td>
             <td><strong>z</strong>(nc)</td>
             <td>
-
+<p>Overall feed composition.</p>
             </td>
         </tr>
         <tr>
@@ -964,7 +975,7 @@ This function initializes a new instance of the GeneralizedLine type.</p>
             <td>::</td>
             <td><strong>x_l0</strong>(np,nc)</td>
             <td>
-
+<p>Initial main-phase compositions.</p>
             </td>
         </tr>
         <tr>
@@ -979,12 +990,12 @@ This function initializes a new instance of the GeneralizedLine type.</p>
             <td>::</td>
             <td><strong>w0</strong>(nc)</td>
             <td>
-
+<p>Initial reference-phase composition.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-betas0~3"></span>
+              <span class="anchor" id="variable-betas0~4"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -994,7 +1005,7 @@ This function initializes a new instance of the GeneralizedLine type.</p>
             <td>::</td>
             <td><strong>betas0</strong>(np+1)</td>
             <td>
-
+<p>Main-phase fractions followed by the reference-phase fraction.</p>
             </td>
         </tr>
         <tr>
@@ -1009,7 +1020,7 @@ This function initializes a new instance of the GeneralizedLine type.</p>
             <td>::</td>
             <td><strong>P0</strong></td>
             <td>
-
+<p>Initial pressure [bar].</p>
             </td>
         </tr>
         <tr>
@@ -1024,7 +1035,7 @@ This function initializes a new instance of the GeneralizedLine type.</p>
             <td>::</td>
             <td><strong>T0</strong></td>
             <td>
-
+<p>Initial temperature [K].</p>
             </td>
         </tr>
         <tr>
@@ -1039,7 +1050,7 @@ This function initializes a new instance of the GeneralizedLine type.</p>
             <td>::</td>
             <td><strong>spec_variable</strong></td>
             <td>
-
+<p>Index in <script type="math/tex">X=[\ln K^l_i, \beta^l, \beta^w, \ln P, \ln T]</script> of the variable held fixed along the line.</p>
             </td>
         </tr>
         <tr>
@@ -1054,12 +1065,12 @@ This function initializes a new instance of the GeneralizedLine type.</p>
             <td>::</td>
             <td><strong>spec_variable_value</strong></td>
             <td>
-
+<p>Fixed value of <code>X(spec_variable)</code> (log for <script type="math/tex">P</script>, <script type="math/tex">T</script>).</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns0~5"></span>
+              <span class="anchor" id="variable-ns0~7"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -1069,12 +1080,12 @@ This function initializes a new instance of the GeneralizedLine type.</p>
             <td>::</td>
             <td><strong>ns0</strong></td>
             <td>
-
+<p>Index in <code>X</code> of the initial continuation (moving) variable.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-s0~5"></span>
+              <span class="anchor" id="variable-s0~4"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1084,7 +1095,7 @@ This function initializes a new instance of the GeneralizedLine type.</p>
             <td>::</td>
             <td><strong>S0</strong></td>
             <td>
-
+<p>Initial continuation specification value.</p>
             </td>
         </tr>
         <tr>
@@ -1099,7 +1110,7 @@ This function initializes a new instance of the GeneralizedLine type.</p>
             <td>::</td>
             <td><strong>dS0</strong></td>
             <td>
-
+<p>Initial signed continuation step.</p>
             </td>
         </tr>
         <tr>
@@ -1114,12 +1125,12 @@ This function initializes a new instance of the GeneralizedLine type.</p>
             <td>::</td>
             <td><strong>ws_stab</strong>(nstab,nc)</td>
             <td>
-
+<p>Trial compositions for stability analysis; required when <code>nstab &gt; 0</code>.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-max_points~6"></span>
+              <span class="anchor" id="variable-max_points~4"></span>
               integer,
             </td>
 <td>intent(in),</td>
@@ -1129,7 +1140,7 @@ This function initializes a new instance of the GeneralizedLine type.</p>
             <td>::</td>
             <td><strong>max_points</strong></td>
             <td>
-
+<p>Maximum number of points to continue.</p>
             </td>
         </tr>
     </tbody>
@@ -1154,7 +1165,7 @@ This function initializes a new instance of the GeneralizedLine type.</p>
 </h3></div>
     <div class="card-body">
           
-  <p>Function to solve at each point of a multi-phase envelope.</p>
+  <p>Function to solve at each point of a multi-phase envelope.</p><a href="../proc/pt_f_np~3.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -1169,7 +1180,7 @@ This function initializes a new instance of the GeneralizedLine type.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~68"></span>
+              <span class="anchor" id="variable-model~41"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -1184,7 +1195,7 @@ This function initializes a new instance of the GeneralizedLine type.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z~48"></span>
+              <span class="anchor" id="variable-z~44"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1199,7 +1210,7 @@ This function initializes a new instance of the GeneralizedLine type.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-np~22"></span>
+              <span class="anchor" id="variable-np~31"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -1214,7 +1225,7 @@ This function initializes a new instance of the GeneralizedLine type.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kinds_x~16"></span>
+              <span class="anchor" id="variable-kinds_x~20"></span>
               character(len=14),
             </td>
 <td>intent(in)</td>
@@ -1229,7 +1240,7 @@ This function initializes a new instance of the GeneralizedLine type.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kind_w~17"></span>
+              <span class="anchor" id="variable-kind_w~20"></span>
               character(len=14),
             </td>
 <td>intent(in)</td>
@@ -1244,7 +1255,7 @@ This function initializes a new instance of the GeneralizedLine type.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~65"></span>
+              <span class="anchor" id="variable-x~56"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1319,7 +1330,7 @@ This function initializes a new instance of the GeneralizedLine type.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-f~42"></span>
+              <span class="anchor" id="variable-f~32"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1334,7 +1345,7 @@ This function initializes a new instance of the GeneralizedLine type.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-df~16"></span>
+              <span class="anchor" id="variable-df~18"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1359,7 +1370,7 @@ This function initializes a new instance of the GeneralizedLine type.</p>
 </h3></div>
     <div class="card-body">
           
-  <p>Function to solve the multiphase flash problem.</p>
+  <p>Function to solve the multiphase flash problem.</p><a href="../proc/solve_generalized_point.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -1374,7 +1385,7 @@ This function initializes a new instance of the GeneralizedLine type.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~69"></span>
+              <span class="anchor" id="variable-model~42"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -1389,7 +1400,7 @@ This function initializes a new instance of the GeneralizedLine type.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z~49"></span>
+              <span class="anchor" id="variable-z~45"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1404,7 +1415,7 @@ This function initializes a new instance of the GeneralizedLine type.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-np~23"></span>
+              <span class="anchor" id="variable-np~32"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -1419,7 +1430,7 @@ This function initializes a new instance of the GeneralizedLine type.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kinds_x~17"></span>
+              <span class="anchor" id="variable-kinds_x~21"></span>
               character(len=14),
             </td>
 <td>intent(in)</td>
@@ -1434,7 +1445,7 @@ This function initializes a new instance of the GeneralizedLine type.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kind_w~18"></span>
+              <span class="anchor" id="variable-kind_w~21"></span>
               character(len=14),
             </td>
 <td>intent(in)</td>
@@ -1449,7 +1460,7 @@ This function initializes a new instance of the GeneralizedLine type.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~66"></span>
+              <span class="anchor" id="variable-x~57"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -1524,7 +1535,7 @@ This function initializes a new instance of the GeneralizedLine type.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-max_iters~10"></span>
+              <span class="anchor" id="variable-max_iters~12"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -1539,7 +1550,7 @@ This function initializes a new instance of the GeneralizedLine type.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-f~43"></span>
+              <span class="anchor" id="variable-f~33"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -1554,7 +1565,7 @@ This function initializes a new instance of the GeneralizedLine type.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-df~17"></span>
+              <span class="anchor" id="variable-df~19"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -1569,7 +1580,7 @@ This function initializes a new instance of the GeneralizedLine type.</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iters~16"></span>
+              <span class="anchor" id="variable-iters~18"></span>
               integer,
             </td>
 <td>intent(out)</td>
@@ -1605,14 +1616,14 @@ This function initializes a new instance of the GeneralizedLine type.</p>
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

@@ -1,18 +1,28 @@
 module legacy_ar_models
-   !! Legacy Thermodynamic routines
-   !! Module for a cubic eos system, made with the intention to keep
-   !! compatiblity with legacy codes but with a better structure.
-   !! this should be later adapted into a simple oop system where an eos object
-   !! stores the relevant parameters (or some functional oriented approach)
+   !! # Legacy cubic EOS procedures
+   !! Compatibility layer for older applications that use global EOS state and procedure pointers.
+   !!
+   !! # Description
+   !! This module stores model configuration, component data, and mixing
+   !! parameters in module variables, then dispatches properties through the
+   !! `ar_fun` and `vinit` pointers from `ar_interface`. It is retained for
+   !! compatibility only: it is not reentrant or thread-safe, and new code
+   !! should use the object-oriented model types exported by `yaeos`.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! call setup(nc, nmodel, ntdep, ncomb)
+   !! call PR78_factory(z, ac, b, Tc, Pc, omega, k)
+   !! ```
    use yaeos__constants, only: pr, R
    use ar_interface, only: ar_fun, vinit
    implicit none
 
    ! Model settings
-   integer :: thermo_model !! Which thermodynamic model to use
-   integer :: tdep         !! Temperature dependance of kij
-   integer :: mixing_rule  !! What mixing rule to use
-   integer :: nc           !! Number of components
+   integer :: thermo_model !! Legacy integer selector for the cubic EOS alpha/covolume formulation.
+   integer :: tdep !! Legacy selector for temperature-dependent binary interactions.
+   integer :: mixing_rule !! Legacy integer selector for the mixing rule.
+   integer :: nc !! Number of active components.
 
    ! Mole fractions
    real(pr), allocatable :: z(:) !! Mole fractions vector
@@ -24,21 +34,23 @@ module legacy_ar_models
    real(pr), allocatable :: tc(:) !! Critical temperature [K]
    real(pr), allocatable :: pc(:) !! Critical pressure [bar]
    real(pr), allocatable :: dc(:) !! Critical density [mol/L]
-   real(pr), allocatable :: w(:)  !! Acentric factor
+   real(pr), allocatable :: w(:) !! Acentric factor
 
    ! Model parameters
-   real(pr), allocatable :: ac(:)   !! Critical attractive parameter [bar (L/mol)^2]
-   real(pr), allocatable :: b(:)    !! repulsive parameter [L]
+   real(pr), allocatable :: ac(:) !! Critical attractive parameter [bar (L/mol)^2]
+   real(pr), allocatable :: b(:) !! repulsive parameter [L]
    real(pr), allocatable :: del1(:) !! $$\delta_1$$ parameter
-   real(pr), allocatable :: k(:)    !! Attractive parameter constant
+   real(pr), allocatable :: k(:) !! Attractive parameter constant
 
    ! Classic VdW mixing rules parameters
    real(pr), allocatable :: kij(:, :) !! Attractive BIP
    real(pr), allocatable :: lij(:, :) !! Repulsive BIP
-   real(pr), allocatable :: bij(:, :)
+   real(pr), allocatable :: bij(:, :) !! Pair covolume matrix used by quadratic mixing.
 
    ! T dependant mixing rule parameters
-   real(pr), allocatable :: kij0(:, :), kinf(:, :), tstar(:, :)
+   real(pr), allocatable :: kij0(:, :) !! Low-temperature binary interaction coefficients.
+   real(pr), allocatable :: kinf(:, :) !! Asymptotic binary interaction coefficients.
+   real(pr), allocatable :: tstar(:, :) !! Reference temperatures for the binary interaction law.
    ! ==========================================================================
 
 contains
@@ -46,9 +58,18 @@ contains
    !  Initializer routines
    ! --------------------------------------------------------------------------
    subroutine setup(n, nmodel, ntdep, ncomb)
-      !! Setup the basics variables that describe the model.
-      ! TODO: With a more integrated legacy code maybe this can be
-      !       avoided or at least better set up
+      !! # setup
+      !! Initialize the global configuration and allocate legacy model arrays.
+      !!
+      !! # Description
+      !! Sets component count, EOS selector, temperature-dependence selector,
+      !! and mixing-rule selector, then reallocates the shared parameter arrays.
+      !! This routine resets the global legacy state and is not thread-safe.
+      !!
+      !! # Examples
+      !! ```fortran
+      !! call setup(nc, model_code, temperature_dependence_code, mixing_code)
+      !! ```
       integer, intent(in) :: n !! Number of components
       integer, intent(in) :: nmodel !! Number of model
       integer, intent(in) :: ntdep !! Kij dependant of temperature
@@ -89,23 +110,32 @@ contains
    end subroutine setup
 
    subroutine PR78_factory(moles_in, ac_in, b_in, tc_in, pc_in, w_in, k_in)
+        !! # PR78_factory
+        !!
+        !! # Description
         !! PengRobinson 78 factory
         !!
         !! Takes either the critical parameters or the fitted model parameters
         !! and gets ones in base of the others
-        real(pr), intent(in) :: moles_in(nc)
-        real(pr), optional, intent(in) :: ac_in(nc)
-        real(pr), optional, intent(in) :: b_in(nc)
-        real(pr), optional, intent(in) :: tc_in(nc)
-        real(pr), optional, intent(in) :: pc_in(nc)
-        real(pr), optional, intent(in) :: w_in(nc)
-        real(pr), optional, intent(in) :: k_in(nc)
+        real(pr), intent(in) :: moles_in(nc) !! Component mole amounts or feed composition used to initialize the legacy model.
+        real(pr), optional, intent(in) :: ac_in(nc) !! Optional precomputed critical attractive parameters.
+        real(pr), optional, intent(in) :: b_in(nc) !! Optional precomputed covolumes.
+        real(pr), optional, intent(in) :: tc_in(nc) !! Optional critical temperatures [K].
+        real(pr), optional, intent(in) :: pc_in(nc) !! Optional critical pressures [bar].
+        real(pr), optional, intent(in) :: w_in(nc) !! Optional acentric factors.
+        real(pr), optional, intent(in) :: k_in(nc) !! Optional alpha-function parameters.
 
-        integer :: i
+        integer :: i !! Loop/index variable.
 
-        logical :: params_spec, critical_spec
-        real(pr) :: zc(nc), oma(nc), omb(nc)
-        real(pr) :: vceos(nc), al, be, ga(nc)
+        logical :: params_spec
+        logical :: critical_spec
+        real(pr) :: zc(nc)
+        real(pr) :: oma(nc)
+        real(pr) :: omb(nc)
+        real(pr) :: vceos(nc)
+        real(pr) :: al
+        real(pr) :: be
+        real(pr) :: ga(nc)
         real(pr) :: RTc(nc)
 
         ar_fun => ar_srkpr
@@ -156,23 +186,32 @@ contains
    end subroutine
 
    subroutine PR76_factory(moles_in, ac_in, b_in, tc_in, pc_in, w_in, k_in)
+      !! # PR76_factory
+      !!
+      !! # Description
       !! PengRobinson 76 factory
       !!
       !! Takes either the critical parameters or the fitted model parameters
       !! and gets ones in base of the others
-      real(pr), intent(in) :: moles_in(nc)
-      real(pr), optional, intent(in) :: ac_in(nc)
-      real(pr), optional, intent(in) :: b_in(nc)
-      real(pr), optional, intent(in) :: tc_in(nc)
-      real(pr), optional, intent(in) :: pc_in(nc)
-      real(pr), optional, intent(in) :: w_in(nc)
-      real(pr), optional, intent(in) :: k_in(nc)
+      real(pr), intent(in) :: moles_in(nc) !! Component mole amounts or feed composition used to initialize the legacy model.
+      real(pr), optional, intent(in) :: ac_in(nc) !! Optional precomputed critical attractive parameters.
+      real(pr), optional, intent(in) :: b_in(nc) !! Optional precomputed covolumes.
+      real(pr), optional, intent(in) :: tc_in(nc) !! Optional critical temperatures [K].
+      real(pr), optional, intent(in) :: pc_in(nc) !! Optional critical pressures [bar].
+      real(pr), optional, intent(in) :: w_in(nc) !! Optional acentric factors.
+      real(pr), optional, intent(in) :: k_in(nc) !! Optional alpha-function parameters.
 
-      integer :: i
+      integer :: i !! Loop/index variable.
 
-      logical :: params_spec, critical_spec
-      real(pr) :: zc(nc), oma(nc), omb(nc)
-      real(pr) :: vceos(nc), al, be, ga(nc)
+      logical :: params_spec
+      logical :: critical_spec
+      real(pr) :: zc(nc)
+      real(pr) :: oma(nc)
+      real(pr) :: omb(nc)
+      real(pr) :: vceos(nc)
+      real(pr) :: al
+      real(pr) :: be
+      real(pr) :: ga(nc)
       real(pr) :: RTc(nc)
 
       ar_fun => ar_srkpr
@@ -220,24 +259,34 @@ contains
    end subroutine
 
    subroutine SRK_factory(moles_in, ac_in, b_in, tc_in, pc_in, w_in, k_in)
+        !! # SRK_factory
+        !!
+        !! # Description
         !! SoaveRedlichKwong factory
         !!
         !! Takes either the critical parameters or the fitted model parameters
         !! and gets ones in base of the others
-        real(pr), intent(in) :: moles_in(nc)
-        real(pr), optional, intent(in) :: ac_in(nc)
-        real(pr), optional, intent(in) :: b_in(nc)
-        real(pr), optional, intent(in) :: tc_in(nc)
-        real(pr), optional, intent(in) :: pc_in(nc)
-        real(pr), optional, intent(in) :: w_in(nc)
-        real(pr), optional, intent(in) :: k_in(nc)
+        real(pr), intent(in) :: moles_in(nc) !! Component mole amounts or feed composition used to initialize the legacy model.
+        real(pr), optional, intent(in) :: ac_in(nc) !! Optional precomputed critical attractive parameters.
+        real(pr), optional, intent(in) :: b_in(nc) !! Optional precomputed covolumes.
+        real(pr), optional, intent(in) :: tc_in(nc) !! Optional critical temperatures [K].
+        real(pr), optional, intent(in) :: pc_in(nc) !! Optional critical pressures [bar].
+        real(pr), optional, intent(in) :: w_in(nc) !! Optional acentric factors.
+        real(pr), optional, intent(in) :: k_in(nc) !! Optional alpha-function parameters.
 
-        logical :: params_spec, critical_spec
-        real(pr) :: zc(nc), oma(nc), omb(nc)
-        real(pr) :: vceos(nc), al, be, ga(nc)
+        logical :: params_spec
+        logical :: critical_spec
+        real(pr) :: zc(nc)
+        real(pr) :: oma(nc)
+        real(pr) :: omb(nc)
+        real(pr) :: vceos(nc)
+        real(pr) :: al
+        real(pr) :: be
+        real(pr) :: ga(nc)
         real(pr) :: RTc(nc)
 
-        integer :: i, j
+        integer :: i !! Loop index `i`.
+        integer :: j !! Loop index `j`.
 
         ar_fun => ar_srkpr
         vinit => cubic_v0
@@ -280,13 +329,17 @@ contains
    end subroutine
 
    subroutine get_Zc_OMa_OMb(del1, Zc, OMa, OMb)
+      !! # get_Zc_OMa_OMb
+      !!
+      !! # Description
       !! Calculate Zc, OMa and OMb from the delta_1 parameter.
       real(pr), intent(in)  :: del1(:) !! delta_1 parameter
-      real(pr), intent(out) :: Zc(:)   !! Critical compressibility factor
-      real(pr), intent(out) :: OMa(:)  !! OMa
-      real(pr), intent(out) :: OMb(:)  !! OMb
+      real(pr), intent(out) :: Zc(:) !! Critical compressibility factor
+      real(pr), intent(out) :: OMa(:) !! OMa
+      real(pr), intent(out) :: OMb(:) !! OMb
 
-      real(pr) :: d1(size(del1)), y(size(del1))
+      real(pr) :: d1(size(del1))
+      real(pr) :: y(size(del1)) !! Auxiliary root \(y\) of the cubic critical condition.
 
       d1 = (1._pr + del1**2._pr)/(1._pr + del1)
       y = 1._pr + (2._pr*(1._pr + del1))**(1.0_pr/3._pr) + (4._pr/(1._pr + del1))**(1.0_pr/3)
@@ -300,6 +353,9 @@ contains
    !  Ar Functions
    ! --------------------------------------------------------------------------
    subroutine ar_srkpr(z, V, T, Ar, ArV, ArTV, ArV2, Arn, ArVn, ArTn, Arn2)
+      !! # ar_srkpr
+      !!
+      !! # Description
       !! Wrapper subroutine to the SRK/PR Residula Helmholtz function to
       !! use the general interface
       real(pr), intent(in) :: z(:) !! Number of moles
@@ -324,6 +380,12 @@ contains
    end subroutine
    
    subroutine ar_rkpr(z, V, T, Ar, ArV, ArTV, ArV2, Arn, ArVn, ArTn, Arn2)
+      !! # ar_rkpr
+      !! Evaluate residual Helmholtz derivatives for the legacy RKPR model.
+      !!
+      !! # Description
+      !! Dispatches the requested properties to the legacy RKPR Helmholtz
+      !! expression using the current module-global component and mixing data.
       real(pr), intent(in) :: z(:) !! Number of moles
       real(pr), intent(in) :: v !! Volume [L]
       real(pr), intent(in) :: t !! Temperature [K]
@@ -346,6 +408,12 @@ contains
    end subroutine
    
    subroutine HelmSRKPR(nc, ND, NT, rn, V, T, Ar, ArV, ArTV, ArV2, Arn, ArVn, ArTn, Arn2)
+      !! # HelmSRKPR
+      !! Evaluate the SRK/PR-family residual Helmholtz expression and derivatives.
+      !!
+      !! # Description
+      !! Combines residual Helmholtz contributions and requested derivatives
+      !! for the legacy cubic-model selectors.
       integer, intent(in) :: nc !! Number of components
       integer, intent(in) :: nd !! Compositional derivatives
       integer, intent(in) :: nt !! Temperature derivatives
@@ -361,19 +429,41 @@ contains
       real(pr), intent(out) :: ArVn(nc) !! dAr2/dVn
       real(pr), intent(out) :: ArTn(nc) !! dAr2/dTn
       real(pr), intent(out) :: Arn2(nc, nc) !! dAr2/dn2
-      real(pr) :: ArT, ArTT
+      real(pr) :: ArT
+      real(pr) :: ArTT
 
-      real(pr) :: Bmix, dBi(nc), dBij(nc, nc)
-      real(pr) :: D, dDi(nc), dDij(nc, nc), dDiT(nc), dDdT, dDdT2
+      real(pr) :: Bmix !! Mixture covolume.
+      real(pr) :: dBi(nc) !! Mole-number gradient of the mixture covolume.
+      real(pr) :: dBij(nc, nc) !! Mole-number Hessian of the mixture covolume.
+      real(pr) :: D !! Attractive mixture parameter.
+      real(pr) :: dDi(nc) !! Mole-number gradient of the attractive mixture parameter.
+      real(pr) :: dDij(nc, nc) !! Mole-number Hessian of the attractive mixture parameter.
+      real(pr) :: dDiT(nc)
+      real(pr) :: dDdT !! Temperature derivative of the attractive mixture parameter.
+      real(pr) :: dDdT2 !! Second temperature derivative of the attractive mixture parameter.
 
-      real(pr) :: totn, d1, d2
+      real(pr) :: totn
+      real(pr) :: d1
+      real(pr) :: d2
 
-      real(pr) :: f, g, fv, fB, gv, fv2, gv2, AUX, FFB, FFBV, FFBB
+      real(pr) :: f
+      real(pr) :: g
+      real(pr) :: fv
+      real(pr) :: fB
+      real(pr) :: gv
+      real(pr) :: fv2
+      real(pr) :: gv2
+      real(pr) :: AUX
+      real(pr) :: FFB
+      real(pr) :: FFBV
+      real(pr) :: FFBB
 
 
-      integer :: i, j
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
 
-      real(pr) :: b_v, a
+      real(pr) :: b_v
+      real(pr) :: a
 
 
       TOTN = sum(rn)
@@ -429,30 +519,65 @@ contains
    end subroutine HelmSRKPR
 
    subroutine HelmRKPR(nco, NDE, NTD, rn, V, T, Ar, ArV, ArTV, ArV2, Arn, ArVn, ArTn, Arn2)
+      !! # HelmRKPR
+      !!
+      !! # Description
       !! Calculate the reduced residual Helmholtz Energy and it's derivatives with the RKPR EOS
-      integer, intent(in) :: nco
-      integer, intent(in) :: NDE
-      integer, intent(in) :: NTD
-      real(pr), intent(in) :: rn(nco)
-      real(pr), intent(in) :: V
-      real(pr), intent(in) :: T
+      integer, intent(in) :: nco !! Number of components in the mixture.
+      integer, intent(in) :: NDE !! Compositional derivative order; `2` also computes `Arn2`.
+      integer, intent(in) :: NTD !! Flag selecting temperature-dependent derivative calculations.
+      real(pr), intent(in) :: rn(nco) !! Component mole amounts used in mixture rules.
+      real(pr), intent(in) :: V !! Total volume [L].
+      real(pr), intent(in) :: T !! Temperature [K].
 
-      real(pr), intent(out) :: Ar, ArV, ArTV, ArV2
-      real(pr), intent(out) :: Arn(nco), ArVn(nco), ArTn(nco), Arn2(nco, nco)
+      real(pr), intent(out) :: Ar !! Residual Helmholtz energy.
+      real(pr), intent(out) :: ArV !! First volume derivative of residual Helmholtz energy.
+      real(pr), intent(out) :: ArTV !! Mixed volume-temperature derivative of residual Helmholtz energy.
+      real(pr), intent(out) :: ArV2 !! Second volume derivative of residual Helmholtz energy.
+      real(pr), intent(out) :: Arn(nco) !! Mole-number gradient of residual Helmholtz energy.
+      real(pr), intent(out) :: ArVn(nco) !! Mixed volume/mole-number derivative of residual Helmholtz energy.
+      real(pr), intent(out) :: ArTn(nco) !! Mixed temperature/mole-number derivative of residual Helmholtz energy.
+      real(pr), intent(out) :: Arn2(nco, nco) !! Mole-number Hessian of residual Helmholtz energy.
 
-      real(pr) :: totn
-      real(pr) :: Bmix, dBi(nco), dBij(nco, nco), dD1i(nco), dD1ij(nco, nco)
-      real(pr) :: D, dDi(nco), dDij(nco, nco), dDiT(nco), dDdT, dDdT2
-      real(pr) :: D1, D2
+      real(pr) :: totn !! Total number of moles.
+      real(pr) :: Bmix !! Mixture covolume.
+      real(pr) :: dBi(nco) !! Mole-number gradient of the mixture covolume.
+      real(pr) :: dBij(nco, nco) !! Mole-number Hessian of the mixture covolume.
+      real(pr) :: dD1i(nco) !! Mole-number gradient of the cubic denominator parameter.
+      real(pr) :: dD1ij(nco, nco) !! Mole-number Hessian of the cubic denominator parameter.
+      real(pr) :: D !! Attractive mixture parameter.
+      real(pr) :: dDi(nco) !! Mole-number gradient of the attractive mixture parameter.
+      real(pr) :: dDij(nco, nco) !! Mole-number Hessian of the attractive mixture parameter.
+      real(pr) :: dDiT(nco)
+      real(pr) :: dDdT !! Temperature derivative of the attractive mixture parameter.
+      real(pr) :: dDdT2 !! Second temperature derivative of the attractive mixture parameter.
+      real(pr) :: D1
+      real(pr) :: D2
 
       ! Auxiliar functions for Ar
-      real(pr) :: f, g, fv, fB, gv, fv2, gv2, AUX, FFB, FFBV, FFBB
+      real(pr) :: f
+      real(pr) :: g
+      real(pr) :: fv
+      real(pr) :: fB
+      real(pr) :: gv
+      real(pr) :: fv2
+      real(pr) :: gv2
+      real(pr) :: AUX
+      real(pr) :: FFB
+      real(pr) :: FFBV
+      real(pr) :: FFBB
       ! Extra auxiliar functions for RKPR
-      real(pr) :: auxD2, fD1, fBD1, fVD1, fD1D1
+      real(pr) :: auxD2
+      real(pr) :: fD1
+      real(pr) :: fBD1
+      real(pr) :: fVD1
+      real(pr) :: fD1D1
 
-      real(pr) :: ArT, ArTT
+      real(pr) :: ArT
+      real(pr) :: ArTT
 
-      integer :: i, j
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
 
       nc = nco
       TOTN = sum(rn)
@@ -527,15 +652,27 @@ contains
    end subroutine HelmRKPR
 
    subroutine ArVnder(nc, NDER, NTEMP, z, V, T, Ar, ArV, ArTV, ArV2, Arn, ArVn, ArTn, Arn2)
-      integer, intent(in) :: nc
-      integer, intent(in) :: nder ! Get compositional derivatives
-      integer, intent(in) :: ntemp ! Get temperature derivatives
-      real(pr), intent(in) :: z(nc)
-      real(pr), intent(in) :: V
-      real(pr), intent(in) :: T
-      real(pr), intent(out) :: ar, arv, artv, arv2
-      real(pr), dimension(size(z)), intent(out) :: Arn, ArVn, ArTn
-      real(pr), intent(out) :: Arn2(size(z),size(z))
+      !! # ArVnder
+      !! Dispatch the configured legacy residual Helmholtz implementation.
+      !!
+      !! # Description
+      !! Selects the active residual Helmholtz callback through `ar_fun` and
+      !! returns the requested residual energy derivatives. `NDER` and `NTEMP`
+      !! control the derivative sets supported by the selected implementation.
+      integer, intent(in) :: nc !! Number of active components.
+      integer, intent(in) :: nder !! Get compositional derivatives
+      integer, intent(in) :: ntemp !! Get temperature derivatives
+      real(pr), intent(in) :: z(nc) !! Component mole amounts/composition vector.
+      real(pr), intent(in) :: V !! Total volume [L].
+      real(pr), intent(in) :: T !! Temperature [K].
+      real(pr), intent(out) :: ar !! Residual Helmholtz energy.
+      real(pr), intent(out) :: arv !! First volume derivative of residual Helmholtz energy.
+      real(pr), intent(out) :: artv !! Mixed volume-temperature derivative of residual Helmholtz energy.
+      real(pr), intent(out) :: arv2 !! Second volume derivative of residual Helmholtz energy.
+      real(pr), dimension(size(z)), intent(out) :: Arn !! Composition gradient of residual Helmholtz energy.
+      real(pr), dimension(size(z)), intent(out) :: ArVn !! Mixed volume-composition derivatives.
+      real(pr), dimension(size(z)), intent(out) :: ArTn !! Mixed temperature-composition derivatives.
+      real(pr), intent(out) :: Arn2(size(z),size(z)) !! Composition Hessian of residual Helmholtz energy.
 
       vinit => cubic_v0
 
@@ -547,15 +684,20 @@ contains
    !  Attractive parameter routines
    ! --------------------------------------------------------------------------
    subroutine aTder(ac, Tc, k, T, a, dadT, dadT2)
-      ! Given ac,Tc and the k parameter of the RKPR correlation, as well as the actual T,
-      ! this subroutine calculates a(T) and its first and second derivatives with T.
-      real(pr), intent(in) :: ac
-      real(pr), intent(in) :: Tc
-      real(pr), intent(in) :: k
-      real(pr), intent(in) :: T
-      real(pr), intent(out) :: a
-      real(pr), intent(out) :: dadT
-      real(pr), intent(out) :: dadT2
+      !! # aTder
+      !! Evaluate the configured cubic alpha correction and its temperature derivatives.
+      !!
+      !! # Description
+      !! Uses the global EOS selector to choose the Soave-family or RKPR alpha
+      !! correlation, then returns the attractive parameter at `T` and its
+      !! first two temperature derivatives.
+      real(pr), intent(in) :: ac !! Pure-component critical attractive parameter.
+      real(pr), intent(in) :: Tc !! Pure-component critical temperature [K].
+      real(pr), intent(in) :: k !! Alpha-function parameter.
+      real(pr), intent(in) :: T !! Temperature [K].
+      real(pr), intent(out) :: a !! Attractive parameter at the state.
+      real(pr), intent(out) :: dadT !! First temperature derivative of the attractive parameter.
+      real(pr), intent(out) :: dadT2 !! Second temperature derivative of the attractive parameter.
 
       real(pr) :: Tr
 
@@ -573,15 +715,27 @@ contains
    end subroutine aTder
 
    subroutine aijTder(NTD, nc, T, aij, daijdT, daijdT2)
-      integer, intent(in) :: ntd
-      integer, intent(in) :: nc
-      real(pr), intent(in) :: T
-      real(pr), intent(out) :: aij(nc, nc), daijdT(nc, nc), daijdT2(nc, nc)
+      !! # aijTder
+      !! Build pair attractive parameters and their temperature derivatives.
+      !!
+      !! # Description
+      !! Evaluates each pure attractive parameter, applies the configured
+      !! binary interaction law, and symmetrizes the resulting pair matrix.
+      integer, intent(in) :: ntd !! Flag selecting temperature-dependent derivative calculations.
+      integer, intent(in) :: nc !! Number of active components.
+      real(pr), intent(in) :: T !! Temperature [K].
+      real(pr), intent(out) :: aij(nc, nc) !! Pair attractive-parameter matrix.
+      real(pr), intent(out) :: daijdT(nc, nc) !! Temperature derivative of the pair attractive parameters.
+      real(pr), intent(out) :: daijdT2(nc, nc) !! Second temperature derivative of the pair attractive parameters.
 
-      real(pr) :: ai(nc), daidT(nc), daidT2(nc)
+      real(pr) :: ai(nc) !! Pure-component attractive parameters.
+      real(pr) :: daidT(nc)
+      real(pr) :: daidT2(nc)
 
-      real(pr) :: aux(nc, nc), ratK(nc, nc)
-      integer :: i, j
+      real(pr) :: aux(nc, nc) !! Intermediate accumulator.
+      real(pr) :: ratK(nc, nc)
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
 
       if (tdep .ge. 1) then
          Kij = 0.0D0
@@ -614,22 +768,32 @@ contains
    end subroutine aijTder
 
    subroutine DandTnder(NTD, nc, T, rn, D, dDi, dDiT, dDij, dDdT, dDdT2)
-      integer, intent(in) :: ntd
-      integer, intent(in) :: nc
+      !! # DandTnder
+      !! Evaluate the legacy mixture attractive parameter and derivatives.
+      !!
+      !! # Description
+      !! Combines the `aij` matrix with component mole amounts and, when
+      !! `NTD` enables temperature dependence, evaluates temperature gradients.
+      integer, intent(in) :: ntd !! Flag selecting temperature-dependent derivative calculations.
+      integer, intent(in) :: nc !! Number of active components.
 
-      real(pr), intent(in) :: T
-      real(pr), intent(in) :: rn(nc)
-      real(pr), intent(out) :: D
-      real(pr), intent(out) :: dDiT(nc)
-      real(pr), intent(out) :: dDdT
-      real(pr), intent(out) :: dDdT2
-      real(pr), intent(out) :: dDi(nc)
-      real(pr), intent(out) :: dDij(nc, nc)
+      real(pr), intent(in) :: T !! Temperature [K].
+      real(pr), intent(in) :: rn(nc) !! Component mole amounts used in mixture rules.
+      real(pr), intent(out) :: D !! Mixture attractive parameter.
+      real(pr), intent(out) :: dDiT(nc) !! \(\partial^2 D/\partial n_i \partial T\).
+      real(pr), intent(out) :: dDdT !! \(\partial D/\partial T\).
+      real(pr), intent(out) :: dDdT2 !! \(\partial^2 D/\partial T^2\).
+      real(pr), intent(out) :: dDi(nc) !! \(\partial D/\partial n_i\).
+      real(pr), intent(out) :: dDij(nc, nc) !! \(\partial^2 D/\partial n_i \partial n_j\).
 
-      real(pr) :: aij(nc, nc), daijdT(nc, nc), daijdT2(nc, nc)
-      real(pr) :: aux, aux2
+      real(pr) :: aij(nc, nc) !! Pair attractive-parameter matrix.
+      real(pr) :: daijdT(nc, nc) !! Temperature derivative of the pair attractive parameters.
+      real(pr) :: daijdT2(nc, nc) !! Second temperature derivative of the pair attractive parameters.
+      real(pr) :: aux !! Intermediate accumulator.
+      real(pr) :: aux2 !! Second intermediate accumulator.
 
-      integer :: i, j
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
 
       call aijTder(NTD, nc, T, aij, daijdT, daijdT2)
 
@@ -663,13 +827,22 @@ contains
    ! ==========================================================================
 
    subroutine DELTAnder(nc, rn, D1m, dD1i, dD1ij)
-      integer, intent(in) :: nc
-      real(pr), intent(in) :: rn(nc)
-      real(pr), intent(out) ::  D1m, dD1i(nc), dD1ij(nc, nc)
+      !! # DELTAnder
+      !! Evaluate the mole-averaged cubic denominator parameter and derivatives.
+      !!
+      !! # Description
+      !! Computes the mixture \(\delta_1\) parameter and its first and second
+      !! derivatives with respect to component mole amounts.
+      integer, intent(in) :: nc !! Number of active components.
+      real(pr), intent(in) :: rn(nc) !! Component mole amounts used in mixture rules.
+      real(pr), intent(out) :: D1m !! Mixture cubic denominator parameter.
+      real(pr), intent(out) :: dD1i(nc) !! Mole-number gradient of the cubic denominator parameter.
+      real(pr), intent(out) :: dD1ij(nc, nc) !! Mole-number Hessian of the cubic denominator parameter.
 
-      real(pr) :: totn
+      real(pr) :: totn !! Total number of moles.
 
-      integer :: i, j
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
 
       D1m = 0.0_pr
       do i = 1, nc
@@ -691,13 +864,23 @@ contains
    !  Repulsive parameter routines
    ! --------------------------------------------------------------------------
    subroutine Bnder(nc, rn, Bmix, dBi, dBij)
-      integer, intent(in) :: nc
-      real(pr), intent(in) :: rn(nc)
-      real(pr), intent(out) ::  Bmix, dBi(nc), dBij(nc, nc)
+      !! # Bnder
+      !! Evaluate the legacy quadratic-mixture covolume and derivatives.
+      !!
+      !! # Description
+      !! Uses the global binary repulsive interaction data to construct the
+      !! mixture covolume and its mole-number gradient and Hessian.
+      integer, intent(in) :: nc !! Number of active components.
+      real(pr), intent(in) :: rn(nc) !! Component mole amounts used in mixture rules.
+      real(pr), intent(out) :: Bmix !! Mixture covolume.
+      real(pr), intent(out) :: dBi(nc) !! Mole-number gradient of the mixture covolume.
+      real(pr), intent(out) :: dBij(nc, nc) !! Mole-number Hessian of the mixture covolume.
 
-      real(pr) :: totn, aux(nc)
+      real(pr) :: totn !! Total number of moles.
+      real(pr) :: aux(nc) !! Intermediate accumulator.
 
-      integer :: i, j
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
 
       TOTN = sum(rn)
       Bmix = 0.0_pr
@@ -727,12 +910,19 @@ contains
    !  Properties
    ! --------------------------------------------------------------------------
    function cubic_v0(z, p, t)
-      real(pr) :: z(:)
+      !! # cubic_v0
+      !! Return a cubic-EOS liquid-volume initial estimate for legacy solvers.
+      !!
+      !! # Description
+      !! Calculates the covolume-based estimate using the globally configured
+      !! EOS parameters; it is not a converged volume root.
+      real(pr) :: z(:) !! Feed or overall composition.
       real(pr) :: p
       real(pr) :: t
       real(pr) :: cubic_v0
 
-      real(pr) :: dbi(nc), dbij(nc,nc)
+      real(pr) :: dbi(nc)
+      real(pr) :: dbij(nc,nc)
       call bnder(nc, z, cubic_v0, dBi, dBij)
    end function
 end module
@@ -743,6 +933,12 @@ module legacy_thermo_properties
 contains
    
    subroutine TERMO(nc, MTYP, INDIC, T, P, rn, V, PHILOG, DLPHIP, DLPHIT, FUGN)
+      !! # TERMO
+      !! Evaluate legacy fugacity and pressure-derivative properties.
+      !!
+      !! # Description
+      !! Dispatches the selected cubic model and mixing rule to calculate
+      !! fugacity coefficients and requested pressure/temperature derivatives.
       !  MTYP      TYPE OF ROOT DESIRED (-1 vapor, 1 liquid, 0 lower Gibbs energy phase)
       !  rn        mixture mole numbers                        (input)
       !  t         temperature (k)                             (input)x, y
@@ -763,18 +959,28 @@ contains
       real(pr), intent(out) :: v !! Volume [L]
       real(pr), intent(out) :: PHILOG(nc) !! ln(phi*p) vector
       real(pr), optional, intent(out) :: DLPHIT(nc) !! ln(phi) Temp derivative
-      real(pr), optional, intent(out) :: DLPHIP(nc) !! ln(phi) Presssure derivative
+      real(pr), optional, intent(out) :: DLPHIP(nc) !! ln(phi) Pressure derivative
       real(pr), optional, intent(out) :: FUGN(nc, nc) !! ln(phi) compositional derivative
 
-      real(pr) :: ar, arv, artv, arv2
-      real(pr) :: RT, Z, dpv, dpdt
+      real(pr) :: ar
+      real(pr) :: arv
+      real(pr) :: artv
+      real(pr) :: arv2
+      real(pr) :: RT
+      real(pr) :: Z
+      real(pr) :: dpv
+      real(pr) :: dpdt
       real(pr) :: Arn(nc)
       real(pr) :: ArVn(nc)
       real(pr) :: ArTn(nc)
       real(pr) :: Arn2(nc, nc)
       real(pr) :: DPDN(nc)
-      real(pr) :: totn
-      integer :: ntemp, igz, nder, i, k
+      real(pr) :: totn !! Total number of moles.
+      integer :: ntemp
+      integer :: igz
+      integer :: nder
+      integer :: i !! Loop/index variable.
+      integer :: k
 
 
       !  The output PHILOG is actually the vector ln(phi(i)*P)
@@ -787,7 +993,7 @@ contains
       ! if (P .le. 0.0d0) MTYP = 1
       call VCALC(MTYP, NC, NTEMP, rn, T, P, V)
       RT = R*T
-      Z = V/(TOTN*RT)        ! this is Z/P
+      Z = V/(TOTN*RT) ! this is Z/P
       call ArVnder(nc, NDER, NTEMP, rn, V, T, Ar, ArV, ArTV, ArV2, Arn, ArVn, ArTn, Arn2)
       DPV = -ArV2 - RT*TOTN/V**2
       DPDT = -ArTV + TOTN*R/V
@@ -814,6 +1020,12 @@ contains
    end subroutine TERMO
 
    subroutine zTVTERMO(nc, INDIC, T, rn, V, P, DPV, PHILOG, DLPHIP, DLPHIT, FUGN)
+      !! # zTVTERMO
+      !! Evaluate legacy thermodynamic properties at fixed composition, temperature, and volume.
+      !!
+      !! # Description
+      !! Calculates pressure, its volume derivative, fugacity coefficients, and
+      !! their pressure/temperature/composition derivatives from global model settings.
       !! Calculation of lnphi*P and derivatives
       !!  rn        mixture mole numbers                       (input)
       !!  t         temperature (k)                            (input)
@@ -826,17 +1038,38 @@ contains
       !!  -------------------------------------------------------------------------
       implicit none
 
-      integer, intent(in) :: nc, indic
-      real(pr), intent(in) :: t, rn(nc), v
+      integer, intent(in) :: nc !! Number of active components.
+      integer, intent(in) :: indic !! Selects the requested outputs (see the `INDIC` table above).
+      real(pr), intent(in) :: t !! Temperature [K].
+      real(pr), intent(in) :: rn(nc) !! Component mole amounts used in mixture rules.
+      real(pr), intent(in) :: v !! Total volume [L].
 
-      real(pr), intent(out) :: p, dpv
-      real(pr), intent(out) :: PHILOG(nc), DLPHIT(nc), DLPHIP(nc)
-      real(pr), intent(out) :: FUGN(nc, nc)
+      real(pr), intent(out) :: p !! Pressure [bar].
+      real(pr), intent(out) :: dpv !! Pressure derivative with respect to volume.
+      real(pr), intent(out) :: PHILOG(nc) !! \(\ln(\phi_i P)\) vector.
+      real(pr), intent(out) :: DLPHIT(nc) !! Temperature derivatives of logarithmic fugacity coefficients.
+      real(pr), intent(out) :: DLPHIP(nc) !! Pressure derivatives of logarithmic fugacity coefficients.
+      real(pr), intent(out) :: FUGN(nc, nc) !! Composition derivatives of \(\ln \phi_i\) at constant \(T, P\).
 
-      real(pr) :: Arn(nc), ArVn(nc), ArTn(nc), Arn2(nc, nc), DPDN(nc), totn
-      real(pr) :: ar, arv, artv, arv2, RT, Z, dpdt
+      real(pr) :: Arn(nc)
+      real(pr) :: ArVn(nc)
+      real(pr) :: ArTn(nc)
+      real(pr) :: Arn2(nc, nc)
+      real(pr) :: DPDN(nc)
+      real(pr) :: totn !! Total number of moles.
+      real(pr) :: ar
+      real(pr) :: arv
+      real(pr) :: artv
+      real(pr) :: arv2
+      real(pr) :: RT
+      real(pr) :: Z !! Feed or overall composition.
+      real(pr) :: dpdt
 
-      integer :: ntemp, igz, nder, i, k
+      integer :: ntemp
+      integer :: igz
+      integer :: nder
+      integer :: i !! Loop/index variable.
+      integer :: k
 
       NTEMP = 0
       IGZ = 0
@@ -877,14 +1110,32 @@ contains
    end subroutine zTVTERMO
 
    subroutine PUREFUG_CALC(nc, icomp, T, P, V, phi)
+      !! # PUREFUG_CALC
+      !! Calculate pure-component fugacity data for a selected legacy component.
+      !!
+      !! # Description
+      !! Evaluates the configured EOS for component `icomp` at the supplied
+      !! state and returns its fugacity coefficient.
       !! Fugacity of a pure component
-      integer, intent(in) :: nc
-      integer, intent(in) :: icomp
-      real(pr), intent(in) :: T, P, V
-      real(pr), intent(out) :: phi
+      integer, intent(in) :: nc !! Number of active components.
+      integer, intent(in) :: icomp !! One-based component index.
+      real(pr), intent(in) :: T !! Temperature [K].
+      real(pr), intent(in) :: P !! Pressure [bar].
+      real(pr), intent(in) :: V !! Total volume [L].
+      real(pr), intent(out) :: phi !! Pure-component fugacity coefficient.
 
-      real(pr) :: rn(nc), Ar, Arv, ArTV, ArV2, Arn(nc), ArVn(nc), ArTn(nc), Arn2(nc, nc)
-      real(pr) :: RT, Z, philog
+      real(pr) :: rn(nc)
+      real(pr) :: Ar !! Residual Helmholtz energy.
+      real(pr) :: Arv
+      real(pr) :: ArTV !! Mixed temperature/volume derivative of residual Helmholtz energy.
+      real(pr) :: ArV2 !! Second volume derivative of residual Helmholtz energy.
+      real(pr) :: Arn(nc) !! Mole-number gradient of residual Helmholtz energy.
+      real(pr) :: ArVn(nc) !! Mixed volume/mole-number derivative of residual Helmholtz energy.
+      real(pr) :: ArTn(nc) !! Mixed temperature/mole-number derivative of residual Helmholtz energy.
+      real(pr) :: Arn2(nc, nc) !! Mole-number Hessian of residual Helmholtz energy.
+      real(pr) :: RT
+      real(pr) :: Z !! Feed or overall composition.
+      real(pr) :: philog
       rn = 0.0
       rn(icomp) = 1.0
       RT = R*T
@@ -895,25 +1146,44 @@ contains
    end subroutine purefug_calc
 
    recursive subroutine VCALC(ITYP, nc, NTEMP, rn, T, P, V)
+      !! # VCALC
+      !!
+      !! # Description
       !! ROUTINE FOR CALCULATION OF VOLUME, GIVEN PRESSURE
       integer, intent(in) :: ITYP !! TYPE OF ROOT DESIRED (-1 vapor, 1 liquid, 0 lower Gibbs energy phase)
-      integer, intent(in) :: nc  !! NO. OF COMPONENTS
+      integer, intent(in) :: nc !! NO. OF COMPONENTS
       integer, intent(in) :: ntemp !! 1 if T-derivatives are required
       real(pr), intent(in) ::  rn(nc) !! FEED MOELS
       real(pr), intent(in) :: T !! TEMPERATURE
       real(pr), intent(in) :: P !! PRESURE
       real(pr), intent(out) :: V !! VOLUME
 
-      real(pr) ::  Ar, ArV, ArTV, ArV2, Arn(nc), ArVn(nc), ArTn(nc), Arn2(nc, nc)
+      real(pr) :: Ar !! Residual Helmholtz energy.
+      real(pr) :: ArV !! Volume derivative of residual Helmholtz energy.
+      real(pr) :: ArTV !! Mixed temperature/volume derivative of residual Helmholtz energy.
+      real(pr) :: ArV2 !! Second volume derivative of residual Helmholtz energy.
+      real(pr) :: Arn(nc) !! Mole-number gradient of residual Helmholtz energy.
+      real(pr) :: ArVn(nc) !! Mixed volume/mole-number derivative of residual Helmholtz energy.
+      real(pr) :: ArTn(nc) !! Mixed temperature/mole-number derivative of residual Helmholtz energy.
+      real(pr) :: Arn2(nc, nc) !! Mole-number Hessian of residual Helmholtz energy.
       logical :: FIRST_RUN
 
       integer :: nder
-      real(pr) :: totn
-      real(pr) :: B, CPV, S3R
-      real(pr) :: ZETMIN, ZETA, ZETMAX
-      real(pr) :: del, pcalc, der, AT, AVAP, VVAP
+      real(pr) :: totn !! Total number of moles.
+      real(pr) :: B
+      real(pr) :: CPV
+      real(pr) :: S3R
+      real(pr) :: ZETMIN
+      real(pr) :: ZETA !! Reduced density \(\zeta = B/V\) used as the volume-solver variable.
+      real(pr) :: ZETMAX
+      real(pr) :: del
+      real(pr) :: pcalc
+      real(pr) :: der
+      real(pr) :: AT
+      real(pr) :: AVAP
+      real(pr) :: VVAP
 
-      integer :: iter
+      integer :: iter !! Iteration count.
 
       NDER = 0
       FIRST_RUN = .true.
@@ -925,7 +1195,7 @@ contains
 
       ZETMIN = 0.D0
       !ZETMAX = 1.D0-0.01*T/5000        !.99D0  This is flexible for low T (V very close to B)
-      ZETMAX = 1.D0 - 0.01*T/(10000*B)  ! improvement for cases with heavy components
+      ZETMAX = 1.D0 - 0.01*T/(10000*B) ! improvement for cases with heavy components
       if (ITYP .gt. 0) then
          ZETA = .5D0
       else
@@ -953,7 +1223,7 @@ contains
          AT = (Ar + V*P)/(T*R) - TOTN*log(V)
          ! AT is something close to Gr(P,T)
 
-         DER = (ArV2*V**2 + TOTN*R*T)*S3R  ! this is dPdrho/B
+         DER = (ArV2*V**2 + TOTN*R*T)*S3R ! this is dPdrho/B
          DEL = -(PCALC - P)/DER
          ZETA = ZETA + max(min(DEL, 0.1D0), -.1D0)
 

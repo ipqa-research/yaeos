@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>ArVnder &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.1% of total for procedures.">13 statements</a>
+                 title=" 0.1% of total for procedures.">18 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -158,6 +159,12 @@
 </h2>
     
 
+    <h1 id="arvnder">ArVnder</h1>
+<p>Dispatch the configured legacy residual Helmholtz implementation.</p>
+<h1 id="description">Description</h1>
+<p>Selects the active residual Helmholtz callback through <code>ar_fun</code> and
+returns the requested residual energy derivatives. <code>NDER</code> and <code>NTEMP</code>
+control the derivative sets supported by the selected implementation.</p>
 
 
     <h3>Arguments</h3>
@@ -173,7 +180,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~90"></span>
+              <span class="anchor" id="variable-nc~80"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -183,7 +190,7 @@
             <td>::</td>
             <td><strong>nc</strong></td>
             <td>
-                
+                <p>Number of active components.</p>
             </td>
         </tr>
         <tr>
@@ -198,7 +205,7 @@
             <td>::</td>
             <td><strong>nder</strong></td>
             <td>
-                
+                <p>Get compositional derivatives</p>
             </td>
         </tr>
         <tr>
@@ -213,12 +220,12 @@
             <td>::</td>
             <td><strong>ntemp</strong></td>
             <td>
-                
+                <p>Get temperature derivatives</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z~42"></span>
+              <span class="anchor" id="variable-z~52"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -228,12 +235,12 @@
             <td>::</td>
             <td><strong>z</strong>(nc)</td>
             <td>
-                
+                <p>Component mole amounts/composition vector.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~40"></span>
+              <span class="anchor" id="variable-v~43"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -243,12 +250,12 @@
             <td>::</td>
             <td><strong>V</strong></td>
             <td>
-                
+                <p>Total volume [L].</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~96"></span>
+              <span class="anchor" id="variable-t~100"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -258,12 +265,12 @@
             <td>::</td>
             <td><strong>T</strong></td>
             <td>
-                
+                <p>Temperature [K].</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ar~8"></span>
+              <span class="anchor" id="variable-ar~6"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -273,12 +280,12 @@
             <td>::</td>
             <td><strong>ar</strong></td>
             <td>
-                
+                <p>Residual Helmholtz energy.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arv~4"></span>
+              <span class="anchor" id="variable-arv~6"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -288,12 +295,12 @@
             <td>::</td>
             <td><strong>arv</strong></td>
             <td>
-                
+                <p>First volume derivative of residual Helmholtz energy.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-artv~4"></span>
+              <span class="anchor" id="variable-artv~6"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -303,12 +310,12 @@
             <td>::</td>
             <td><strong>artv</strong></td>
             <td>
-                
+                <p>Mixed volume-temperature derivative of residual Helmholtz energy.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arv2~4"></span>
+              <span class="anchor" id="variable-arv2~6"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -318,12 +325,12 @@
             <td>::</td>
             <td><strong>arv2</strong></td>
             <td>
-                
+                <p>Second volume derivative of residual Helmholtz energy.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arn~16"></span>
+              <span class="anchor" id="variable-arn~19"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -333,12 +340,12 @@
             <td>::</td>
             <td><strong>Arn</strong></td>
             <td>
-                
+                <p>Composition gradient of residual Helmholtz energy.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arvn~15"></span>
+              <span class="anchor" id="variable-arvn~18"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -348,12 +355,12 @@
             <td>::</td>
             <td><strong>ArVn</strong></td>
             <td>
-                
+                <p>Mixed volume-composition derivatives.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-artn~15"></span>
+              <span class="anchor" id="variable-artn~18"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -363,12 +370,12 @@
             <td>::</td>
             <td><strong>ArTn</strong></td>
             <td>
-                
+                <p>Mixed temperature-composition derivatives.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arn2~12"></span>
+              <span class="anchor" id="variable-arn2~15"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -378,7 +385,7 @@
             <td>::</td>
             <td><strong>Arn2</strong>(size(z),size(z))</td>
             <td>
-                
+                <p>Composition Hessian of residual Helmholtz energy.</p>
             </td>
         </tr>
     </tbody>
@@ -393,85 +400,85 @@
   <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: proc~~arvnder~~CalledByGraph Pages: 1 -->
-<svg id="procarvnderCalledByGraph" width="287pt" height="154pt"
- viewBox="0.00 0.00 287.00 154.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~arvnder~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 150)">
+<svg id="procarvnderCalledByGraph" width="285pt" height="154pt"
+ viewBox="0.00 0.00 285.00 154.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~arvnder~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 150.27)">
 <title>proc~~arvnder~~CalledByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-150 283,-150 283,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-150.27 280.54,-150.27 280.54,4 -4,4"/>
 <!-- proc~arvnder -->
 <g id="proc~~arvnder~~CalledByGraph_node1" class="node">
 <title>proc~arvnder</title>
-<polygon fill="none" stroke="black" points="279,-86 222,-86 222,-62 279,-62 279,-86"/>
-<text text-anchor="middle" x="250.5" y="-71.6" font-family="Helvetica,sans-Serif" font-size="10.50">ArVnder</text>
+<polygon fill="none" stroke="black" points="276.54,-86.27 220.77,-86.27 220.77,-62 276.54,-62 276.54,-86.27"/>
+<text xml:space="preserve" text-anchor="middle" x="248.65" y="-70.54" font-family="Helvetica,sans-Serif" font-size="10.50">ArVnder</text>
 </g>
 <!-- proc~purefug_calc -->
 <g id="proc~~arvnder~~CalledByGraph_node2" class="node">
 <title>proc~purefug_calc</title>
 <g id="a_proc~~arvnder~~CalledByGraph_node2"><a xlink:href="../proc/purefug_calc.html" xlink:title="PUREFUG_CALC">
-<polygon fill="#d9534f" stroke="#d9534f" points="186,-146 90,-146 90,-122 186,-122 186,-146"/>
-<text text-anchor="middle" x="138" y="-131.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PUREFUG_CALC</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="184.77,-146.27 90,-146.27 90,-122 184.77,-122 184.77,-146.27"/>
+<text xml:space="preserve" text-anchor="middle" x="137.38" y="-130.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PUREFUG_CALC</text>
 </a>
 </g>
 </g>
 <!-- proc~purefug_calc&#45;&gt;proc~arvnder -->
 <g id="proc~~arvnder~~CalledByGraph_edge1" class="edge">
 <title>proc~purefug_calc&#45;&gt;proc~arvnder</title>
-<path fill="none" stroke="#000000" d="M161.36,-121.86C177.69,-112.99 200.04,-100.86 218.14,-91.03"/>
-<polygon fill="#000000" stroke="#000000" points="220.05,-93.97 227.17,-86.12 216.71,-87.82 220.05,-93.97"/>
+<path fill="none" stroke="#000000" d="M161.29,-121.56C176.88,-113 197.74,-101.54 215.06,-92.03"/>
+<polygon fill="#000000" stroke="#000000" points="216.37,-95.31 223.45,-87.42 213,-89.17 216.37,-95.31"/>
 </g>
 <!-- proc~termo -->
 <g id="proc~~arvnder~~CalledByGraph_node3" class="node">
 <title>proc~termo</title>
 <g id="a_proc~~arvnder~~CalledByGraph_node3"><a xlink:href="../proc/termo.html" xlink:title="TERMO">
-<polygon fill="#d9534f" stroke="#d9534f" points="54,-86 0,-86 0,-62 54,-62 54,-86"/>
-<text text-anchor="middle" x="27" y="-71.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">TERMO</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="54,-86.27 0,-86.27 0,-62 54,-62 54,-86.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-70.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">TERMO</text>
 </a>
 </g>
 </g>
 <!-- proc~termo&#45;&gt;proc~arvnder -->
 <g id="proc~~arvnder~~CalledByGraph_edge2" class="edge">
 <title>proc~termo&#45;&gt;proc~arvnder</title>
-<path fill="none" stroke="#000000" d="M54.24,-74.52C65.28,-74.71 78.27,-74.91 90,-75 132.67,-75.34 143.33,-75.34 186,-75 194.39,-74.93 203.4,-74.82 211.92,-74.69"/>
-<polygon fill="#000000" stroke="#000000" points="212.05,-78.19 222,-74.53 211.94,-71.19 212.05,-78.19"/>
+<path fill="none" stroke="#000000" d="M54.24,-74.65C65.28,-74.85 78.27,-75.04 90,-75.14 132.12,-75.47 142.65,-75.47 184.77,-75.14 192.62,-75.07 201.02,-74.97 209.04,-74.85"/>
+<polygon fill="#000000" stroke="#000000" points="208.96,-78.35 218.9,-74.69 208.85,-71.35 208.96,-78.35"/>
 </g>
 <!-- proc~vcalc -->
 <g id="proc~~arvnder~~CalledByGraph_node4" class="node">
 <title>proc~vcalc</title>
 <g id="a_proc~~arvnder~~CalledByGraph_node4"><a xlink:href="../proc/vcalc.html" xlink:title="VCALC">
-<polygon fill="#d9534f" stroke="#d9534f" points="165,-66 111,-66 111,-42 165,-42 165,-66"/>
-<text text-anchor="middle" x="138" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">VCALC</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="164.38,-66.27 110.38,-66.27 110.38,-42 164.38,-42 164.38,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="137.38" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">VCALC</text>
 </a>
 </g>
 </g>
 <!-- proc~termo&#45;&gt;proc~vcalc -->
 <g id="proc~~arvnder~~CalledByGraph_edge5" class="edge">
 <title>proc~termo&#45;&gt;proc~vcalc</title>
-<path fill="none" stroke="#000000" d="M54.11,-69.21C68.03,-66.66 85.37,-63.47 100.6,-60.68"/>
-<polygon fill="#000000" stroke="#000000" points="101.52,-64.07 110.73,-58.82 100.26,-57.18 101.52,-64.07"/>
+<path fill="none" stroke="#000000" d="M54.24,-69.29C67.58,-66.83 84.05,-63.79 98.72,-61.08"/>
+<polygon fill="#000000" stroke="#000000" points="99.33,-64.53 108.53,-59.28 98.06,-57.65 99.33,-64.53"/>
 </g>
 <!-- proc~vcalc&#45;&gt;proc~arvnder -->
 <g id="proc~~arvnder~~CalledByGraph_edge3" class="edge">
 <title>proc~vcalc&#45;&gt;proc~arvnder</title>
-<path fill="none" stroke="#000000" d="M165.19,-58.74C179.08,-61.26 196.41,-64.39 211.74,-67.16"/>
-<polygon fill="#000000" stroke="#000000" points="211.5,-70.68 221.96,-69.02 212.74,-63.79 211.5,-70.68"/>
+<path fill="none" stroke="#000000" d="M164.84,-58.98C178.09,-61.4 194.4,-64.39 209.03,-67.06"/>
+<polygon fill="#000000" stroke="#000000" points="208.35,-70.5 218.82,-68.86 209.61,-63.61 208.35,-70.5"/>
 </g>
 <!-- proc~ztvtermo -->
 <g id="proc~~arvnder~~CalledByGraph_node5" class="node">
 <title>proc~ztvtermo</title>
 <g id="a_proc~~arvnder~~CalledByGraph_node5"><a xlink:href="../proc/ztvtermo.html" xlink:title="zTVTERMO">
-<polygon fill="#d9534f" stroke="#d9534f" points="173,-24 103,-24 103,0 173,0 173,-24"/>
-<text text-anchor="middle" x="138" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">zTVTERMO</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="172.02,-24.27 102.75,-24.27 102.75,0 172.02,0 172.02,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="137.38" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">zTVTERMO</text>
 </a>
 </g>
 </g>
 <!-- proc~ztvtermo&#45;&gt;proc~arvnder -->
 <g id="proc~~arvnder~~CalledByGraph_edge4" class="edge">
 <title>proc~ztvtermo&#45;&gt;proc~arvnder</title>
-<path fill="none" stroke="#000000" d="M168.17,-24.2C174.15,-26.93 180.34,-29.93 186,-33 198.84,-39.96 212.51,-48.61 223.87,-56.17"/>
-<polygon fill="#000000" stroke="#000000" points="222.17,-59.25 232.42,-61.95 226.09,-53.45 222.17,-59.25"/>
+<path fill="none" stroke="#000000" d="M167.67,-24.57C173.42,-27.24 179.34,-30.16 184.77,-33.13 196.84,-39.75 209.66,-47.89 220.56,-55.17"/>
+<polygon fill="#000000" stroke="#000000" points="218.45,-57.97 228.69,-60.69 222.38,-52.18 218.45,-57.97"/>
 </g>
 </g>
 </svg>
@@ -490,55 +497,55 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
 <svg width="641pt" height="28pt"
- viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
 <!-- Subroutine -->
 <g id="node1" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node2" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Interface -->
 <g id="node3" class="node">
 <title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
 </g>
 <!-- Type Bound Procedure -->
 <g id="node4" class="node">
 <title>Type Bound Procedure</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
-<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
 </g>
 <!-- Unknown Procedure Type -->
 <g id="node5" class="node">
 <title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
-<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
 </g>
 <!-- Program -->
 <g id="node6" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node7" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
-<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -578,14 +585,14 @@ implementation in a submodule of an interface in a parent module.
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>write_PTEnvel2 &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.2% of total for procedures.">31 statements</a>
+                 title=" 0.2% of total for procedures.">32 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -135,10 +136,10 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/write_ptenvel2.html#variable-cp~2">cp</a>
-            <a class="list-group-item" href="../proc/write_ptenvel2.html#variable-cps~2">cps</a>
-            <a class="list-group-item" href="../proc/write_ptenvel2.html#variable-i~4">i</a>
-            <a class="list-group-item" href="../proc/write_ptenvel2.html#variable-nc~3">nc</a>
+            <a class="list-group-item" href="../proc/write_ptenvel2.html#variable-cp~4">cp</a>
+            <a class="list-group-item" href="../proc/write_ptenvel2.html#variable-cps~4">cps</a>
+            <a class="list-group-item" href="../proc/write_ptenvel2.html#variable-i~147">i</a>
+            <a class="list-group-item" href="../proc/write_ptenvel2.html#variable-nc~127">nc</a>
         </div>
       </div>
     </div>
@@ -172,6 +173,8 @@
 </h2>
     
 
+    <h1 id="write_ptenvel2">write_PTEnvel2</h1>
+<p>Write a two-phase PT envelope using sectioned, plotting-friendly output.</p>
 
     <h3>Type Bound</h3>
     <p><a href='../type/ptenvel2.html'>PTEnvel2</a></p>
@@ -199,12 +202,12 @@
             <td>::</td>
             <td><strong>pt2</strong></td>
             <td>
-                
+                <p>Envelope result to serialize.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-unit"></span>
+              <span class="anchor" id="variable-unit~5"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -214,12 +217,12 @@
             <td>::</td>
             <td><strong>unit</strong></td>
             <td>
-                
+                <p>Output unit number.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iotype"></span>
+              <span class="anchor" id="variable-iotype~2"></span>
               character(len=*),
             </td>
 <td>intent(in)</td>
@@ -229,12 +232,12 @@
             <td>::</td>
             <td><strong>iotype</strong></td>
             <td>
-                
+                <p>Fortran formatted-I/O mode.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v_list"></span>
+              <span class="anchor" id="variable-v_list~2"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -244,12 +247,12 @@
             <td>::</td>
             <td><strong>v_list</strong>(:)</td>
             <td>
-                
+                <p>Format control list supplied by the runtime.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iostat"></span>
+              <span class="anchor" id="variable-iostat~2"></span>
               integer,
             </td>
 <td>intent(out)</td>
@@ -259,12 +262,12 @@
             <td>::</td>
             <td><strong>iostat</strong></td>
             <td>
-                
+                <p>I/O status returned to the runtime.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iomsg"></span>
+              <span class="anchor" id="variable-iomsg~2"></span>
               character(len=*),
             </td>
 <td>intent(inout)</td>
@@ -274,7 +277,7 @@
             <td>::</td>
             <td><strong>iomsg</strong></td>
             <td>
-                
+                <p>I/O error message buffer.</p>
             </td>
         </tr>
     </tbody>
@@ -297,7 +300,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-cp~2"></span>
+              <span class="anchor" id="variable-cp~4"></span>
               integer,
             </td>
               <td>private</td>
@@ -314,7 +317,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-cps~2"></span>
+              <span class="anchor" id="variable-cps~4"></span>
               integer,
             </td>
               <td>private,</td>
@@ -331,7 +334,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-i~4"></span>
+              <span class="anchor" id="variable-i~147"></span>
               integer,
             </td>
               <td>private</td>
@@ -343,12 +346,12 @@
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Loop/index variable.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~3"></span>
+              <span class="anchor" id="variable-nc~127"></span>
               integer,
             </td>
               <td>private</td>
@@ -360,7 +363,7 @@
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Number of components.</p>
             </td>
         </tr>
     </tbody>
@@ -389,14 +392,14 @@
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

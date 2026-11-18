@@ -34,8 +34,7 @@ module yaeos__models_ge_group_contribution_unifac
    !! ```
    !!
    !! # References
-   !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst
-   !! .com/published-parameters-unifac.html)
+   !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst.com/published-parameters-unifac.html)
    !! 2. Fredenslund, A., Jones, R. L., & Prausnitz, J. M. (1975).
    !! Group‐contribution estimation of activity coefficients in nonideal liquid
    !! mixtures. AIChE Journal, 21(6), 1086–1099.
@@ -119,8 +118,7 @@ module yaeos__models_ge_group_contribution_unifac
       !! ```
       !!
       !! # References
-      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst
-      !! .com/published-parameters-unifac.html)
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst.com/published-parameters-unifac.html)
       !! 2. Fredenslund, A., Jones, R. L., & Prausnitz, J. M. (1975).
       !! Group‐contribution estimation of activity coefficients in nonideal liquid
       !! mixtures. AIChE Journal, 21(6), 1086–1099.
@@ -204,13 +202,20 @@ contains
       !!
       !!  type(UNIFAC) :: model
       !!
-      !!  integer, parameter :: nc = 3, ng = 4
+      !!  integer, parameter :: nc = 3
       !!
       !!  type(Groups) :: molecules(nc)
       !!
-      !!  real(pr) :: Ge, Gen(nc), GeT, GeT2, GeTn(nc), Gen2(nc, nc)
+      !!  real(pr) :: Ge
+      !!  real(pr) :: Gen(nc)
+      !!  real(pr) :: GeT
+      !!  real(pr) :: GeT2
+      !!  real(pr) :: GeTn(nc)
+      !!  real(pr) :: Gen2(nc, nc)
       !!
-      !!  real(pr) :: n(nc), ln_gammas(nc), T
+      !!  real(pr) :: n(nc)
+      !!  real(pr) :: ln_gammas(nc)
+      !!  real(pr) :: T
       !!
       !!  T = 150.0_pr
       !!  n = [2.0_pr, 7.0_pr, 1.0_pr]
@@ -231,7 +236,7 @@ contains
       !!  model = setup_unifac(molecules)
       !!
       !!  ! Call all Ge and derivatives
-      !!  call model%excess_gibbs(model, n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)
+      !!  call model%excess_gibbs(n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)
       !!
       !!  print *, "Ge: ", Ge
       !!  print *, "GeT: ", GeT
@@ -276,7 +281,9 @@ contains
       real(pr) :: dGe_c_dn2(self%nmolecules, self%nmolecules)
 
       ! logical
-      logical :: pge, dn, dn2
+      logical :: pge
+      logical :: dn
+      logical :: dn2
 
       ! Residual calling
       call self%Ge_residual(n, T, Ge, Gen, Gen2, GeT, GeT2, GeTn)
@@ -311,7 +318,7 @@ contains
       !! # Description
       !! Calculate the UNIFAC combinatorial term of reduced Gibbs excess 
       !! energy. The subroutine uses the Flory-Huggins and 
-      !! Staverman-Guggenheim.
+      !! Staverman-Guggenheim terms.
       !!
       !! # References
       !! 1. [SINTEF - Thermopack](https://github.com/thermotools/thermopack)
@@ -339,8 +346,12 @@ contains
       real(pr) :: dGe_sg_dn2(self%nmolecules,self%nmolecules)
 
       ! utility
-      real(pr) :: nq, nr, nrp, n_t
-      integer :: i, j
+      real(pr) :: nq
+      real(pr) :: nr
+      real(pr) :: nrp
+      real(pr) :: n_t
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
 
       associate(&
          q => self%molecules%surface_area,&
@@ -425,7 +436,9 @@ contains
       real(pr) :: dlambda_ik_dT2(self%nmolecules, self%ngroups)
 
       ! Auxiliars
-      real(pr) :: Ge_aux, dGe_dT_aux, dGe_dn_aux(self%nmolecules)
+      real(pr) :: Ge_aux
+      real(pr) :: dGe_dT_aux
+      real(pr) :: dGe_dn_aux(self%nmolecules)
       real(pr) :: sum_vij_Qj_Ejk(self%nmolecules, self%ngroups)
       real(pr) :: sum_ni_vij_Qj_Ejk(self%ngroups)
       real(pr) :: sum_vik_Qk(self%nmolecules)
@@ -442,13 +455,20 @@ contains
       real(pr) :: sum_vij_Qj_dlambdas_dT2(self%nmolecules)
 
       ! Indexes used for groups
-      integer :: j, k
+      integer :: j !! Group index.
+      integer :: k !! Group index.
 
       ! Indexes used for components
-      integer :: i, l
+      integer :: i !! Component index.
+      integer :: l !! Component index.
 
       ! logicals
-      logical :: pge, dn, dn2, dt, dt2, dtn
+      logical :: pge
+      logical :: dn
+      logical :: dn2
+      logical :: dt
+      logical :: dt2
+      logical :: dtn
 
       pge = present(Ge)
       dn = present(dGe_dn)
@@ -664,10 +684,10 @@ contains
 
    function thetas_i(nm, ng, parameters, stew, molecules) result(thetas_ij)
       !! # \(\Theta_i \) calculation
-      !! Calculate the area fraciton of each froup on each molecule.
+      !! Calculate the area fraction of each group on each molecule.
       !!
       !! # Description
-      !! Calculate the area fraciton of each froup on each molecule. The values
+      !! Calculate the area fraction of each group on each molecule. The values
       !! are obtained on the setup_unifac function and stored on the UNIFAC
       !! type, since the values can be reused (no compositional or temperature
       !! dependence)
@@ -685,7 +705,9 @@ contains
       real(pr) :: qki_contribution
 
       integer :: gi
-      integer :: i, j, k
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: k !! Loop index `k`.
 
       thetas_ij = 0.0_pr
       total_area_i = 0.0_pr
@@ -758,8 +780,7 @@ contains
       !! ```
       !!
       !! # References
-      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst
-      !! .com/published-parameters-unifac.html)
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst.com/published-parameters-unifac.html)
       !!
       type(Groups), intent(in) :: molecules(:)
       !! Molecules (Group type) objects
@@ -774,9 +795,13 @@ contains
 
       ! Usefull matrixes to store
       integer, allocatable :: vij(:, :)
-      real(pr), allocatable :: qks(:), Aij(:, :)
+      real(pr), allocatable :: qks(:)
+      real(pr), allocatable :: Aij(:, :)
 
-      integer :: gi, i, j, k
+      integer :: gi
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: k !! Loop index `k`.
 
       setup_unifac%molecules = molecules
 

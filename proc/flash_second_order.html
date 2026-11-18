@@ -1,0 +1,1215 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
+    <link rel="icon" href="../favicon.png">
+
+    <title>flash_second_order &ndash; yaeos</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../css/brands.min.css" rel="stylesheet">
+    <link href="../css/regular.min.css" rel="stylesheet">
+    <link href="../css/solid.min.css" rel="stylesheet">
+    <link href="../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../css/local.css" rel="stylesheet">
+    <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
+    <script src="../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../index.html">yaeos </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="../page/index.html">User documentation</a></li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>flash_second_order
+      <small>Function</small>
+      
+    </h1>
+      <div class="container p-2 mb-4 bg-light border rounded-3">
+    <div class="row align-items-center justify-content-between" id="info-bar">
+      <div class="col">
+        <ul class="list-inline" style="margin-bottom:0px;display:inline">
+            <li class="list-inline-item" id="meta-license"><i class="fa fa-legal"></i> MPL</li>
+
+            <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
+              <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
+                 title=" 0.8% of total for procedures.">149 statements</a>
+            </li>
+
+            <li class="list-inline-item" id="source-file">
+              <i class="fa fa-code"></i>
+              <a href="../src/flash_second_order.f90"> Source File</a>
+            </li>
+        </ul>
+      </div>
+      <div class="col">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../sourcefile/flash_second_order.f90.html'>flash_second_order.f90</a></li>
+                <li class="breadcrumb-item"><a href='../module/yaeos__equilibria_flash_second_order.html'>yaeos__equilibria_flash_second_order</a></li>
+            <li class="breadcrumb-item active" aria-current="page">flash_second_order</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Enable Bootstrap tooltips
+    (function () {
+      const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    })();
+  </script>
+
+  </div>
+  
+  <div class="row">
+    <div class="col-md-3 hidden-xs hidden-sm visible-md visible-lg">
+      <div id="sidebar">
+      <h3>Contents</h3>
+  
+      <div class="card mb-4">
+      <a data-bs-toggle="collapse" href="#vars-0"
+         aria-expanded="false" aria-controls="vars-0">
+         <h4 class="card-header bg-primary text-white">Variables</h4>
+      </a>
+      <div id="vars-0" class="collapse">
+        <div class="list-group list-group-flush">
+            <a class="list-group-item" href="../proc/flash_second_order.html#variable-g_trial">G_trial</a>
+            <a class="list-group-item" href="../proc/flash_second_order.html#variable-gibbs">Gibbs</a>
+            <a class="list-group-item" href="../proc/flash_second_order.html#variable-h">H</a>
+            <a class="list-group-item" href="../proc/flash_second_order.html#variable-h_l">H_l</a>
+            <a class="list-group-item" href="../proc/flash_second_order.html#variable-k~3">K</a>
+            <a class="list-group-item" href="../proc/flash_second_order.html#variable-ltot">Ltot</a>
+            <a class="list-group-item" href="../proc/flash_second_order.html#variable-vtot">Vtot</a>
+            <a class="list-group-item" href="../proc/flash_second_order.html#variable-accepted">accepted</a>
+            <a class="list-group-item" href="../proc/flash_second_order.html#variable-alpha~6">alpha</a>
+            <a class="list-group-item" href="../proc/flash_second_order.html#variable-alpha_max">alpha_max</a>
+            <a class="list-group-item" href="../proc/flash_second_order.html#variable-beta">beta</a>
+            <a class="list-group-item" href="../proc/flash_second_order.html#variable-evaluated">evaluated</a>
+            <a class="list-group-item" href="../proc/flash_second_order.html#variable-g">g</a>
+            <a class="list-group-item" href="../proc/flash_second_order.html#variable-g_l">g_l</a>
+            <a class="list-group-item" href="../proc/flash_second_order.html#variable-grad_norm">grad_norm</a>
+            <a class="list-group-item" href="../proc/flash_second_order.html#variable-i~6">i</a>
+            <a class="list-group-item" href="../proc/flash_second_order.html#variable-iterations">iterations</a>
+            <a class="list-group-item" href="../proc/flash_second_order.html#variable-j~3">j</a>
+            <a class="list-group-item" href="../proc/flash_second_order.html#variable-l~3">l</a>
+            <a class="list-group-item" href="../proc/flash_second_order.html#variable-light_root_type">light_root_type</a>
+            <a class="list-group-item" href="../proc/flash_second_order.html#variable-max_iterations~3">max_iterations</a>
+            <a class="list-group-item" href="../proc/flash_second_order.html#variable-mintpd">mintpd</a>
+            <a class="list-group-item" href="../proc/flash_second_order.html#variable-step">step</a>
+            <a class="list-group-item" href="../proc/flash_second_order.html#variable-theta">theta</a>
+            <a class="list-group-item" href="../proc/flash_second_order.html#variable-theta_trial">theta_trial</a>
+            <a class="list-group-item" href="../proc/flash_second_order.html#variable-tolg">tolG</a>
+            <a class="list-group-item" href="../proc/flash_second_order.html#variable-tolerance">tolerance</a>
+            <a class="list-group-item" href="../proc/flash_second_order.html#variable-v">v</a>
+            <a class="list-group-item" href="../proc/flash_second_order.html#variable-w~6">w</a>
+            <a class="list-group-item" href="../proc/flash_second_order.html#variable-x">x</a>
+            <a class="list-group-item" href="../proc/flash_second_order.html#variable-y">y</a>
+        </div>
+      </div>
+    </div>
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+
+  </div>
+
+    </div>
+    
+    <div class="col-md-9" id='text'>
+    <h2>public  function flash_second_order(model, z, T, P_spec, k0, light_root, iters, tol, max_iters) result(flash)  
+</h2>
+    
+
+    <h1 id="flash_second_order"><code>flash_second_order</code></h1>
+<h2 id="description">Description</h2>
+<p>Find a two-phase split at fixed temperature and pressure by minimizing
+the reduced Gibbs energy with a second-order method.</p>
+<h2 id="arguments">Arguments</h2>
+<ul>
+<li><code>model</code>: thermodynamic model (<code>ArModel</code> or <code>GeModel</code>).</li>
+<li><code>z</code>: global mole fractions.</li>
+<li><code>T</code>: temperature [K].</li>
+<li><code>P_spec</code>: pressure [bar].</li>
+<li><code>k0</code>: optional initial K-factors. If omitted, Wilson factors are
+  used for <code>ArModel</code> and a stability analysis is used for <code>GeModel</code>.</li>
+<li><code>light_root</code>: root used for the light phase with <code>ArModel</code>
+  (<code>"stable"</code> by default, <code>"liquid"</code> for a liquid-liquid split).</li>
+<li><code>iters</code>: number of iterations used.</li>
+<li><code>tol</code>: gradient-norm tolerance (default <code>1e-8</code>).</li>
+<li><code>max_iters</code>: maximum number of iterations (default <code>200</code>).</li>
+</ul>
+
+
+    <h3>Arguments</h3>
+        <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Intent</th><th scope="col">Optional</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-model~4"></span>
+              class(<a href='../type/basemodel.html'>BaseModel</a>),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>model</strong></td>
+            <td>
+                <p>Thermodynamic model</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-z~4"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>z</strong>(:)</td>
+            <td>
+                <p>Global mole fractions</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-t~6"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>T</strong></td>
+            <td>
+                <p>Temperature [K]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-p_spec"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in)</td>
+              <td></td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>P_spec</strong></td>
+            <td>
+                <p>Pressure [bar]</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-k0"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>k0</strong>(:)</td>
+            <td>
+                <p>Initial K-factors (y/x)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-light_root"></span>
+              character(len=*),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>light_root</strong></td>
+            <td>
+                <p>Root of the light phase for <code>ArModel</code> (<code>"stable"</code> or <code>"liquid"</code>)</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-iters~3"></span>
+              integer,
+            </td>
+<td>intent(out),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>iters</strong></td>
+            <td>
+                <p>Iterations used</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tol"></span>
+              real(kind=pr),
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tol</strong></td>
+            <td>
+                <p>Convergence tolerance</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-max_iters"></span>
+              integer,
+            </td>
+<td>intent(in),</td>
+              <td>optional</td>            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>max_iters</strong></td>
+            <td>
+                <p>Maximum iterations</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+      <h3>Return Value
+        <small>
+          <span class="anchor" id="variable-flash"></span>
+          type(<a href='../type/equilibriumstate.html'>EquilibriumState</a>)
+        </small>
+      </h3>
+      
+    <br>
+    <div class="card">
+      <div class="card-header">
+  <h3 class="card-title">Calls</h3>
+      </div>
+      <div class="card-body">
+  <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (0)
+ -->
+<!-- Title: proc~~flash_second_order~~CallsGraph Pages: 1 -->
+<svg id="procflash_second_orderCallsGraph" width="593pt" height="238pt"
+ viewBox="0.00 0.00 593.00 238.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~flash_second_order~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 234.27)">
+<title>proc~~flash_second_order~~CallsGraph</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-234.27 588.58,-234.27 588.58,4 -4,4"/>
+<!-- proc~flash_second_order -->
+<g id="proc~~flash_second_order~~CallsGraph_node1" class="node">
+<title>proc~flash_second_order</title>
+<polygon fill="none" stroke="black" points="115.02,-128.27 0,-128.27 0,-104 115.02,-104 115.02,-128.27"/>
+<text xml:space="preserve" text-anchor="middle" x="57.51" y="-112.53" font-family="Helvetica,sans-Serif" font-size="10.50">flash_second_order</text>
+</g>
+<!-- proc~betato01 -->
+<g id="proc~~flash_second_order~~CallsGraph_node2" class="node">
+<title>proc~betato01</title>
+<g id="a_proc~~flash_second_order~~CallsGraph_node2"><a xlink:href="../proc/betato01.html" xlink:title="betato01">
+<polygon fill="#d9534f" stroke="#d9534f" points="252.54,-230.27 193.02,-230.27 193.02,-206 252.54,-206 252.54,-230.27"/>
+<text xml:space="preserve" text-anchor="middle" x="222.78" y="-214.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">betato01</text>
+</a>
+</g>
+</g>
+<!-- proc~flash_second_order&#45;&gt;proc~betato01 -->
+<g id="proc~~flash_second_order~~CallsGraph_edge1" class="edge">
+<title>proc~flash_second_order&#45;&gt;proc~betato01</title>
+<path fill="none" stroke="#000000" d="M69.5,-128.7C85.66,-146.44 117.56,-178.69 151.02,-197.13 160.5,-202.36 171.42,-206.42 181.81,-209.52"/>
+<polygon fill="#000000" stroke="#000000" points="180.74,-212.86 191.31,-212.12 182.59,-206.11 180.74,-212.86"/>
+</g>
+<!-- proc~evaluate_gibbs -->
+<g id="proc~~flash_second_order~~CallsGraph_node3" class="node">
+<title>proc~evaluate_gibbs</title>
+<g id="a_proc~~flash_second_order~~CallsGraph_node3"><a xlink:href="../proc/evaluate_gibbs.html" xlink:title="evaluate_gibbs">
+<polygon fill="#d9534f" stroke="#d9534f" points="422.31,-128.27 330.54,-128.27 330.54,-104 422.31,-104 422.31,-128.27"/>
+<text xml:space="preserve" text-anchor="middle" x="376.42" y="-112.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">evaluate_gibbs</text>
+</a>
+</g>
+</g>
+<!-- proc~flash_second_order&#45;&gt;proc~evaluate_gibbs -->
+<g id="proc~~flash_second_order~~CallsGraph_edge2" class="edge">
+<title>proc~flash_second_order&#45;&gt;proc~evaluate_gibbs</title>
+<path fill="none" stroke="#000000" d="M115.26,-116.85C127.08,-116.97 139.46,-117.07 151.02,-117.13 214.81,-117.48 230.75,-117.53 294.54,-117.13 302.37,-117.09 310.62,-117.01 318.74,-116.92"/>
+<polygon fill="#000000" stroke="#000000" points="318.61,-120.43 328.57,-116.81 318.53,-113.43 318.61,-120.43"/>
+</g>
+<!-- proc~k_wilson -->
+<g id="proc~~flash_second_order~~CallsGraph_node4" class="node">
+<title>proc~k_wilson</title>
+<g id="a_proc~~flash_second_order~~CallsGraph_node4"><a xlink:href="../proc/k_wilson.html" xlink:title="k_wilson">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="250.66,-108.27 194.89,-108.27 194.89,-84 250.66,-84 250.66,-108.27"/>
+<text xml:space="preserve" text-anchor="middle" x="222.78" y="-92.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">k_wilson</text>
+</a>
+</g>
+</g>
+<!-- proc~flash_second_order&#45;&gt;proc~k_wilson -->
+<g id="proc~~flash_second_order~~CallsGraph_edge3" class="edge">
+<title>proc~flash_second_order&#45;&gt;proc~k_wilson</title>
+<path fill="none" stroke="#000000" d="M115.16,-109.2C137.64,-106.44 162.92,-103.35 183.22,-100.86"/>
+<polygon fill="#000000" stroke="#000000" points="183.53,-104.35 193.03,-99.66 182.68,-97.4 183.53,-104.35"/>
+</g>
+<!-- proc~min_tpd -->
+<g id="proc~~flash_second_order~~CallsGraph_node5" class="node">
+<title>proc~min_tpd</title>
+<g id="a_proc~~flash_second_order~~CallsGraph_node5"><a xlink:href="../proc/min_tpd.html" xlink:title="min_tpd">
+<polygon fill="#d9534f" stroke="#d9534f" points="249.91,-188.27 195.64,-188.27 195.64,-164 249.91,-164 249.91,-188.27"/>
+<text xml:space="preserve" text-anchor="middle" x="222.78" y="-172.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">min_tpd</text>
+</a>
+</g>
+</g>
+<!-- proc~flash_second_order&#45;&gt;proc~min_tpd -->
+<g id="proc~~flash_second_order~~CallsGraph_edge4" class="edge">
+<title>proc~flash_second_order&#45;&gt;proc~min_tpd</title>
+<path fill="none" stroke="#000000" d="M92.74,-128.71C119.61,-138.59 156.98,-152.32 184.58,-162.47"/>
+<polygon fill="#000000" stroke="#000000" points="183.37,-165.75 193.97,-165.91 185.79,-159.18 183.37,-165.75"/>
+</g>
+<!-- proc~solve_modified_cholesky -->
+<g id="proc~~flash_second_order~~CallsGraph_node6" class="node">
+<title>proc~solve_modified_cholesky</title>
+<g id="a_proc~~flash_second_order~~CallsGraph_node6"><a xlink:href="../proc/solve_modified_cholesky.html" xlink:title="solve_modified_cholesky">
+<polygon fill="#d9534f" stroke="#d9534f" points="294.54,-66.27 151.02,-66.27 151.02,-42 294.54,-42 294.54,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="222.78" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">solve_modified_cholesky</text>
+</a>
+</g>
+</g>
+<!-- proc~flash_second_order&#45;&gt;proc~solve_modified_cholesky -->
+<g id="proc~~flash_second_order~~CallsGraph_edge5" class="edge">
+<title>proc~flash_second_order&#45;&gt;proc~solve_modified_cholesky</title>
+<path fill="none" stroke="#000000" d="M84.46,-103.56C102.8,-94.94 128.11,-83.57 151.02,-75.13 155.68,-73.42 160.55,-71.74 165.45,-70.13"/>
+<polygon fill="#000000" stroke="#000000" points="166.28,-73.54 174.75,-67.18 164.16,-66.87 166.28,-73.54"/>
+</g>
+<!-- volume -->
+<g id="proc~~flash_second_order~~CallsGraph_node7" class="node">
+<title>volume</title>
+<polygon fill="#777777" stroke="#777777" points="249.78,-24.27 195.78,-24.27 195.78,0 249.78,0 249.78,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="222.78" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">volume</text>
+</g>
+<!-- proc~flash_second_order&#45;&gt;volume -->
+<g id="proc~~flash_second_order~~CallsGraph_edge6" class="edge">
+<title>proc~flash_second_order&#45;&gt;volume</title>
+<path fill="none" stroke="#000000" d="M69.17,-103.55C85.16,-85.42 117.12,-52.09 151.02,-33.13 161.34,-27.37 173.41,-23.03 184.63,-19.84"/>
+<polygon fill="#000000" stroke="#000000" points="185.2,-23.3 194,-17.4 183.44,-16.53 185.2,-23.3"/>
+</g>
+<!-- ln_activity_coefficient -->
+<g id="proc~~flash_second_order~~CallsGraph_node8" class="node">
+<title>ln_activity_coefficient</title>
+<polygon fill="#777777" stroke="#777777" points="584.58,-167.27 458.31,-167.27 458.31,-143 584.58,-143 584.58,-167.27"/>
+<text xml:space="preserve" text-anchor="middle" x="521.44" y="-151.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ln_activity_coefficient</text>
+</g>
+<!-- proc~evaluate_gibbs&#45;&gt;ln_activity_coefficient -->
+<g id="proc~~flash_second_order~~CallsGraph_edge7" class="edge">
+<title>proc~evaluate_gibbs&#45;&gt;ln_activity_coefficient</title>
+<path fill="none" stroke="#000000" d="M422.68,-128.47C435.72,-132.03 450.12,-135.96 463.76,-139.68"/>
+<polygon fill="#000000" stroke="#000000" points="462.48,-142.95 473.04,-142.21 464.32,-136.2 462.48,-142.95"/>
+</g>
+<!-- lnphi_pt -->
+<g id="proc~~flash_second_order~~CallsGraph_node9" class="node">
+<title>lnphi_pt</title>
+<polygon fill="#777777" stroke="#777777" points="548.44,-209.27 494.44,-209.27 494.44,-185 548.44,-185 548.44,-209.27"/>
+<text xml:space="preserve" text-anchor="middle" x="521.44" y="-193.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">lnphi_pt</text>
+</g>
+<!-- proc~evaluate_gibbs&#45;&gt;lnphi_pt -->
+<g id="proc~~flash_second_order~~CallsGraph_edge8" class="edge">
+<title>proc~evaluate_gibbs&#45;&gt;lnphi_pt</title>
+<path fill="none" stroke="#000000" d="M391.41,-128.66C406.85,-141.96 432.9,-162.84 458.31,-176.13 466.1,-180.21 474.84,-183.74 483.25,-186.67"/>
+<polygon fill="#000000" stroke="#000000" points="481.97,-189.94 492.56,-189.72 484.15,-183.29 481.97,-189.94"/>
+</g>
+<!-- proc~min_tpd&#45;&gt;ln_activity_coefficient -->
+<g id="proc~~flash_second_order~~CallsGraph_edge9" class="edge">
+<title>proc~min_tpd&#45;&gt;ln_activity_coefficient</title>
+<path fill="none" stroke="#000000" d="M250.37,-174.25C294.17,-171.15 383.01,-164.86 446.85,-160.34"/>
+<polygon fill="#000000" stroke="#000000" points="446.83,-163.86 456.55,-159.66 446.33,-156.87 446.83,-163.86"/>
+</g>
+<!-- proc~min_tpd&#45;&gt;lnphi_pt -->
+<g id="proc~~flash_second_order~~CallsGraph_edge10" class="edge">
+<title>proc~min_tpd&#45;&gt;lnphi_pt</title>
+<path fill="none" stroke="#000000" d="M250.13,-182.48C263.66,-186.11 280.25,-191.13 294.54,-197.13 311.41,-204.23 312.82,-212.54 330.54,-217.13 382.53,-230.61 444.77,-219.02 483.47,-208.69"/>
+<polygon fill="#000000" stroke="#000000" points="484.06,-212.16 492.75,-206.1 482.18,-205.42 484.06,-212.16"/>
+</g>
+<!-- proc~tm -->
+<g id="proc~~flash_second_order~~CallsGraph_node10" class="node">
+<title>proc~tm</title>
+<g id="a_proc~~flash_second_order~~CallsGraph_node10"><a xlink:href="../proc/tm.html" xlink:title="tm">
+<polygon fill="#d94e8f" stroke="#d94e8f" points="403.42,-208.27 349.42,-208.27 349.42,-184 403.42,-184 403.42,-208.27"/>
+<text xml:space="preserve" text-anchor="middle" x="376.42" y="-192.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">tm</text>
+</a>
+</g>
+</g>
+<!-- proc~min_tpd&#45;&gt;proc~tm -->
+<g id="proc~~flash_second_order~~CallsGraph_edge11" class="edge">
+<title>proc~min_tpd&#45;&gt;proc~tm</title>
+<path fill="none" stroke="#000000" d="M250.19,-179.62C274.47,-182.82 310.73,-187.6 337.99,-191.2"/>
+<polygon fill="#000000" stroke="#000000" points="337.19,-194.62 347.56,-192.46 338.1,-187.68 337.19,-194.62"/>
+</g>
+<!-- proc~tm&#45;&gt;ln_activity_coefficient -->
+<g id="proc~~flash_second_order~~CallsGraph_edge12" class="edge">
+<title>proc~tm&#45;&gt;ln_activity_coefficient</title>
+<path fill="none" stroke="#000000" d="M403.66,-188.61C420.96,-183.65 444.28,-176.97 465.52,-170.88"/>
+<polygon fill="#000000" stroke="#000000" points="466.3,-174.3 474.95,-168.18 464.37,-167.57 466.3,-174.3"/>
+</g>
+<!-- proc~tm&#45;&gt;lnphi_pt -->
+<g id="proc~~flash_second_order~~CallsGraph_edge13" class="edge">
+<title>proc~tm&#45;&gt;lnphi_pt</title>
+<path fill="none" stroke="#000000" d="M403.66,-196.32C425.93,-196.47 458.17,-196.7 483.13,-196.87"/>
+<polygon fill="#000000" stroke="#000000" points="482.84,-200.37 492.87,-196.94 482.89,-193.37 482.84,-200.37"/>
+</g>
+</g>
+</svg>
+</div>          <div>
+            <a type="button" class="graph-help" data-bs-toggle="modal" href="#CallsGraph-help-text">Help</a>
+          </div>
+          <div class="modal fade" id="CallsGraph-help-text" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="-graph-help-label">Graph Key</h4>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+<p>Nodes of different colours represent the following: </p>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 14.1.2 (0)
+ -->
+<!-- Title: Graph Key Pages: 1 -->
+<svg width="641pt" height="28pt"
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
+<title>Graph Key</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
+<!-- Subroutine -->
+<g id="node1" class="node">
+<title>Subroutine</title>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+</g>
+<!-- Function -->
+<g id="node2" class="node">
+<title>Function</title>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+</g>
+<!-- Interface -->
+<g id="node3" class="node">
+<title>Interface</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+</g>
+<!-- Type Bound Procedure -->
+<g id="node4" class="node">
+<title>Type Bound Procedure</title>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+</g>
+<!-- Unknown Procedure Type -->
+<g id="node5" class="node">
+<title>Unknown Procedure Type</title>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+</g>
+<!-- Program -->
+<g id="node6" class="node">
+<title>Program</title>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+</g>
+<!-- This Page&#39;s Entity -->
+<g id="node7" class="node">
+<title>This Page&#39;s Entity</title>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+</g>
+</g>
+</svg>
+
+<p>Solid arrows point from a procedure to one which it calls. Dashed 
+arrows point from an interface to procedures which implement that interface.
+This could include the module procedures in a generic interface or the
+implementation in a submodule of an interface in a parent module.
+</p>
+ </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+
+
+    <section>    
+      <h2>Variables</h2>
+      <table class="table table-striped varlist">
+    <thead>
+      <tr>
+        <th scope="col">Type</th>
+<th scope="col">Visibility</th>        <th scope="col">Attributes</th>
+        <th scope="col"></th>
+        <th scope="col">Name</th>
+<th></th><th scope="col">Initial</th>        <th scope="col"></th>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-g_trial"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>G_trial</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-gibbs"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Gibbs</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-h"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>H</strong>(size(z),size(z))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-h_l"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>H_l</strong>(size(z),size(z))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-k~3"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>K</strong>(size(z))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-ltot"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Ltot</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-vtot"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>Vtot</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-accepted"></span>
+              logical,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>accepted</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-alpha~6"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>alpha</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-alpha_max"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>alpha_max</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-beta"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>beta</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>Phase fraction.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-evaluated"></span>
+              logical,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>evaluated</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-g"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>g</strong>(size(z))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-g_l"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>g_l</strong>(size(z))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-grad_norm"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>grad_norm</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-i~6"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>i</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>Loop/index variable.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-iterations"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>iterations</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-j~3"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>j</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>Loop/index variable.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-l~3"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>l</strong>(size(z))</td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>Heavy-phase mole numbers <script type="math/tex">l_i = \theta_i z_i</script>.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-light_root_type"></span>
+              character(len=:),
+            </td>
+              <td>private,</td>
+            <td>
+              allocatable
+            </td>
+            <td>::</td>
+            <td><strong>light_root_type</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-max_iterations~3"></span>
+              integer,
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>max_iterations</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-mintpd"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>mintpd</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-step"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>step</strong>(size(z))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-theta"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>theta</strong>(size(z))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-theta_trial"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>theta_trial</strong>(size(z))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tolg"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tolG</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-tolerance"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>tolerance</strong></td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-v"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>v</strong>(size(z))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-w~6"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>w</strong>(size(z))</td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>Reference/trial phase composition.</p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-x"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>x</strong>(size(z))</td>
+                <td></td>
+                <td></td>
+            <td>
+                
+            </td>
+        </tr>
+        <tr>
+            <td>
+              <span class="anchor" id="variable-y"></span>
+              real(kind=pr),
+            </td>
+              <td>private</td>
+            <td>
+              
+            </td>
+            <td>::</td>
+            <td><strong>y</strong>(size(z))</td>
+                <td></td>
+                <td></td>
+            <td>
+                <p>Light-phase composition.</p>
+            </td>
+        </tr>
+    </tbody>
+  </table>
+
+    </section>
+    <br>
+    
+    
+
+    
+    
+
+
+
+    
+    
+    </div>
+  </div>
+
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              yaeos
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2026-11-18 15:31 +0000             </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

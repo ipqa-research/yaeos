@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SAFT Equations of State &mdash; yaeos 4.5.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+  <title>SAFT Equations of State &mdash; yaeos 4.5.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=a284863f"></script>
+      <script src="../../../_static/documentation_options.js?v=06fc0226"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,17 +56,17 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../init.html">Models</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../init.html">Residual Helmholtz Models</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../cubic_eos/init.html">Cubic Equations of State</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../multifluid/init.html">Multifluid Equations of State</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">SAFT Equations of State</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="pcsaft.html">PC-SAFT</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../init.html#choose-the-model-before-the-solver">Choose the model before the solver</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../init.html">Residual Helmholtz Models</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../cubic_eos/init.html">Cubic Equations of State</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../multifluid/init.html">Multifluid Equations of State</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">SAFT Equations of State</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../../excess_gibbs/init.html">Excess Gibbs Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../groups.html">Groups module</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../excess_gibbs/init.html">Excess Gibbs Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../groups.html">Groups module</a></li>
 </ul>
 </li>
 </ul>
@@ -103,9 +103,15 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-yaeos.models.residual_helmholtz.saft">
-<span id="saft-equations-of-state"></span><h1>SAFT Equations of State<a class="headerlink" href="#module-yaeos.models.residual_helmholtz.saft" title="Link to this heading"></a></h1>
-<p>SAFT equations module.</p>
+  <section id="saft-equations-of-state">
+<h1>SAFT Equations of State<a class="headerlink" href="#saft-equations-of-state" title="Link to this heading"></a></h1>
+<p>SAFT models describe fluids using molecular segments rather than only
+critical constants. The Python model here is <a class="reference internal" href="pcsaft.html"><span class="doc">PC-SAFT</span></a>; use it when you
+have a compatible set of segment parameters for your components.</p>
+<p>It inherits the same <a class="reference internal" href="../../../core.html"><span class="doc">Core Module</span></a> property and equilibrium methods as cubic
+EoS. Begin with the <a class="reference internal" href="../../../tutorial/equations_of_state/saft_eos/saft_eos.html"><span class="doc">SAFT tutorial</span></a>
+and verify a homogeneous property before attempting saturation or a flash.</p>
+<p id="module-yaeos.models.residual_helmholtz.saft">SAFT equations module.</p>
 <p>Implemented models:</p>
 <ul class="simple">
 <li><p>PC-SAFT: PC-SAFT Residual contribution</p></li>

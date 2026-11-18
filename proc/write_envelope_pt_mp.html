@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>write_envelope_PT_MP &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.4% of total for procedures.">73 statements</a>
+                 title=" 0.4% of total for procedures.">82 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -135,25 +136,25 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-p~20">P</a>
-            <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-s~11">S</a>
-            <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-t~24">T</a>
-            <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-betas~8">betas</a>
-            <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-ds~7">dS</a>
+            <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-p~32">P</a>
+            <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-s~27">S</a>
+            <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-t~42">T</a>
+            <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-betas~20">betas</a>
+            <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-ds~17">dS</a>
             <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-hdr">hdr</a>
-            <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-i~30">i</a>
-            <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-its~7">its</a>
-            <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-j~13">j</a>
-            <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-k~5">k</a>
+            <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-i~59">i</a>
+            <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-its~12">its</a>
+            <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-j~38">j</a>
+            <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-k~7">k</a>
             <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-n_beta">n_beta</a>
             <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-n_phase">n_phase</a>
-            <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-nc~25">nc</a>
-            <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-np~10">np</a>
-            <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-ns~12">ns</a>
+            <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-nc~44">nc</a>
+            <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-np~29">np</a>
+            <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-ns~33">ns</a>
             <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-str_k">str_k</a>
             <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-str_ph">str_ph</a>
-            <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-w~11">w</a>
-            <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-x_l~8">x_l</a>
+            <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-w~21">w</a>
+            <a class="list-group-item" href="../proc/write_envelope_pt_mp.html#variable-x_l~20">x_l</a>
         </div>
       </div>
     </div>
@@ -198,6 +199,8 @@
 </h2>
     
 
+    <h1 id="write_envelope_pt_mp">write_envelope_PT_MP</h1>
+<p>Write a multiphase PT envelope with one block per phase-boundary section.</p>
 
     <h3>Type Bound</h3>
     <p><a href='../type/ptenvelmp.html'>PTEnvelMP</a></p>
@@ -215,7 +218,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-env"></span>
+              <span class="anchor" id="variable-env~3"></span>
               class(<a href='../type/ptenvelmp.html'>PTEnvelMP</a>),
             </td>
 <td>intent(in)</td>
@@ -225,12 +228,12 @@
             <td>::</td>
             <td><strong>env</strong></td>
             <td>
-                
+                <p>Multiphase envelope to serialize.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-unit~2"></span>
+              <span class="anchor" id="variable-unit~4"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -240,7 +243,7 @@
             <td>::</td>
             <td><strong>unit</strong></td>
             <td>
-                
+                <p>Output unit number.</p>
             </td>
         </tr>
     </tbody>
@@ -255,34 +258,34 @@
   <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: proc~~write_envelope_pt_mp~~CallsGraph Pages: 1 -->
-<svg id="procwrite_envelope_pt_mpCallsGraph" width="309pt" height="32pt"
- viewBox="0.00 0.00 309.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~write_envelope_pt_mp~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg id="procwrite_envelope_pt_mpCallsGraph" width="306pt" height="32pt"
+ viewBox="0.00 0.00 306.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~write_envelope_pt_mp~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>proc~~write_envelope_pt_mp~~CallsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 305,-28 305,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 302.29,-28.27 302.29,4 -4,4"/>
 <!-- proc~write_envelope_pt_mp -->
 <g id="proc~~write_envelope_pt_mp~~CallsGraph_node1" class="node">
 <title>proc~write_envelope_pt_mp</title>
-<polygon fill="none" stroke="black" points="199,-24 0,-24 0,0 199,0 199,-24"/>
-<text text-anchor="middle" x="99.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">PTEnvelMP%write_envelope_PT_MP</text>
+<polygon fill="none" stroke="black" points="197.52,-24.27 0,-24.27 0,0 197.52,0 197.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="98.76" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">PTEnvelMP%write_envelope_PT_MP</text>
 </g>
 <!-- none~center_str -->
 <g id="proc~~write_envelope_pt_mp~~CallsGraph_node2" class="node">
 <title>none~center_str</title>
 <g id="a_proc~~write_envelope_pt_mp~~CallsGraph_node2"><a xlink:href="../proc/write_envelope_pt_mp.html#proc-center_str" xlink:title="center_str">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="301,-24 235,-24 235,0 301,0 301,-24"/>
-<text text-anchor="middle" x="268" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">center_str</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="298.29,-24.27 233.52,-24.27 233.52,0 298.29,0 298.29,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="265.91" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">center_str</text>
 </a>
 </g>
 </g>
 <!-- proc~write_envelope_pt_mp&#45;&gt;none~center_str -->
 <g id="proc~~write_envelope_pt_mp~~CallsGraph_edge1" class="edge">
 <title>proc~write_envelope_pt_mp&#45;&gt;none~center_str</title>
-<path fill="none" stroke="#000000" d="M199.28,-12C208.14,-12 216.76,-12 224.71,-12"/>
-<polygon fill="#000000" stroke="#000000" points="224.75,-15.5 234.75,-12 224.75,-8.5 224.75,-15.5"/>
+<path fill="none" stroke="#000000" d="M197.73,-12.13C206.12,-12.13 214.29,-12.13 221.87,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="221.75,-15.64 231.75,-12.14 221.75,-8.64 221.75,-15.64"/>
 </g>
 </g>
 </svg>
@@ -301,55 +304,55 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
 <svg width="641pt" height="28pt"
- viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
 <!-- Subroutine -->
 <g id="node1" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node2" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Interface -->
 <g id="node3" class="node">
 <title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
 </g>
 <!-- Type Bound Procedure -->
 <g id="node4" class="node">
 <title>Type Bound Procedure</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
-<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
 </g>
 <!-- Unknown Procedure Type -->
 <g id="node5" class="node">
 <title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
-<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
 </g>
 <!-- Program -->
 <g id="node6" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node7" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
-<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -382,7 +385,7 @@ implementation in a submodule of an interface in a parent module.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~20"></span>
+              <span class="anchor" id="variable-p~32"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -399,7 +402,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-s~11"></span>
+              <span class="anchor" id="variable-s~27"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -416,7 +419,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~24"></span>
+              <span class="anchor" id="variable-t~42"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -433,7 +436,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-betas~8"></span>
+              <span class="anchor" id="variable-betas~20"></span>
               real(kind=pr),
             </td>
               <td>private,</td>
@@ -445,12 +448,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Phase fractions for the main phases.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ds~7"></span>
+              <span class="anchor" id="variable-ds~17"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -484,7 +487,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-i~30"></span>
+              <span class="anchor" id="variable-i~59"></span>
               integer,
             </td>
               <td>private</td>
@@ -496,12 +499,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Loop index <code>i</code>.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-its~7"></span>
+              <span class="anchor" id="variable-its~12"></span>
               integer,
             </td>
               <td>private</td>
@@ -513,12 +516,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Iteration count.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-j~13"></span>
+              <span class="anchor" id="variable-j~38"></span>
               integer,
             </td>
               <td>private</td>
@@ -530,12 +533,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Loop index <code>j</code>.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-k~5"></span>
+              <span class="anchor" id="variable-k~7"></span>
               integer,
             </td>
               <td>private</td>
@@ -547,7 +550,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Loop index <code>k</code>.</p>
             </td>
         </tr>
         <tr>
@@ -586,7 +589,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~25"></span>
+              <span class="anchor" id="variable-nc~44"></span>
               integer,
             </td>
               <td>private</td>
@@ -598,12 +601,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Number of components.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-np~10"></span>
+              <span class="anchor" id="variable-np~29"></span>
               integer,
             </td>
               <td>private</td>
@@ -615,12 +618,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Number of phases.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns~12"></span>
+              <span class="anchor" id="variable-ns~33"></span>
               integer,
             </td>
               <td>private</td>
@@ -671,7 +674,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-w~11"></span>
+              <span class="anchor" id="variable-w~21"></span>
               real(kind=pr),
             </td>
               <td>private,</td>
@@ -683,12 +686,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Reference/trial phase composition.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x_l~8"></span>
+              <span class="anchor" id="variable-x_l~20"></span>
               real(kind=pr),
             </td>
               <td>private,</td>
@@ -700,7 +703,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Main-phase compositions.</p>
             </td>
         </tr>
     </tbody>
@@ -721,7 +724,7 @@ implementation in a submodule of an interface in a parent module.
 </h3></div>
     <div class="card-body">
           
-  
+  <p>Center a string in a fixed-width field for the formatted table header.</p><a href="../proc/write_envelope_pt_mp.html#proc-center_str" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -746,7 +749,7 @@ implementation in a submodule of an interface in a parent module.
             <td>::</td>
             <td><strong>text</strong></td>
             <td>
-
+<p>Text to center.</p>
             </td>
         </tr>
         <tr>
@@ -761,7 +764,7 @@ implementation in a submodule of an interface in a parent module.
             <td>::</td>
             <td><strong>width</strong></td>
             <td>
-
+<p>Output field width in characters.</p>
             </td>
         </tr>
     </tbody>
@@ -771,7 +774,7 @@ implementation in a submodule of an interface in a parent module.
     Return Value
     <small>character(len=width)</small>
     </h4>
-    
+    <p>Centered or truncated text.</p>
 
     </div>
   </div>
@@ -794,14 +797,14 @@ implementation in a submodule of an interface in a parent module.
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

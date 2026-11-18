@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>TXEnvelMP &ndash; yaeos </title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title="<p> 2.2% of total for derived types.</p>Including implementation: 107 statements,  1.1% of total for derived types.">14 statements</a>
+                 title="<p> 2.2% of total for derived types.</p>Including implementation: 111 statements,  1.0% of total for derived types.">14 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -135,14 +136,14 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../type/txenvelmp.html#variable-tc~10">Tc</a>
-            <a class="list-group-item" href="../type/txenvelmp.html#variable-ac">ac</a>
-            <a class="list-group-item" href="../type/txenvelmp.html#variable-alpha~20">alpha</a>
-            <a class="list-group-item" href="../type/txenvelmp.html#variable-kind_w~9">kind_w</a>
-            <a class="list-group-item" href="../type/txenvelmp.html#variable-kinds_x~8">kinds_x</a>
-            <a class="list-group-item" href="../type/txenvelmp.html#variable-points~10">points</a>
-            <a class="list-group-item" href="../type/txenvelmp.html#variable-z0~16">z0</a>
-            <a class="list-group-item" href="../type/txenvelmp.html#variable-zi~12">zi</a>
+            <a class="list-group-item" href="../type/txenvelmp.html#variable-tc">Tc</a>
+            <a class="list-group-item" href="../type/txenvelmp.html#variable-ac~3">ac</a>
+            <a class="list-group-item" href="../type/txenvelmp.html#variable-alpha~7">alpha</a>
+            <a class="list-group-item" href="../type/txenvelmp.html#variable-kind_w~3">kind_w</a>
+            <a class="list-group-item" href="../type/txenvelmp.html#variable-kinds_x~3">kinds_x</a>
+            <a class="list-group-item" href="../type/txenvelmp.html#variable-points~3">points</a>
+            <a class="list-group-item" href="../type/txenvelmp.html#variable-z0~6">z0</a>
+            <a class="list-group-item" href="../type/txenvelmp.html#variable-zi~6">zi</a>
         </div>
       </div>
     </div>
@@ -171,7 +172,7 @@
         <div class="list-group list-group-flush">
             <a class="list-group-item" href="../type/txenvelmp.html#boundprocedure-get_values_from_x~2">get_values_from_X</a>
             <a class="list-group-item" href="../type/txenvelmp.html#boundprocedure-solve_point~2">solve_point</a>
-            <a class="list-group-item" href="../type/txenvelmp.html#boundprocedure-write~3">write</a>
+            <a class="list-group-item" href="../type/txenvelmp.html#boundprocedure-write~2">write</a>
         </div>
       </div>
     </div>
@@ -187,7 +188,14 @@
     <div class="col-md-9" id='text'>
       <h2 id="type-def-statement">
         type, public :: TXEnvelMP</h2>
-    <p>Multiphase T<script type="math/tex">alpha</script> envelope.</p>
+    <h1 id="txenvelmp">TXEnvelMP</h1>
+<p>Multiphase temperature-composition envelope at fixed pressure.</p>
+<h1 id="description">Description</h1>
+<p>Stores each converged multiphase point together with its feed
+interpolation coordinate, critical markers, and phase-kind labels.</p>
+<h1 id="examples">Examples</h1>
+<div class="codehilite"><pre><span></span><code><span class="n">line</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tx_envelope</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z0</span><span class="p">,</span><span class="w"> </span><span class="n">zi</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">state0</span><span class="p">)</span>
+</code></pre></div>
 <br>      <div class="card">
         <div class="card-header">
           <h3 class="card-title">Inherits</h3>
@@ -196,35 +204,35 @@
           <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: type~~txenvelmp~~InheritsGraph Pages: 1 -->
-<svg id="typetxenvelmpInheritsGraph" width="200pt" height="32pt"
- viewBox="0.00 0.00 200.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="type~~txenvelmp~~InheritsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg id="typetxenvelmpInheritsGraph" width="198pt" height="32pt"
+ viewBox="0.00 0.00 198.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="type~~txenvelmp~~InheritsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>type~~txenvelmp~~InheritsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 196,-28 196,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 194.02,-28.27 194.02,4 -4,4"/>
 <!-- type~txenvelmp -->
 <g id="type~~txenvelmp~~InheritsGraph_node1" class="node">
 <title>type~txenvelmp</title>
-<polygon fill="none" stroke="black" points="192,-24 121,-24 121,0 192,0 192,-24"/>
-<text text-anchor="middle" x="156.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">TXEnvelMP</text>
+<polygon fill="none" stroke="black" points="190.02,-24.27 120,-24.27 120,0 190.02,0 190.02,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="155.01" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">TXEnvelMP</text>
 </g>
 <!-- type~mppoint~3 -->
 <g id="type~~txenvelmp~~InheritsGraph_node2" class="node">
 <title>type~mppoint~3</title>
 <g id="a_type~~txenvelmp~~InheritsGraph_node2"><a xlink:href="../type/mppoint~3.html" xlink:title="MPPoint">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">MPPoint</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">MPPoint</text>
 </a>
 </g>
 </g>
 <!-- type~txenvelmp&#45;&gt;type~mppoint~3 -->
 <g id="type~~txenvelmp~~InheritsGraph_edge1" class="edge">
 <title>type~txenvelmp&#45;&gt;type~mppoint~3</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M121,-12C103.36,-12 81.92,-12 64.07,-12"/>
-<polygon fill="#000000" stroke="#000000" points="64.03,-8.5 54.03,-12 64.03,-15.5 64.03,-8.5"/>
-<text text-anchor="middle" x="87.5" y="-14.4" font-family="Helvetica,sans-Serif" font-size="9.50">points</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M119.58,-12.13C102.88,-12.13 82.79,-12.13 65.68,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="65.91,-8.64 55.91,-12.14 65.91,-15.64 65.91,-8.64"/>
+<text xml:space="preserve" text-anchor="middle" x="87" y="-14.36" font-family="Helvetica,sans-Serif" font-size="9.50">points</text>
 </g>
 </g>
 </svg>
@@ -243,25 +251,25 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="186pt" height="32pt"
- viewBox="0.00 0.00 185.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="184pt" height="32pt"
+ viewBox="0.00 0.00 184.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 181.5,-28 181.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 179.88,-28.27 179.88,4 -4,4"/>
 <!-- Type -->
 <g id="node1" class="node">
 <title>Type</title>
-<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node2" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="177.5,-24 72.5,-24 72.5,0 177.5,0 177.5,-24"/>
-<text text-anchor="middle" x="125" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="175.88,-24.27 72.12,-24.27 72.12,0 175.88,0 175.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="124" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -293,7 +301,7 @@ said component(s).
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-tc~10"></span>
+              <span class="anchor" id="variable-tc"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -310,7 +318,7 @@ said component(s).
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ac"></span>
+              <span class="anchor" id="variable-ac~3"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -327,7 +335,7 @@ said component(s).
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-alpha~20"></span>
+              <span class="anchor" id="variable-alpha~7"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -339,12 +347,12 @@ said component(s).
                 <td></td>
                 <td></td>
             <td>
-                <p>Array of <script type="math/tex">alpha</script> values for each point in the envelope.</p>
+                <p>Array of <script type="math/tex">\alpha</script> values for each point in the envelope.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kind_w~9"></span>
+              <span class="anchor" id="variable-kind_w~3"></span>
               character(len=14),
             </td>
               <td>public,</td>
@@ -361,7 +369,7 @@ said component(s).
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kinds_x~8"></span>
+              <span class="anchor" id="variable-kinds_x~3"></span>
               character(len=14),
             </td>
               <td>public,</td>
@@ -378,7 +386,7 @@ said component(s).
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-points~10"></span>
+              <span class="anchor" id="variable-points~3"></span>
               type(<a href='mppoint~3.html'>MPPoint</a>),
             </td>
               <td>public,</td>
@@ -395,7 +403,7 @@ said component(s).
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z0~16"></span>
+              <span class="anchor" id="variable-z0~6"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -412,7 +420,7 @@ said component(s).
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-zi~12"></span>
+              <span class="anchor" id="variable-zi~6"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -599,7 +607,7 @@ said component(s).
             <td>::</td>
             <td><strong>T</strong></td>
             <td>
-<p>Pressure [bar].</p>
+<p>Temperature [K].</p>
             </td>
         </tr>
         <tr>
@@ -615,7 +623,7 @@ said component(s).
             <td><strong>alpha</strong></td>
             <td>
 <p>
-<script type="math/tex">alpha</script>.</p>
+<script type="math/tex">\alpha</script>.</p>
             </td>
         </tr>
     </tbody>
@@ -640,11 +648,11 @@ said component(s).
       <ul class="list-group">
           <li class="list-group-item">
                     <h3>
-    private  subroutine <a href='../proc/solve_point~3.html'>solve_point</a>(model, z0, zi, np, P, beta_w, kinds_x, kind_w, X, ns, S, dXdS, F, df, iters, max_iterations)  
+    private  subroutine <a href='../proc/solve_point~2.html'>solve_point</a>(model, z0, zi, np, P, beta_w, kinds_x, kind_w, X, ns, S, dXdS, F, df, iters, max_iterations)  
 </h3>
     
 
-  <p>Solve a point in the multiphase envelope.</p><a href="../proc/solve_point~3.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+  <p>Solve a point in the multiphase envelope.</p><a href="../proc/solve_point~2.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -834,7 +842,7 @@ said component(s).
             <td>::</td>
             <td><strong>dXdS</strong>(size(X))</td>
             <td>
-
+<p>Tangent direction from the preceding continuation point.</p>
             </td>
         </tr>
         <tr>
@@ -909,10 +917,10 @@ said component(s).
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-write~3"></span>
+      <span class="anchor" id="boundprocedure-write~2"></span>
       <h3>
           procedure, public ::
-  <strong>write</strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/write_envelope_tx_mp.html'>write_envelope_TX_MP</a>
+  <strong>write</strong> => <a href='../proc/write_envelope_tx_mp.html'>write_envelope_TX_MP</a>
         
       </h3>
     </div>
@@ -989,14 +997,14 @@ said component(s).
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

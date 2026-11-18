@@ -6,22 +6,20 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos Python API &mdash; yaeos 4.5.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+  <title>yaeos Python API &mdash; yaeos 4.5.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=a284863f"></script>
+      <script src="_static/documentation_options.js?v=06fc0226"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="_static/copybutton.js?v=f281be69"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -94,8 +92,8 @@
 <p align="center">
   <img src="https://github.com/ipqa-research/yaeos/blob/main/media/logo.png?raw=true" alt="logo" width="500"/>
 </p>
-<p>The <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> Python API is on and early stage of development. So the API will
-change with time. The supported operative system is Linux, and the supported
+<p>The <code class="docutils literal notranslate"><span class="pre">yaeos</span></code> Python API is in an early stage of development, so the API will
+change with time. The supported operating system is Linux, and the supported
 Python versions are 3.10, 3.11, 3.12 and 3.13.</p>
 <section id="important-advice">
 <h2>Important advice<a class="headerlink" href="#important-advice" title="Link to this heading"></a></h2>
@@ -106,87 +104,61 @@ looking at the “Getting Started - Using This Documentation” section of the
 down below</strong>, there you will understand how to use this documentation.</p>
 </section>
 </section>
+<section id="start-with-a-physical-question">
+<h1>Start with a physical question<a class="headerlink" href="#start-with-a-physical-question" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p><strong>What pressure or volume does this fluid have?</strong> Choose an
+<a class="reference internal" href="models/residual_helmholtz/init.html"><span class="doc">equation of state</span></a> and follow the
+<a class="reference internal" href="tutorial/equations_of_state/equations_of_state.html"><span class="doc">EoS tutorials</span></a>.</p></li>
+<li><p><strong>How nonideal is a liquid mixture?</strong> Start with
+<a class="reference internal" href="models/excess_gibbs/init.html"><span class="doc">excess Gibbs models</span></a> for activity
+coefficients and liquid-liquid separation.</p></li>
+<li><p><strong>Will the mixture split into phases?</strong> Read
+<a class="reference internal" href="tutorial/equations_of_state/phase_equilibrium/phase_equilibrium.html"><span class="doc">phase equilibrium</span></a>
+before using flash or saturation methods.</p></li>
+</ul>
+<p>New users should follow the <a class="reference internal" href="tutorial/tutorial_tree.html"><span class="doc">Tutorial</span></a> in order. The API
+pages below give exact signatures; common property and equilibrium methods
+are inherited from <a class="reference internal" href="core.html"><span class="doc">Core Module</span></a>, not repeated on every model page.</p>
+<section id="input-conventions-to-keep-nearby">
+<span id="python-input-conventions"></span><h2>Input conventions to keep nearby<a class="headerlink" href="#input-conventions-to-keep-nearby" title="Link to this heading"></a></h2>
+<p>The property methods use <strong>kelvin</strong>, <strong>bar</strong>, <strong>litres</strong>, and <strong>moles</strong>.
+Energies reported in bar L convert to joules by multiplying by 100.
+Check each signature: <code class="docutils literal notranslate"><span class="pre">moles</span></code> is an amount vector, whereas <code class="docutils literal notranslate"><span class="pre">z</span></code> in
+equilibrium calculations is an overall mole-fraction vector summing to one.
+A mole-fraction vector used as <code class="docutils literal notranslate"><span class="pre">moles</span></code> chooses a one-mole basis; the
+corresponding volume is then the volume of that one mole.</p>
+<p>Keep the same component order in every parameter array, composition vector,
+and row/column of an interaction matrix. Outputs use that same order.
+Mass fractions must be converted to mole fractions before use. Residual and
+excess energies are contributions relative to a reference, not complete
+enthalpies or Gibbs energies; see <a class="reference internal" href="core.html"><span class="doc">Core Module</span></a> before making an energy balance.</p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="tutorial/tutorial_tree.html">Tutorial</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="tutorial/getting_started.html">Getting Started</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="tutorial/getting_started.html#Using-This-Documentation">Using This Documentation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorial/getting_started.html#Installation-Instructions">Installation Instructions</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/getting_started.html#Local-Installation">Local Installation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/getting_started.html#Building-from-source">Building from source</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/getting_started.html#Setting-a-Google-Colab-to-use-yaeos">Setting a Google Colab to use yaeos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/tutorial_tree.html#suggested-route">Suggested route</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/getting_started.html">Getting Started</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/getting_started.html#Using-This-Documentation">Using This Documentation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/getting_started.html#Installation-Instructions">Installation Instructions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/getting_started.html#Installation-For-Developers">Installation For Developers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/getting_started.html#Yaeos-units">Yaeos units</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="tutorial/getting_started.html#Installation-For-Developers">Installation For Developers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorial/getting_started.html#Yaeos-units">Yaeos units</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/equations_of_state/equations_of_state.html">Equations of State (EoS)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/bulk_properties.html">Bulk Properties</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/cubic_eos/cubic_eos.html">Cubic Equations of State</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/multifluid_eos/multifluid_eos.html">Multifluid Equations of State</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/saft_eos/saft_eos.html">SAFT Equations of State</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/phase_equilibrium/phase_equilibrium.html">Phase Equilibrium Calculations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/gpec/gpec.html">GPEC (Global Phase Equilibrium Calculations)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/fitting/fitting.html">Fitting Equations of State</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="tutorial/equations_of_state/equations_of_state.html">Equations of State (EoS)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="tutorial/equations_of_state/bulk_properties.html">Bulk Properties</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/bulk_properties.html#Example-model">Example model</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/bulk_properties.html#Properties-function-of-Volume-and-Temperature-\left(V,-T-\right)">Properties function of Volume and Temperature <span class="math notranslate nohighlight">\(\left(V, T \right)\)</span></a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/bulk_properties.html#Properties-function-of-Pressure-and-Temperature-\left(P,-T-\right)">Properties function of Pressure and Temperature <span class="math notranslate nohighlight">\(\left(P, T \right)\)</span></a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/bulk_properties.html#Excess-properties-(properties-of-mixing)">Excess properties (properties of mixing)</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="tutorial/equations_of_state/cubic_eos/cubic_eos.html">Cubic Equations of State</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/cubic_eos/cubic_models.html">Generic Cubic Equation of State</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/cubic_eos/cubic_models.html#Peng-Robinson-(1976)">Peng-Robinson (1976)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/cubic_eos/cubic_models.html#Peng-Robinson-(1978)">Peng-Robinson (1978)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/cubic_eos/cubic_models.html#Soave-Redlich-Kwong">Soave-Redlich-Kwong</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/cubic_eos/cubic_models.html#RKPR">RKPR</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/cubic_eos/cubic_models.html#Predictive-Soave-Redlich-Kwong-(PSRK)">Predictive Soave-Redlich-Kwong (PSRK)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/cubic_eos/cubic_alphas.html">Alpha functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/cubic_eos/cubic_mixing_rules.html">Mixing Rules</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="tutorial/equations_of_state/multifluid_eos/multifluid_eos.html">Multifluid Equations of State</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/multifluid_eos/gerg2008.html">Gerg2008</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="tutorial/equations_of_state/saft_eos/saft_eos.html">SAFT Equations of State</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/saft_eos/saft.html">PC-SAFT</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="tutorial/equations_of_state/phase_equilibrium/phase_equilibrium.html">Phase Equilibrium Calculations</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/phase_equilibrium/phase_equilibrium_tutorial.html">Calculating an isotherm</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/phase_equilibrium/phase_equilibrium_tutorial.html#Calculate-a-saturation-pressure">Calculate a saturation pressure</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/phase_equilibrium/phase_equilibrium_tutorial.html#Pxy-diagram-for-a-mixture">Pxy diagram for a mixture</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/phase_equilibrium/phase_equilibrium_tutorial.html#Flash-calculation">Flash calculation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/phase_equilibrium/phase_equilibrium_tutorial.html#Phase-envelopes">Phase envelopes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/phase_equilibrium/phase_equilibrium_tutorial.html#Critical-lines">Critical lines</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/phase_equilibrium/phase_equilibrium_tutorial.html#Stability-analysis">Stability analysis</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/phase_equilibrium/phase_equilibrium_tutorial.html#Pure-components-saturation-lines">Pure components saturation lines</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/phase_equilibrium/phase_equilibrium_tutorial.html#Three-phase-envelopes">Three-phase envelopes</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="tutorial/equations_of_state/gpec/gpec.html">GPEC (Global Phase Equilibrium Calculations)</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/gpec/gpec_tutorial.html">Binary Systems Diagrams</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="tutorial/equations_of_state/fitting/fitting.html">Fitting Equations of State</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/equations_of_state/fitting/fitting_tutorial.html">Fitting interaction parameters of binary systems</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="tutorial/gibbs_excess/gibbs_excess.html">Excess Gibbs models</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="tutorial/gibbs_excess/bulk_properties.html">Bulk properties</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/gibbs_excess/bulk_properties.html#Example-model">Example model</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/gibbs_excess/bulk_properties.html#Properties-of-Excess-Gibbs-Models">Properties of Excess Gibbs Models</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="tutorial/gibbs_excess/models/ge_models.html">Models</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/gibbs_excess/models/nrtl.html">NRTL</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/gibbs_excess/models/uniquac.html">UNIQUAC</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/gibbs_excess/models/unifac_models.html">UNIFAC models</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="tutorial/gibbs_excess/equilibrium_calcs.html">Equilibrium calculations</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/gibbs_excess/equilibrium_calcs.html#Example-model">Example model</a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/gibbs_excess/equilibrium_calcs.html#Flash-\gamma-\text{-}-\gamma">Flash <span class="math notranslate nohighlight">\(\gamma \text{-} \gamma\)</span></a></li>
-<li class="toctree-l4"><a class="reference internal" href="tutorial/gibbs_excess/equilibrium_calcs.html#Stability-analysis">Stability analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorial/gibbs_excess/gibbs_excess.html">Excess Gibbs models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/gibbs_excess/bulk_properties.html">Bulk properties</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/gibbs_excess/models/ge_models.html">Models</a></li>
+<li class="toctree-l4"><a class="reference internal" href="tutorial/gibbs_excess/equilibrium_calcs.html">Equilibrium calculations</a></li>
 </ul>
 </li>
 </ul>
@@ -198,49 +170,70 @@ down below</strong>, there you will understand how to use this documentation.</p
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">API documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="core.html">Core Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="core.html">Core Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="core.html#where-the-shared-calculations-live">Where the shared calculations live</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#before-calling-a-method">Before calling a method</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.html#choosing-a-calculation">Choosing a calculation</a></li>
+</ul>
+</li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="models/init.html">Models</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="models/residual_helmholtz/init.html">Residual Helmholtz Models</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="models/residual_helmholtz/cubic_eos/init.html">Cubic Equations of State</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="models/residual_helmholtz/cubic_eos/cubic_eos.html">Cubic EoS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="models/residual_helmholtz/cubic_eos/mixing_rules.html">Mixing Rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="models/init.html#choose-the-model-before-the-solver">Choose the model before the solver</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="models/residual_helmholtz/init.html">Residual Helmholtz Models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="models/residual_helmholtz/cubic_eos/init.html">Cubic Equations of State</a></li>
+<li class="toctree-l4"><a class="reference internal" href="models/residual_helmholtz/multifluid/init.html">Multifluid Equations of State</a></li>
+<li class="toctree-l4"><a class="reference internal" href="models/residual_helmholtz/saft/init.html">SAFT Equations of State</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="models/residual_helmholtz/multifluid/init.html">Multifluid Equations of State</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="models/residual_helmholtz/multifluid/gerg2008.html">GERG 2008</a></li>
+<li class="toctree-l3"><a class="reference internal" href="models/excess_gibbs/init.html">Excess Gibbs Models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="models/excess_gibbs/nrtl.html">NRTL</a></li>
+<li class="toctree-l4"><a class="reference internal" href="models/excess_gibbs/unifacvle.html">UNIFACVLE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="models/excess_gibbs/unifac_dortmund.html">UNIFAC Dortmund</a></li>
+<li class="toctree-l4"><a class="reference internal" href="models/excess_gibbs/psrk_unifac.html">UNIFAC PSRK</a></li>
+<li class="toctree-l4"><a class="reference internal" href="models/excess_gibbs/uniquac.html">UNIQUAC</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="models/residual_helmholtz/saft/init.html">SAFT Equations of State</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="models/residual_helmholtz/saft/pcsaft.html">PC-SAFT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="models/groups.html">Groups module</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="models/excess_gibbs/init.html">Excess Gibbs Models</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="models/excess_gibbs/nrtl.html">NRTL</a></li>
-<li class="toctree-l3"><a class="reference internal" href="models/excess_gibbs/unifacvle.html">UNIFACVLE</a></li>
-<li class="toctree-l3"><a class="reference internal" href="models/excess_gibbs/unifac_dortmund.html">UNIFAC Dortmund</a></li>
-<li class="toctree-l3"><a class="reference internal" href="models/excess_gibbs/psrk_unifac.html">UNIFAC PSRK</a></li>
-<li class="toctree-l3"><a class="reference internal" href="models/excess_gibbs/uniquac.html">UNIQUAC</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="models/groups.html">Groups module</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="gpec.html">GPEC module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="envelopes.html">Envelopes Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gpec.html">GPEC module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gpec.html#before-constructing-it">Before constructing it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gpec.html#reading-the-results">Reading the results</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="envelopes.html">Envelopes Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="envelopes.html#reading-an-envelope">Reading an envelope</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="fitting/init.html">EoS Fitting Module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="fitting/core.html">Core Fitting module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fitting/model_setters.html">Model Setters Fitting module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="fitting/solvers.html">Solvers Fitting module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fitting/init.html#practical-guidance">Practical guidance</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="fitting/core.html">Core Fitting module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fitting/core.html#data-format">Data format</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fitting/core.html#how-the-fit-runs">How the fit runs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fitting/core.html#errors-and-diagnostics">Errors and diagnostics</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="fitting/model_setters.html">Model Setters Fitting module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fitting/model_setters.html#the-supplied-setters">The supplied setters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fitting/model_setters.html#practical-notes">Practical notes</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="fitting/solvers.html">Solvers Fitting module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="fitting/solvers.html#interpreting-the-output">Interpreting the output</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fitting/solvers.html#cautions">Cautions</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tools/init.html">Tools</a><ul>
@@ -249,6 +242,8 @@ down below</strong>, there you will understand how to use this documentation.</p
 </li>
 </ul>
 </div>
+</section>
+</section>
 <section id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading"></a></h1>
 <ul class="simple">

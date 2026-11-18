@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Model Setters Fitting module &mdash; yaeos 4.5.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+  <title>Model Setters Fitting module &mdash; yaeos 4.5.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=a284863f"></script>
+      <script src="../_static/documentation_options.js?v=06fc0226"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -61,9 +61,16 @@
 <li class="toctree-l1"><a class="reference internal" href="../gpec.html">GPEC module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../envelopes.html">Envelopes Module</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="init.html">EoS Fitting Module</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="core.html">Core Fitting module</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Model Setters Fitting module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html">Solvers Fitting module</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="init.html#practical-guidance">Practical guidance</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="core.html">Core Fitting module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Model Setters Fitting module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#the-supplied-setters">The supplied setters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#practical-notes">Practical notes</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="solvers.html">Solvers Fitting module</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../tools/init.html">Tools</a></li>
@@ -94,29 +101,127 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-yaeos.fitting.model_setters">
-<span id="model-setters-fitting-module"></span><h1>Model Setters Fitting module<a class="headerlink" href="#module-yaeos.fitting.model_setters" title="Link to this heading"></a></h1>
-<p>Model Setters.</p>
+  <section id="model-setters-fitting-module">
+<h1>Model Setters Fitting module<a class="headerlink" href="#model-setters-fitting-module" title="Link to this heading"></a></h1>
+<p>A model setter converts the optimizer’s trial parameter vector into a model
+that the <a class="reference internal" href="core.html"><span class="doc">Core Fitting module</span></a> fitter can score. The convention used throughout the
+package is <code class="docutils literal notranslate"><span class="pre">setter(parameters,</span> <span class="pre">*args)</span> <span class="pre">-&gt;</span> <span class="pre">ArModel</span></code>: the parameters come
+first, and the extra arguments are the ones passed to the fitter as
+<code class="docutils literal notranslate"><span class="pre">model_setter_args</span></code>.</p>
+<section id="the-supplied-setters">
+<h2>The supplied setters<a class="headerlink" href="#the-supplied-setters" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">fit_kij_lij(x,</span> <span class="pre">model,</span> <span class="pre">fit_kij,</span> <span class="pre">fit_lij)</span></code></dt><dd><p>Updates the model’s mixing rule with binary interaction parameters. When
+both are fitted, the vector is <code class="docutils literal notranslate"><span class="pre">[kij,</span> <span class="pre">lij]</span></code>; when only one is fitted,
+the vector has a single element. The matrices are built symmetric, so
+this setter cannot represent directional 12/21 differences.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">fit_mhv_nrtl(x,</span> <span class="pre">args)</span></code> and <code class="docutils literal notranslate"><span class="pre">fit_hv_nrtl(x,</span> <span class="pre">args)</span></code></dt><dd><p>Build an NRTL excess-Gibbs model and couple it to the cubic EoS through
+the MHV or HV mixing rule. Their extra arguments arrive as a single
+tuple, <code class="docutils literal notranslate"><span class="pre">args</span> <span class="pre">=</span> <span class="pre">(model,</span> <span class="pre">q)</span></code> for MHV and <code class="docutils literal notranslate"><span class="pre">args</span> <span class="pre">=</span> <span class="pre">(model,)</span></code> for HV, so
+pass them to the fitter wrapped once more, for example
+<code class="docutils literal notranslate"><span class="pre">model_setter_args=((model,</span> <span class="pre">q),)</span></code>. The parameter vector is
+<code class="docutils literal notranslate"><span class="pre">[a12,</span> <span class="pre">a21,</span> <span class="pre">b12,</span> <span class="pre">b21,</span> <span class="pre">alpha]</span></code>, matching the NRTL convention
+<code class="docutils literal notranslate"><span class="pre">tau_ij</span> <span class="pre">=</span> <span class="pre">a_ij</span> <span class="pre">+</span> <span class="pre">b_ij</span> <span class="pre">/</span> <span class="pre">T</span></code> with <code class="docutils literal notranslate"><span class="pre">G_ij</span> <span class="pre">=</span> <span class="pre">exp(-c_ij</span> <span class="pre">tau_ij)</span></code>: <code class="docutils literal notranslate"><span class="pre">a</span></code> and
+<code class="docutils literal notranslate"><span class="pre">alpha</span></code> are dimensionless, <code class="docutils literal notranslate"><span class="pre">b</span></code> is in K, and the 12 and 21 entries are
+independent.</p>
+</dd>
+</dl>
+</section>
+<section id="practical-notes">
+<h2>Practical notes<a class="headerlink" href="#practical-notes" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>The vector order is part of the interface. A vector of the right length
+but the wrong order will silently fit the wrong parameters.</p></li>
+<li><p>Setters mutate the model and return it. Keep the parameter vector yourself
+if you need to know which values produced a given result.</p></li>
+<li><p>Writing your own setter is normal and often better than using the
+supplied ones: it lets you fit parameters the helpers do not cover, such
+as asymmetric <code class="docutils literal notranslate"><span class="pre">kij</span></code> values or several parameters at once. Follow the
+same calling convention and return the updated model.</p></li>
+</ul>
+<p>See <a class="reference internal" href="core.html"><span class="doc">Core Fitting module</span></a> for how the setter is called and the
+<a class="reference internal" href="../tutorial/equations_of_state/fitting/fitting.html"><span class="doc">fitting tutorial</span></a> for a
+complete worked example, including a custom setter.</p>
+<p id="module-yaeos.fitting.model_setters">Model Setters.</p>
 <p>Compilation of functions that set a model’s parameters to the values
 given in the input arguments.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="yaeos.fitting.model_setters.fit_kij_lij">
 <span class="sig-name descname"><span class="pre">fit_kij_lij</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit_kij</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit_lij</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yaeos/fitting/model_setters.html#fit_kij_lij"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.fitting.model_setters.fit_kij_lij" title="Link to this definition"></a></dt>
 <dd><p>Set the kij and/or lij parameter of the model.</p>
+<p>Intended to be used as <cite>model_setter</cite> in
+<a class="reference internal" href="core.html#yaeos.fitting.core.BinaryFitter" title="yaeos.fitting.core.BinaryFitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">BinaryFitter</span></code></a> with
+<code class="docutils literal notranslate"><span class="pre">model_setter_args=(model,</span> <span class="pre">fit_kij,</span> <span class="pre">fit_lij)</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>array_like</em>) – Optimization parameters: <code class="docutils literal notranslate"><span class="pre">[kij,</span> <span class="pre">lij]</span></code> if both are fitted,
+otherwise <code class="docutils literal notranslate"><span class="pre">[kij]</span></code> or <code class="docutils literal notranslate"><span class="pre">[lij]</span></code>.</p></li>
+<li><p><strong>model</strong> (<a class="reference internal" href="../models/residual_helmholtz/cubic_eos/cubic_eos.html#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS" title="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS"><em>CubicEoS</em></a>) – Binary cubic EoS whose mixing rule has <cite>kij</cite> and <cite>lij</cite> attributes
+(e.g. <code class="xref py py-class docutils literal notranslate"><span class="pre">QMR</span></code>).</p></li>
+<li><p><strong>fit_kij</strong> (<em>bool</em>) – Whether to fit the kij parameter.</p></li>
+<li><p><strong>fit_lij</strong> (<em>bool</em>) – Whether to fit the lij parameter.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The same model object with its mixing rule updated.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../models/residual_helmholtz/cubic_eos/cubic_eos.html#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS" title="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS">CubicEoS</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="yaeos.fitting.model_setters.fit_mhv_nrtl">
 <span class="sig-name descname"><span class="pre">fit_mhv_nrtl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yaeos/fitting/model_setters.html#fit_mhv_nrtl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.fitting.model_setters.fit_mhv_nrtl" title="Link to this definition"></a></dt>
-<dd><p>Fit the MHV mixing rule for Cubic EoS with NRTL GE.</p>
+<dd><p>Set an MHV mixing rule with NRTL GE in a binary cubic EoS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>array_like</em>) – Optimization parameters <code class="docutils literal notranslate"><span class="pre">[a12,</span> <span class="pre">a21,</span> <span class="pre">b12,</span> <span class="pre">b21,</span> <span class="pre">alpha]</span></code> of the NRTL
+model.</p></li>
+<li><p><strong>args</strong> (<em>tuple</em>) – <code class="docutils literal notranslate"><span class="pre">(model,</span> <span class="pre">q)</span></code>: the cubic EoS and the MHV <cite>q</cite> parameter. Note that
+<a class="reference internal" href="core.html#yaeos.fitting.core.BinaryFitter" title="yaeos.fitting.core.BinaryFitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">BinaryFitter</span></code></a> calls the setter as
+<code class="docutils literal notranslate"><span class="pre">model_setter(x,</span> <span class="pre">*model_setter_args)</span></code>, so this tuple must be
+wrapped: <code class="docutils literal notranslate"><span class="pre">model_setter_args=((model,</span> <span class="pre">q),)</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The same model object with its mixing rule updated.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../models/residual_helmholtz/cubic_eos/cubic_eos.html#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS" title="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS">CubicEoS</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="yaeos.fitting.model_setters.fit_hv_nrtl">
 <span class="sig-name descname"><span class="pre">fit_hv_nrtl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/yaeos/fitting/model_setters.html#fit_hv_nrtl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.fitting.model_setters.fit_hv_nrtl" title="Link to this definition"></a></dt>
-<dd><p>Fit the HV mixing rule for Cubic EoS with NRTL GE.</p>
+<dd><p>Set an HV mixing rule with NRTL GE in a binary cubic EoS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>array_like</em>) – Optimization parameters <code class="docutils literal notranslate"><span class="pre">[a12,</span> <span class="pre">a21,</span> <span class="pre">b12,</span> <span class="pre">b21,</span> <span class="pre">alpha]</span></code> of the NRTL
+model.</p></li>
+<li><p><strong>args</strong> (<em>tuple</em>) – <code class="docutils literal notranslate"><span class="pre">(model,)</span></code>: the cubic EoS. Note that
+<a class="reference internal" href="core.html#yaeos.fitting.core.BinaryFitter" title="yaeos.fitting.core.BinaryFitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">BinaryFitter</span></code></a> calls the setter as
+<code class="docutils literal notranslate"><span class="pre">model_setter(x,</span> <span class="pre">*model_setter_args)</span></code>, so this tuple must be
+wrapped: <code class="docutils literal notranslate"><span class="pre">model_setter_args=((model,),)</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The same model object with its mixing rule updated.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../models/residual_helmholtz/cubic_eos/cubic_eos.html#yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS" title="yaeos.models.residual_helmholtz.cubic_eos.cubic_eos.CubicEoS">CubicEoS</a></p>
+</dd>
+</dl>
 </dd></dl>
 
+</section>
 </section>
 
 

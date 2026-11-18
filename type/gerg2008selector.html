@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>GERG2008Selector &ndash; yaeos </title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title="<p> 3.6% of total for derived types.</p>Including implementation: 23 statements,  0.2% of total for derived types.">23 statements</a>
+                 title="<p> 3.5% of total for derived types.</p>Including implementation: 23 statements,  0.2% of total for derived types.">23 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -187,7 +188,14 @@
     <div class="col-md-9" id='text'>
       <h2 id="type-def-statement">
         type, private :: GERG2008Selector</h2>
-    
+    <h1 id="gerg2008selector">GERG2008Selector</h1>
+<p>Internal integer codes for the 21 components supported by GERG2008.</p>
+<h1 id="description">Description</h1>
+<p>The public <code>G2008Components</code> object exposes these code values as
+named component selectors for model construction.</p>
+<h1 id="examples">Examples</h1>
+<div class="codehilite"><pre><span></span><code><span class="n">ids</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">G2008Components</span><span class="p">%</span><span class="n">methane</span><span class="p">,</span><span class="w"> </span><span class="n">G2008Components</span><span class="p">%</span><span class="n">nitrogen</span><span class="p">]</span>
+</code></pre></div>
     <br>
 
     <section>
@@ -216,7 +224,7 @@
 <td> =</td>
                 <td>21</td>
             <td>
-                
+                <p>Argon.</p>
             </td>
         </tr>
         <tr>
@@ -233,7 +241,7 @@
 <td> =</td>
                 <td>3</td>
             <td>
-                
+                <p>Carbon dioxide.</p>
             </td>
         </tr>
         <tr>
@@ -250,7 +258,7 @@
 <td> =</td>
                 <td>17</td>
             <td>
-                
+                <p>Carbon monoxide.</p>
             </td>
         </tr>
         <tr>
@@ -267,7 +275,7 @@
 <td> =</td>
                 <td>14</td>
             <td>
-                
+                <p>n-Decane.</p>
             </td>
         </tr>
         <tr>
@@ -284,7 +292,7 @@
 <td> =</td>
                 <td>4</td>
             <td>
-                
+                <p>Ethane.</p>
             </td>
         </tr>
         <tr>
@@ -301,7 +309,7 @@
 <td> =</td>
                 <td>20</td>
             <td>
-                
+                <p>Helium.</p>
             </td>
         </tr>
         <tr>
@@ -318,7 +326,7 @@
 <td> =</td>
                 <td>15</td>
             <td>
-                
+                <p>Hydrogen.</p>
             </td>
         </tr>
         <tr>
@@ -335,7 +343,7 @@
 <td> =</td>
                 <td>19</td>
             <td>
-                
+                <p>Hydrogen sulfide.</p>
             </td>
         </tr>
         <tr>
@@ -352,7 +360,7 @@
 <td> =</td>
                 <td>7</td>
             <td>
-                
+                <p>Isobutane.</p>
             </td>
         </tr>
         <tr>
@@ -369,7 +377,7 @@
 <td> =</td>
                 <td>9</td>
             <td>
-                
+                <p>Isopentane.</p>
             </td>
         </tr>
         <tr>
@@ -386,7 +394,7 @@
 <td> =</td>
                 <td>1</td>
             <td>
-                
+                <p>Methane.</p>
             </td>
         </tr>
         <tr>
@@ -403,7 +411,7 @@
 <td> =</td>
                 <td>6</td>
             <td>
-                
+                <p>n-Butane.</p>
             </td>
         </tr>
         <tr>
@@ -420,7 +428,7 @@
 <td> =</td>
                 <td>11</td>
             <td>
-                
+                <p>n-Heptane.</p>
             </td>
         </tr>
         <tr>
@@ -437,7 +445,7 @@
 <td> =</td>
                 <td>10</td>
             <td>
-                
+                <p>n-Hexane.</p>
             </td>
         </tr>
         <tr>
@@ -454,7 +462,7 @@
 <td> =</td>
                 <td>2</td>
             <td>
-                
+                <p>Nitrogen.</p>
             </td>
         </tr>
         <tr>
@@ -471,7 +479,7 @@
 <td> =</td>
                 <td>12</td>
             <td>
-                
+                <p>n-Octane.</p>
             </td>
         </tr>
         <tr>
@@ -488,7 +496,7 @@
 <td> =</td>
                 <td>13</td>
             <td>
-                
+                <p>n-Nonane.</p>
             </td>
         </tr>
         <tr>
@@ -505,7 +513,7 @@
 <td> =</td>
                 <td>8</td>
             <td>
-                
+                <p>n-Pentane.</p>
             </td>
         </tr>
         <tr>
@@ -522,7 +530,7 @@
 <td> =</td>
                 <td>16</td>
             <td>
-                
+                <p>Oxygen.</p>
             </td>
         </tr>
         <tr>
@@ -539,7 +547,7 @@
 <td> =</td>
                 <td>5</td>
             <td>
-                
+                <p>Propane.</p>
             </td>
         </tr>
         <tr>
@@ -556,7 +564,7 @@
 <td> =</td>
                 <td>18</td>
             <td>
-                
+                <p>Water.</p>
             </td>
         </tr>
     </tbody>
@@ -580,14 +588,14 @@
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

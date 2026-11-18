@@ -1,4 +1,17 @@
 module yaeos__models_ge_group_contribution_psrk
+   !! # PSRK UNIFAC model
+   !!
+   !! # Description
+   !! Group-contribution model used by the PSRK equation of state. Use
+   !! [[setup_psrk]] to build the model from the groups of each molecule.
+   !! Uses the PSRK group parameter set with the UNIFAC combinatorial and
+   !! residual contributions.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! model = setup_psrk(molecules)
+   !! call model%ln_activity_coefficient(n, T, ln_gamma)
+   !! ```
    use yaeos__constants, only: pr
    use yaeos__models_ge_gc_td, only: QuadraticPsi
    use yaeos__models_ge_group_contribution_groups, only: Groups
@@ -10,16 +23,25 @@ module yaeos__models_ge_group_contribution_psrk
 contains
 
    type(UNIFAC) function setup_psrk(molecules, parameters)
+      !! Create a PSRK UNIFAC model.
+      !!
+      !! Uses the PSRK parameter set by default. An alternative parameter
+      !! object can be supplied with `parameters`.
       use yaeos__models_ge_group_contribution_unifac_parameters, only: UNIFACParameters
-      type(Groups), intent(in) :: molecules(:)
+      type(Groups), intent(in) :: molecules(:) !! Groups of each molecule
       type(GeGCModelParameters), optional, intent(in) :: parameters
+      !! Optional parameter set
       
       type(GeGCModelParameters) :: params
       type(QuadraticPsi) :: psi_function
 
-      real(pr), allocatable :: Aij(:, :), Bij(:, :), Cij(:, :)
+      real(pr), allocatable :: Aij(:, :)
+      real(pr), allocatable :: Bij(:, :)
+      real(pr), allocatable :: Cij(:, :)
       type(Groups) :: soup
-      integer :: i, j, ng
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: ng
 
       if (present(parameters)) then
          params = parameters

@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GERG 2008 &mdash; yaeos 4.5.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+  <title>GERG 2008 &mdash; yaeos 4.5.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=a284863f"></script>
+      <script src="../../../_static/documentation_options.js?v=06fc0226"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,17 +56,17 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../init.html">Models</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../init.html">Residual Helmholtz Models</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../cubic_eos/init.html">Cubic Equations of State</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="init.html">Multifluid Equations of State</a><ul class="current">
-<li class="toctree-l4 current"><a class="current reference internal" href="#">GERG 2008</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../init.html#choose-the-model-before-the-solver">Choose the model before the solver</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../init.html">Residual Helmholtz Models</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../cubic_eos/init.html">Cubic Equations of State</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="init.html">Multifluid Equations of State</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../saft/init.html">SAFT Equations of State</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../saft/init.html">SAFT Equations of State</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../excess_gibbs/init.html">Excess Gibbs Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../groups.html">Groups module</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../excess_gibbs/init.html">Excess Gibbs Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../groups.html">Groups module</a></li>
 </ul>
 </li>
 </ul>
@@ -104,9 +104,22 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-yaeos.models.residual_helmholtz.multifluid.gerg2008">
-<span id="gerg-2008"></span><h1>GERG 2008<a class="headerlink" href="#module-yaeos.models.residual_helmholtz.multifluid.gerg2008" title="Link to this heading"></a></h1>
-<p>GERG2008 Equation of State.</p>
+  <section id="gerg-2008">
+<h1>GERG 2008<a class="headerlink" href="#gerg-2008" title="Link to this heading"></a></h1>
+<p>GERG2008 is a multifluid EoS used for natural-gas mixtures. Construct it with
+a list of supported component names, for example
+<code class="docutils literal notranslate"><span class="pre">GERG2008([&quot;methane&quot;,</span> <span class="pre">&quot;nitrogen&quot;,</span> <span class="pre">&quot;carbon</span> <span class="pre">dioxide&quot;])</span></code>. Subsequent mole
+vectors must follow that exact order, not the order of the full component
+list below. The name lookup is case-sensitive; unsupported names raise
+<code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.</p>
+<p>The wrapper exposes the residual contribution through <a class="reference internal" href="../../../core.html"><span class="doc">Core Module</span></a>.
+<code class="docutils literal notranslate"><span class="pre">volume(n,</span> <span class="pre">P,</span> <span class="pre">T)</span></code> uses mol, bar, and K and returns L; <code class="docutils literal notranslate"><span class="pre">sum(n)</span> <span class="pre">/</span> <span class="pre">V</span></code> is
+molar density in mol/L, not kg/m3. Residual heat capacities and energies
+must not be mistaken for complete caloric properties.</p>
+<p>See the <a class="reference internal" href="../../../tutorial/equations_of_state/multifluid_eos/multifluid_eos.html"><span class="doc">GERG2008 tutorial</span></a>
+and verify that the chosen conditions and components are appropriate for
+the underlying model before relying on a prediction.</p>
+<p id="module-yaeos.models.residual_helmholtz.multifluid.gerg2008">GERG2008 Equation of State.</p>
 <p>The <cite>GERG2008</cite> object is instantiated by providing a list of the components
 desired to include. The available components are:</p>
 <ul class="simple">
@@ -146,11 +159,13 @@ model for natural gas applications.</p>
 methane, nitrogen, carbon dioxide, ethane, propane, n-butane,
 isobutane, n-pentane, isopentane, n-hexane, n-heptane, n-octane,
 nonane, decane, hydrogen, oxygen, carbon monoxide, water,
-hydrogen sulfide, helium, argon.</p>
+hydrogen sulfide, helium, argon. Short aliases such as “c1”, “co2”,
+“nc4” or “h2o” are also accepted. Names are case-sensitive and an
+invalid name raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">GERG2008</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">GERG2008</span>
 
 <span class="n">model</span> <span class="o">=</span> <span class="n">GERG2008</span><span class="p">([</span><span class="s2">&quot;methane&quot;</span><span class="p">,</span> <span class="s2">&quot;nitrogen&quot;</span><span class="p">,</span> <span class="s2">&quot;carbon dioxide&quot;</span><span class="p">,])</span>
 </pre></div>

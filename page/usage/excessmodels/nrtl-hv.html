@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../../../favicon.png">
 
     <title>NRTL-HV &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../../../css/local.css" rel="stylesheet">
     <link href="../../../css/pygments.css" rel="stylesheet">
+      <link href="../../../css/user.css" rel="stylesheet">
     <script src="../../../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -92,7 +93,7 @@
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb justify-content-end mb-0">
                 <li class="breadcrumb-item"><a href='../../index.html'>User documentation</a></li>
-                <li class="breadcrumb-item"><a href='../index.html'>Using yaeos</a></li>
+                <li class="breadcrumb-item"><a href='../index.html'>Getting started</a></li>
                 <li class="breadcrumb-item"><a href='index.html'>Gibbs Excess Models</a></li>
               <li class="breadcrumb-item active" aria-current="page">NRTL-HV</li>
             </ol>
@@ -112,9 +113,10 @@
           </ul>
           <hr>
           <nav class="nav nav-pills flex-column">
-              <a class="nav-link" href="../index.html">Using yaeos</a>
+              <a class="nav-link" href="../index.html">Getting started</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../eos/index.html">Equations of State</a>
+                                <a class="nav-link" href="../fundamentals.html">Thermodynamics essentials</a>
+              <a class="nav-link" href="../eos/index.html">Equations of State</a>
                 <nav class="nav nav-pills flex-column">
                                 <a class="nav-link" href="../eos/cubics/index.html">Cubics</a>
                 <nav class="nav nav-pills flex-column">
@@ -122,27 +124,33 @@
               <a class="nav-link" href="../eos/cubics/mixing.html">Mixing Rules</a>
 
                 </nav>
+              <a class="nav-link" href="../eos/gerg2008.html">GERG2008</a>
+              <a class="nav-link" href="../eos/gerg2008_parameters.html">GERG2008 parameters</a>
+              <a class="nav-link" href="../eos/pc_saft.html">PC-SAFT</a>
 
                 </nav>
               <a class="nav-link" href="index.html">Gibbs Excess Models</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link active disabled" href="nrtl-hv.html">NRTL-HV</a>
-              <a class="nav-link" href="nrtl.html">NRTL</a>
+                                <a class="nav-link" href="nrtl.html">NRTL</a>
+              <a class="nav-link active disabled" href="nrtl-hv.html">NRTL-HV</a>
+              <a class="nav-link" href="uniquac.html">UNIQUAC</a>
               <a class="nav-link" href="unifac_models/index.html">UNIFAC Models</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="unifac_models/dortmund.html">UNIFAC-Dortmund</a>
+                                <a class="nav-link" href="unifac_models/unifaclv.html">UNIFAC-LV</a>
+              <a class="nav-link" href="unifac_models/dortmund.html">UNIFAC-Dortmund</a>
               <a class="nav-link" href="unifac_models/psrk.html">UNIFAC-PSRK</a>
-              <a class="nav-link" href="unifac_models/unifaclv.html">UNIFAC-LV</a>
 
                 </nav>
-              <a class="nav-link" href="uniquac.html">UNIQUAC</a>
 
                 </nav>
               <a class="nav-link" href="../phase_equilibrium/index.html">Phase Equilibrium</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../phase_equilibrium/envelopes.html">Phase envelopes</a>
-              <a class="nav-link" href="../phase_equilibrium/flash.html">Flash calculations</a>
+                                <a class="nav-link" href="../phase_equilibrium/flash.html">Flash calculations</a>
               <a class="nav-link" href="../phase_equilibrium/saturation_points.html">Saturation Points</a>
+              <a class="nav-link" href="../phase_equilibrium/envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="../phase_equilibrium/stability.html">Stability analysis</a>
+              <a class="nav-link" href="../phase_equilibrium/critical.html">Critical points</a>
+              <a class="nav-link" href="../phase_equilibrium/multiphase.html">Multiphase flash</a>
 
                 </nav>
               <a class="nav-link" href="../newmodels/index.html">Adding your own models</a>
@@ -153,25 +161,72 @@
                 </nav>
 
                 </nav>
+              <a class="nav-link" href="../../python-api/index.html">Python-API</a>
+              <a class="nav-link" href="../../developer/index.html">Becoming a yaeos developer</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../developer/architecture.html">Architecture and repository map</a>
+              <a class="nav-link" href="../../developer/workflow.html">Developer workflow</a>
+              <a class="nav-link" href="../../developer/fortran.html">Working in the Fortran core</a>
+              <a class="nav-link" href="../../developer/numerics.html">Working on numerical algorithms</a>
+              <a class="nav-link" href="../../developer/c_interface.html">C interface layer</a>
+              <a class="nav-link" href="../../developer/python_interface.html">Python interface layer</a>
+              <a class="nav-link" href="../../developer/testing.html">Tests and numerical validation</a>
+              <a class="nav-link" href="../../developer/walkthrough.html">An end-to-end change</a>
+
+                </nav>
               <a class="nav-link" href="../../contributing/index.html">Contributing</a>
                 <nav class="nav nav-pills flex-column">
                                 <a class="nav-link" href="../../contributing/styleguide.html">Style guide</a>
 
                 </nav>
-              <a class="nav-link" href="../../python-api/index.html">Python-API</a>
           </nav>
         </div>
       </div>
 
     <div class="col-9" id='text'>
-      <h1 id="nrtl-hv">NRTL-HV</h1>
-<p>The NRLT model presented by Huron and Vidal is a variation of the original
+      <div class="toc">
+<ul>
+<li><a href="#nrtl-hv">NRTL-HV</a><ul>
+<li><a href="#when-to-use-it">When to use it</a></li>
+<li><a href="#equation-and-actual-parameter-convention">Equation and actual parameter convention</a></li>
+<li><a href="#complete-property-example">Complete property example</a><ul>
+<li><a href="#cross-check-against-ordinary-nrtl">Cross-check against ordinary NRTL</a></li>
+<li><a href="#checks-limits-and-next-steps">Checks, limits, and next steps</a></li>
+</ul>
+</li>
+<li><a href="#derivatives">Derivatives</a><ul>
+<li><a href="#compositional-derivatives">Compositional derivatives</a></li>
+<li><a href="#temperature-derivatives">Temperature derivatives</a></li>
+<li><a href="#crossed-derivative">Crossed derivative</a></li>
+</ul>
+</li>
+<li><a href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h1 id="nrtl-hv">NRTL-HV</h1>
+<p>The NRTL model modified by Huron and Vidal is a variation of the original
 non-random two-liquid model. This variation is intended to be used combined with
 cubic Equations of State, using the Huron-Vidal mixing rule.  The major
 difference with respect to the original NRTL model is that it includes the
 repulsive parameter of the cubic EoS in the expression for the excess Gibbs
 energy. This allows the model to be simplified to the classic Van der Waals
 1-fluid quadratic mixing rules when giving special values to the parameters.</p>
+<h2 id="when-to-use-it">When to use it</h2>
+<p>Choose this model when your parameter set was developed for a Huron-Vidal
+cubic-EOS formulation. Ordinary <a href="nrtl.html">NRTL</a> weights neighbors by their
+amounts and interaction factors; NRTL-HV additionally weights them by pure-fluid
+<strong>covolumes</strong> <script type="math/tex">b_j</script>, which represent excluded-volume size in the cubic EOS.
+This is not a liquid molar-volume calculation. In <code>yaeos</code> the public type is
+<a href="../../../type/nrtlhv.html">NRTLHV</a>, while the ordinary type is <a href="../../../type/nrtl.html">NRTL</a>.</p>
+<p>NRTL-HV itself remains a <a href="../../../type/gemodel.html">GeModel</a>: its derivatives give activity coefficients
+relative to an ideal liquid, not fugacity coefficients relative to an ideal gas.
+An activity is <script type="math/tex">x_i\gamma_i</script>; a liquid fugacity also requires its pure-liquid
+reference fugacity. Coupling the excess model to a cubic EOS is a separate step
+through the <a href="../eos/cubics/mixing.html">mixing rule</a>, not a side effect of calling
+the constructor.</p>
+<h2 id="equation-and-actual-parameter-convention">Equation and actual parameter convention</h2>
 <p>The general expression for the excess Gibbs energy is given by:</p>
 <p>
 <script type="math/tex; mode=display">\begin{equation}
@@ -184,19 +239,149 @@ energy. This allows the model to be simplified to the classic Van der Waals
 <p>Where the parameters are defined as follows:</p>
 <p>
 <script type="math/tex; mode=display">\begin{align}
-    \tau_{j, i}(T) & = \frac{g_{j,i} - g_{i,i}}{RT} \\
+    \tau_{j, i}(T) & = \frac{\Delta g_{j,i}(T)}{RT} \\
     E_{j, i} &= \exp\left(-\alpha_{j, i} \tau_{j, i} \right)
 \end{align}</script>
 </p>
 <p>In this implementation:</p>
 <p>
 <script type="math/tex; mode=display">\begin{equation}
-g_{j,i} = g_{j,i}^0 + g_{j,i}^T \cdot T
+\Delta g_{j,i}(T) = g_{j,i}^0 + g_{j,i}^T \cdot T
 \end{equation}</script>
 </p>
-<p>Where <script type="math/tex">g_{j,i}</script> is the interaction parameter between components <script type="math/tex">j</script> and <script type="math/tex">i</script>,
-which can be a function of temperature, and <script type="math/tex">\alpha_{j,i}</script> is the non-randomness
-parameters which is usually symmetric with values between 0 and 0.5.</p>
+<p>Here <script type="math/tex">\Delta g_{j,i}</script> is the <strong>already-referenced</strong> interaction difference.
+If a source supplies raw energies <script type="math/tex">g_{j,i}-g_{i,i}</script>, subtract the reference
+before constructing this model: the implementation does <strong>not</strong> subtract a
+diagonal energy. The non-randomness parameter <script type="math/tex">\alpha_{j,i}</script> controls the local
+weighting and is often symmetric, but must match the fitted parameter set.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Constructor argument</th>
+<th style="text-align: left;">Meaning and units</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>b(:)</code></td>
+<td style="text-align: left;">Pure-component cubic covolumes, L/mol</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>alpha(:,:)</code></td>
+<td style="text-align: left;">Dimensionless non-randomness parameters</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>gji0(:,:)</code></td>
+<td style="text-align: left;">Constant referenced energy differences, bar L/mol</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>gjiT(:,:)</code></td>
+<td style="text-align: left;">Coefficients multiplying <code>T</code>, bar L/(mol K)</td>
+</tr>
+</tbody>
+</table>
+<p>Thus <script type="math/tex">\tau_{ji}=\texttt{gjiT(j,i)}/R+\texttt{gji0(j,i)}/(RT)</script>, with <code>T</code>
+in kelvin and the library gas constant <code>R</code> in bar L/(mol K). Divide J/mol by 100
+to obtain bar L/mol (and likewise for J/(mol K)). These arrays are <strong>not</strong> the
+dimensionless <code>a</code> and kelvin-valued <code>b</code> matrices of the ordinary NRTL constructor.
+All matrices have shape <code>(nc,nc)</code> and need not be symmetric. <code>(:,i)</code> describes
+contacts in the local average around component <code>i</code>. Use zero diagonal energy
+differences and keep component order consistent with <code>n</code> and the covolume vector.</p>
+<h2 id="complete-property-example">Complete property example</h2>
+<p>The following artificial binary example tests the API and its ideal-interaction
+limit; it is not a parameter set for named chemicals. For EOS work, obtain <code>b</code>
+from the same pure-component cubic model used for coupling.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">program </span><span class="n">nrtlhv_activity</span>
+<span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">NRTLHV</span>
+<span class="k">implicit none</span>
+
+<span class="k">type</span><span class="p">(</span><span class="n">NRTLHV</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">b</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">alpha</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">gji0</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">gjiT</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ln_gamma</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Ge</span>
+
+<span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.04_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.06_pr</span><span class="p">]</span>
+<span class="n">alpha</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.3_pr</span>
+<span class="n">gji0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<span class="n">gji0</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="mf">0.0_pr</span>
+<span class="n">gji0</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mf">5.0_pr</span>
+<span class="n">gjiT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.4_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.6_pr</span><span class="p">]</span>
+<span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span>
+
+<span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NRTLHV</span><span class="p">(</span><span class="n">b</span><span class="o">=</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span><span class="w"> </span><span class="n">gji0</span><span class="o">=</span><span class="n">gji0</span><span class="p">,</span><span class="w"> </span><span class="n">gjiT</span><span class="o">=</span><span class="n">gjiT</span><span class="p">)</span>
+<span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">ln_activity_coefficient</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">ln_gamma</span><span class="p">)</span>
+<span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">excess_gibbs</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">Ge</span><span class="o">=</span><span class="n">Ge</span><span class="p">)</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;gamma, components 1 and 2 = &quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">exp</span><span class="p">(</span><span class="n">ln_gamma</span><span class="p">)</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;GE [bar L] = &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Ge</span>
+
+<span class="n">gji0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NRTLHV</span><span class="p">(</span><span class="n">b</span><span class="o">=</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span><span class="w"> </span><span class="n">gji0</span><span class="o">=</span><span class="n">gji0</span><span class="p">,</span><span class="w"> </span><span class="n">gjiT</span><span class="o">=</span><span class="n">gjiT</span><span class="p">)</span>
+<span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">ln_activity_coefficient</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">ln_gamma</span><span class="p">)</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Zero-interaction ln(gamma), near zero = &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ln_gamma</span>
+<span class="k">end program </span><span class="n">nrtlhv_activity</span>
+</code></pre></div>
+
+<p>The output coefficient order follows <code>n</code>. Coefficients must be positive, not
+necessarily less than 1. With both energy matrices zero, <script type="math/tex">G^E=0</script> and the
+coefficients are 1, even when the covolumes differ. This ideal-<em>excess</em> check is
+not the same as the special parameter choices needed to recover quadratic
+mixing in an EOS.</p>
+<h3 id="cross-check-against-ordinary-nrtl">Cross-check against ordinary NRTL</h3>
+<p>When every component has the same covolume, the covolume weighting drops out
+of the local averages and NRTL-HV reduces to ordinary NRTL for the same
+<script type="math/tex">\tau</script> and <script type="math/tex">\alpha</script>. Because the two models use different parameter forms,
+the conversion is:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Ordinary NRTL</th>
+<th style="text-align: left;">NRTL-HV equivalent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>a(i,j)</code> (dimensionless)</td>
+<td style="text-align: left;"><code>gjiT(i,j) = a(i,j) * R</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>b(i,j)</code> (K)</td>
+<td style="text-align: left;"><code>gji0(i,j) = b(i,j) * R</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>c(i,j)</code> (dimensionless)</td>
+<td style="text-align: left;"><code>alpha(i,j) = c(i,j)</code></td>
+</tr>
+<tr>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;"><code>b(i) = 1</code> for every component</td>
+</tr>
+</tbody>
+</table>
+<p>With those substitutions the two models give identical activity coefficients.
+This is a useful diagnostic when converting a parameter set: if the results
+differ, a unit or a matrix direction is wrong.</p>
+<h3 id="checks-limits-and-next-steps">Checks, limits, and next steps</h3>
+<p>Use positive covolumes and nonnegative mole amounts with a positive total.
+Wrong energy units, reversed matrix directions, and subtracting the diagonal
+twice are particularly damaging mistakes. Equal covolumes reduce the weighting
+to ordinary NRTL for the same <script type="math/tex">\tau</script> and <script type="math/tex">\alpha</script>, which offers another
+cross-check. Do not transplant a fitted ordinary-NRTL parameter set into an
+unequal-covolume model and assume unchanged predictions.</p>
+<p>The special parameter choices that recover the classic van der Waals one-fluid
+quadratic mixing rule inside a cubic EOS (a specific set of diagonal and
+off-diagonal energies, and zero non-randomness) are implemented in the
+<a href="../eos/cubics/mixing.html">Huron-Vidal mixing rule</a>, not by this model object.</p>
+<p>No density, vapor phase, ionic chemistry, or pressure-dependent excess properties
+are supplied by this standalone model. Validate the fitted temperature range,
+then continue to <a href="index.html">shared property methods</a> and
+<a href="../eos/cubics/mixing.html">cubic mixing rules</a>. The derivative details below are
+optional background; application code should call the model methods.</p>
 <h2 id="derivatives">Derivatives</h2>
 <p>In this section we present the first and second order derivatives of the excess
 Gibbs energy. To simplify the expressions we will define the following
@@ -204,8 +389,8 @@ parameters:</p>
 <p>
 <script type="math/tex; mode=display">\begin{align}
     \xi_{ji} & = E_{ji} \tau_{ji} b_j n_j \\
-    \theta{ji} & = {E_{ji} b_j n_j} \\
-    \Omega{ji} &= E_{ji} b_j \\
+    \theta_{ji} & = {E_{ji} b_j n_j} \\
+    \Omega_{ji} &= E_{ji} b_j \\
     \eta_{ji} &= E_{ji} \tau_{ji} b_j
 \end{align}</script>
 </p>
@@ -221,7 +406,7 @@ parameters:</p>
 number of moles of component <script type="math/tex">i</script> are given by:</p>
 <p>
 <script type="math/tex; mode=display">\begin{equation}
-    \frac{1}{RT}\frac{dG^E}{dn_i} = \left(\sum_{i=1}^{NC} \frac{{E}_{k,i}
+    \frac{1}{RT}\frac{\partial G^E}{\partial n_k} = \left(\sum_{i=1}^{NC} \frac{{E}_{k,i}
     {\tau}_{k,i} {b}_{k} {n}_{i}}{\sum_{j=1}^{NC} {E}_{j,i} {b}_{j} {n}_{j}} +
     \sum_{i=1}^{NC} - \frac{{E}_{k,i} {b}_{k} {n}_{i} \sum_{j=1}^{NC} {E}_{j,i}
     {\tau}_{j,i} {b}_{j} {n}_{j}}{\left(\sum_{j=1}^{NC} {E}_{j,i} {b}_{j}
@@ -244,7 +429,7 @@ number of moles of component <script type="math/tex">i</script> are given by:</p
 <p>The second order derivatives of the excess Gibbs energy with respect to the number of moles of components <script type="math/tex">i</script> and <script type="math/tex">j</script> are given by:</p>
 <p>
 <script type="math/tex; mode=display">\begin{equation}
-    \frac{1}{RT}\frac{dG^E}{dn_{ij}} = 
+    \frac{1}{RT}\frac{\partial^2 G^E}{\partial n_i\partial n_j} =
     \begin{aligned}
     - \frac{\Omega_{ji} \sum\limits_k{\xi_{ki}}}{\left(\sum\limits_k \theta_{ki}\right)^2}
     - \frac{\Omega_{ij} \sum\limits_k \xi_{kj}}{\left(\sum\limits_k \theta_{kj}\right)^2}
@@ -291,7 +476,7 @@ second order derivatives.</p>
 <p>
 <script type="math/tex; mode=display">\begin{equation}
 \begin{aligned}
-    \frac{\partial G^E}{\partial n_i \partial T}  = & \\
+    \frac{\partial^2 G^E}{\partial n_i \partial T}  = & \\
     & \frac{\frac{\partial G^E}{\partial n_i}}{T}  + RT \left( 
        \frac{\sum\limits_l \xi_{l,i}^T}{\sum\limits_l\theta_{l,i}} - \sum\limits_l \xi_{l, i} \frac{\sum\limits_l \theta^T_{l,i}}{\left(\sum\limits_l\theta_{l,i}\right)^2} \right.\\
     & + \sum\limits_k^{NC} n_k 
@@ -306,6 +491,12 @@ second order derivatives.</p>
 \end{aligned}
 \end{equation}</script>
 </p>
+<h2 id="references">References</h2>
+<ol>
+<li>Huron, M.-J., and Vidal, J. (1979). New mixing rules in simple equations of
+   state for representing vapour-liquid equilibria of strongly non-ideal
+   mixtures. Fluid Phase Equilibria, 3, 255–271.</li>
+</ol>
     </div>
   </div>
       <hr>
@@ -316,14 +507,14 @@ second order derivatives.</p>
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

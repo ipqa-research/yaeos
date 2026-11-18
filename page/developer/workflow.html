@@ -1,0 +1,491 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
+    <link rel="icon" href="../../favicon.png">
+
+    <title>Developer workflow &ndash; yaeos</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../../css/brands.min.css" rel="stylesheet">
+    <link href="../../css/regular.min.css" rel="stylesheet">
+    <link href="../../css/solid.min.css" rel="stylesheet">
+    <link href="../../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../../css/local.css" rel="stylesheet">
+    <link href="../../css/pygments.css" rel="stylesheet">
+      <link href="../../css/user.css" rel="stylesheet">
+    <script src="../../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../../index.html">yaeos </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="../index.html">User documentation</a></li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>Developer workflow</h1>
+    <div class="container p-2 mb-4 bg-light border rounded-3">
+      <div class="row align-items-center justify-content-between">
+        <div class="col">
+          <ul class="list-inline" style="margin-bottom:0px; display:inline">
+          </ul>
+        </div>
+        <div class="col">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../index.html'>User documentation</a></li>
+                <li class="breadcrumb-item"><a href='index.html'>Becoming a yaeos developer</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Developer workflow</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+      <div class="col-3">
+        <div class="card card-body bg-light" id="sidebar-toc">
+          <ul class="nav flex-column align-items">
+            <li class="nav-item">
+              <a class="nav-link" href="../index.html">User documentation</a>
+            </li>
+          </ul>
+          <hr>
+          <nav class="nav nav-pills flex-column">
+              <a class="nav-link" href="../usage/index.html">Getting started</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/fundamentals.html">Thermodynamics essentials</a>
+              <a class="nav-link" href="../usage/eos/index.html">Equations of State</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/eos/cubics/index.html">Cubics</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/eos/cubics/alpha.html">Alpha functions</a>
+              <a class="nav-link" href="../usage/eos/cubics/mixing.html">Mixing Rules</a>
+
+                </nav>
+              <a class="nav-link" href="../usage/eos/gerg2008.html">GERG2008</a>
+              <a class="nav-link" href="../usage/eos/gerg2008_parameters.html">GERG2008 parameters</a>
+              <a class="nav-link" href="../usage/eos/pc_saft.html">PC-SAFT</a>
+
+                </nav>
+              <a class="nav-link" href="../usage/excessmodels/index.html">Gibbs Excess Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/excessmodels/nrtl.html">NRTL</a>
+              <a class="nav-link" href="../usage/excessmodels/nrtl-hv.html">NRTL-HV</a>
+              <a class="nav-link" href="../usage/excessmodels/uniquac.html">UNIQUAC</a>
+              <a class="nav-link" href="../usage/excessmodels/unifac_models/index.html">UNIFAC Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
+              <a class="nav-link" href="../usage/excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
+              <a class="nav-link" href="../usage/excessmodels/unifac_models/psrk.html">UNIFAC-PSRK</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../usage/phase_equilibrium/index.html">Phase Equilibrium</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/phase_equilibrium/flash.html">Flash calculations</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/saturation_points.html">Saturation Points</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/stability.html">Stability analysis</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/critical.html">Critical points</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/multiphase.html">Multiphase flash</a>
+
+                </nav>
+              <a class="nav-link" href="../usage/newmodels/index.html">Adding your own models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/newmodels/analtical.html">Analytical derivatives</a>
+              <a class="nav-link" href="../usage/newmodels/autodiff.html">Automatic differentiation</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../python-api/index.html">Python-API</a>
+              <a class="nav-link" href="index.html">Becoming a yaeos developer</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="architecture.html">Architecture and repository map</a>
+              <a class="nav-link active disabled" href="workflow.html">Developer workflow</a>
+              <a class="nav-link" href="fortran.html">Working in the Fortran core</a>
+              <a class="nav-link" href="numerics.html">Working on numerical algorithms</a>
+              <a class="nav-link" href="c_interface.html">C interface layer</a>
+              <a class="nav-link" href="python_interface.html">Python interface layer</a>
+              <a class="nav-link" href="testing.html">Tests and numerical validation</a>
+              <a class="nav-link" href="walkthrough.html">An end-to-end change</a>
+
+                </nav>
+              <a class="nav-link" href="../contributing/index.html">Contributing</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../contributing/styleguide.html">Style guide</a>
+
+                </nav>
+          </nav>
+        </div>
+      </div>
+
+    <div class="col-9" id='text'>
+      <div class="toc">
+<ul>
+<li><a href="#from-a-checkout-to-a-reviewed-change">From a checkout to a reviewed change</a><ul>
+<li><a href="#1-start-from-an-identifiable-revision">1. Start from an identifiable revision</a></li>
+<li><a href="#2-understand-the-build-boundaries">2. Understand the build boundaries</a></li>
+<li><a href="#3-install-the-tools-for-the-layer-you-need">3. Install the tools for the layer you need</a><ul>
+<li><a href="#native-fortran-work">Native Fortran work</a></li>
+<li><a href="#python-work">Python work</a></li>
+<li><a href="#documentation-work">Documentation work</a></li>
+</ul>
+</li>
+<li><a href="#4-build-the-native-package-first">4. Build the native package first</a><ul>
+<li><a href="#debugging-and-performance-builds-are-different-checks">Debugging and performance builds are different checks</a></li>
+<li><a href="#a-smaller-test-is-a-faster-feedback-loop">A smaller test is a faster feedback loop</a></li>
+</ul>
+</li>
+<li><a href="#5-build-the-python-package-separately">5. Build the Python package separately</a></li>
+<li><a href="#6-build-both-documentation-systems">6. Build both documentation systems</a></li>
+<li><a href="#7-diagnose-failures-in-the-right-layer">7. Diagnose failures in the right layer</a></li>
+<li><a href="#8-prepare-the-change-for-review">8. Prepare the change for review</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h1 id="from-a-checkout-to-a-reviewed-change">From a checkout to a reviewed change</h1>
+<p>This page explains how to build the project you are editing, rather than
+accidentally testing a different installed version. Read the
+<a href="architecture.html">architecture map</a> first if you are unsure which layer a
+change belongs to.</p>
+<p>There are three distinct outcomes to check: the native Fortran package, the
+Python package with its compiled extension, and the generated documentation.
+A successful build of one does not prove the others work.</p>
+<h2 id="1-start-from-an-identifiable-revision">1. Start from an identifiable revision</h2>
+<p>For a fresh checkout:</p>
+<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/ipqa-research/yaeos.git
+<span class="nb">cd</span><span class="w"> </span>yaeos
+git<span class="w"> </span>switch<span class="w"> </span>-c<span class="w"> </span>feature/my-change
+git<span class="w"> </span>status<span class="w"> </span>--short
+</code></pre></div>
+
+<p>For a fork-based contribution, use your fork&rsquo;s clone URL and add the project
+repository as an <code>upstream</code> remote. Agree on the target branch before starting
+a larger change. The commands above create a new development branch; they do
+not reset or discard existing work.</p>
+<p>Before editing an existing checkout, inspect <code>git status</code> and understand its
+modified and untracked files. A dirty tree can be perfectly ordinary work in
+progress. Do not clean, overwrite, or revert it merely to make a command run.</p>
+<p>Record <code>git rev-parse HEAD</code>, compiler and <code>fpm</code> versions when diagnosing a
+numerical regression. A package version string alone may not identify the
+source of an uncommitted development checkout.</p>
+<h2 id="2-understand-the-build-boundaries">2. Understand the build boundaries</h2>
+<table>
+<thead>
+<tr>
+<th>Outcome</th>
+<th>Entry point</th>
+<th>What gets produced</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Native library, apps, examples, and tests</td>
+<td>Root <code>fpm.toml</code></td>
+<td>Compiler-specific files under <code>build/</code></td>
+</tr>
+<tr>
+<td>Python package</td>
+<td><code>python/pyproject.toml</code> and <code>python/meson.build</code></td>
+<td>A compiled extension and installed Python modules</td>
+</tr>
+<tr>
+<td>Fortran API and guide pages</td>
+<td>Root <code>ford.md</code></td>
+<td><code>doc/ford_site/</code></td>
+</tr>
+<tr>
+<td>Python API and tutorials</td>
+<td><code>python/docs/source/conf.py</code></td>
+<td>A Sphinx HTML tree in your selected output directory</td>
+</tr>
+</tbody>
+</table>
+<p>Meson invokes <code>fpm install</code> internally to build a position-independent native
+library for the Python extension. That is a separate build from an ordinary
+root-level <code>fpm build</code>. Do not copy a random <code>.mod</code> file from one compiler or
+profile into another build: module files are compiler-specific artifacts.</p>
+<p>Keep generated outputs out of commits. Check <code>.gitignore</code> for the current
+rules rather than assuming every file generated by a new tool is ignored.</p>
+<h2 id="3-install-the-tools-for-the-layer-you-need">3. Install the tools for the layer you need</h2>
+<h3 id="native-fortran-work">Native Fortran work</h3>
+<p>You need a Fortran compiler, a C compiler for the Tapenade runtime support,
+<code>fpm</code>, Git for dependencies, and BLAS/LAPACK libraries. The root manifest links
+<code>lapack</code> and <code>blas</code>. On Debian/Ubuntu a typical system-library setup is:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>gfortran<span class="w"> </span>gcc<span class="w"> </span>git<span class="w"> </span>libblas-dev<span class="w"> </span>liblapack-dev
+</code></pre></div>
+
+<p>Install <code>fpm</code> using its supported installation instructions, then check:</p>
+<div class="codehilite"><pre><span></span><code>fpm<span class="w"> </span>--version
+gfortran<span class="w"> </span>--version
+gcc<span class="w"> </span>--version
+</code></pre></div>
+
+<p>The first build needs network access to fetch the Git dependencies declared in
+<code>fpm.toml</code>. Later builds normally reuse their downloaded copies under <code>build/</code>.
+Changing a dependency revision, compiler, profile, or compiler flags can
+require a different build or a rebuild. Diagnose fetch failures separately
+from compilation failures.</p>
+<h3 id="python-work">Python work</h3>
+<p>In addition to the native tools, the Python build uses <code>meson-python</code>, Meson,
+Ninja, NumPy/f2py, and a supported Python interpreter. Build isolation installs
+the requirements declared in <code>python/pyproject.toml</code> but does not install a
+system compiler or BLAS/LAPACK for you.</p>
+<p><strong>Check the actual compiler requirement.</strong> The current non-Windows branch of
+<code>python/meson.build</code> rejects a Fortran compiler version below <strong>14.1</strong> and uses
+GNU-specific flags, including heap trampoline support. This requirement belongs
+to this Python build, not to a generic Fortran language requirement or an
+equivalent minimum enforced by root <code>fpm.toml</code>. The Windows branch has different
+flags and checks; do not infer platform support solely from the absence of
+that version gate.</p>
+<h3 id="documentation-work">Documentation work</h3>
+<p>FORD needs a compatible Fortran preprocessor and Graphviz for the configured
+dependency graphs. Sphinx uses <code>python/docs/requirements.txt</code>; notebook
+conversion also needs Pandoc. Use a virtual environment for documentation
+packages instead of changing unrelated system Python installations.</p>
+<h2 id="4-build-the-native-package-first">4. Build the native package first</h2>
+<p>Run from the repository root:</p>
+<div class="codehilite"><pre><span></span><code>fpm<span class="w"> </span>build
+fpm<span class="w"> </span>run<span class="w"> </span>--example<span class="w"> </span>basics
+fpm<span class="w"> </span><span class="nb">test</span><span class="w"> </span>mixing_base
+fpm<span class="w"> </span><span class="nb">test</span>
+</code></pre></div>
+
+<p><code>basics</code> is a registered example in <code>fpm.toml</code>. <code>mixing_base</code> is the test
+program <code>test/models/residual_helmholtz/cubic/mixing_rules/test_mixing_base.f90</code>,
+registered in <code>fpm.toml</code> by <code>tools/dev/test_to_toml.py</code>. Every native test is
+a standalone program like this one, in a <code>test/</code> subdirectory that mirrors
+<code>src/</code>, and the full <code>fpm test</code> runs all of them.
+Discover your checkout&rsquo;s targets
+with <code>fpm test --list</code> and consult <code>fpm test --help</code> for your installed version.</p>
+<p>Run build commands sequentially when they share the same build directory.
+Two concurrent <code>fpm</code> processes can overwrite intermediate files or make a
+failure harder to reproduce.</p>
+<h3 id="debugging-and-performance-builds-are-different-checks">Debugging and performance builds are different checks</h3>
+<p>A debug build is useful for finding invalid array access or uninitialized
+state; a release build is useful for checking optimized behavior and timing:</p>
+<div class="codehilite"><pre><span></span><code>fpm<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--profile<span class="w"> </span>debug
+fpm<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--profile<span class="w"> </span>release
+</code></pre></div>
+
+<p>For additional compiler diagnostics, select flags supported by that compiler
+and document what you used. For example, a GNU debugging investigation might
+use <code>--flag "-g -fcheck=all -fbacktrace"</code>. Bounds checks can expose existing
+defects as well as your new change. Do not turn them off merely to make a
+regression disappear.</p>
+<p>Some existing test files contain long lines; GNU&rsquo;s
+<code>-ffree-line-length-none</code> can be useful when reproducing a build with explicit
+flags. Do not hard-code this compiler-specific flag as if it applied to every
+toolchain.</p>
+<h3 id="a-smaller-test-is-a-faster-feedback-loop">A smaller test is a faster feedback loop</h3>
+<p>Start with the affected target, then run the larger suite before review. When
+changing a model kernel, test derivatives and a small property call before
+running an expensive phase envelope. A failing one-point correction is easier
+to inspect than the last point of a long curve.</p>
+<p>The <a href="testing.html">testing guide</a> shows how to write a standalone test program
+with the existing assertion helper and how to choose numerical assertions.</p>
+<h2 id="5-build-the-python-package-separately">5. Build the Python package separately</h2>
+<p>From the repository root, in a Python environment intended for development:</p>
+<div class="codehilite"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>./python
+python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import yaeos; print(yaeos.__file__, yaeos.__version__)&quot;</span>
+</code></pre></div>
+
+<p>The printed path helps catch importing an old wheel or another environment.
+After changing compiled Fortran or wrapper signatures, rebuild/reinstall; a
+Python interpreter cannot pick up a newly changed shared library reliably just
+because its source file changed. Restart the interpreter after rebuilding.</p>
+<p>The current Meson build locates the interface source relative to <code>python/</code>
+and invokes <code>fpm</code> without an explicit project-directory argument. Its working
+directory and <code>fpm</code>&rsquo;s upward manifest search therefore matter. Prefer the
+standard package build layout; do not assume an arbitrary external Meson build
+directory will work unchanged. See <a href="python_interface.html">Python internals</a>
+for the full pipeline.</p>
+<p>From the <code>python/</code> directory, run:</p>
+<div class="codehilite"><pre><span></span><code>python<span class="w"> </span>-m<span class="w"> </span>pytest<span class="w"> </span>tests/<span class="w"> </span>--import-mode<span class="o">=</span>importlib
+</code></pre></div>
+
+<p>Some Python tests generate Fortran programs under root <code>app/</code> and invoke <code>fpm</code>
+to compare the two language paths. They need a working checkout and native
+tools, not just an installed Python wheel. Do not run them concurrently against
+the same generated filenames. <code>python/tox.ini</code> documents the project&rsquo;s test,
+style, coverage, and documentation environments; <code>tox</code> runs from <code>python/</code>.</p>
+<p>Importing the package directly from source can also require installed package
+metadata: <code>yaeos.__version__</code> uses <code>importlib.metadata.version("yaeos")</code>. Adding
+<code>python/</code> to <code>PYTHONPATH</code> alone is not a substitute for an installation.</p>
+<h2 id="6-build-both-documentation-systems">6. Build both documentation systems</h2>
+<p>From the repository root, FORD builds the native API and the Markdown guides:</p>
+<div class="codehilite"><pre><span></span><code>ford<span class="w"> </span>ford.md
+</code></pre></div>
+
+<p>Open <code>doc/ford_site/index.html</code>. Review your rendered page, its equations,
+tables, code, images, and links. A successful process exit does not prove
+that a formula is correct or an example is runnable.</p>
+<p>From the repository root, an explicit Sphinx output path avoids directory
+ambiguity:</p>
+<div class="codehilite"><pre><span></span><code>sphinx-build<span class="w"> </span>-b<span class="w"> </span>html<span class="w"> </span>python/docs/source<span class="w"> </span>python/docs/build
+</code></pre></div>
+
+<p>Use <code>-W</code> for a warning-as-error check when the environment can import the
+documented package and all required extensions. Explain any existing warnings
+separately from warnings introduced by your changes. The Sphinx configuration
+disables notebook execution, so building the site does <strong>not</strong> validate notebook
+numerical outputs.</p>
+<p>The documentation deployment workflow builds both systems and replaces FORD&rsquo;s
+<code>page/python-api/</code> output with the Sphinx HTML tree. Consequently a local
+FORD-only build shows the Python fallback page, not the complete Python API.
+Preserve that replacement path and test links in the assembled site when
+changing navigation.</p>
+<p>Do not use a path to a personal compiler cache or temporary environment in a
+published example. Describe reproducible package-level commands, and identify
+any environment-specific command used for local debugging as such.</p>
+<h2 id="7-diagnose-failures-in-the-right-layer">7. Diagnose failures in the right layer</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>First investigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dependency clone fails</td>
+<td>Network, Git URL/revision, and dependency cache</td>
+</tr>
+<tr>
+<td>BLAS/LAPACK symbols are unresolved</td>
+<td>Installed libraries, link names, and search paths</td>
+</tr>
+<tr>
+<td>A native call succeeds but Python fails</td>
+<td>Rebuilt extension, handle lookup, shapes, and option conversion</td>
+</tr>
+<tr>
+<td>Python imports the wrong implementation</td>
+<td>Interpreter/environment and printed <code>yaeos.__file__</code></td>
+</tr>
+<tr>
+<td>Wrapper compiles but values are transposed</td>
+<td>Array ordering and native shape conventions</td>
+</tr>
+<tr>
+<td>A regression occurs only in release mode</td>
+<td>Uninitialized values, aliasing, bounds, and undefined behavior</td>
+</tr>
+<tr>
+<td>A Sphinx page omits an object</td>
+<td>Import diagnostics, installed metadata, and extension availability</td>
+</tr>
+<tr>
+<td>FORD succeeds but a page is missing</td>
+<td>Front matter, <code>ordered_subpage</code>, filename, and page-relative links</td>
+</tr>
+</tbody>
+</table>
+<p>If you need a clean build, inspect what is generated and what is user work
+before removing anything. <code>fpm clean --help</code> describes the installed version&rsquo;s
+cleaning options. Do not put a broad deletion command into a debugging recipe
+without explaining exactly which artifacts it removes.</p>
+<h2 id="8-prepare-the-change-for-review">8. Prepare the change for review</h2>
+<p>Run <code>git diff --check</code> and inspect the diff yourself. Include implementation,
+tests, and documentation for one coherent change. If a failure predated your
+work, retain the evidence rather than silently changing an unrelated algorithm.</p>
+<p>In the review description, include the affected layers, a minimal reproducer,
+the expected physical/numerical behavior, and the exact checks run. Distinguish
+native tests, Python tests, and documentation builds. A check that could not
+run is a limitation to report, not an implied success.</p>
+<p>Read the actual <code>.github/workflows/CI.yml</code>, <code>.github/workflows/docs.yml</code>, and
+<code>ci/ci.sh</code> when comparing with CI. Workflow names, exclusions, or a commented
+command are not proof of test coverage. For example, current Python wheel
+testing and the nominal <code>Python-API</code> job do not execute identical commands.</p>
+<p>Continue with <a href="testing.html">writing tests</a>,
+<a href="c_interface.html">the C-facing boundary</a>, or
+<a href="walkthrough.html">an end-to-end contribution</a>.</p>
+    </div>
+  </div>
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              yaeos
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2026-11-18 15:31 +0000             </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../../../../favicon.png">
 
     <title>UNIFAC-LV &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../../../../css/local.css" rel="stylesheet">
     <link href="../../../../css/pygments.css" rel="stylesheet">
+      <link href="../../../../css/user.css" rel="stylesheet">
     <script src="../../../../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -92,7 +93,7 @@
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb justify-content-end mb-0">
                 <li class="breadcrumb-item"><a href='../../../index.html'>User documentation</a></li>
-                <li class="breadcrumb-item"><a href='../../index.html'>Using yaeos</a></li>
+                <li class="breadcrumb-item"><a href='../../index.html'>Getting started</a></li>
                 <li class="breadcrumb-item"><a href='../index.html'>Gibbs Excess Models</a></li>
                 <li class="breadcrumb-item"><a href='index.html'>UNIFAC Models</a></li>
               <li class="breadcrumb-item active" aria-current="page">UNIFAC-LV</li>
@@ -113,9 +114,10 @@
           </ul>
           <hr>
           <nav class="nav nav-pills flex-column">
-              <a class="nav-link" href="../../index.html">Using yaeos</a>
+              <a class="nav-link" href="../../index.html">Getting started</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../../eos/index.html">Equations of State</a>
+                                <a class="nav-link" href="../../fundamentals.html">Thermodynamics essentials</a>
+              <a class="nav-link" href="../../eos/index.html">Equations of State</a>
                 <nav class="nav nav-pills flex-column">
                                 <a class="nav-link" href="../../eos/cubics/index.html">Cubics</a>
                 <nav class="nav nav-pills flex-column">
@@ -123,27 +125,33 @@
               <a class="nav-link" href="../../eos/cubics/mixing.html">Mixing Rules</a>
 
                 </nav>
+              <a class="nav-link" href="../../eos/gerg2008.html">GERG2008</a>
+              <a class="nav-link" href="../../eos/gerg2008_parameters.html">GERG2008 parameters</a>
+              <a class="nav-link" href="../../eos/pc_saft.html">PC-SAFT</a>
 
                 </nav>
               <a class="nav-link" href="../index.html">Gibbs Excess Models</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../nrtl-hv.html">NRTL-HV</a>
-              <a class="nav-link" href="../nrtl.html">NRTL</a>
+                                <a class="nav-link" href="../nrtl.html">NRTL</a>
+              <a class="nav-link" href="../nrtl-hv.html">NRTL-HV</a>
+              <a class="nav-link" href="../uniquac.html">UNIQUAC</a>
               <a class="nav-link" href="index.html">UNIFAC Models</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="dortmund.html">UNIFAC-Dortmund</a>
+                                <a class="nav-link active disabled" href="unifaclv.html">UNIFAC-LV</a>
+              <a class="nav-link" href="dortmund.html">UNIFAC-Dortmund</a>
               <a class="nav-link" href="psrk.html">UNIFAC-PSRK</a>
-              <a class="nav-link active disabled" href="unifaclv.html">UNIFAC-LV</a>
 
                 </nav>
-              <a class="nav-link" href="../uniquac.html">UNIQUAC</a>
 
                 </nav>
               <a class="nav-link" href="../../phase_equilibrium/index.html">Phase Equilibrium</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../../phase_equilibrium/envelopes.html">Phase envelopes</a>
-              <a class="nav-link" href="../../phase_equilibrium/flash.html">Flash calculations</a>
+                                <a class="nav-link" href="../../phase_equilibrium/flash.html">Flash calculations</a>
               <a class="nav-link" href="../../phase_equilibrium/saturation_points.html">Saturation Points</a>
+              <a class="nav-link" href="../../phase_equilibrium/envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="../../phase_equilibrium/stability.html">Stability analysis</a>
+              <a class="nav-link" href="../../phase_equilibrium/critical.html">Critical points</a>
+              <a class="nav-link" href="../../phase_equilibrium/multiphase.html">Multiphase flash</a>
 
                 </nav>
               <a class="nav-link" href="../../newmodels/index.html">Adding your own models</a>
@@ -154,12 +162,24 @@
                 </nav>
 
                 </nav>
+              <a class="nav-link" href="../../../python-api/index.html">Python-API</a>
+              <a class="nav-link" href="../../../developer/index.html">Becoming a yaeos developer</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../../developer/architecture.html">Architecture and repository map</a>
+              <a class="nav-link" href="../../../developer/workflow.html">Developer workflow</a>
+              <a class="nav-link" href="../../../developer/fortran.html">Working in the Fortran core</a>
+              <a class="nav-link" href="../../../developer/numerics.html">Working on numerical algorithms</a>
+              <a class="nav-link" href="../../../developer/c_interface.html">C interface layer</a>
+              <a class="nav-link" href="../../../developer/python_interface.html">Python interface layer</a>
+              <a class="nav-link" href="../../../developer/testing.html">Tests and numerical validation</a>
+              <a class="nav-link" href="../../../developer/walkthrough.html">An end-to-end change</a>
+
+                </nav>
               <a class="nav-link" href="../../../contributing/index.html">Contributing</a>
                 <nav class="nav nav-pills flex-column">
                                 <a class="nav-link" href="../../../contributing/styleguide.html">Style guide</a>
 
                 </nav>
-              <a class="nav-link" href="../../../python-api/index.html">Python-API</a>
           </nav>
         </div>
       </div>
@@ -175,6 +195,7 @@
 <li><a href="#calculating-activity-coefficients">Calculating activity coefficients</a></li>
 </ul>
 </li>
+<li><a href="#checks-common-errors-and-next-steps">Checks, common errors, and next steps</a></li>
 <li><a href="#references">References</a></li>
 </ul>
 </li>
@@ -182,6 +203,18 @@
 </div>
 <h1 id="liquid-vapor-unifac">Liquid-Vapor UNIFAC</h1>
 <h2 id="model-description">Model description</h2>
+<p>Choose original UNIFAC for a structure-based estimate of liquid activity
+coefficients when the original group&rsquo;s interaction table covers your chemistry.
+It was developed for liquid-vapor data: do not assume that availability of a
+parameter automatically establishes accurate liquid-liquid equilibria. For a
+well-measured binary, a validated molecular fit may be better; see the
+<a href="../index.html">model selection guide</a>.</p>
+<p>Like <a href="../uniquac.html">UNIQUAC</a>, it combines a size/shape term with an energetic
+term. Unlike a molecular UNIQUAC fit, it transfers interactions between
+functional groups. The prediction is an excess property relative to ideal
+liquid mixing, not an ideal-gas residual property. Its coefficients correct
+activity, <script type="math/tex">a_i=x_i\gamma_i</script>, and are not vapor fugacity coefficients. See
+the <a href="index.html">family overview</a> for reference states and input preparation.</p>
 <p>This is the original and classic Liquid-Vapor UNIFAC model. In this model, the
 parameters are defined as:
 <script type="math/tex; mode=display">
@@ -200,6 +233,19 @@ constant <script type="math/tex">a_{jk}</script> coefficient as follows:</p>
     E_{jk} = \text{exp} \left(- \frac{U_{jk}}{RT} \right) = \text{exp} \left(- \frac{a_{jk}}{T} \right)
 </script>
 </p>
+<p>Here <code>T</code> is absolute temperature in K, <script type="math/tex">a_{jk}=U_{jk}/R</script> is in K, and
+<script type="math/tex">E_{jk}</script> is dimensionless. A larger positive coefficient suppresses that
+directional contact factor at fixed temperature. In general <script type="math/tex">a_{jk}\ne a_{kj}</script>.
+These are group interaction coefficients, not ordinary NRTL <code>a</code> coefficients
+or molecular UNIQUAC coefficients. <code>setup_unifac</code> supplies them from its default
+parameter table; you normally provide only subgroup IDs and counts.</p>
+<p>The single-coefficient law means the original model has no explicit
+temperature dependence beyond <script type="math/tex">1/T</script>. That is a real limitation: a fit
+obtained at one temperature is used at another with no correction for how the
+interaction enthalpy changes with temperature. If you need temperature
+dependence over a wide range, or accurate excess enthalpies, compare with
+<a href="dortmund.html">Dortmund</a>, whose interaction law has fitted linear and
+quadratic temperature terms.</p>
 <h2 id="subgroups-list">Subgroups list</h2>
 <p>The list of the functional groups and its interaction parameters could be 
 accessed on the DDBST web page:
@@ -207,6 +253,15 @@ accessed on the DDBST web page:
 <p>We reproduce here the list of functional groups. To instantiate a UNIFAC model
 you must define which functional groups are used in a molecule by the Subgroup
 Number column.</p>
+<p>The main-group labels explain shared interaction parameters; they are <strong>not</strong>
+the IDs to enter. <code>R</code> and <code>Q</code> are dimensionless relative size and area. This
+published reference table is retained for convenience; verify availability and
+interaction coverage in the installed library rather than assuming the web
+table and the bundled parameter revision are identical.</p>
+<p>These numbers belong to the <strong>original UNIFAC</strong> variant only. Other variants
+reuse some of the same integers for different fragments, so do not copy a
+subgroup number from the <a href="dortmund.html">Dortmund</a> or <a href="psrk.html">PSRK</a> tables
+into this model.</p>
 <table>
 <thead>
 <tr>
@@ -1016,7 +1071,7 @@ Number column.</p>
 <a href="https://github.com/ipqa-research/ugropy"><code>ugropy</code></a> to retrieve the UNIFAC 
 subgroups and not suffer the pain of typing the subgroup numbers and
 parameters by hand. The next Python snippet shows how you can use it.</p>
-<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">ugropy</span> <span class="kn">import</span> <span class="n">unifac</span><span class="p">,</span> <span class="n">writers</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">ugropy</span><span class="w"> </span><span class="kn">import</span> <span class="n">unifac</span><span class="p">,</span> <span class="n">writers</span>
 
 
 <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;water&quot;</span><span class="p">,</span> <span class="s2">&quot;toluene&quot;</span><span class="p">,</span> <span class="s2">&quot;acetone&quot;</span><span class="p">]</span>
@@ -1027,8 +1082,10 @@ parameters by hand. The next Python snippet shows how you can use it.</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">fortran_code</span><span class="p">)</span>
 </code></pre></div>
 
-<p>And you will obtain:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos__models_ge_group_contribution_unifac</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">Groups</span>
+<p>Typical generated output is a <strong>setup snippet</strong>, not a complete program. Inspect
+the proposed decomposition and ensure it uses the original UNIFAC variant;
+automatic group assignment does not validate mixture predictions:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">Groups</span>
 
 <span class="k">type</span><span class="p">(</span><span class="n">Groups</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">molecules</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
 
@@ -1052,13 +1109,17 @@ model.</p>
 <p>We can instantiate a <a href="../../../../type/unifac.html">UNIFAC</a> model with a mixture ethanol-water and evaluate
 the logarithm of activity coefficients of the model for a 0.5 mole fraction of
 each, and a temperature of 298.0 K.</p>
-<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos__constants</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span>
-<span class="k">use </span><span class="n">yaeos__models_ge_group_contribution_unifac</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">Groups</span><span class="p">,</span><span class="w"> </span><span class="n">UNIFAC</span><span class="p">,</span><span class="w"> </span><span class="n">setup_unifac</span>
+<div class="codehilite"><pre><span></span><code><span class="k">program </span><span class="n">original_unifac_activity</span>
+<span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">Groups</span><span class="p">,</span><span class="w"> </span><span class="n">UNIFAC</span><span class="p">,</span><span class="w"> </span><span class="n">setup_unifac</span>
+<span class="k">implicit none</span>
 
 <span class="c">! Variables declarations</span>
 <span class="k">type</span><span class="p">(</span><span class="n">UNIFAC</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
 <span class="k">type</span><span class="p">(</span><span class="n">Groups</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">molecules</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 <span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ln_gammas</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Ge</span>
 
 <span class="c">! Variables instances</span>
 <span class="c">! Ethanol definition [CH3, CH2, OH]</span>
@@ -1073,11 +1134,49 @@ each, and a temperature of 298.0 K.</p>
 <span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">setup_unifac</span><span class="p">(</span><span class="n">molecules</span><span class="p">)</span>
 
 <span class="c">! Calculate ln_gammas</span>
-<span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">ln_activity_coefficient</span><span class="p">([</span><span class="mf">0.5_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5_pr</span><span class="p">],</span><span class="w"> </span><span class="mi">29</span><span class="mf">8.0_pr</span><span class="p">,</span><span class="w"> </span><span class="n">ln_gammas</span><span class="p">)</span>
+<span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.5_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5_pr</span><span class="p">]</span>
+<span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">29</span><span class="mf">8.0_pr</span>
+<span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">ln_activity_coefficient</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">ln_gammas</span><span class="p">)</span>
+<span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">excess_gibbs</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">Ge</span><span class="o">=</span><span class="n">Ge</span><span class="p">)</span>
 
-<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">ln_gammas</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ln(gamma): ethanol, water = &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ln_gammas</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;gamma = &quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">exp</span><span class="p">(</span><span class="n">ln_gammas</span><span class="p">)</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Molar GE [bar L/mol] = &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Ge</span><span class="o">/</span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="k">end program </span><span class="n">original_unifac_activity</span>
 </code></pre></div>
 
+<p>This is a complete program. Ethanol uses one CH3, one CH2, and one OH fragment;
+water uses one dedicated H2O subgroup. Counts are per molecule, independent of
+the mixture amounts. Results follow ethanol–water order, with dimensionless
+coefficients obtained by exponentiating the natural-log output. The printed
+molar excess Gibbs energy uses the library&rsquo;s bar L/mol convention (multiply by
+100 for J/mol); it is not the total Gibbs energy of mixing.</p>
+<h2 id="checks-common-errors-and-next-steps">Checks, common errors, and next steps</h2>
+<p>The most common failures with this model are input errors that the program
+cannot detect. Make sure <code>groups_ids</code> and <code>number_of_groups</code> have the same
+length, that counts are positive, and that each subgroup appears once with its
+total occurrence count. Check both directions of every interaction your
+mixtures need. An unavailable group-pair interaction is not a zero-energy
+contact: it means the prediction for that pair has no basis, and nothing in
+the output will say so.</p>
+<p>Two specific traps deserve naming. Do not enter main-group numbers in place of
+subgroup numbers; the constructor will accept any integer it finds in its
+table and produce a plausible-looking answer for the wrong fragment. And do not
+decompose methanol as an ordinary CH3 plus an OH when the model defines a
+dedicated CH3OH subgroup, because that changes both the size and the interaction
+of the molecule.</p>
+<p>Use nonnegative mole amounts with a positive total and kelvin temperatures.
+Scaling all amounts should leave <code>gamma</code> unchanged, and the pure component&rsquo;s
+coefficient should approach 1 as the mixture approaches that pure component.</p>
+<p>Know what the model does not do. It calculates no liquid density, no vapor
+fugacity, and no chemical speciation. Predictions outside a group&rsquo;s fitted
+range, particularly for very dilute solutes or for a different equilibrium type
+than the one the parameters were fitted to, need experimental checks. Continue
+to the <a href="../index.html">shared property methods</a> for excess enthalpies and
+derivatives, or compare against <a href="dortmund.html">Dortmund</a> using its <strong>own</strong>
+group definitions and parameters. A full
+<a href="../../phase_equilibrium/index.html">phase-equilibrium calculation</a> requires more
+than evaluating a single liquid composition.</p>
 <h2 id="references">References</h2>
 <ol>
 <li>Fredenslund, A., Jones, R. L., &amp; Prausnitz, J. M. (1975). Group‐contribution
@@ -1095,8 +1194,8 @@ Industrial &amp; Engineering Chemistry Process Design and Development, 21(1),
 118–127.
 <a href="https://doi.org/10.1021/i200016a021">https://doi.org/10.1021/i200016a021</a></li>
 <li>Macedo, E. A., Weidlich, U., Gmehling, J., &amp; Rasmussen, P. (1983).
-Vapor-liquid equilibriums by UNIFAC group contribution. Revision and extension.</li>
-<li>Industrial &amp; Engineering Chemistry Process Design and Development, 22(4),
+Vapor-liquid equilibriums by UNIFAC group contribution. Revision and extension. 3.
+Industrial &amp; Engineering Chemistry Process Design and Development, 22(4),
 676–678.
 <a href="https://doi.org/10.1021/i200023a023">https://doi.org/10.1021/i200023a023</a></li>
 <li>Tiegs, D., Rasmussen, P., Gmehling, J., &amp; Fredenslund, A. (1987).
@@ -1122,14 +1221,14 @@ Chemistry Research, 42(1), 183–188.
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

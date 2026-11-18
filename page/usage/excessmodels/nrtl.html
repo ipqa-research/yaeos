@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../../../favicon.png">
 
     <title>NRTL &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../../../css/local.css" rel="stylesheet">
     <link href="../../../css/pygments.css" rel="stylesheet">
+      <link href="../../../css/user.css" rel="stylesheet">
     <script src="../../../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -92,7 +93,7 @@
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb justify-content-end mb-0">
                 <li class="breadcrumb-item"><a href='../../index.html'>User documentation</a></li>
-                <li class="breadcrumb-item"><a href='../index.html'>Using yaeos</a></li>
+                <li class="breadcrumb-item"><a href='../index.html'>Getting started</a></li>
                 <li class="breadcrumb-item"><a href='index.html'>Gibbs Excess Models</a></li>
               <li class="breadcrumb-item active" aria-current="page">NRTL</li>
             </ol>
@@ -112,9 +113,10 @@
           </ul>
           <hr>
           <nav class="nav nav-pills flex-column">
-              <a class="nav-link" href="../index.html">Using yaeos</a>
+              <a class="nav-link" href="../index.html">Getting started</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../eos/index.html">Equations of State</a>
+                                <a class="nav-link" href="../fundamentals.html">Thermodynamics essentials</a>
+              <a class="nav-link" href="../eos/index.html">Equations of State</a>
                 <nav class="nav nav-pills flex-column">
                                 <a class="nav-link" href="../eos/cubics/index.html">Cubics</a>
                 <nav class="nav nav-pills flex-column">
@@ -122,27 +124,33 @@
               <a class="nav-link" href="../eos/cubics/mixing.html">Mixing Rules</a>
 
                 </nav>
+              <a class="nav-link" href="../eos/gerg2008.html">GERG2008</a>
+              <a class="nav-link" href="../eos/gerg2008_parameters.html">GERG2008 parameters</a>
+              <a class="nav-link" href="../eos/pc_saft.html">PC-SAFT</a>
 
                 </nav>
               <a class="nav-link" href="index.html">Gibbs Excess Models</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="nrtl-hv.html">NRTL-HV</a>
-              <a class="nav-link active disabled" href="nrtl.html">NRTL</a>
+                                <a class="nav-link active disabled" href="nrtl.html">NRTL</a>
+              <a class="nav-link" href="nrtl-hv.html">NRTL-HV</a>
+              <a class="nav-link" href="uniquac.html">UNIQUAC</a>
               <a class="nav-link" href="unifac_models/index.html">UNIFAC Models</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="unifac_models/dortmund.html">UNIFAC-Dortmund</a>
+                                <a class="nav-link" href="unifac_models/unifaclv.html">UNIFAC-LV</a>
+              <a class="nav-link" href="unifac_models/dortmund.html">UNIFAC-Dortmund</a>
               <a class="nav-link" href="unifac_models/psrk.html">UNIFAC-PSRK</a>
-              <a class="nav-link" href="unifac_models/unifaclv.html">UNIFAC-LV</a>
 
                 </nav>
-              <a class="nav-link" href="uniquac.html">UNIQUAC</a>
 
                 </nav>
               <a class="nav-link" href="../phase_equilibrium/index.html">Phase Equilibrium</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../phase_equilibrium/envelopes.html">Phase envelopes</a>
-              <a class="nav-link" href="../phase_equilibrium/flash.html">Flash calculations</a>
+                                <a class="nav-link" href="../phase_equilibrium/flash.html">Flash calculations</a>
               <a class="nav-link" href="../phase_equilibrium/saturation_points.html">Saturation Points</a>
+              <a class="nav-link" href="../phase_equilibrium/envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="../phase_equilibrium/stability.html">Stability analysis</a>
+              <a class="nav-link" href="../phase_equilibrium/critical.html">Critical points</a>
+              <a class="nav-link" href="../phase_equilibrium/multiphase.html">Multiphase flash</a>
 
                 </nav>
               <a class="nav-link" href="../newmodels/index.html">Adding your own models</a>
@@ -153,37 +161,288 @@
                 </nav>
 
                 </nav>
+              <a class="nav-link" href="../../python-api/index.html">Python-API</a>
+              <a class="nav-link" href="../../developer/index.html">Becoming a yaeos developer</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../developer/architecture.html">Architecture and repository map</a>
+              <a class="nav-link" href="../../developer/workflow.html">Developer workflow</a>
+              <a class="nav-link" href="../../developer/fortran.html">Working in the Fortran core</a>
+              <a class="nav-link" href="../../developer/numerics.html">Working on numerical algorithms</a>
+              <a class="nav-link" href="../../developer/c_interface.html">C interface layer</a>
+              <a class="nav-link" href="../../developer/python_interface.html">Python interface layer</a>
+              <a class="nav-link" href="../../developer/testing.html">Tests and numerical validation</a>
+              <a class="nav-link" href="../../developer/walkthrough.html">An end-to-end change</a>
+
+                </nav>
               <a class="nav-link" href="../../contributing/index.html">Contributing</a>
                 <nav class="nav nav-pills flex-column">
                                 <a class="nav-link" href="../../contributing/styleguide.html">Style guide</a>
 
                 </nav>
-              <a class="nav-link" href="../../python-api/index.html">Python-API</a>
           </nav>
         </div>
       </div>
 
     <div class="col-9" id='text'>
-      <h1 id="nrtl">NRTL</h1>
-<p>The Non-Random-Two-Liquid model presented by Renon and Prausnitz.
-This model uses local compositions to represent the excess Gibbs energy.</p>
+      <div class="toc">
+<ul>
+<li><a href="#nrtl">NRTL</a></li>
+<li><a href="#theory">Theory</a></li>
+<li><a href="#parameters">Parameters</a></li>
+<li><a href="#usage">Usage</a></li>
+<li><a href="#worked-example-a-liquid-liquid-split">Worked example: a liquid-liquid split</a></li>
+<li><a href="#notes">Notes</a><ul>
+<li><a href="#common-mistakes-and-next-steps">Common mistakes and next steps</a></li>
+</ul>
+</li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+<h1 id="nrtl">NRTL</h1>
+<p>The Non-Random-Two-Liquid (NRTL) model presented by Renon and Prausnitz is an
+activity-coefficient model for the excess Gibbs energy of liquid mixtures. It
+uses local compositions to represent the non-randomness of the mixture.</p>
+<p>Use NRTL when you have binary interaction parameters fitted for your components
+and the property of interest (for example vapor-liquid or liquid-liquid data).
+It is useful for strongly nonideal liquids, including systems that may demix,
+but does not discover parameters from chemical names or molecular structure.
+For structure-based estimates, see the <a href="unifac_models/index.html">UNIFAC models</a>.</p>
+<p>Intuitively, the neighbors around a molecule need not have the same composition
+as the bulk liquid: favorable contacts can be overrepresented. NRTL uses a
+directional interaction measure <script type="math/tex">\tau</script> and a non-randomness parameter
+<script type="math/tex">\alpha</script> to weight those local contacts. The result is an excess Gibbs energy,
+relative to ideal liquid mixing, not a residual ideal-gas departure. Its
+derivatives give <script type="math/tex">\ln\gamma_i</script>; the dimensionless activity is
+<script type="math/tex">x_i\gamma_i</script>, not <script type="math/tex">\gamma_i</script> alone. See the
+<a href="index.html">shared introduction</a> for the distinction from fugacity coefficients.</p>
+<h1 id="theory">Theory</h1>
+<p>The model averages interaction energies around each component, using local
+composition weights rather than just bulk mole fractions. With
+<script type="math/tex">n=\sum_i n_i</script> and <script type="math/tex">x_i=n_i/n</script>, its excess Gibbs energy is</p>
 <p>
 <script type="math/tex; mode=display">
-   G^E = nRT \cdot \sum_i x_i \frac{\sum_j x_j \tau_{ji} G_{ji}}{\sum_j x_j G_{ji}}
+   G^E = nRT \sum_i x_i \frac{\sum_j x_j \tau_{ji} G_{ji}}{\sum_j x_j G_{ji}}
 </script>
 </p>
-<p>with:</p>
+<p>with</p>
 <p>
-<script type="math/tex; mode=display">\tau_{ij} = A_{ij} + \frac{B_{ij}}{T}</script>
+<script type="math/tex; mode=display">
+   \tau_{ij} = A_{ij} + \frac{B_{ij}}{T}, \qquad
+   G_{ij} = \exp(-\alpha_{ij}\tau_{ij})
+</script>
 </p>
+<p>where <script type="math/tex">A_{ij}</script>, <script type="math/tex">B_{ij}</script>, and <script type="math/tex">\alpha_{ij}</script> are the model parameters.
+The negative sign and the product in <script type="math/tex">\exp(-\alpha_{ij}\tau_{ij})</script> are
+essential; this is not <script type="math/tex">\exp(-\alpha_{ij})</script> or <script type="math/tex">\exp(-\tau_{ij}/T)</script>.
+In <code>yaeos</code>, the matrices <code>a</code>, <code>b</code>, and <code>c</code> store <script type="math/tex">A_{ij}</script>, <script type="math/tex">B_{ij}</script>, and
+<script type="math/tex">\alpha_{ij}</script>, respectively.</p>
+<p>The activity coefficient of component <script type="math/tex">i</script> follows from</p>
 <p>
-<script type="math/tex; mode=display">G_{ij} = exp(-C\tau_{ij})</script>
+<script type="math/tex; mode=display">
+   \ln \gamma_i =
+   \frac{\sum_j x_j \tau_{ji} G_{ji}}{\sum_j x_j G_{ji}} +
+   \sum_k \frac{x_k G_{ik}}{\sum_j x_j G_{jk}}
+   \left(\tau_{ik} - \frac{\sum_j x_j \tau_{jk} G_{jk}}{\sum_j x_j G_{jk}}\right)
+</script>
 </p>
-<p>Where <script type="math/tex">A_{ij}, A_{ji}, B_{ij}, B_{ji} \text{ and } C</script> are fittable parameters.</p>
+<h1 id="parameters">Parameters</h1>
+<p>The model is constructed from three <script type="math/tex">N_c \times N_c</script> matrices:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Matrix</th>
+<th style="text-align: left;">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>a</code></td>
+<td style="text-align: left;">Dimensionless <script type="math/tex">A_{ij}</script> interaction parameters</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>b</code></td>
+<td style="text-align: left;">
+<script type="math/tex">B_{ij}</script> temperature-dependent interaction parameters [K]</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>c</code></td>
+<td style="text-align: left;">Dimensionless <script type="math/tex">\alpha_{ij}</script> non-randomness parameters</td>
+</tr>
+</tbody>
+</table>
+<p><code>T</code> is in kelvin. Store matrix element <script type="math/tex">(i,j)</script> in <code>a(i,j)</code>, <code>b(i,j)</code>, and
+<code>c(i,j)</code>; the column <code>(:,i)</code> enters the local average around component <code>i</code> in
+the equation above. The two directions generally differ. Keep the same order
+in <code>n</code> and every matrix, and normally set diagonal interaction coefficients to
+zero. Non-randomness parameters are often symmetric, but must follow your fit.</p>
+<p>Published NRTL tables do not all use this convention. If a source defines
+<script type="math/tex">\tau_{ij}=\Delta g_{ij}/(RT)</script> with a constant energy difference, convert it
+to <code>b(i,j) = Delta_g(i,j)/R</code> and set <code>a=0</code>, using a gas constant with matching
+energy units. Do not enter J/mol directly as a kelvin-valued <code>b</code>, add another
+minus sign without checking the source definition, or reuse UNIQUAC parameters.</p>
+<h1 id="usage">Usage</h1>
+<p>This complete program illustrates matrix orientation and the ideal-interaction
+limit. The nonzero numbers are <strong>illustrative</strong>, not fitted parameters for any
+named chemical pair.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">program </span><span class="n">nrtl_activity</span>
+<span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">NRTL</span>
+<span class="k">implicit none</span>
+
+<span class="k">type</span><span class="p">(</span><span class="n">NRTL</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">b</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">c</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ln_gamma</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ln_gamma_scaled</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<span class="n">b</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">20</span><span class="mf">0.0_pr</span>
+<span class="n">b</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="mi">10</span><span class="mf">0.0_pr</span>
+<span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.3_pr</span>
+
+<span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NRTL</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">)</span>
+
+<span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.4_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.6_pr</span><span class="p">]</span>
+<span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span>
+<span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">ln_activity_coefficient</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">ln_gamma</span><span class="p">)</span>
+<span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">ln_activity_coefficient</span><span class="p">(</span><span class="mi">1</span><span class="mf">0.0_pr</span><span class="o">*</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">ln_gamma_scaled</span><span class="p">)</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;ln(gamma), components 1 and 2 = &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ln_gamma</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;gamma = &quot;</span><span class="p">,</span><span class="w"> </span><span class="nb">exp</span><span class="p">(</span><span class="n">ln_gamma</span><span class="p">)</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Scaling difference, near zero = &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ln_gamma_scaled</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">ln_gamma</span>
+
+<span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NRTL</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">)</span>
+<span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">ln_activity_coefficient</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">ln_gamma</span><span class="p">)</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Zero-interaction ln(gamma), near zero = &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ln_gamma</span>
+<span class="k">end program </span><span class="n">nrtl_activity</span>
+</code></pre></div>
+
+<p><code>exp(ln_gamma)</code> is positive and may exceed 1; negative logarithms are normal.
+Scaling all amounts should leave coefficients unchanged. When both <code>a</code> and <code>b</code>
+vanish, this NRTL model becomes ideal (all coefficients are 1), regardless of
+<code>c</code>. Fortran <code>reshape</code> fills columns first; explicit off-diagonal assignments
+above avoid silently transposing directional parameters.</p>
+<h1 id="worked-example-a-liquid-liquid-split">Worked example: a liquid-liquid split</h1>
+<p>An activity model earns its keep when it predicts that a mixture separates. The
+following program uses NRTL for a strongly nonideal binary and searches for a
+two-liquid split with the library&rsquo;s stability and flash routines.</p>
+<p>The parameters here are <strong>illustrative</strong>: they produce a split, but they are not
+a fit to any named chemical pair.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">program </span><span class="n">nrtl_lle</span>
+<span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">NRTL</span><span class="p">,</span><span class="w"> </span><span class="n">EquilibriumState</span><span class="p">,</span><span class="w"> </span><span class="n">flash</span><span class="p">,</span><span class="w"> </span><span class="n">min_tpd</span>
+<span class="k">implicit none</span>
+
+<span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">nc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span>
+
+<span class="k">type</span><span class="p">(</span><span class="n">NRTL</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="k">type</span><span class="p">(</span><span class="n">EquilibriumState</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="k">result</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span><span class="w"> </span><span class="n">nc</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">b</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span><span class="w"> </span><span class="n">nc</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">c</span><span class="p">(</span><span class="n">nc</span><span class="p">,</span><span class="w"> </span><span class="n">nc</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="n">nc</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">w</span><span class="p">(</span><span class="n">nc</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">P</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">mintpd</span>
+<span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">iters</span>
+
+<span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<span class="n">a</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">5.0_pr</span>
+<span class="n">a</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">5.0_pr</span>
+<span class="n">c</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.3_pr</span>
+<span class="n">c</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.3_pr</span>
+<span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NRTL</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">)</span>
+
+<span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.3_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7_pr</span><span class="p">]</span>
+<span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span>
+<span class="n">P</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_pr</span>
+
+<span class="c">! Minimum of the reduced tangent-plane distance</span>
+<span class="k">call </span><span class="n">min_tpd</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="o">=</span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="o">=</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">mintpd</span><span class="o">=</span><span class="n">mintpd</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="o">=</span><span class="n">w</span><span class="p">)</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;mintpd = &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">mintpd</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;trial composition = &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">w</span>
+
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">mintpd</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0.0_pr</span><span class="p">)</span><span class="w"> </span><span class="k">then</span>
+<span class="w">   </span><span class="c">! The trial composition gives the initial K-factors</span>
+<span class="w">   </span><span class="k">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">flash</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">k0</span><span class="o">=</span><span class="n">w</span><span class="o">/</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">iters</span><span class="o">=</span><span class="n">iters</span><span class="p">)</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;kind = &quot;</span><span class="p">,</span><span class="w"> </span><span class="k">result</span><span class="p">%</span><span class="nb">kind</span>
+<span class="nb">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;x = &quot;</span><span class="p">,</span><span class="w"> </span><span class="k">result</span><span class="p">%</span><span class="n">x</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;y = &quot;</span><span class="p">,</span><span class="w"> </span><span class="k">result</span><span class="p">%</span><span class="n">y</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;beta = &quot;</span><span class="p">,</span><span class="w"> </span><span class="k">result</span><span class="p">%</span><span class="n">beta</span>
+<span class="k">else</span>
+<span class="k">   print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Feed is stable in this search.&quot;</span>
+<span class="k">end if</span>
+<span class="k">end program </span><span class="n">nrtl_lle</span>
+</code></pre></div>
+
+<p>How to read this:</p>
+<ul>
+<li><code>min_tpd</code> minimizes a tangent-plane distance measure at fixed <code>T</code> and <code>P</code>. A
+  <strong>negative</strong> <code>mintpd</code> means the feed is unstable to a small perturbation, i.e.
+  a second phase wants to appear. A positive value means the search found no
+  instability; it is not proof that the feed is globally stable.</li>
+<li><code>flash</code> for an activity model solves the isofugacity and mass-balance
+  equations at a specified temperature. It <strong>requires</strong> the initial K-factors
+  <code>k0</code>; without them the routine stops with an error rather than guessing.
+  Use the trial composition from <code>min_tpd</code> for that purpose.</li>
+<li><code>result%kind</code> reports the outcome. Only read <code>x</code>, <code>y</code>, and <code>beta</code> when it
+  says <code>"split"</code>. The pressure and the two phase volumes are <strong>not</strong> set for an
+  activity model and must not be read.</li>
+<li><code>x</code> and <code>y</code> are the two liquid phases (for an activity model the
+  &ldquo;heavy&rdquo;/&rdquo;light&rdquo; labels carry no density meaning, and <code>x</code> is not necessarily
+  the larger phase), and <code>beta</code> is the mole fraction of the feed in the <code>y</code>
+  phase. Check the material balance
+  <script type="math/tex">z_i=(1-\beta)x_i+\beta y_i</script> yourself.</li>
+</ul>
+<p>The same workflow is described in the
+<a href="../phase_equilibrium/index.html">phase-equilibrium guide</a>; the
+<a href="../phase_equilibrium/flash.html">flash page</a> covers the activity-model branch in
+detail.</p>
+<h1 id="notes">Notes</h1>
+<p>NRTL is a <code>GeModel</code>: it provides activity coefficients and excess thermal
+properties, but no volumetric properties, and the flash routines solve only
+the isofugacity and mass-balance equations.</p>
+<p>Values such as 0.2 or 0.3 are common choices of <script type="math/tex">\alpha_{ij}</script>. They are not
+universal constants, and they are not an instruction to replace the value used
+in a parameter fit: the non-randomness parameter is part of the fit, and
+changing it changes the model&rsquo;s predictions.</p>
+<p>The three matrices need not be symmetric, but the diagonal entries are usually
+zero. The diagonal represents a component&rsquo;s interaction with itself, which
+carries no information about unlike pairs.</p>
+<p>Ordinary NRTL and <a href="nrtl-hv.html">NRTL-HV</a> share the same mathematical form
+when all covolumes are equal: with a unit covolume for every component,
+NRTL-HV reproduces NRTL exactly when <code>gji0 = b_matrix * R</code> and
+<code>gjiT = a_matrix * R</code>. Use this as a numerical cross-check when converting a
+parameter set, not as a claim that the two models are interchangeable for
+unequal covolumes.</p>
+<h2 id="common-mistakes-and-next-steps">Common mistakes and next steps</h2>
+<p>Do not extrapolate a good room-temperature binary fit across a large
+temperature range without checks. The temperature dependence of NRTL is
+strictly linear in <script type="math/tex">1/T</script>, so it cannot represent a change in interaction
+enthalpy over the range, and the prediction drifts silently. Large values of
+<code>a+b/T</code> can also overflow the exponential, and an apparently smooth curve can
+still predict the wrong phase behavior. NRTL does not include ionic
+speciation, chemical reaction, or density physics by itself.</p>
+<p>A good sequence of work is: compare activity coefficients and excess enthalpies
+against your parameter source using the
+<a href="index.html">shared property methods</a>; then use
+<a href="../phase_equilibrium/index.html">stability and phase-equilibrium calculations</a>
+to determine whether a composition is stable, remembering that a single call
+to an activity method is not a flash calculation; and finally compare the
+result with data. For vapor-liquid equilibrium you also need the liquid
+standard-state and vapor fugacity information, not just activity coefficients.
+For a cubic EOS with Huron-Vidal mixing, read <a href="nrtl-hv.html">NRTL-HV</a> rather
+than assuming the two parameterizations are interchangeable.</p>
+<h1 id="references">References</h1>
 <ol>
-<li>H. Renon and J. M. Prausnitz, “Local compositions in thermodynamic excess
-functions for liquid mixtures,” AIChE Journal, vol. 14, no. 1, pp. 135–144,
-1968, doi: <img alt="10.1002/aic.690140124." src="https://onlinelibrary.wiley.com/doi/abs/10.1002/aic.690140124"></li>
+<li>H. Renon and J. M. Prausnitz, &ldquo;Local compositions in thermodynamic excess
+   functions for liquid mixtures,&rdquo; AIChE Journal, vol. 14, no. 1, pp. 135-144,
+   1968, doi: 10.1002/aic.690140124.</li>
 </ol>
     </div>
   </div>
@@ -195,14 +454,14 @@ functions for liquid mixtures,” AIChE Journal, vol. 14, no. 1, pp. 135–144,
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

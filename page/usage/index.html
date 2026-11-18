@@ -6,11 +6,11 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../../favicon.png">
 
-    <title>Using yaeos &ndash; yaeos</title>
+    <title>Getting started &ndash; yaeos</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../../css/local.css" rel="stylesheet">
     <link href="../../css/pygments.css" rel="stylesheet">
+      <link href="../../css/user.css" rel="stylesheet">
     <script src="../../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -81,7 +82,7 @@
 
     <div class="container">
   <div class="row">
-    <h1>Using yaeos</h1>
+    <h1>Getting started</h1>
     <div class="container p-2 mb-4 bg-light border rounded-3">
       <div class="row align-items-center justify-content-between">
         <div class="col">
@@ -92,7 +93,7 @@
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb justify-content-end mb-0">
                 <li class="breadcrumb-item"><a href='../index.html'>User documentation</a></li>
-              <li class="breadcrumb-item active" aria-current="page">Using yaeos</li>
+              <li class="breadcrumb-item active" aria-current="page">Getting started</li>
             </ol>
           </nav>
         </div>
@@ -110,9 +111,10 @@
           </ul>
           <hr>
           <nav class="nav nav-pills flex-column">
-              <a class="nav-link active disabled" href="index.html">Using yaeos</a>
+              <a class="nav-link active disabled" href="index.html">Getting started</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="eos/index.html">Equations of State</a>
+                                <a class="nav-link" href="fundamentals.html">Thermodynamics essentials</a>
+              <a class="nav-link" href="eos/index.html">Equations of State</a>
                 <nav class="nav nav-pills flex-column">
                                 <a class="nav-link" href="eos/cubics/index.html">Cubics</a>
                 <nav class="nav nav-pills flex-column">
@@ -120,27 +122,33 @@
               <a class="nav-link" href="eos/cubics/mixing.html">Mixing Rules</a>
 
                 </nav>
+              <a class="nav-link" href="eos/gerg2008.html">GERG2008</a>
+              <a class="nav-link" href="eos/gerg2008_parameters.html">GERG2008 parameters</a>
+              <a class="nav-link" href="eos/pc_saft.html">PC-SAFT</a>
 
                 </nav>
               <a class="nav-link" href="excessmodels/index.html">Gibbs Excess Models</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="excessmodels/nrtl-hv.html">NRTL-HV</a>
-              <a class="nav-link" href="excessmodels/nrtl.html">NRTL</a>
+                                <a class="nav-link" href="excessmodels/nrtl.html">NRTL</a>
+              <a class="nav-link" href="excessmodels/nrtl-hv.html">NRTL-HV</a>
+              <a class="nav-link" href="excessmodels/uniquac.html">UNIQUAC</a>
               <a class="nav-link" href="excessmodels/unifac_models/index.html">UNIFAC Models</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
+                                <a class="nav-link" href="excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
+              <a class="nav-link" href="excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
               <a class="nav-link" href="excessmodels/unifac_models/psrk.html">UNIFAC-PSRK</a>
-              <a class="nav-link" href="excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
 
                 </nav>
-              <a class="nav-link" href="excessmodels/uniquac.html">UNIQUAC</a>
 
                 </nav>
               <a class="nav-link" href="phase_equilibrium/index.html">Phase Equilibrium</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="phase_equilibrium/envelopes.html">Phase envelopes</a>
-              <a class="nav-link" href="phase_equilibrium/flash.html">Flash calculations</a>
+                                <a class="nav-link" href="phase_equilibrium/flash.html">Flash calculations</a>
               <a class="nav-link" href="phase_equilibrium/saturation_points.html">Saturation Points</a>
+              <a class="nav-link" href="phase_equilibrium/envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="phase_equilibrium/stability.html">Stability analysis</a>
+              <a class="nav-link" href="phase_equilibrium/critical.html">Critical points</a>
+              <a class="nav-link" href="phase_equilibrium/multiphase.html">Multiphase flash</a>
 
                 </nav>
               <a class="nav-link" href="newmodels/index.html">Adding your own models</a>
@@ -151,12 +159,24 @@
                 </nav>
 
                 </nav>
+              <a class="nav-link" href="../python-api/index.html">Python-API</a>
+              <a class="nav-link" href="../developer/index.html">Becoming a yaeos developer</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../developer/architecture.html">Architecture and repository map</a>
+              <a class="nav-link" href="../developer/workflow.html">Developer workflow</a>
+              <a class="nav-link" href="../developer/fortran.html">Working in the Fortran core</a>
+              <a class="nav-link" href="../developer/numerics.html">Working on numerical algorithms</a>
+              <a class="nav-link" href="../developer/c_interface.html">C interface layer</a>
+              <a class="nav-link" href="../developer/python_interface.html">Python interface layer</a>
+              <a class="nav-link" href="../developer/testing.html">Tests and numerical validation</a>
+              <a class="nav-link" href="../developer/walkthrough.html">An end-to-end change</a>
+
+                </nav>
               <a class="nav-link" href="../contributing/index.html">Contributing</a>
                 <nav class="nav nav-pills flex-column">
                                 <a class="nav-link" href="../contributing/styleguide.html">Style guide</a>
 
                 </nav>
-              <a class="nav-link" href="../python-api/index.html">Python-API</a>
           </nav>
         </div>
       </div>
@@ -164,194 +184,331 @@
     <div class="col-9" id='text'>
       <div class="toc">
 <ul>
-<li><a href="#getting-started">Getting started</a><ul>
-<li><a href="#fortran">Fortran</a></li>
-<li><a href="#getting-yaeos">Getting yaeos</a></li>
+<li><a href="#your-first-calculation-with-yaeos">Your first calculation with yaeos</a><ul>
+<li><a href="#1-prepare-a-project">1. Prepare a project</a></li>
+<li><a href="#2-understand-the-inputs">2. Understand the inputs</a></li>
+<li><a href="#3-run-a-complete-pressure-calculation">3. Run a complete pressure calculation</a></li>
+<li><a href="#4-solve-the-inverse-problem-volume-from-pressure">4. Solve the inverse problem: volume from pressure</a></li>
+<li><a href="#5-generate-a-pressurevolume-isotherm">5. Generate a pressure–volume isotherm</a></li>
+<li><a href="#6-request-derivatives-only-when-you-need-them">6. Request derivatives only when you need them</a></li>
+<li><a href="#units-and-amount-basis">Units and amount basis</a></li>
+<li><a href="#if-something-goes-wrong">If something goes wrong</a></li>
+<li><a href="#where-to-go-next">Where to go next</a></li>
 </ul>
 </li>
-<li><a href="#setting-up-a-model">Setting up a model</a></li>
-<li><a href="#calculating-thermodynamic-properties">Calculating thermodynamic properties</a></li>
-<li><a href="#units">Units</a></li>
 </ul>
 </div>
-<h1 id="getting-started">Getting started</h1>
-<h2 id="fortran">Fortran</h2>
-<p>Maybe you&rsquo;ve heard of Fortran as that old and cryptic language that everyone is
-afraid of. Well, not anymore! Fortran is really easy to understand and has been
-updated a lot in the recent decades. There is a fairly direct guide on the
-<a href="https://fortran-lang.org/learn/">fortran-lang site</a></p>
-<h2 id="getting-yaeos">Getting yaeos</h2>
-<p><code>yaeos</code> is a Fortran library intended to be used as a
-<a href="fpm.fortran-lang.org"><code>fpm</code></a> package (fpm: Fortran Package Manager), <code>fpm</code> can
-be easily easily obtained with the Python package manager <code>pip</code> with a simple:</p>
-<div class="codehilite"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>--user<span class="w"> </span>fpm
+<h1 id="your-first-calculation-with-yaeos">Your first calculation with yaeos</h1>
+<p>This tutorial goes from an empty Fortran project to a pressure calculation,
+then shows how to solve for volume and generate a pressure–volume curve.
+You need basic familiarity with variables and arrays, but not with the
+derivation of an equation of state (EOS).</p>
+<p>The example uses a methane–ethane mixture. We will choose a model, supply
+component data in a consistent order, and ask it to predict a homogeneous
+fluid&rsquo;s pressure. Finding how much liquid and vapor coexist is a different
+task, introduced in the <a href="phase_equilibrium/index.html">phase-equilibrium guide</a>.</p>
+<h2 id="1-prepare-a-project">1. Prepare a project</h2>
+<p><code>yaeos</code> is a modern Fortran library distributed as an
+<a href="https://fpm.fortran-lang.org"><code>fpm</code></a> package. Install a Fortran compiler,
+<code>fpm</code>, Git, and the BLAS/LAPACK numerical libraries. Building the bundled
+automatic-differentiation support also requires a C compiler. On Debian or
+Ubuntu the compiler and system-library packages can be installed with:</p>
+<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>gfortran<span class="w"> </span>gcc<span class="w"> </span>git<span class="w"> </span>libblas-dev<span class="w"> </span>liblapack-dev
 </code></pre></div>
 
-<p>With <code>fpm</code> installed you can create a new Fortran project by running:</p>
-<div class="codehilite"><pre><span></span><code>fpm<span class="w"> </span>new<span class="w"> </span>your_project_name
+<p>Install <code>fpm</code> separately following its
+<a href="https://fpm.fortran-lang.org/install/index.html">installation guide</a>, then create
+a project:</p>
+<div class="codehilite"><pre><span></span><code>fpm<span class="w"> </span>new<span class="w"> </span>first_yaeos<span class="w"> </span>--app
+<span class="nb">cd</span><span class="w"> </span>first_yaeos
 </code></pre></div>
 
-<p>A new directory with the name of your project will be created. </p>
-<p>You can include <code>yaeos</code> in your <code>fpm</code> project by adding it as a dependency on
-your <code>fpm.toml</code> file by adding this:</p>
+<p>Add the following dependency to <code>fpm.toml</code>. If a <code>[dependencies]</code> section
+already exists, add the <code>yaeos</code> line there rather than creating a second section.</p>
 <div class="codehilite"><pre><span></span><code><span class="k">[dependencies]</span>
-<span class="n">stdlib</span><span class="o">=</span><span class="s2">&quot;*&quot;</span>
-<span class="n">yaeos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">git</span><span class="p">=</span><span class="s2">&quot;https://github.com/ipqa-research/yaeos&quot;</span><span class="p">}</span>
+<span class="n">yaeos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">git</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;https://github.com/ipqa-research/yaeos&quot;</span><span class="w"> </span><span class="p">}</span>
 </code></pre></div>
 
-<p>Or maybe you want a specific version:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">[dependencies]</span>
-<span class="n">stdlib</span><span class="o">=</span><span class="s2">&quot;*&quot;</span>
-<span class="n">yaeos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">git</span><span class="p">=</span><span class="s2">&quot;https://github.com/ipqa-research/yaeos&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">tag</span><span class="p">=</span><span class="s2">&quot;2.0.0&quot;</span><span class="p">}</span>
-</code></pre></div>
-
-<h1 id="setting-up-a-model">Setting up a model</h1>
-<p>On <code>yaeos</code> there is a series of models implemented, right now we include
-Residual Helmholtz energy models (like Cubic Equations of State), but plan on
-extening to a broader variety. Moreover, <code>yaeos</code> implements excess Gibbs energy
-models like NRTL, UNIQUAC, liquid-vapor UNIFAC, and more.</p>
-<p>In this example we&rsquo;ll show how a model in <code>yaeos</code> can be used. We&rsquo;ll take the
-<code>Peng-Robinson</code> equation of state as an example, but all the implemented models
-can be seen at <a href="../../module/yaeos__models.html">yaeos__models</a>. Inside your <code>app/main.f90</code> file use</p>
-<div class="codehilite"><pre><span></span><code><span class="k">program </span><span class="n">main</span>
-<span class="w">    </span><span class="k">use </span><span class="n">yaeos</span>
-
-<span class="w">    </span><span class="c">! Set the variable `model` as a generic `ArModel`</span>
-<span class="w">    </span><span class="k">class</span><span class="p">(</span><span class="n">ArModel</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
-
-<span class="w">    </span><span class="c">! Set the variables that we&#39;re going to use as variable length arrays</span>
-<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(:),</span><span class="w"> </span><span class="n">tc</span><span class="p">(:),</span><span class="w"> </span><span class="n">pc</span><span class="p">(:),</span><span class="w"> </span><span class="n">w</span><span class="p">(:)</span>
-
-<span class="w">    </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.3</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7</span><span class="p">]</span><span class="w">    </span><span class="c">! Number of moles of each component [mol]</span>
-<span class="w">    </span><span class="n">tc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">190</span><span class="p">,</span><span class="w"> </span><span class="mi">310</span><span class="p">]</span><span class="w">   </span><span class="c">! Critical temperatures [K]</span>
-<span class="w">    </span><span class="n">pc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">14</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="p">]</span><span class="w">     </span><span class="c">! Critical pressures [bar]</span>
-<span class="w">    </span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.001</span><span class="p">,</span><span class="w"> </span><span class="mf">0.03</span><span class="p">]</span><span class="w"> </span><span class="c">! Acentric factors [-]</span>
-
-<span class="w">    </span><span class="c">! Now we set our model as the PengRobinson76 equation of state.</span>
-<span class="w">    </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span><span class="w"> </span><span class="n">pc</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">)</span>
-
-<span class="k">end program</span>
-</code></pre></div>
-
-<p>And then it&rsquo;s all set, now we&rsquo;ve set the <code>model</code> variable to use in our
-calculations. The parameter <code>pr</code> is the precision used by <code>yaeos</code>, with
-<code>real64</code> as its value.</p>
-<h1 id="calculating-thermodynamic-properties">Calculating thermodynamic properties</h1>
-<p>Some thermodynamic properties can be calculated with <code>yaeos</code> models, and we&rsquo;re
-adding more! In this example we&rsquo;ll calculate a PV isotherm from our previously
-defined model. For the sake of simplicity all the next code blocks are assumed
-to be extensions of the previous one, before the <code>end program</code> sentence.</p>
-<div class="codehilite"><pre><span></span><code><span class="n">pv_isotherm</span><span class="p">:</span><span class="w"> </span><span class="k">block</span>
-<span class="k">    </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="w">      </span><span class="c">! Thermodynamic variables</span>
-<span class="w">    </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">vf</span><span class="p">,</span><span class="w"> </span><span class="n">dv</span><span class="w">   </span><span class="c">! End and start volumes</span>
-<span class="w">    </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">n_points</span><span class="w">   </span><span class="c">! iteration variable and how many points to calc</span>
-
-<span class="w">    </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span><span class="w">   </span><span class="c">! Set temperature to 300 K</span>
-<span class="w">    </span><span class="n">n_points</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="w">  </span><span class="c">! Set the number of points to calculate</span>
-
-<span class="w">    </span><span class="c">! Set initial and final volume points</span>
-<span class="w">    </span><span class="n">v0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.1</span>
-<span class="w">    </span><span class="n">vf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span>
-<span class="w">    </span><span class="n">dv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">vf</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">v0</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">n_points</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span>
-
-<span class="w">    </span><span class="c">! Build isotherm</span>
-<span class="w">    </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Volume [L], Pressure [bar]&quot;</span>
-
-<span class="w">    </span><span class="k">do </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">n_points</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span>
-<span class="w">        </span><span class="c">! Set new volume point</span>
-<span class="w">        </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v0</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">i</span><span class="o">*</span><span class="n">dv</span>
-
-<span class="w">        </span><span class="c">! Calculate pressure</span>
-<span class="w">        </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="c">! &lt;- Pressure is stored in `p`</span>
-
-<span class="w">        </span><span class="c">! Print results as a CSV table</span>
-<span class="w">        </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;,&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">p</span>
-<span class="w">    </span><span class="k">end do</span>
-<span class="k">end block </span><span class="n">pv_isotherm</span>
-</code></pre></div>
-
-<p>You will obtain a table with the data:</p>
+<p>The first build downloads dependencies and can take longer than later builds.
+For reproducible work, select a tested release tag or commit using <code>fpm</code>&rsquo;s
+<code>tag</code> or <code>rev</code> dependency options. Examples in these pages describe the API in
+this documentation&rsquo;s source revision; an older release may expose different
+arguments.</p>
+<p>If Fortran itself is new to you, the
+<a href="https://fortran-lang.org/learn/">Fortran-lang learning resources</a> explain
+programs, arrays, derived types, and procedure calls.</p>
+<h2 id="2-understand-the-inputs">2. Understand the inputs</h2>
+<p>An EOS relates pressure, volume, temperature, and composition. The
+Peng–Robinson 1976 model used here needs each component&rsquo;s critical temperature
+<code>tc</code>, critical pressure <code>pc</code>, and acentric factor <code>omega</code>.</p>
+<p>A <strong>critical temperature</strong> and <strong>critical pressure</strong> locate the pure fluid&rsquo;s
+critical point, where its liquid and vapor become indistinguishable. The
+<strong>acentric factor</strong> is a dimensionless descriptor of its vapor-pressure
+behavior. These are component data, not the temperature and pressure of the
+mixture you are about to calculate.</p>
 <table>
 <thead>
 <tr>
-<th>Volume [L]</th>
+<th>Array position</th>
+<th>Component</th>
+<th><code>tc</code> [K]</th>
+<th><code>pc</code> [bar]</th>
+<th><code>omega</code> [–]</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Methane</td>
+<td>190.564</td>
+<td>45.99</td>
+<td>0.01142</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Ethane</td>
+<td>305.32</td>
+<td>48.72</td>
+<td>0.0995</td>
+</tr>
+</tbody>
+</table>
+<p>These rounded values are suitable for a tutorial, not a substitute for
+selecting consistent data for a validated application. All arrays use this
+same component order.</p>
+<p>We use 0.3 mol methane and 0.7 mol ethane, a total of 1 mol. At 320 K in a
+1 L vessel, the ideal-gas equation would give
+<script type="math/tex">P=n_{\mathrm{tot}}RT/V\approx26.61</script> bar. The EOS accounts for molecular
+interactions and will give a different pressure. The ideal-gas value is a
+useful scale check, not the expected EOS answer.</p>
+<h2 id="3-run-a-complete-pressure-calculation">3. Run a complete pressure calculation</h2>
+<p>Replace <code>app/main.f90</code> with this complete program:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">program </span><span class="n">first_yaeos</span>
+<span class="w">   </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">ArModel</span><span class="p">,</span><span class="w"> </span><span class="n">PengRobinson76</span>
+<span class="w">   </span><span class="k">implicit none</span>
+
+<span class="k">   class</span><span class="p">(</span><span class="n">ArModel</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">tc</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">pc</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">omega</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">temperature</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">volume</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">pressure</span>
+
+<span class="w">   </span><span class="n">tc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">19</span><span class="mf">0.564_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="mf">5.32_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">pc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">4</span><span class="mf">5.99_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="mf">8.72_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">omega</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.01142_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0995_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.3_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">temperature</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">32</span><span class="mf">0.0_pr</span>
+<span class="w">   </span><span class="n">volume</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_pr</span>
+
+<span class="w">   </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span><span class="w"> </span><span class="n">pc</span><span class="p">,</span><span class="w"> </span><span class="n">omega</span><span class="p">)</span>
+<span class="w">   </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">volume</span><span class="p">,</span><span class="w"> </span><span class="n">temperature</span><span class="p">,</span><span class="w"> </span><span class="n">pressure</span><span class="p">)</span>
+
+<span class="w">   </span><span class="k">write</span><span class="p">(</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;(A,F10.4)&#39;</span><span class="p">)</span><span class="w"> </span><span class="s2">&quot;Pressure [bar]: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">pressure</span>
+<span class="k">end program </span><span class="n">first_yaeos</span>
+</code></pre></div>
+
+<p>Run it from the project directory:</p>
+<div class="codehilite"><pre><span></span><code>fpm<span class="w"> </span>run
+</code></pre></div>
+
+<p>Here is what the important lines do:</p>
+<ul>
+<li><code>use yaeos, only: ...</code> imports the names needed for this calculation.</li>
+<li><code>pr</code> selects the library&rsquo;s floating-point precision. The <code>_pr</code> suffix keeps
+  literal constants in that precision.</li>
+<li><code>class(ArModel), allocatable</code> declares a variable that can hold different
+  residual-Helmholtz EOS model types. You do not have to implement that class.</li>
+<li><code>PengRobinson76(...)</code> constructs and stores the component parameters. It
+  does <strong>not</strong> calculate equilibrium at a particular temperature or pressure.</li>
+<li><code>model%pressure(...)</code> evaluates this model at the supplied state and writes
+  the answer into the last argument.</li>
+</ul>
+<p>For the rounded inputs above, the pressure is approximately <strong>23.4215 bar</strong>,
+below the ideal-gas estimate of 26.61 bar. At this particular state, the net
+non-ideal correction lowers the pressure; this is not a rule that holds at
+every density. Small differences in component data or compiler arithmetic can
+change the last displayed digits.</p>
+<p>This example has not fitted binary
+interaction parameters: the constructor&rsquo;s default mixing rule uses zero
+binary interactions. That is a useful starting point, not evidence that those
+parameters are suitable for every mixture.</p>
+<h2 id="4-solve-the-inverse-problem-volume-from-pressure">4. Solve the inverse problem: volume from pressure</h2>
+<p>In an experiment you often know pressure and temperature, not volume. The
+following <strong>insertable block</strong> goes before <code>end program first_yaeos</code> in the
+previous program; it reuses <code>model</code> and <code>n</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">volume_example</span><span class="p">:</span><span class="w"> </span><span class="k">block</span>
+<span class="k">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">specified_pressure</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">solved_volume</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">checked_pressure</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">temperature</span>
+
+<span class="w">   </span><span class="n">specified_pressure</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="mf">0.0_pr</span>
+<span class="w">   </span><span class="n">temperature</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">32</span><span class="mf">0.0_pr</span>
+<span class="w">   </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">volume</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">specified_pressure</span><span class="p">,</span><span class="w"> </span><span class="n">temperature</span><span class="p">,</span><span class="w"> </span><span class="n">solved_volume</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="n">root_type</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span><span class="p">)</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">solved_volume</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mf">0.0_pr</span><span class="p">)</span><span class="w"> </span><span class="k">error stop</span><span class="w"> </span><span class="s2">&quot;Volume calculation failed&quot;</span>
+
+<span class="w">   </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">solved_volume</span><span class="p">,</span><span class="w"> </span><span class="n">temperature</span><span class="p">,</span><span class="w"> </span><span class="n">checked_pressure</span><span class="p">)</span>
+<span class="w">   </span><span class="k">write</span><span class="p">(</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;(A,F10.5)&#39;</span><span class="p">)</span><span class="w"> </span><span class="s2">&quot;Total volume [L]: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">solved_volume</span>
+<span class="w">   </span><span class="k">write</span><span class="p">(</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;(A,ES12.4)&#39;</span><span class="p">)</span><span class="w"> </span><span class="s2">&quot;Pressure mismatch [bar]: &quot;</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="n">checked_pressure</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">specified_pressure</span>
+<span class="k">end block </span><span class="n">volume_example</span>
+</code></pre></div>
+
+<p>Re-evaluating pressure at the solved volume should reproduce the specified
+pressure to the solver&rsquo;s numerical accuracy. This checks the inverse
+calculation, not the model&rsquo;s agreement with experimental data.
+The example gives approximately 2.52678 L; in a local run the pressure mismatch
+was about <script type="math/tex">4\times10^{-10}</script> bar, rather than exactly zero.</p>
+<p>The <code>root_type</code> argument controls the volume branch. <code>"liquid"</code> requests the
+dense branch, <code>"vapor"</code> the dilute branch, and <code>"stable"</code> the preferred
+homogeneous root. These roots need not be different at every state. In
+particular, a stable volume root does not by itself test whether a mixture
+would separate into phases with different compositions. See
+<a href="fundamentals.html#a-volume-root-is-not-a-phase-split">thermodynamics essentials</a>.</p>
+<h2 id="5-generate-a-pressurevolume-isotherm">5. Generate a pressure–volume isotherm</h2>
+<p>An <strong>isotherm</strong> is a curve at constant temperature. Insert this block before
+the end of the first program to evaluate twelve volumes at 320 K:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">pv_isotherm</span><span class="p">:</span><span class="w"> </span><span class="k">block</span>
+<span class="k">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">volume</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">pressure</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">first_volume</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">last_volume</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">step</span>
+<span class="w">   </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">i</span>
+<span class="w">   </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n_points</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">12</span>
+
+<span class="w">   </span><span class="n">first_volume</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.1_pr</span>
+<span class="w">   </span><span class="n">last_volume</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="mf">0.0_pr</span>
+<span class="w">   </span><span class="n">step</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">last_volume</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">first_volume</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="kt">real</span><span class="p">(</span><span class="n">n_points</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">pr</span><span class="p">)</span>
+<span class="w">   </span><span class="k">write</span><span class="p">(</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;(A)&#39;</span><span class="p">)</span><span class="w"> </span><span class="s2">&quot;Volume [L],Pressure [bar]&quot;</span>
+<span class="w">   </span><span class="k">do </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">n_points</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">      </span><span class="n">volume</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">first_volume</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="kt">real</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">step</span>
+<span class="w">      </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">volume</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="n">pressure</span><span class="p">)</span>
+<span class="w">      </span><span class="k">write</span><span class="p">(</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;(F9.4,&quot;,&quot;,F12.6)&#39;</span><span class="p">)</span><span class="w"> </span><span class="n">volume</span><span class="p">,</span><span class="w"> </span><span class="n">pressure</span>
+<span class="w">   </span><span class="k">end do</span>
+<span class="k">end block </span><span class="n">pv_isotherm</span>
+</code></pre></div>
+
+<p>Plot the two columns in your preferred plotting tool. The volume range is
+deliberately broad: at large volumes the pressure approaches the ideal-gas
+behavior, whereas small volumes magnify intermolecular effects. An arbitrary
+small volume may be outside a model&rsquo;s physical domain; check before extending
+the sweep toward zero.</p>
+<p>Some rows of the calculated table are:</p>
+<table>
+<thead>
+<tr>
+<th>Total volume [L]</th>
 <th>Pressure [bar]</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>0.100</td>
-<td>456.048</td>
+<td>0.1</td>
+<td>137.063211</td>
 </tr>
 <tr>
-<td>1.000</td>
-<td>18.936</td>
+<td>1.0</td>
+<td>23.421450</td>
 </tr>
 <tr>
-<td>1.900</td>
-<td>11.310</td>
+<td>3.7</td>
+<td>6.940690</td>
 </tr>
 <tr>
-<td>2.800</td>
-<td>8.044</td>
-</tr>
-<tr>
-<td>3.700</td>
-<td>6.238</td>
-</tr>
-<tr>
-<td>4.600</td>
-<td>5.093</td>
-</tr>
-<tr>
-<td>5.500</td>
-<td>4.303</td>
-</tr>
-<tr>
-<td>6.400</td>
-<td>3.725</td>
-</tr>
-<tr>
-<td>7.300</td>
-<td>3.284</td>
-</tr>
-<tr>
-<td>8.200</td>
-<td>2.936</td>
-</tr>
-<tr>
-<td>9.100</td>
-<td>2.655</td>
-</tr>
-<tr>
-<td>10.000</td>
-<td>2.423</td>
+<td>10.0</td>
+<td>2.625777</td>
 </tr>
 </tbody>
 </table>
-<p>Also some useful derivatives are available when calculating each property, they
-can be easily accessed as optional arguments of the routine. For example, to
-obtain the derivative of pressure with respect to volume the line that
-calculates pressure should be changed to:</p>
-<div class="codehilite"><pre><span></span><code><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">dPdV</span><span class="o">=</span><span class="n">dPdV</span><span class="p">)</span><span class="w"> </span><span class="c">! Calculate pressure and dPdV</span>
+<p><img alt="Calculated Peng–Robinson pressure–volume points and ideal-gas comparison for the tutorial mixture" src="../../media/pv_isotherm.png"></p>
+<p>The markers are the twelve states evaluated by the program; connecting lines
+are a guide to the eye. The dashed curve compares the ideal-gas pressure at
+those same volumes and temperature.</p>
+<p>This is an EOS curve for proposed homogeneous states, not a phase-equilibrium
+envelope. At other temperatures, a model curve can pass through unstable
+states; those points do not describe a physically stable, uniform sample.</p>
+<h2 id="6-request-derivatives-only-when-you-need-them">6. Request derivatives only when you need them</h2>
+<p>A derivative tells you how a property changes when an input changes. For
+example, <code>dPdV</code> is the slope of pressure with respect to total volume while
+temperature and mole amounts stay fixed. This insertable block requests that
+slope as well as pressure:</p>
+<div class="codehilite"><pre><span></span><code><span class="n">derivative_example</span><span class="p">:</span><span class="w"> </span><span class="k">block</span>
+<span class="k">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">pressure</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">slope</span>
+
+<span class="w">   </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="n">pressure</span><span class="p">,</span><span class="w"> </span><span class="n">dPdV</span><span class="o">=</span><span class="n">slope</span><span class="p">)</span>
+<span class="w">   </span><span class="k">write</span><span class="p">(</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;(A,ES12.4)&#39;</span><span class="p">)</span><span class="w"> </span><span class="s2">&quot;dP/dV [bar/L]: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">slope</span>
+<span class="k">end block </span><span class="n">derivative_example</span>
 </code></pre></div>
 
-<p>In the next sections of this documentation are listed all the available
-properties and derivatives that can be calculated with <code>yaeos</code> models. Also,
-in further sections we&rsquo;ll show how to calculate phase equilibriums and how to
-create new models.</p>
-<h1 id="units">Units</h1>
-<p>If you were paying attention to the previous examples, you may have noticed
-that the units of yaeos are defined according to the ideal gas constant R with
-units:</p>
-<p>
-<script type="math/tex">R = 0.08314462618 \frac{bar \, L}{K \, mol}</script>
-</p>
-<p>Because of that, pressure must be specified as bar, volume as liters,
-temperature as Kelvin and number of moles as moles. The returns of the
-properties will be in the same units as the inputs. Energetic properties as
-enthalpy, entropy, etc will have unit of <script type="math/tex">[bar \, L]</script>, which equals to
-centijoules <script type="math/tex">[cJ]</script>.</p>
+<p>Optional keyword outputs let you ask for the quantities you need without
+implementing numerical differentiation yourself. For normal stable fluid
+states this slope is negative: expansion lowers the pressure. Derivatives near
+singularities or critical states require more care.</p>
+<h2 id="units-and-amount-basis">Units and amount basis</h2>
+<p>Use bar, litres, kelvin, and moles unless a model-specific parameter is
+documented otherwise. The library uses
+<script type="math/tex">R=0.08314462618\;\mathrm{bar\,L\,mol^{-1}\,K^{-1}}</script>.
+Extensive energies are in bar·L, and <script type="math/tex">1\;\mathrm{bar\,L}=100\;\mathrm J</script>.</p>
+<p>Here the amounts sum to one mole, so the numerical total volume equals the
+numerical molar volume. If you multiply every amount by ten, multiply total
+volume by ten to describe the same density and pressure. Do not assume this
+one-mole coincidence holds for arbitrary input amounts. See the
+<a href="fundamentals.html">units and composition guide</a> for examples and conversion
+checks.</p>
+<h2 id="if-something-goes-wrong">If something goes wrong</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>First things to check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>fpm</code> cannot fetch a dependency</td>
+<td>Network access, Git availability, and the dependency revision</td>
+</tr>
+<tr>
+<td>Linker reports missing <code>blas</code> or <code>lapack</code></td>
+<td>Installed development libraries and library-search configuration</td>
+</tr>
+<tr>
+<td>Compiler does not recognize a keyword argument</td>
+<td>Installed <code>yaeos</code> version versus this documentation&rsquo;s API</td>
+</tr>
+<tr>
+<td>Implausible pressure or density</td>
+<td>K versus °C, bar versus Pa, total versus molar volume, and component ordering</td>
+</tr>
+<tr>
+<td>A volume calculation fails or returns a nonphysical value</td>
+<td>Input domain, requested root, parameter validity, and solver diagnostics</td>
+</tr>
+</tbody>
+</table>
+<p>Do not fix a unit or parameter error by changing solver tolerances. Numerical
+convergence and physical accuracy are separate questions.</p>
+<h2 id="where-to-go-next">Where to go next</h2>
+<ul>
+<li><a href="fundamentals.html">Thermodynamics essentials</a>: amounts, phases, energy
+  references, fugacity, and the questions each solver answers.</li>
+<li><a href="eos/cubics/index.html">EOS model guides</a>: select a model and understand its
+  parameters, alpha function, and mixing rule.</li>
+<li><a href="eos/index.html">Thermodynamic properties</a>: practical calls followed by
+  detailed equations and derivatives.</li>
+<li><a href="excessmodels/index.html">Liquid activity models</a>: describe non-ideal liquid
+  mixtures using excess Gibbs energy.</li>
+<li><a href="phase_equilibrium/index.html">Phase equilibrium</a>: move from a property
+  calculation to saturation, flash, stability, and envelopes.</li>
+<li><a href="newmodels/index.html">Adding a model</a>: implement a new energy model when
+  configuration of an existing one is not sufficient.</li>
+</ul>
     </div>
   </div>
       <hr>
@@ -362,14 +519,14 @@ centijoules <script type="math/tex">[cJ]</script>.</p>
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

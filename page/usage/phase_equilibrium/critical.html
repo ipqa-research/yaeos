@@ -1,0 +1,588 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
+    <link rel="icon" href="../../../favicon.png">
+
+    <title>Critical points &ndash; yaeos</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../../../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../../../css/brands.min.css" rel="stylesheet">
+    <link href="../../../css/regular.min.css" rel="stylesheet">
+    <link href="../../../css/solid.min.css" rel="stylesheet">
+    <link href="../../../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../../../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../../../css/local.css" rel="stylesheet">
+    <link href="../../../css/pygments.css" rel="stylesheet">
+      <link href="../../../css/user.css" rel="stylesheet">
+    <script src="../../../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../../../index.html">yaeos </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="../../index.html">User documentation</a></li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../../../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>Critical points</h1>
+    <div class="container p-2 mb-4 bg-light border rounded-3">
+      <div class="row align-items-center justify-content-between">
+        <div class="col">
+          <ul class="list-inline" style="margin-bottom:0px; display:inline">
+          </ul>
+        </div>
+        <div class="col">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../../index.html'>User documentation</a></li>
+                <li class="breadcrumb-item"><a href='../index.html'>Getting started</a></li>
+                <li class="breadcrumb-item"><a href='index.html'>Phase Equilibrium</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Critical points</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+      <div class="col-3">
+        <div class="card card-body bg-light" id="sidebar-toc">
+          <ul class="nav flex-column align-items">
+            <li class="nav-item">
+              <a class="nav-link" href="../../index.html">User documentation</a>
+            </li>
+          </ul>
+          <hr>
+          <nav class="nav nav-pills flex-column">
+              <a class="nav-link" href="../index.html">Getting started</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../fundamentals.html">Thermodynamics essentials</a>
+              <a class="nav-link" href="../eos/index.html">Equations of State</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../eos/cubics/index.html">Cubics</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../eos/cubics/alpha.html">Alpha functions</a>
+              <a class="nav-link" href="../eos/cubics/mixing.html">Mixing Rules</a>
+
+                </nav>
+              <a class="nav-link" href="../eos/gerg2008.html">GERG2008</a>
+              <a class="nav-link" href="../eos/gerg2008_parameters.html">GERG2008 parameters</a>
+              <a class="nav-link" href="../eos/pc_saft.html">PC-SAFT</a>
+
+                </nav>
+              <a class="nav-link" href="../excessmodels/index.html">Gibbs Excess Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../excessmodels/nrtl.html">NRTL</a>
+              <a class="nav-link" href="../excessmodels/nrtl-hv.html">NRTL-HV</a>
+              <a class="nav-link" href="../excessmodels/uniquac.html">UNIQUAC</a>
+              <a class="nav-link" href="../excessmodels/unifac_models/index.html">UNIFAC Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
+              <a class="nav-link" href="../excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
+              <a class="nav-link" href="../excessmodels/unifac_models/psrk.html">UNIFAC-PSRK</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="index.html">Phase Equilibrium</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="flash.html">Flash calculations</a>
+              <a class="nav-link" href="saturation_points.html">Saturation Points</a>
+              <a class="nav-link" href="envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="stability.html">Stability analysis</a>
+              <a class="nav-link active disabled" href="critical.html">Critical points</a>
+              <a class="nav-link" href="multiphase.html">Multiphase flash</a>
+
+                </nav>
+              <a class="nav-link" href="../newmodels/index.html">Adding your own models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../newmodels/analtical.html">Analytical derivatives</a>
+              <a class="nav-link" href="../newmodels/autodiff.html">Automatic differentiation</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../../python-api/index.html">Python-API</a>
+              <a class="nav-link" href="../../developer/index.html">Becoming a yaeos developer</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../developer/architecture.html">Architecture and repository map</a>
+              <a class="nav-link" href="../../developer/workflow.html">Developer workflow</a>
+              <a class="nav-link" href="../../developer/fortran.html">Working in the Fortran core</a>
+              <a class="nav-link" href="../../developer/numerics.html">Working on numerical algorithms</a>
+              <a class="nav-link" href="../../developer/c_interface.html">C interface layer</a>
+              <a class="nav-link" href="../../developer/python_interface.html">Python interface layer</a>
+              <a class="nav-link" href="../../developer/testing.html">Tests and numerical validation</a>
+              <a class="nav-link" href="../../developer/walkthrough.html">An end-to-end change</a>
+
+                </nav>
+              <a class="nav-link" href="../../contributing/index.html">Contributing</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../contributing/styleguide.html">Style guide</a>
+
+                </nav>
+          </nav>
+        </div>
+      </div>
+
+    <div class="col-9" id='text'>
+      <div class="toc">
+<ul>
+<li><a href="#critical-points">Critical points</a></li>
+<li><a href="#theory">Theory</a></li>
+<li><a href="#critical-point-specification">Critical-point specification</a></li>
+<li><a href="#critical_point">critical_point</a><ul>
+<li><a href="#example">Example</a></li>
+</ul>
+</li>
+<li><a href="#critical_line">critical_line</a></li>
+<li><a href="#get_critical_constants">get_critical_constants</a></li>
+<li><a href="#practical-notes">Practical notes</a></li>
+</ul>
+</div>
+<h1 id="critical-points">Critical points</h1>
+<p>A critical point is the state where two coexisting phases become
+indistinguishable: their compositions, molar volumes, and densities converge,
+and the boundary between them disappears. For a pure substance it is a single
+point in pressure-temperature space. For a mixture it also depends on
+composition, so the critical states form a <strong>critical line</strong> in
+pressure-temperature-composition space.</p>
+<p>Near a critical point the usual &ldquo;which phase is this?&rdquo; questions stop having
+sharp answers. That is why critical calculations are useful: they mark the end
+of a phase envelope, and they explain why a flash or a saturation solver becomes
+ill-conditioned in that region.</p>
+<p><code>yaeos</code> provides:</p>
+<ul>
+<li><a href="../../../proc/critical_point.html">critical_point</a>: a single critical point at a specified composition.</li>
+<li><a href="../../../proc/critical_line.html">critical_line</a>: a critical line between two limiting compositions.</li>
+<li><a href="../../../proc/get_critical_constants.html">get_critical_constants</a>: pure-component critical constants of a model.</li>
+</ul>
+<h1 id="theory">Theory</h1>
+<p>For a pure fluid, the critical point is the point where the pressure-volume
+curve develops an inflection:</p>
+<p>
+<script type="math/tex; mode=display">
+   \left(\frac{\partial P}{\partial V}\right)_T = 0, \qquad
+   \left(\frac{\partial^2 P}{\partial V^2}\right)_T = 0
+</script>
+</p>
+<p>For a mixture, composition fluctuations matter as well as changes in density;
+the pure-fluid pressure-inflection test is not a general mixture criticality
+criterion. Write the total Helmholtz energy as an ideal-gas contribution plus
+a residual (real-fluid) contribution,</p>
+<p>
+<script type="math/tex; mode=display">
+   A(\mathbf n,V,T) = A^{\mathrm{ideal}}(\mathbf n,V,T) + A^{r}(\mathbf n,V,T).
+</script>
+</p>
+<p>The mixture loses stability when the matrix of second derivatives of the
+<strong>total</strong> Helmholtz energy with respect to the component mole numbers becomes
+singular:</p>
+<p>
+<script type="math/tex; mode=display">
+   \left(\frac{\partial^2 A}{\partial n_i \partial n_j}\right)_{T,V}
+   \text{ is singular}.
+</script>
+</p>
+<p>The ideal contribution is not optional. In the Hessian divided by <script type="math/tex">RT</script>, it
+supplies the positive diagonal elements <script type="math/tex">1/n_i</script>. An ideal gas with positive
+component amounts is stable against these fluctuations: this term does not
+make it unstable at low temperature. In a real fluid, the residual contribution
+can offset that stabilizing curvature. Using the residual Hessian alone would
+therefore test a different, generally incorrect condition.</p>
+<p>This is how the implementation proceeds. The fugacity derivative returned by
+<code>lnfug_vt</code> satisfies</p>
+<p>
+<script type="math/tex; mode=display">
+   \frac{\partial \ln f_i}{\partial n_j}
+   = \frac{1}{n_i}\delta_{ij} + \frac{1}{RT}\frac{\partial^2 A^{r}}{\partial n_i \partial n_j},
+</script>
+</p>
+<p>that is, the ideal-mixing term is already included. The stability matrix built
+from it is</p>
+<p>
+<script type="math/tex; mode=display">
+   M_{ij} = \sqrt{z_i z_j}\;\frac{\partial \ln f_i}{\partial n_j},
+</script>
+</p>
+<p>and the implementation selects the eigenvalue closest to zero in absolute
+value, denoted <script type="math/tex">\lambda_1</script> here. This selection is an implementation choice;
+it is not by itself a test that all other eigenvalues are nonnegative.
+The implementation evaluates <script type="math/tex">\lambda_1</script> at
+the state and along a small composition perturbation
+<script type="math/tex">\mathbf n = \mathbf z + s\,\mathbf u\sqrt{\mathbf z}</script>, where <script type="math/tex">\mathbf u</script> is
+the eigenvector associated with the selected eigenvalue. The solver imposes</p>
+<p>
+<script type="math/tex; mode=display">
+   \lambda_1(0) = 0
+   \qquad\text{and}\qquad
+   \frac{d\lambda_1}{ds}\Big|_{s=0} = 0,
+</script>
+</p>
+<p>plus the pressure identity <script type="math/tex">P(\mathbf n,V,T) = \exp(X_4)</script> and the requested
+specification. The second condition is evaluated by a central difference with
+<script type="math/tex">\varepsilon = 10^{-4}</script>, and the whole system is solved by Newton iteration.</p>
+<h1 id="critical-point-specification">Critical-point specification</h1>
+<p>Critical-point calculations solve a system of equations involving the
+stability limit and the criticality conditions. One variable must be
+specified. The <code>spec_CP</code> object provides the allowed specifications:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>spec_CP%a</code></td>
+<td style="text-align: left;">Composition parameter <script type="math/tex">\alpha</script>
+</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>spec_CP%V</code></td>
+<td style="text-align: left;">Volume</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>spec_CP%T</code></td>
+<td style="text-align: left;">Temperature</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>spec_CP%P</code></td>
+<td style="text-align: left;">Pressure</td>
+</tr>
+</tbody>
+</table>
+<p>The composition of the mixture is defined as:</p>
+<p>
+<script type="math/tex; mode=display">
+    z = \alpha z_i + (1 - \alpha) z_0
+</script>
+</p>
+<p>where <script type="math/tex">z_0</script> and <script type="math/tex">z_i</script> are the two limiting compositions. With
+<script type="math/tex">z_0=[1,0]</script> and <script type="math/tex">z_i=[0,1]</script>, <script type="math/tex">\alpha</script> is simply the mole fraction of the
+second component. With more general limiting compositions, <script type="math/tex">\alpha</script> is a
+mixing parameter and the actual mole fractions are the linear combination above.</p>
+<h1 id="critical_point"><code>critical_point</code></h1>
+<div class="codehilite"><pre><span></span><code><span class="k">type</span><span class="p">(</span><span class="n">EquilibriumState</span><span class="p">)</span><span class="w"> </span><span class="k">function </span><span class="n">critical_point</span><span class="p">(</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">   </span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z0</span><span class="p">,</span><span class="w"> </span><span class="n">zi</span><span class="p">,</span><span class="w"> </span><span class="n">spec</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="p">,</span><span class="w"> </span><span class="n">max_iters</span><span class="p">,</span><span class="w"> </span><span class="n">V0</span><span class="p">,</span><span class="w"> </span><span class="n">T0</span><span class="p">,</span><span class="w"> </span><span class="n">a0</span><span class="p">,</span><span class="w"> </span><span class="n">P0</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">   </span><span class="p">)</span>
+<span class="w">   </span><span class="k">class</span><span class="p">(</span><span class="n">ArModel</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">z0</span><span class="p">(:)</span><span class="w">   </span><span class="c">!! First limiting composition</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">zi</span><span class="p">(:)</span><span class="w">   </span><span class="c">!! Second limiting composition</span>
+<span class="w">   </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">spec</span><span class="w">      </span><span class="c">!! spec_CP field</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">S</span><span class="w">        </span><span class="c">!! Specification value</span>
+<span class="w">   </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">max_iters</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">V0</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T0</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">a0</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">P0</span>
+<span class="k">end function </span><span class="n">critical_point</span>
+</code></pre></div>
+
+<p>The specification value <code>S</code> follows the natural variables of the solver,
+<script type="math/tex">(\alpha, \ln V, \ln T, \ln P)</script>:</p>
+<ul>
+<li>For <code>spec_CP%a</code>, <code>S</code> is the composition parameter <script type="math/tex">\alpha</script> itself, in
+  <script type="math/tex">[0,1]</script>.</li>
+<li>For <code>spec_CP%T</code>, <code>S</code> is <script type="math/tex">\ln T</script>, with <script type="math/tex">T</script> in kelvin.</li>
+<li>For <code>spec_CP%P</code>, <code>S</code> is <script type="math/tex">\ln P</script>, with <script type="math/tex">P</script> in bar.</li>
+<li>For <code>spec_CP%V</code>, <code>S</code> is <script type="math/tex">\ln V</script>, with <script type="math/tex">V</script> in L/mol.</li>
+</ul>
+<p>The <code>V0</code>, <code>T0</code>, <code>P0</code>, and <code>a0</code> arguments are initial guesses, given in the
+ordinary units (K, bar, L/mol, and <script type="math/tex">\alpha</script> respectively), not as logarithms.
+Only the specified variable <code>S</code> uses the logarithmic convention. Passing a
+temperature in kelvin as <code>S</code> for <code>spec_CP%T</code> therefore produces a nonsense
+state rather than an error.</p>
+<h2 id="example">Example</h2>
+<div class="codehilite"><pre><span></span><code><span class="k">program </span><span class="n">critical_example</span>
+<span class="w">   </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">CubicEoS</span><span class="p">,</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">,</span><span class="w"> </span><span class="n">EquilibriumState</span>
+<span class="w">   </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">critical_point</span><span class="p">,</span><span class="w"> </span><span class="n">spec_CP</span>
+<span class="w">   </span><span class="k">implicit none</span>
+
+<span class="k">   type</span><span class="p">(</span><span class="n">CubicEoS</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">EquilibriumState</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">cp</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">tc</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">pc</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">w</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">z0</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">zi</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">a</span>
+
+<span class="w">   </span><span class="c">! Carbon dioxide + n-hexane</span>
+<span class="w">   </span><span class="n">tc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">30</span><span class="mf">4.21_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">50</span><span class="mf">7.6_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">pc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">7</span><span class="mf">3.83_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="mf">0.25_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.223621_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.301261_pr</span><span class="p">]</span>
+
+<span class="w">   </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span><span class="w"> </span><span class="n">pc</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">)</span>
+
+<span class="w">   </span><span class="n">z0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">1.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0_pr</span><span class="p">]</span><span class="w">  </span><span class="c">! Pure carbon dioxide</span>
+<span class="w">   </span><span class="n">zi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="p">]</span><span class="w">  </span><span class="c">! Pure n-hexane</span>
+<span class="w">   </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.5_pr</span><span class="w">             </span><span class="c">! Equimolar mixture</span>
+
+<span class="w">   </span><span class="n">cp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">critical_point</span><span class="p">(</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z0</span><span class="p">,</span><span class="w"> </span><span class="n">zi</span><span class="p">,</span><span class="w"> </span><span class="n">spec</span><span class="o">=</span><span class="n">spec_CP</span><span class="p">%</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="o">=</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">max_iters</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span><span class="w"> </span><span class="n">a0</span><span class="o">=</span><span class="n">a</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="p">)</span>
+
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Critical temperature: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">cp</span><span class="p">%</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot; K&quot;</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Critical pressure: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">cp</span><span class="p">%</span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot; bar&quot;</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Critical volume: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">cp</span><span class="p">%</span><span class="n">Vx</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot; L/mol&quot;</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Critical composition: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">cp</span><span class="p">%</span><span class="n">x</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Iterations: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">cp</span><span class="p">%</span><span class="n">iters</span>
+<span class="k">end program </span><span class="n">critical_example</span>
+</code></pre></div>
+
+<p>The result is an <a href="../../../type/equilibriumstate.html">EquilibriumState</a> with <code>kind="critical"</code>, <code>x == y == z</code>,
+and <code>Vx == Vy</code>. <code>beta</code> is zero. With the parameters above the calculation
+converges in a few tens of Newton iterations to about 461.2 K and 76.4 bar.</p>
+<p><code>critical_point</code> has no separate failure flag: <code>kind</code> is set to <code>"critical"</code>
+when the iteration ends, whether or not the residuals are small. Check the
+returned state instead: the pressure must be positive and finite, the
+composition must be normalized and nonnegative, and the result must be
+consistent with an independent calculation.</p>
+<h1 id="critical_line"><code>critical_line</code></h1>
+<p><code>critical_line</code> continues a critical point along the composition parameter
+<script type="math/tex">\alpha</script>. It uses the same continuation method as the phase envelopes.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">type</span><span class="p">(</span><span class="n">CriticalLine</span><span class="p">)</span><span class="w"> </span><span class="k">function </span><span class="n">critical_line</span><span class="p">(</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">   </span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">a0</span><span class="p">,</span><span class="w"> </span><span class="n">z0</span><span class="p">,</span><span class="w"> </span><span class="n">zi</span><span class="p">,</span><span class="w"> </span><span class="n">ns0</span><span class="p">,</span><span class="w"> </span><span class="n">S0</span><span class="p">,</span><span class="w"> </span><span class="n">dS0</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">   </span><span class="n">v0</span><span class="p">,</span><span class="w"> </span><span class="n">t0</span><span class="p">,</span><span class="w"> </span><span class="n">p0</span><span class="p">,</span><span class="w"> </span><span class="n">max_points</span><span class="p">,</span><span class="w"> </span><span class="n">maxP</span><span class="p">,</span><span class="w"> </span><span class="n">first_point</span><span class="p">,</span><span class="w"> </span><span class="n">stability_analysis</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">   </span><span class="p">)</span>
+<span class="w">   </span><span class="k">class</span><span class="p">(</span><span class="n">ArModel</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">a0</span><span class="w">       </span><span class="c">!! Initial alpha</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">z0</span><span class="p">(:)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">zi</span><span class="p">(:)</span>
+<span class="w">   </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ns0</span><span class="w">       </span><span class="c">!! Specification variable</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">S0</span><span class="w">       </span><span class="c">!! Initial specification value</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">dS0</span><span class="w">      </span><span class="c">!! Initial step</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">v0</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">t0</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">p0</span>
+<span class="w">   </span><span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">optional</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">max_points</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">maxP</span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">EquilibriumState</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">first_point</span>
+<span class="w">   </span><span class="kt">logical</span><span class="p">,</span><span class="w"> </span><span class="k">optional</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">stability_analysis</span>
+<span class="k">end function </span><span class="n">critical_line</span>
+</code></pre></div>
+
+<p><code>ns0</code> is usually <code>spec_CP%a</code>. In that case <code>S0</code> is the initial <script type="math/tex">\alpha</script> and
+<code>dS0</code> is the step in <script type="math/tex">\alpha</script>. A negative <code>dS0</code> scans in the opposite
+direction. The optional <code>first_point</code> allows the continuation to start from an
+already converged critical point; without it the routine starts from an
+initial guess built from the component critical constants and a volume
+estimate.</p>
+<p>When <code>ns0</code> is not <code>spec_CP%a</code>, <code>S0</code> follows the same logarithmic convention as
+<code>critical_point</code>: <code>log(T)</code>, <code>log(P)</code>, or <code>log(V)</code>.</p>
+<p>The optional <code>first_point</code> is used for two things: the volume, temperature and
+pressure guesses, and the composition parameter, which is taken from
+<code>first_point%x(2)</code>. That second element is the mole fraction of the second
+component only for a binary mixture whose limiting compositions are the pure
+components. For other mixtures, set the starting point with <code>a0</code> and <code>S0</code>
+instead.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">CriticalLine</span><span class="p">,</span><span class="w"> </span><span class="n">critical_line</span><span class="p">,</span><span class="w"> </span><span class="n">critical_point</span><span class="p">,</span><span class="w"> </span><span class="n">spec_CP</span>
+
+<span class="k">type</span><span class="p">(</span><span class="n">CriticalLine</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">cl</span>
+<span class="k">type</span><span class="p">(</span><span class="n">EquilibriumState</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">cp</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">a</span>
+
+<span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.5_pr</span>
+
+<span class="n">cp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">critical_point</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z0</span><span class="p">,</span><span class="w"> </span><span class="n">zi</span><span class="p">,</span><span class="w"> </span><span class="n">spec</span><span class="o">=</span><span class="n">spec_CP</span><span class="p">%</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="o">=</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">max_iters</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span><span class="w"> </span><span class="n">a0</span><span class="o">=</span><span class="n">a</span><span class="p">)</span>
+
+<span class="n">cl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">critical_line</span><span class="p">(</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">   </span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">a0</span><span class="o">=</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">z0</span><span class="o">=</span><span class="n">z0</span><span class="p">,</span><span class="w"> </span><span class="n">zi</span><span class="o">=</span><span class="n">zi</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">   </span><span class="n">ns0</span><span class="o">=</span><span class="n">spec_CP</span><span class="p">%</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">S0</span><span class="o">=</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">dS0</span><span class="o">=</span><span class="mf">0.01_pr</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">   </span><span class="n">first_point</span><span class="o">=</span><span class="n">cp</span><span class="p">,</span><span class="w"> </span><span class="n">max_points</span><span class="o">=</span><span class="mi">1000</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">   </span><span class="p">)</span>
+
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Number of points: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="n">cl</span><span class="p">%</span><span class="n">a</span><span class="p">)</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Alpha range: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">cl</span><span class="p">%</span><span class="n">a</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="n">cl</span><span class="p">%</span><span class="n">a</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">cl</span><span class="p">%</span><span class="n">a</span><span class="p">))</span>
+</code></pre></div>
+
+<p>The <code>CriticalLine</code> type contains:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>a</code></td>
+<td style="text-align: left;">Composition parameter <script type="math/tex">\alpha</script> at each point</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>z0</code>, <code>zi</code></td>
+<td style="text-align: left;">Limiting compositions</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>P</code></td>
+<td style="text-align: left;">Pressure [bar]</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>V</code></td>
+<td style="text-align: left;">Molar volume [L/mol]</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>T</code></td>
+<td style="text-align: left;">Temperature [K]</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ns</code></td>
+<td style="text-align: left;">Specification variable used at each point</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>iters</code></td>
+<td style="text-align: left;">Iterations used at each point</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>CEP</code></td>
+<td style="text-align: left;">Critical end point, when one is found</td>
+</tr>
+</tbody>
+</table>
+<p>The number of points is decided by the continuation itself: it stops when the
+line turns, when a point fails to converge, when the pressure exceeds <code>maxP</code>
+(default 2500 bar), or when <code>max_points</code> is reached. An empty line is a
+legitimate outcome and means the starting point was not usable, not that the
+mixture has no critical behaviour. Starting from a converged critical point
+matters: with the example above, a continuation started from a poor point
+returned an empty line.</p>
+<p><code>CEP</code> is only filled when <code>stability_analysis</code> is requested and a critical end
+point is actually detected. The detection routine is limited to binary
+mixtures and scans a fixed grid of trial compositions, so a null <code>CEP</code> is not
+evidence that no critical end point exists.</p>
+<h1 id="get_critical_constants"><code>get_critical_constants</code></h1>
+<p><a href="../../../proc/get_critical_constants.html">get_critical_constants</a> calculates the pure-component critical constants of
+an <code>ArModel</code> and updates the model&rsquo;s <code>components</code> object in place:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos__equilibria_critical</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">get_critical_constants</span>
+
+<span class="k">call </span><span class="n">get_critical_constants</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+
+<span class="c">! The critical constants are now available in the model</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="p">%</span><span class="n">components</span><span class="p">%</span><span class="n">Tc</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="p">%</span><span class="n">components</span><span class="p">%</span><span class="n">Pc</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">model</span><span class="p">%</span><span class="n">components</span><span class="p">%</span><span class="n">w</span>
+</code></pre></div>
+
+<p>This routine is <strong>not</strong> re-exported by the top-level <code>yaeos</code> module; it must be
+imported from the implementation module <code>yaeos__equilibria_critical</code> as shown
+above. Use it only with a model that has already allocated <code>Tc</code>, <code>Pc</code>, and <code>w</code>
+for its components.</p>
+<p>The routine solves a critical point for each pure component, then estimates
+the acentric factor from the saturation pressure at <script type="math/tex">0.7\,T_c</script>:</p>
+<p>
+<script type="math/tex; mode=display">
+   \omega = -1 - \log_{10}\left(\frac{P^{\mathrm{sat}}(0.7\,T_c)}{P_c}\right).
+</script>
+</p>
+<p>It is used internally by models such as PC-SAFT, where the critical constants
+are not known analytically and must be obtained from the equation of state
+itself.</p>
+<h1 id="practical-notes">Practical notes</h1>
+<ul>
+<li>Critical-point calculations are sensitive to the initial guesses. Use <code>a0</code>,
+  <code>T0</code>, <code>P0</code>, and <code>V0</code> when they are available.</li>
+<li>Specify temperature or pressure in preference to volume. A run with
+  <code>spec_CP%V</code> for the example mixture returned a state with a pressure of
+  order <script type="math/tex">10^{-7}</script> bar, which is a converged iteration of the wrong problem.</li>
+<li>The specification value is logarithmic for <code>spec_CP%T</code>, <code>spec_CP%P</code>, and
+  <code>spec_CP%V</code>; the initial guesses are not.</li>
+<li><code>critical_point</code> does not report convergence failure. Validate the returned
+  temperature, pressure, and composition, and compare with a second
+  specification when possible.</li>
+<li>A critical line can cross a critical end point or a liquid-liquid region.
+  Check the <code>CEP</code> field and the stability of the calculated points.</li>
+<li>The critical line and the phase envelope should meet at the critical point.
+  Use this as a consistency check.</li>
+<li>Near a critical point the two phases are nearly identical, so the
+  saturation and flash routines lose their conditioning: phase fractions,
+  volumes, and compositions all become uncertain at the same time. Treat
+  results close to a critical point as qualitative.</li>
+<li>Critical calculations are expensive because they require second and third
+  derivatives of the Helmholtz energy through numerical differentiation of the
+  criticality conditions.</li>
+</ul>
+    </div>
+  </div>
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              yaeos
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2026-11-18 15:31 +0000             </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

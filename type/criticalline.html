@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>CriticalLine &ndash; yaeos </title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -136,14 +137,14 @@
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
             <a class="list-group-item" href="../type/criticalline.html#variable-cep">CEP</a>
-            <a class="list-group-item" href="../type/criticalline.html#variable-p~25">P</a>
-            <a class="list-group-item" href="../type/criticalline.html#variable-t~45">T</a>
-            <a class="list-group-item" href="../type/criticalline.html#variable-v~9">V</a>
-            <a class="list-group-item" href="../type/criticalline.html#variable-a~14">a</a>
-            <a class="list-group-item" href="../type/criticalline.html#variable-iters~7">iters</a>
-            <a class="list-group-item" href="../type/criticalline.html#variable-ns~21">ns</a>
-            <a class="list-group-item" href="../type/criticalline.html#variable-z0~4">z0</a>
-            <a class="list-group-item" href="../type/criticalline.html#variable-zi~2">zi</a>
+            <a class="list-group-item" href="../type/criticalline.html#variable-p~34">P</a>
+            <a class="list-group-item" href="../type/criticalline.html#variable-t~46">T</a>
+            <a class="list-group-item" href="../type/criticalline.html#variable-v~14">V</a>
+            <a class="list-group-item" href="../type/criticalline.html#variable-a~12">a</a>
+            <a class="list-group-item" href="../type/criticalline.html#variable-iters~16">iters</a>
+            <a class="list-group-item" href="../type/criticalline.html#variable-ns~34">ns</a>
+            <a class="list-group-item" href="../type/criticalline.html#variable-z0~13">z0</a>
+            <a class="list-group-item" href="../type/criticalline.html#variable-zi~11">zi</a>
         </div>
       </div>
     </div>
@@ -176,11 +177,11 @@
       <h2 id="type-def-statement">
         type, public :: CriticalLine</h2>
     <h1 id="criticalline">CriticalLine</h1>
-<h2 id="description">Description</h2>
+<h1 id="description">Description</h1>
 <p>This derived type is used to store a critical line between two fluids.
 The critical line is calculated using the <code>critical_line</code> function. It
 uses the continuation method.</p>
-<h2 id="examples">Examples</h2>
+<h1 id="examples">Examples</h1>
 <p>A critical line can be calculated between two fluids using the
 <code>critical_line</code> function.
 In this example we calculate the critical of a binary mixture of
@@ -190,6 +191,7 @@ carbon dioxide and bicyclohexyl.</p>
 <span class="k">type</span><span class="p">(</span><span class="n">CubicEoS</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
 <span class="k">type</span><span class="p">(</span><span class="n">CriticalLine</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">cl</span>
 <span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">z0</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">zi</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">tc</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">pc</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">w</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 
 <span class="n">z0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="c">! Pure carbon dioxide</span>
 <span class="n">zi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="c">! Pure bicyclohexyl</span>
@@ -200,7 +202,8 @@ carbon dioxide and bicyclohexyl.</p>
 <span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.223621_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.427556_pr</span><span class="p">]</span>
 <span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span><span class="w"> </span><span class="n">pc</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">)</span>
 <span class="c">! Calculate the critical line</span>
-<span class="n">cl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">critical_line</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">a0</span><span class="o">=</span><span class="mf">0.99_pr</span><span class="p">,</span><span class="w"> </span><span class="n">z0</span><span class="o">=</span><span class="n">z0</span><span class="p">,</span><span class="w"> </span><span class="n">zi</span><span class="o">=</span><span class="n">zi</span><span class="p">,</span><span class="w"> </span><span class="n">dS0</span><span class="o">=-</span><span class="mf">0.01_pr</span><span class="p">)</span>
+<span class="n">cl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">critical_line</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">a0</span><span class="o">=</span><span class="mf">0.99_pr</span><span class="p">,</span><span class="w"> </span><span class="n">z0</span><span class="o">=</span><span class="n">z0</span><span class="p">,</span><span class="w"> </span><span class="n">zi</span><span class="o">=</span><span class="n">zi</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">                 </span><span class="n">ns0</span><span class="o">=</span><span class="n">spec_CP</span><span class="p">%</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">S0</span><span class="o">=</span><span class="mf">0.99_pr</span><span class="p">,</span><span class="w"> </span><span class="n">dS0</span><span class="o">=-</span><span class="mf">0.01_pr</span><span class="p">)</span>
 </code></pre></div>
 <br>      <div class="card">
         <div class="card-header">
@@ -210,35 +213,35 @@ carbon dioxide and bicyclohexyl.</p>
           <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: type~~criticalline~~InheritsGraph Pages: 1 -->
-<svg id="typecriticallineInheritsGraph" width="237pt" height="32pt"
- viewBox="0.00 0.00 237.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="type~~criticalline~~InheritsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg id="typecriticallineInheritsGraph" width="234pt" height="32pt"
+ viewBox="0.00 0.00 234.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="type~~criticalline~~InheritsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>type~~criticalline~~InheritsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 233,-28 233,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 230.29,-28.27 230.29,4 -4,4"/>
 <!-- type~criticalline -->
 <g id="type~~criticalline~~InheritsGraph_node1" class="node">
 <title>type~criticalline</title>
-<polygon fill="none" stroke="black" points="229,-24 156,-24 156,0 229,0 229,-24"/>
-<text text-anchor="middle" x="192.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">CriticalLine</text>
+<polygon fill="none" stroke="black" points="226.29,-24.27 154.77,-24.27 154.77,0 226.29,0 226.29,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="190.53" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">CriticalLine</text>
 </g>
 <!-- type~equilibriumstate -->
 <g id="type~~criticalline~~InheritsGraph_node2" class="node">
 <title>type~equilibriumstate</title>
 <g id="a_type~~criticalline~~InheritsGraph_node2"><a xlink:href="../type/equilibriumstate.html" xlink:title="EquilibriumState">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="101,-24 0,-24 0,0 101,0 101,-24"/>
-<text text-anchor="middle" x="50.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">EquilibriumState</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="100.02,-24.27 0,-24.27 0,0 100.02,0 100.02,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="50.01" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">EquilibriumState</text>
 </a>
 </g>
 </g>
 <!-- type~criticalline&#45;&gt;type~equilibriumstate -->
 <g id="type~~criticalline~~InheritsGraph_edge1" class="edge">
 <title>type~criticalline&#45;&gt;type~equilibriumstate</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M155.81,-12C142.32,-12 126.56,-12 111.45,-12"/>
-<polygon fill="#000000" stroke="#000000" points="111.12,-8.5 101.12,-12 111.12,-15.5 111.12,-8.5"/>
-<text text-anchor="middle" x="128.5" y="-14.4" font-family="Helvetica,sans-Serif" font-size="9.50">CEP</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M154.58,-12.13C141.48,-12.13 126.2,-12.13 111.46,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="111.85,-8.64 101.85,-12.14 111.85,-15.64 111.85,-8.64"/>
+<text xml:space="preserve" text-anchor="middle" x="127.39" y="-14.36" font-family="Helvetica,sans-Serif" font-size="9.50">CEP</text>
 </g>
 </g>
 </svg>
@@ -257,25 +260,25 @@ carbon dioxide and bicyclohexyl.</p>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="186pt" height="32pt"
- viewBox="0.00 0.00 185.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="184pt" height="32pt"
+ viewBox="0.00 0.00 184.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 181.5,-28 181.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 179.88,-28.27 179.88,4 -4,4"/>
 <!-- Type -->
 <g id="node1" class="node">
 <title>Type</title>
-<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node2" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="177.5,-24 72.5,-24 72.5,0 177.5,0 177.5,-24"/>
-<text text-anchor="middle" x="125" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="175.88,-24.27 72.12,-24.27 72.12,0 175.88,0 175.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="124" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -324,7 +327,7 @@ said component(s).
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~25"></span>
+              <span class="anchor" id="variable-p~34"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -341,7 +344,7 @@ said component(s).
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~45"></span>
+              <span class="anchor" id="variable-t~46"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -358,7 +361,7 @@ said component(s).
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~9"></span>
+              <span class="anchor" id="variable-v~14"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -375,7 +378,7 @@ said component(s).
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~14"></span>
+              <span class="anchor" id="variable-a~12"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -392,7 +395,7 @@ said component(s).
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iters~7"></span>
+              <span class="anchor" id="variable-iters~16"></span>
               integer,
             </td>
               <td>public,</td>
@@ -409,7 +412,7 @@ said component(s).
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns~21"></span>
+              <span class="anchor" id="variable-ns~34"></span>
               integer,
             </td>
               <td>public,</td>
@@ -426,7 +429,7 @@ said component(s).
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z0~4"></span>
+              <span class="anchor" id="variable-z0~13"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -443,7 +446,7 @@ said component(s).
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-zi~2"></span>
+              <span class="anchor" id="variable-zi~11"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -479,14 +482,14 @@ said component(s).
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

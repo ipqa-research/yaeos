@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>TERMO &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.3% of total for procedures.">52 statements</a>
+                 title=" 0.3% of total for procedures.">62 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -135,25 +136,25 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/termo.html#variable-artn~16">ArTn</a>
-            <a class="list-group-item" href="../proc/termo.html#variable-arvn~16">ArVn</a>
-            <a class="list-group-item" href="../proc/termo.html#variable-arn~17">Arn</a>
-            <a class="list-group-item" href="../proc/termo.html#variable-arn2~13">Arn2</a>
+            <a class="list-group-item" href="../proc/termo.html#variable-artn~19">ArTn</a>
+            <a class="list-group-item" href="../proc/termo.html#variable-arvn~19">ArVn</a>
+            <a class="list-group-item" href="../proc/termo.html#variable-arn~20">Arn</a>
+            <a class="list-group-item" href="../proc/termo.html#variable-arn2~16">Arn2</a>
             <a class="list-group-item" href="../proc/termo.html#variable-dpdn">DPDN</a>
             <a class="list-group-item" href="../proc/termo.html#variable-rt~3">RT</a>
             <a class="list-group-item" href="../proc/termo.html#variable-z~6">Z</a>
-            <a class="list-group-item" href="../proc/termo.html#variable-ar~9">ar</a>
-            <a class="list-group-item" href="../proc/termo.html#variable-artv~5">artv</a>
-            <a class="list-group-item" href="../proc/termo.html#variable-arv~5">arv</a>
-            <a class="list-group-item" href="../proc/termo.html#variable-arv2~5">arv2</a>
+            <a class="list-group-item" href="../proc/termo.html#variable-ar~7">ar</a>
+            <a class="list-group-item" href="../proc/termo.html#variable-artv~7">artv</a>
+            <a class="list-group-item" href="../proc/termo.html#variable-arv~7">arv</a>
+            <a class="list-group-item" href="../proc/termo.html#variable-arv2~7">arv2</a>
             <a class="list-group-item" href="../proc/termo.html#variable-dpdt">dpdt</a>
             <a class="list-group-item" href="../proc/termo.html#variable-dpv">dpv</a>
-            <a class="list-group-item" href="../proc/termo.html#variable-i~111">i</a>
+            <a class="list-group-item" href="../proc/termo.html#variable-i~107">i</a>
             <a class="list-group-item" href="../proc/termo.html#variable-igz">igz</a>
-            <a class="list-group-item" href="../proc/termo.html#variable-k~29">k</a>
+            <a class="list-group-item" href="../proc/termo.html#variable-k~19">k</a>
             <a class="list-group-item" href="../proc/termo.html#variable-nder~2">nder</a>
             <a class="list-group-item" href="../proc/termo.html#variable-ntemp~2">ntemp</a>
-            <a class="list-group-item" href="../proc/termo.html#variable-totn~15">totn</a>
+            <a class="list-group-item" href="../proc/termo.html#variable-totn~16">totn</a>
         </div>
       </div>
     </div>
@@ -187,6 +188,11 @@
 </h2>
     
 
+    <h1 id="termo">TERMO</h1>
+<p>Evaluate legacy fugacity and pressure-derivative properties.</p>
+<h1 id="description">Description</h1>
+<p>Dispatches the selected cubic model and mixing rule to calculate
+fugacity coefficients and requested pressure/temperature derivatives.</p>
 
 
     <h3>Arguments</h3>
@@ -202,7 +208,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~95"></span>
+              <span class="anchor" id="variable-nc~85"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -247,7 +253,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~35"></span>
+              <span class="anchor" id="variable-t~26"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -262,7 +268,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~7"></span>
+              <span class="anchor" id="variable-p~6"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -292,7 +298,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~22"></span>
+              <span class="anchor" id="variable-v~12"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -332,7 +338,7 @@
             <td>::</td>
             <td><strong>DLPHIP</strong>(nc)</td>
             <td>
-                <p>ln(phi) Presssure derivative</p>
+                <p>ln(phi) Pressure derivative</p>
             </td>
         </tr>
         <tr>
@@ -377,55 +383,55 @@
   <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: proc~~termo~~CallsGraph Pages: 1 -->
-<svg id="proctermoCallsGraph" width="245pt" height="52pt"
- viewBox="0.00 0.00 245.00 52.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~termo~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 48)">
+<svg id="proctermoCallsGraph" width="244pt" height="52pt"
+ viewBox="0.00 0.00 244.00 52.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~termo~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 48.27)">
 <title>proc~~termo~~CallsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-48 241,-48 241,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-48.27 239.77,-48.27 239.77,4 -4,4"/>
 <!-- proc~termo -->
 <g id="proc~~termo~~CallsGraph_node1" class="node">
 <title>proc~termo</title>
-<polygon fill="none" stroke="black" points="54,-44 0,-44 0,-20 54,-20 54,-44"/>
-<text text-anchor="middle" x="27" y="-29.6" font-family="Helvetica,sans-Serif" font-size="10.50">TERMO</text>
+<polygon fill="none" stroke="black" points="54,-44.27 0,-44.27 0,-20 54,-20 54,-44.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-28.53" font-family="Helvetica,sans-Serif" font-size="10.50">TERMO</text>
 </g>
 <!-- proc~arvnder -->
 <g id="proc~~termo~~CallsGraph_node2" class="node">
 <title>proc~arvnder</title>
 <g id="a_proc~~termo~~CallsGraph_node2"><a xlink:href="../proc/arvnder.html" xlink:title="ArVnder">
-<polygon fill="#d9534f" stroke="#d9534f" points="237,-44 180,-44 180,-20 237,-20 237,-44"/>
-<text text-anchor="middle" x="208.5" y="-29.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArVnder</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="235.77,-44.27 180,-44.27 180,-20 235.77,-20 235.77,-44.27"/>
+<text xml:space="preserve" text-anchor="middle" x="207.88" y="-28.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArVnder</text>
 </a>
 </g>
 </g>
 <!-- proc~termo&#45;&gt;proc~arvnder -->
 <g id="proc~~termo~~CallsGraph_edge1" class="edge">
 <title>proc~termo&#45;&gt;proc~arvnder</title>
-<path fill="none" stroke="#000000" d="M54.24,-32.52C65.28,-32.71 78.27,-32.91 90,-33 114,-33.19 120,-33.19 144,-33 152.39,-32.93 161.4,-32.82 169.92,-32.69"/>
-<polygon fill="#000000" stroke="#000000" points="170.05,-36.19 180,-32.53 169.94,-29.19 170.05,-36.19"/>
+<path fill="none" stroke="#000000" d="M54.24,-32.65C65.28,-32.85 78.27,-33.04 90,-33.13 114,-33.33 120,-33.33 144,-33.13 151.85,-33.07 160.25,-32.97 168.27,-32.85"/>
+<polygon fill="#000000" stroke="#000000" points="168.19,-36.35 178.13,-32.69 168.08,-29.35 168.19,-36.35"/>
 </g>
 <!-- proc~vcalc -->
 <g id="proc~~termo~~CallsGraph_node3" class="node">
 <title>proc~vcalc</title>
 <g id="a_proc~~termo~~CallsGraph_node3"><a xlink:href="../proc/vcalc.html" xlink:title="VCALC">
-<polygon fill="#d9534f" stroke="#d9534f" points="144,-24 90,-24 90,0 144,0 144,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">VCALC</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="144,-24.27 90,-24.27 90,0 144,0 144,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="117" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">VCALC</text>
 </a>
 </g>
 </g>
 <!-- proc~termo&#45;&gt;proc~vcalc -->
 <g id="proc~~termo~~CallsGraph_edge2" class="edge">
 <title>proc~termo&#45;&gt;proc~vcalc</title>
-<path fill="none" stroke="#000000" d="M54.4,-26C62.48,-24.16 71.51,-22.11 80.1,-20.16"/>
-<polygon fill="#000000" stroke="#000000" points="80.94,-23.56 89.92,-17.93 79.39,-16.73 80.94,-23.56"/>
+<path fill="none" stroke="#000000" d="M54.4,-26.13C61.97,-24.41 70.38,-22.5 78.48,-20.66"/>
+<polygon fill="#000000" stroke="#000000" points="79.16,-24.1 88.14,-18.47 77.61,-17.27 79.16,-24.1"/>
 </g>
 <!-- proc~vcalc&#45;&gt;proc~arvnder -->
 <g id="proc~~termo~~CallsGraph_edge3" class="edge">
 <title>proc~vcalc&#45;&gt;proc~arvnder</title>
-<path fill="none" stroke="#000000" d="M144.37,-17.89C152.37,-19.68 161.33,-21.68 169.92,-23.6"/>
-<polygon fill="#000000" stroke="#000000" points="169.24,-27.04 179.76,-25.8 170.77,-20.21 169.24,-27.04"/>
+<path fill="none" stroke="#000000" d="M144.19,-18.03C151.86,-19.75 160.42,-21.68 168.68,-23.54"/>
+<polygon fill="#000000" stroke="#000000" points="167.65,-26.89 178.17,-25.67 169.19,-20.06 167.65,-26.89"/>
 </g>
 </g>
 </svg>
@@ -444,55 +450,55 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
 <svg width="641pt" height="28pt"
- viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
 <!-- Subroutine -->
 <g id="node1" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node2" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Interface -->
 <g id="node3" class="node">
 <title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
 </g>
 <!-- Type Bound Procedure -->
 <g id="node4" class="node">
 <title>Type Bound Procedure</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
-<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
 </g>
 <!-- Unknown Procedure Type -->
 <g id="node5" class="node">
 <title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
-<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
 </g>
 <!-- Program -->
 <g id="node6" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node7" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
-<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -525,7 +531,7 @@ implementation in a submodule of an interface in a parent module.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-artn~16"></span>
+              <span class="anchor" id="variable-artn~19"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -542,7 +548,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arvn~16"></span>
+              <span class="anchor" id="variable-arvn~19"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -559,7 +565,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arn~17"></span>
+              <span class="anchor" id="variable-arn~20"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -576,7 +582,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arn2~13"></span>
+              <span class="anchor" id="variable-arn2~16"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -644,7 +650,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ar~9"></span>
+              <span class="anchor" id="variable-ar~7"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -661,7 +667,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-artv~5"></span>
+              <span class="anchor" id="variable-artv~7"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -678,7 +684,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arv~5"></span>
+              <span class="anchor" id="variable-arv~7"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -695,7 +701,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arv2~5"></span>
+              <span class="anchor" id="variable-arv2~7"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -746,7 +752,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-i~111"></span>
+              <span class="anchor" id="variable-i~107"></span>
               integer,
             </td>
               <td>public</td>
@@ -758,7 +764,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Loop/index variable.</p>
             </td>
         </tr>
         <tr>
@@ -780,7 +786,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-k~29"></span>
+              <span class="anchor" id="variable-k~19"></span>
               integer,
             </td>
               <td>public</td>
@@ -831,7 +837,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-totn~15"></span>
+              <span class="anchor" id="variable-totn~16"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -843,7 +849,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Total number of moles.</p>
             </td>
         </tr>
     </tbody>
@@ -872,14 +878,14 @@ implementation in a submodule of an interface in a parent module.
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

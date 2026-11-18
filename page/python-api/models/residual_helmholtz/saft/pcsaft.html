@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PC-SAFT &mdash; yaeos 4.5.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+  <title>PC-SAFT &mdash; yaeos 4.5.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=a284863f"></script>
+      <script src="../../../_static/documentation_options.js?v=06fc0226"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,17 +56,17 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../init.html">Models</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../init.html">Residual Helmholtz Models</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../cubic_eos/init.html">Cubic Equations of State</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../multifluid/init.html">Multifluid Equations of State</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="init.html">SAFT Equations of State</a><ul class="current">
-<li class="toctree-l4 current"><a class="current reference internal" href="#">PC-SAFT</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../init.html#choose-the-model-before-the-solver">Choose the model before the solver</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../init.html">Residual Helmholtz Models</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../cubic_eos/init.html">Cubic Equations of State</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../multifluid/init.html">Multifluid Equations of State</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="init.html">SAFT Equations of State</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../../excess_gibbs/init.html">Excess Gibbs Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../groups.html">Groups module</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../excess_gibbs/init.html">Excess Gibbs Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../groups.html">Groups module</a></li>
 </ul>
 </li>
 </ul>
@@ -104,9 +104,22 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-yaeos.models.residual_helmholtz.saft.pcsaft">
-<span id="pc-saft"></span><h1>PC-SAFT<a class="headerlink" href="#module-yaeos.models.residual_helmholtz.saft.pcsaft" title="Link to this heading"></a></h1>
-<p>PC-SAFT Equation of State.</p>
+  <section id="pc-saft">
+<h1>PC-SAFT<a class="headerlink" href="#pc-saft" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">PCSAFT(m,</span> <span class="pre">sigma,</span> <span class="pre">epsilon_k,</span> <span class="pre">kij=None)</span></code> describes each component by a
+segment count <code class="docutils literal notranslate"><span class="pre">m</span></code> (dimensionless), segment diameter <code class="docutils literal notranslate"><span class="pre">sigma</span></code> (angstrom),
+and energy scale <code class="docutils literal notranslate"><span class="pre">epsilon_k</span></code> (K). These are model parameters, not the
+operating temperature or a molecular diameter to enter in litres.</p>
+<p>Keep all three arrays and the square <code class="docutils literal notranslate"><span class="pre">kij</span></code> matrix in the composition’s
+component order. Omitting <code class="docutils literal notranslate"><span class="pre">kij</span></code> sets it to zero. <code class="docutils literal notranslate"><span class="pre">set_kij(i,</span> <span class="pre">j,</span> <span class="pre">value)</span></code>
+uses Python component indices starting at zero. This constructor does not
+accept association-site or polar parameters; do not assume every published
+PC-SAFT parameterization can be represented by this interface.</p>
+<p>After construction, <code class="docutils literal notranslate"><span class="pre">volume</span></code> returns L for the supplied moles, not mass
+density; divide total moles by volume for mol/L. For property units and
+phase-result interpretation see <a class="reference internal" href="../../../core.html"><span class="doc">Core Module</span></a>. Continue with the
+<a class="reference internal" href="../../../tutorial/equations_of_state/saft_eos/saft_eos.html"><span class="doc">SAFT tutorial</span></a>.</p>
+<p id="module-yaeos.models.residual_helmholtz.saft.pcsaft">PC-SAFT Equation of State.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.saft.pcsaft.PCSAFT">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">PCSAFT</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kij</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/yaeos/models/residual_helmholtz/saft/pcsaft.html#PCSAFT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.models.residual_helmholtz.saft.pcsaft.PCSAFT" title="Link to this definition"></a></dt>
@@ -126,7 +139,7 @@ interaction parameters to zero.</p></li>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">PCSAFT</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">PCSAFT</span>
 
 <span class="n">m</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0582</span><span class="p">,</span> <span class="mf">3.3004</span><span class="p">]</span>
 <span class="n">sigma</span> <span class="o">=</span> <span class="p">[</span><span class="mf">3.6316</span><span class="p">,</span> <span class="mf">3.8639</span><span class="p">]</span>
@@ -148,8 +161,10 @@ interaction parameters to zero.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>i</strong> (<em>int</em>) – Component i. Counting from 0</p></li>
-<li><p><strong>j</strong> (<em>int</em>) – Component j. Counting from 0</p></li>
+<li><p><strong>i</strong> (<em>int</em>) – Component i. Counting from 0 (negative indices count from the
+end)</p></li>
+<li><p><strong>j</strong> (<em>int</em>) – Component j. Counting from 0 (negative indices count from the
+end)</p></li>
 <li><p><strong>kij</strong> (<em>float</em>) – kij value</p></li>
 </ul>
 </dd>

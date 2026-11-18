@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>tapenade_ge_d_b &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.3% of total for procedures.">43 statements</a>
+                 title=" 0.3% of total for procedures.">58 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -174,7 +175,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~61"></span>
+              <span class="anchor" id="variable-model~52"></span>
               class(<a href='../type/gemodeltapenade.html'>GeModelTapenade</a>)
             </td>
 <td></td>
@@ -184,12 +185,12 @@
             <td>::</td>
             <td><strong>model</strong></td>
             <td>
-                
+                <p>Concrete activity model.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~104"></span>
+              <span class="anchor" id="variable-n~84"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -199,12 +200,12 @@
             <td>::</td>
             <td><strong>n</strong>(:)</td>
             <td>
-                
+                <p>Component mole amounts [mol].</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nb~7"></span>
+              <span class="anchor" id="variable-nb~2"></span>
               real(kind=pr)
             </td>
 <td></td>
@@ -214,12 +215,12 @@
             <td>::</td>
             <td><strong>nb</strong>(:)</td>
             <td>
-                
+                <p>Adjoint value for component mole amounts.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nd~13"></span>
+              <span class="anchor" id="variable-nd~5"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -229,12 +230,12 @@
             <td>::</td>
             <td><strong>nd</strong>(:)</td>
             <td>
-                
+                <p>Tangent seed for component mole amounts (nd).</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ndb~4"></span>
+              <span class="anchor" id="variable-ndb"></span>
               real(kind=pr)
             </td>
 <td></td>
@@ -244,12 +245,12 @@
             <td>::</td>
             <td><strong>ndb</strong>(:)</td>
             <td>
-                
+                <p>Mixed tangent-adjoint value for component mole amounts.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~40"></span>
+              <span class="anchor" id="variable-t~31"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -259,12 +260,12 @@
             <td>::</td>
             <td><strong>t</strong></td>
             <td>
-                
+                <p>Temperature [K].</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tb~7"></span>
+              <span class="anchor" id="variable-tb~2"></span>
               real(kind=pr)
             </td>
 <td></td>
@@ -274,12 +275,12 @@
             <td>::</td>
             <td><strong>tb</strong></td>
             <td>
-                
+                <p>Adjoint value for temperature.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-td~10"></span>
+              <span class="anchor" id="variable-td~2"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -289,12 +290,12 @@
             <td>::</td>
             <td><strong>td</strong></td>
             <td>
-                
+                <p>Tangent seed for temperature (td).</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tdb~4"></span>
+              <span class="anchor" id="variable-tdb"></span>
               real(kind=pr)
             </td>
 <td></td>
@@ -304,12 +305,12 @@
             <td>::</td>
             <td><strong>tdb</strong></td>
             <td>
-                
+                <p>Mixed tangent-adjoint value for temperature.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ge~9"></span>
+              <span class="anchor" id="variable-ge~8"></span>
               real(kind=pr)
             </td>
 <td></td>
@@ -334,7 +335,7 @@
             <td>::</td>
             <td><strong>geb</strong></td>
             <td>
-                
+                <p>Adjoint seed for the primal output.</p>
             </td>
         </tr>
         <tr>
@@ -349,7 +350,7 @@
             <td>::</td>
             <td><strong>ged</strong></td>
             <td>
-                
+                <p>Forward directional energy derivative.</p>
             </td>
         </tr>
         <tr>
@@ -364,12 +365,15 @@
             <td>::</td>
             <td><strong>gedb</strong></td>
             <td>
-                
+                <p>Mixed tangent-adjoint output for GE.</p>
             </td>
         </tr>
     </tbody>
   </table>
 
+    <h3>Description</h3>
+    <h1 id="tapenade_ge_d_b">tapenade_ge_d_b</h1>
+<p>Mixed forward/reverse derivative callback for GE Hessian components.</p>
     <br>
 
  </div>
@@ -383,14 +387,14 @@
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

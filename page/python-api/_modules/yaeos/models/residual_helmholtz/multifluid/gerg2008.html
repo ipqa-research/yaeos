@@ -5,15 +5,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.models.residual_helmholtz.multifluid.gerg2008 &mdash; yaeos 4.5.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
+  <title>yaeos.models.residual_helmholtz.multifluid.gerg2008 &mdash; yaeos 4.5.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
 
   
       <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../../_static/documentation_options.js?v=a284863f"></script>
+      <script src="../../../../../_static/documentation_options.js?v=06fc0226"></script>
       <script src="../../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -114,13 +114,13 @@
 <span class="sd">- `argon`</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">yaeos.core</span> <span class="kn">import</span> <span class="n">ArModel</span>
-<span class="kn">from</span> <span class="nn">yaeos.lib</span> <span class="kn">import</span> <span class="n">yaeos_c</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos.lib</span><span class="w"> </span><span class="kn">import</span> <span class="n">yaeos_c</span>
 
 
 <div class="viewcode-block" id="GERG2008">
 <a class="viewcode-back" href="../../../../../models/residual_helmholtz/multifluid/gerg2008.html#yaeos.models.residual_helmholtz.multifluid.gerg2008.GERG2008">[docs]</a>
-<span class="k">class</span> <span class="nc">GERG2008</span><span class="p">(</span><span class="n">ArModel</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GERG2008</span><span class="p">(</span><span class="n">ArModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;GERG2008 Equation of State.</span>
 
 <span class="sd">    This class implements the residual contribution of the GERG2008 equation of</span>
@@ -134,7 +134,9 @@
 <span class="sd">        methane, nitrogen, carbon dioxide, ethane, propane, n-butane,</span>
 <span class="sd">        isobutane, n-pentane, isopentane, n-hexane, n-heptane, n-octane,</span>
 <span class="sd">        nonane, decane, hydrogen, oxygen, carbon monoxide, water,</span>
-<span class="sd">        hydrogen sulfide, helium, argon.</span>
+<span class="sd">        hydrogen sulfide, helium, argon. Short aliases such as &quot;c1&quot;, &quot;co2&quot;,</span>
+<span class="sd">        &quot;nc4&quot; or &quot;h2o&quot; are also accepted. Names are case-sensitive and an</span>
+<span class="sd">        invalid name raises ``ValueError``.</span>
 
 <span class="sd">    Example</span>
 <span class="sd">    -------</span>
@@ -200,7 +202,7 @@
         <span class="s2">&quot;ar&quot;</span><span class="p">:</span> <span class="mi">21</span><span class="p">,</span>
     <span class="p">}</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_possible_components</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -216,12 +218,12 @@
 
 <div class="viewcode-block" id="GERG2008.size">
 <a class="viewcode-back" href="../../../../../models/residual_helmholtz/multifluid/gerg2008.html#yaeos.models.residual_helmholtz.multifluid.gerg2008.GERG2008.size">[docs]</a>
-    <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the number of components in the model.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nc</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_model_params_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_model_params_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model parameters as a string.</span>
 
 <span class="sd">        This method should be implemented by subclasses to return a string</span>
@@ -238,7 +240,7 @@
 
         <span class="k">return</span> <span class="n">fcode</span>
 
-    <span class="k">def</span> <span class="nf">_model_params_declaration_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_model_params_declaration_as_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the model parameters declaration as a string.</span>
 
 <span class="sd">        This method should be implemented by subclasses to return a string</span>

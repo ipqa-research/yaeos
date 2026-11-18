@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>yaeos__models_ar_gerg2008 &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 1.6% of total for modules and submodules.">285 statements</a>
+                 title=" 1.6% of total for modules and submodules.">334 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -183,9 +184,9 @@
         <div class="list-group list-group-flush">
             <a class="list-group-item" href="../module/yaeos__models_ar_gerg2008.html#proc-ar_ij">ar_ij</a>
             <a class="list-group-item" href="../module/yaeos__models_ar_gerg2008.html#proc-ar_pure">ar_pure</a>
-            <a class="list-group-item" href="../module/yaeos__models_ar_gerg2008.html#proc-ln_activity_coefficient">ln_activity_coefficient</a>
+            <a class="list-group-item" href="../module/yaeos__models_ar_gerg2008.html#proc-ln_activity_coefficient~2">ln_activity_coefficient</a>
             <a class="list-group-item" href="../module/yaeos__models_ar_gerg2008.html#proc-reducing_functions">reducing_functions</a>
-            <a class="list-group-item" href="../module/yaeos__models_ar_gerg2008.html#proc-volume">volume</a>
+            <a class="list-group-item" href="../module/yaeos__models_ar_gerg2008.html#proc-volume~3">volume</a>
         </div>
       </div>
     </div>
@@ -204,267 +205,280 @@
     </div>
 
     <div class="col-md-9" id='text'>
-      <p>Ideal gas constants used on yaeos</p>
+      <h1 id="gerg2008-equation-of-state">GERG2008 equation of state</h1>
+<h1 id="description">Description</h1>
+<p>Multifluid equation of state for natural-gas mixtures based on the
+reduced Helmholtz energy. The model is constructed with
+<a href="../proc/gerg_2008.html">gerg_2008</a> from the component identifiers in
+<a href="../module/yaeos__models_ar_gerg2008.html#variable-g2008components">G2008Components</a>.
+The model uses the composition-dependent reducing functions and binary
+departure terms of the original 21-component formulation.</p>
+<h1 id="examples">Examples</h1>
+<div class="codehilite"><pre><span></span><code><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">gerg_2008</span><span class="p">([</span><span class="n">G2008Components</span><span class="p">%</span><span class="n">methane</span><span class="p">,</span><span class="w"> </span><span class="n">G2008Components</span><span class="p">%</span><span class="n">nitrogen</span><span class="p">])</span>
+<span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">)</span>
+</code></pre></div>
+
+<p>Ideal gas constants used on yaeos</p>
 <br>          <div class="card mb-4">
       <h3 class="card-header card-title bg-light">Uses</h3>
       <div class="card-body">
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <ul class="list-inline">
-                  <li class="list-inline-item"><a href='yaeos__adiff_hyperdual_ar_api.html'>yaeos__adiff_hyperdual_ar_api</a></li>
-                  <li class="list-inline-item"><a href='yaeos__models_ar_genericcubic.html'>yaeos__models_ar_genericcubic</a></li>
-                  <li class="list-inline-item"><a href='yaeos__models_ar_multifluid_parameters_gerg2008.html'>yaeos__models_ar_multifluid_parameters_gerg2008</a></li>
-                  <li class="list-inline-item"><a href='hyperdual_mod.html'>hyperdual_mod</a></li>
                   <li class="list-inline-item"><a href='yaeos__constants.html'>yaeos__constants</a></li>
+                  <li class="list-inline-item"><a href='yaeos__models_ar_multifluid_parameters_gerg2008.html'>yaeos__models_ar_multifluid_parameters_gerg2008</a></li>
+                  <li class="list-inline-item"><a href='yaeos__models_ar_genericcubic.html'>yaeos__models_ar_genericcubic</a></li>
                   <li class="list-inline-item"><a href='yaeos__models_ar_cubic_implementations.html'>yaeos__models_ar_cubic_implementations</a></li>
+                  <li class="list-inline-item"><a href='hyperdual_mod.html'>hyperdual_mod</a></li>
+                  <li class="list-inline-item"><a href='yaeos__adiff_hyperdual_ar_api.html'>yaeos__adiff_hyperdual_ar_api</a></li>
               </ul>
             </li>
             <li class="list-group-item">
               <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: module~~yaeos__models_ar_gerg2008~~UsesGraph Pages: 1 -->
 <svg id="moduleyaeos__models_ar_gerg2008UsesGraph" width="641pt" height="114pt"
- viewBox="0.00 0.00 641.00 113.77" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="module~~yaeos__models_ar_gerg2008~~UsesGraph" class="graph" transform="scale(0.41 0.41) rotate(0) translate(4 275.18)">
+ viewBox="0.00 0.00 641.00 114.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~yaeos__models_ar_gerg2008~~UsesGraph" class="graph" transform="scale(0.409608 0.409608) rotate(0) translate(4 275.19)">
 <title>module~~yaeos__models_ar_gerg2008~~UsesGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-275.18 1569,-275.18 1569,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-275.19 1560.91,-275.19 1560.91,4 -4,4"/>
 <!-- module~yaeos__models_ar_gerg2008 -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_node1" class="node">
 <title>module~yaeos__models_ar_gerg2008</title>
-<polygon fill="none" stroke="black" points="1565,-117.26 1398,-117.26 1398,-93.26 1565,-93.26 1565,-117.26"/>
-<text text-anchor="middle" x="1481.5" y="-102.86" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__models_ar_gerg2008</text>
+<polygon fill="none" stroke="black" points="1556.91,-117.41 1390.89,-117.41 1390.89,-93.14 1556.91,-93.14 1556.91,-117.41"/>
+<text xml:space="preserve" text-anchor="middle" x="1473.9" y="-101.67" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__models_ar_gerg2008</text>
 </g>
 <!-- module~hyperdual_mod -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_node2" class="node">
 <title>module~hyperdual_mod</title>
 <g id="a_module~~yaeos__models_ar_gerg2008~~UsesGraph_node2"><a xlink:href="../module/hyperdual_mod.html" xlink:title="hyperdual_mod">
-<polygon fill="#337ab7" stroke="#337ab7" points="770,-235.26 674,-235.26 674,-211.26 770,-211.26 770,-235.26"/>
-<text text-anchor="middle" x="722" y="-220.86" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">hyperdual_mod</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="764.47,-235.41 669.7,-235.41 669.7,-211.14 764.47,-211.14 764.47,-235.41"/>
+<text xml:space="preserve" text-anchor="middle" x="717.09" y="-219.67" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">hyperdual_mod</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__models_ar_gerg2008&#45;&gt;module~hyperdual_mod -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_edge1" class="edge">
 <title>module~yaeos__models_ar_gerg2008&#45;&gt;module~hyperdual_mod</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1241.5,-263.26C1133.43,-278.29 1105.04,-267.25 996,-263.26"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M994,-263.26C953.54,-261.78 847.03,-244.58 780.22,-233.22"/>
-<polygon fill="#000000" stroke="#000000" points="780.7,-229.75 770.26,-231.52 779.53,-236.65 780.7,-229.75"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1234.88,-263.27C1127.19,-278.3 1098.89,-267.26 990.23,-263.27"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M988.23,-263.27C948.09,-261.8 842.74,-244.75 776.08,-233.39"/>
+<polygon fill="#000000" stroke="#000000" points="776.86,-229.97 766.42,-231.74 775.68,-236.87 776.86,-229.97"/>
 </g>
 <!-- module~yaeos__adiff_hyperdual_ar_api -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_node3" class="node">
 <title>module~yaeos__adiff_hyperdual_ar_api</title>
 <g id="a_module~~yaeos__models_ar_gerg2008~~UsesGraph_node3"><a xlink:href="../module/yaeos__adiff_hyperdual_ar_api.html" xlink:title="yaeos__adiff_hyperdual_ar_api">
-<polygon fill="#337ab7" stroke="#337ab7" points="1083,-197.26 907,-197.26 907,-173.26 1083,-173.26 1083,-197.26"/>
-<text text-anchor="middle" x="995" y="-182.86" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__adiff_hyperdual_ar_api</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="1076.74,-197.41 901.72,-197.41 901.72,-173.14 1076.74,-173.14 1076.74,-197.41"/>
+<text xml:space="preserve" text-anchor="middle" x="989.23" y="-181.67" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__adiff_hyperdual_ar_api</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__models_ar_gerg2008&#45;&gt;module~yaeos__adiff_hyperdual_ar_api -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_edge2" class="edge">
 <title>module~yaeos__models_ar_gerg2008&#45;&gt;module~yaeos__adiff_hyperdual_ar_api</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1241.5,-263.26C1159.62,-274.65 1067.99,-228.92 1023.37,-202.63"/>
-<polygon fill="#000000" stroke="#000000" points="1024.96,-199.5 1014.59,-197.34 1021.35,-205.49 1024.96,-199.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1234.88,-263.27C1154.19,-274.53 1064.02,-229.96 1019.03,-203.53"/>
+<polygon fill="#000000" stroke="#000000" points="1021.04,-200.66 1010.67,-198.5 1017.43,-206.66 1021.04,-200.66"/>
 </g>
 <!-- module~yaeos__constants -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_node4" class="node">
 <title>module~yaeos__constants</title>
 <g id="a_module~~yaeos__models_ar_gerg2008~~UsesGraph_node4"><a xlink:href="../module/yaeos__constants.html" xlink:title="yaeos__constants">
-<polygon fill="#337ab7" stroke="#337ab7" points="236,-76.26 130,-76.26 130,-52.26 236,-52.26 236,-76.26"/>
-<text text-anchor="middle" x="183" y="-61.86" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__constants</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="233.79,-76.41 129.27,-76.41 129.27,-52.14 233.79,-52.14 233.79,-76.41"/>
+<text xml:space="preserve" text-anchor="middle" x="181.53" y="-60.67" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__constants</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__models_ar_gerg2008&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_edge3" class="edge">
 <title>module~yaeos__models_ar_gerg2008&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M994,-263.26C808.6,-256.48 757.94,-285.24 577,-244.26 531.35,-233.92 524.88,-216.55 480,-203.26"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M988.23,-263.27C803.43,-256.49 752.91,-285.25 572.58,-244.27 527.09,-233.93 520.66,-216.59 475.94,-203.27"/>
 </g>
 <!-- module~yaeos__models_ar_cubic_implementations -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_node5" class="node">
 <title>module~yaeos__models_ar_cubic_implementations</title>
 <g id="a_module~~yaeos__models_ar_gerg2008~~UsesGraph_node5"><a xlink:href="../module/yaeos__models_ar_cubic_implementations.html" xlink:title="yaeos__models_ar_cubic_implementations">
-<polygon fill="#337ab7" stroke="#337ab7" points="1362,-117.26 1123,-117.26 1123,-93.26 1362,-93.26 1362,-117.26"/>
-<text text-anchor="middle" x="1242.5" y="-102.86" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar_cubic_implementations</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="1354.89,-117.41 1116.87,-117.41 1116.87,-93.14 1354.89,-93.14 1354.89,-117.41"/>
+<text xml:space="preserve" text-anchor="middle" x="1235.88" y="-101.67" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar_cubic_implementations</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__models_ar_gerg2008&#45;&gt;module~yaeos__models_ar_cubic_implementations -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_edge4" class="edge">
 <title>module~yaeos__models_ar_gerg2008&#45;&gt;module~yaeos__models_ar_cubic_implementations</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1397.94,-105.26C1389.59,-105.26 1380.97,-105.26 1372.28,-105.26"/>
-<polygon fill="#000000" stroke="#000000" points="1372.05,-101.76 1362.05,-105.26 1372.05,-108.76 1372.05,-101.76"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1390.68,-105.27C1382.91,-105.27 1374.9,-105.27 1366.82,-105.27"/>
+<polygon fill="#000000" stroke="#000000" points="1366.87,-101.77 1356.87,-105.27 1366.87,-108.77 1366.87,-101.77"/>
 </g>
 <!-- module~yaeos__models_ar_genericcubic -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_node6" class="node">
 <title>module~yaeos__models_ar_genericcubic</title>
 <g id="a_module~~yaeos__models_ar_gerg2008~~UsesGraph_node6"><a xlink:href="../module/yaeos__models_ar_genericcubic.html" xlink:title="yaeos__models_ar_genericcubic">
-<polygon fill="#337ab7" stroke="#337ab7" points="1087,-117.26 903,-117.26 903,-93.26 1087,-93.26 1087,-117.26"/>
-<text text-anchor="middle" x="995" y="-102.86" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar_genericcubic</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="1080.87,-117.41 897.6,-117.41 897.6,-93.14 1080.87,-93.14 1080.87,-117.41"/>
+<text xml:space="preserve" text-anchor="middle" x="989.23" y="-101.67" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar_genericcubic</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__models_ar_gerg2008&#45;&gt;module~yaeos__models_ar_genericcubic -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_edge5" class="edge">
 <title>module~yaeos__models_ar_gerg2008&#45;&gt;module~yaeos__models_ar_genericcubic</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1470.26,-117.35C1439.94,-151.8 1346.36,-248.96 1243.5,-263.26"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1241.5,-263.26C1240.71,-263.37 1087.5,-164.41 1023.54,-123.07"/>
-<polygon fill="#000000" stroke="#000000" points="1025.08,-119.9 1014.78,-117.41 1021.28,-125.78 1025.08,-119.9"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1462.28,-117.85C1431.67,-152.73 1338.95,-249.03 1236.88,-263.27"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1234.88,-263.27C1233.31,-263.49 1083.04,-165.74 1018.82,-123.9"/>
+<polygon fill="#000000" stroke="#000000" points="1020.84,-121.04 1010.55,-118.52 1017.02,-126.91 1020.84,-121.04"/>
 </g>
 <!-- module~yaeos__models_ar_multifluid_parameters_gerg2008 -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_node7" class="node">
 <title>module~yaeos__models_ar_multifluid_parameters_gerg2008</title>
 <g id="a_module~~yaeos__models_ar_gerg2008~~UsesGraph_node7"><a xlink:href="../module/yaeos__models_ar_multifluid_parameters_gerg2008.html" xlink:title="yaeos__models_ar_multifluid_parameters_gerg2008">
-<polygon fill="#337ab7" stroke="#337ab7" points="867,-37.26 577,-37.26 577,-13.26 867,-13.26 867,-37.26"/>
-<text text-anchor="middle" x="722" y="-22.86" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar_multifluid_parameters_gerg2008</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="861.6,-37.41 572.58,-37.41 572.58,-13.14 861.6,-13.14 861.6,-37.41"/>
+<text xml:space="preserve" text-anchor="middle" x="717.09" y="-21.67" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar_multifluid_parameters_gerg2008</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__models_ar_gerg2008&#45;&gt;module~yaeos__models_ar_multifluid_parameters_gerg2008 -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_edge6" class="edge">
 <title>module~yaeos__models_ar_gerg2008&#45;&gt;module~yaeos__models_ar_multifluid_parameters_gerg2008</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1416.34,-93.22C1398.76,-90.1 1379.67,-86.89 1362,-84.26 1240.24,-66.18 1209.54,-62.98 1087,-51.26 1018.31,-44.69 942.17,-39.01 877.36,-34.64"/>
-<polygon fill="#000000" stroke="#000000" points="877.27,-31.13 867.06,-33.95 876.81,-38.11 877.27,-31.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1405.92,-92.68C1389.28,-89.73 1371.46,-86.74 1354.89,-84.27 1233.56,-66.19 1202.98,-62.99 1080.87,-51.27 1012.83,-44.74 937.46,-39.08 873.13,-34.73"/>
+<polygon fill="#000000" stroke="#000000" points="873.39,-31.24 863.18,-34.06 872.92,-38.22 873.39,-31.24"/>
 </g>
 <!-- module~hyperdual_mod&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_edge7" class="edge">
 <title>module~hyperdual_mod&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M673.76,-224.96C624.4,-225.45 545.21,-222.57 480,-203.26"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M669.46,-224.98C620.3,-225.51 541.1,-222.68 475.94,-203.27"/>
 </g>
 <!-- module~yaeos__adiff_hyperdual_ar_api&#45;&gt;module~hyperdual_mod -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_edge8" class="edge">
 <title>module~yaeos__adiff_hyperdual_ar_api&#45;&gt;module~hyperdual_mod</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M908.25,-197.29C866.58,-203.13 817.62,-210 780.5,-215.2"/>
-<polygon fill="#000000" stroke="#000000" points="779.78,-211.77 770.36,-216.62 780.75,-218.7 779.78,-211.77"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M901.27,-197.5C860.18,-203.28 812.25,-210.03 775.72,-215.16"/>
+<polygon fill="#000000" stroke="#000000" points="775.69,-211.63 766.27,-216.49 776.66,-218.57 775.69,-211.63"/>
 </g>
 <!-- module~yaeos__adiff_hyperdual_ar_api&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_edge9" class="edge">
 <title>module~yaeos__adiff_hyperdual_ar_api&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M906.92,-181.03C853.72,-179.34 784.35,-178.72 723,-183.26"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M901.43,-181.04C848.4,-179.34 779.24,-178.72 718.09,-183.27"/>
 </g>
 <!-- module~yaeos__models_ar -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_node9" class="node">
 <title>module~yaeos__models_ar</title>
 <g id="a_module~~yaeos__models_ar_gerg2008~~UsesGraph_node9"><a xlink:href="../module/yaeos__models_ar.html" xlink:title="yaeos__models_ar">
-<polygon fill="#337ab7" stroke="#337ab7" points="777,-155.26 667,-155.26 667,-131.26 777,-131.26 777,-155.26"/>
-<text text-anchor="middle" x="722" y="-140.86" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="771.6,-155.41 662.58,-155.41 662.58,-131.14 771.6,-131.14 771.6,-155.41"/>
+<text xml:space="preserve" text-anchor="middle" x="717.09" y="-139.67" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__adiff_hyperdual_ar_api&#45;&gt;module~yaeos__models_ar -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_edge10" class="edge">
 <title>module~yaeos__adiff_hyperdual_ar_api&#45;&gt;module~yaeos__models_ar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M916.34,-173.23C875.42,-166.89 825.84,-159.2 787.13,-153.2"/>
-<polygon fill="#000000" stroke="#000000" points="787.45,-149.71 777.03,-151.64 786.37,-156.63 787.45,-149.71"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M907.18,-172.67C867.46,-166.5 820.28,-159.16 782.99,-153.36"/>
+<polygon fill="#000000" stroke="#000000" points="783.66,-149.92 773.25,-151.85 782.59,-156.84 783.66,-149.92"/>
 </g>
 <!-- iso_fortran_env -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_node8" class="node">
 <title>iso_fortran_env</title>
 <g id="a_module~~yaeos__models_ar_gerg2008~~UsesGraph_node8"><a xlink:href="http://fortranwiki.org/fortran/show/iso_fortran_env" xlink:title="iso_fortran_env">
-<polygon fill="#337ab7" stroke="#337ab7" points="94,-76.26 0,-76.26 0,-52.26 94,-52.26 94,-76.26"/>
-<text text-anchor="middle" x="47" y="-61.86" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="93.27,-76.41 0,-76.41 0,-52.14 93.27,-52.14 93.27,-76.41"/>
+<text xml:space="preserve" text-anchor="middle" x="46.63" y="-60.67" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__constants&#45;&gt;iso_fortran_env -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_edge11" class="edge">
 <title>module~yaeos__constants&#45;&gt;iso_fortran_env</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.81,-64.26C121.45,-64.26 112.77,-64.26 104.32,-64.26"/>
-<polygon fill="#000000" stroke="#000000" points="104.16,-60.76 94.16,-64.26 104.16,-67.76 104.16,-60.76"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.15,-64.27C121.3,-64.27 113.15,-64.27 105.18,-64.27"/>
+<polygon fill="#000000" stroke="#000000" points="105.19,-60.77 95.19,-64.27 105.19,-67.77 105.19,-60.77"/>
 </g>
 <!-- module~yaeos__models_ar_cubic_implementations&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_edge12" class="edge">
 <title>module~yaeos__models_ar_cubic_implementations&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1181.56,-117.29C1085.35,-135.91 890.26,-170.87 723,-183.26"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M721,-183.26C694.2,-185.15 505.76,-210.89 480,-203.26"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1172.38,-117.83C1075.56,-136.58 883.23,-170.99 718.09,-183.27"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M716.09,-183.27C689.38,-185.16 501.61,-210.92 475.94,-203.27"/>
 </g>
 <!-- module~yaeos__models_ar_cubic_implementations&#45;&gt;module~yaeos__models_ar_genericcubic -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_edge13" class="edge">
 <title>module~yaeos__models_ar_cubic_implementations&#45;&gt;module~yaeos__models_ar_genericcubic</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1122.71,-105.26C1114.18,-105.26 1105.63,-105.26 1097.21,-105.26"/>
-<polygon fill="#000000" stroke="#000000" points="1097.03,-101.76 1087.03,-105.26 1097.03,-108.76 1097.03,-101.76"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1116.5,-105.27C1108.55,-105.27 1100.58,-105.27 1092.72,-105.27"/>
+<polygon fill="#000000" stroke="#000000" points="1092.82,-101.77 1082.82,-105.27 1092.82,-108.77 1092.82,-101.77"/>
 </g>
 <!-- module~yaeos__substance -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_node11" class="node">
 <title>module~yaeos__substance</title>
 <g id="a_module~~yaeos__models_ar_gerg2008~~UsesGraph_node11"><a xlink:href="../module/yaeos__substance.html" xlink:title="yaeos__substance">
-<polygon fill="#337ab7" stroke="#337ab7" points="381,-76.26 272,-76.26 272,-52.26 381,-52.26 381,-76.26"/>
-<text text-anchor="middle" x="326.5" y="-61.86" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__substance</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="377.31,-76.41 269.79,-76.41 269.79,-52.14 377.31,-52.14 377.31,-76.41"/>
+<text xml:space="preserve" text-anchor="middle" x="323.55" y="-60.67" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__substance</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__models_ar_cubic_implementations&#45;&gt;module~yaeos__substance -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_edge14" class="edge">
 <title>module~yaeos__models_ar_cubic_implementations&#45;&gt;module~yaeos__substance</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1165.45,-93.25C1140.52,-89.76 1112.63,-86.34 1087,-84.26 829.71,-63.45 521.95,-62.77 391.24,-63.61"/>
-<polygon fill="#000000" stroke="#000000" points="390.99,-60.11 381.01,-63.68 391.04,-67.11 390.99,-60.11"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M1154.73,-92.66C1131.01,-89.38 1104.94,-86.23 1080.87,-84.27 825.11,-63.52 519.27,-62.79 388.72,-63.61"/>
+<polygon fill="#000000" stroke="#000000" points="388.87,-60.11 378.89,-63.68 388.92,-67.11 388.87,-60.11"/>
 </g>
 <!-- module~yaeos__models_ar_genericcubic&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_edge15" class="edge">
 <title>module~yaeos__models_ar_genericcubic&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M478,-104.26C411.3,-99.22 391.54,-123.57 327.5,-104.26"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M325.5,-104.26C296.67,-95.57 264.38,-86.4 237.93,-79.03"/>
-<polygon fill="#000000" stroke="#000000" points="238.67,-75.61 228.09,-76.3 236.79,-82.35 238.67,-75.61"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M473.94,-104.27C407.75,-99.15 388.07,-123.59 324.55,-104.27"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M322.55,-104.27C295.16,-95.94 264.6,-87.15 239.04,-79.94"/>
+<polygon fill="#000000" stroke="#000000" points="240.08,-76.6 229.5,-77.26 238.18,-83.34 240.08,-76.6"/>
 </g>
 <!-- module~yaeos__models_ar_genericcubic&#45;&gt;module~yaeos__models_ar -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_edge16" class="edge">
 <title>module~yaeos__models_ar_genericcubic&#45;&gt;module~yaeos__models_ar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M908.25,-117.29C868.99,-122.79 823.26,-129.2 787.05,-134.28"/>
-<polygon fill="#000000" stroke="#000000" points="786.53,-130.82 777.11,-135.68 787.5,-137.75 786.53,-130.82"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M898.66,-117.87C860.98,-123.17 817.97,-129.22 783.37,-134.09"/>
+<polygon fill="#000000" stroke="#000000" points="782.9,-130.62 773.48,-135.48 783.87,-137.55 782.9,-130.62"/>
 </g>
 <!-- module~yaeos__models_ar_genericcubic&#45;&gt;module~yaeos__substance -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_edge17" class="edge">
 <title>module~yaeos__models_ar_genericcubic&#45;&gt;module~yaeos__substance</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M902.9,-108.44C800.07,-111.26 627.84,-113.61 480,-104.26"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M478,-104.26C440.22,-101.41 398.69,-89.69 368.85,-79.67"/>
-<polygon fill="#000000" stroke="#000000" points="369.8,-76.29 359.2,-76.35 367.52,-82.91 369.8,-76.29"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M897.44,-108.47C794.95,-111.29 623.29,-113.66 475.94,-104.27"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M473.94,-104.27C437.51,-101.45 397.58,-90.32 368.18,-80.52"/>
+<polygon fill="#000000" stroke="#000000" points="369.48,-77.26 358.89,-77.33 367.22,-83.89 369.48,-77.26"/>
 </g>
 <!-- module~yaeos__models_ar_multifluid_parameters_gerg2008&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_edge18" class="edge">
 <title>module~yaeos__models_ar_multifluid_parameters_gerg2008&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M635.57,-13.24C605.72,-9.58 571.94,-6.06 541,-4.26 485.98,-1.06 471.67,2.66 417,-4.26 350.4,-12.7 275.6,-34.19 229.14,-49.02"/>
-<polygon fill="#000000" stroke="#000000" points="227.82,-45.76 219.38,-52.17 229.97,-52.43 227.82,-45.76"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M625.87,-12.64C597.37,-9.21 565.71,-5.97 536.58,-4.27 481.89,-1.08 467.65,2.68 413.31,-4.27 348.63,-12.54 276.18,-33.35 230,-48.14"/>
+<polygon fill="#000000" stroke="#000000" points="229.01,-44.78 220.57,-51.19 231.16,-51.44 229.01,-44.78"/>
 </g>
 <!-- module~yaeos__models_base -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_node10" class="node">
 <title>module~yaeos__models_base</title>
 <g id="a_module~~yaeos__models_ar_gerg2008~~UsesGraph_node10"><a xlink:href="../module/yaeos__models_base.html" xlink:title="yaeos__models_base">
-<polygon fill="#337ab7" stroke="#337ab7" points="541,-37.26 417,-37.26 417,-13.26 541,-13.26 541,-37.26"/>
-<text text-anchor="middle" x="479" y="-22.86" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_base</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="536.58,-37.41 413.31,-37.41 413.31,-13.14 536.58,-13.14 536.58,-37.41"/>
+<text xml:space="preserve" text-anchor="middle" x="474.94" y="-21.67" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_base</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__models_ar_multifluid_parameters_gerg2008&#45;&gt;module~yaeos__models_base -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_edge19" class="edge">
 <title>module~yaeos__models_ar_multifluid_parameters_gerg2008&#45;&gt;module~yaeos__models_base</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M576.98,-25.26C568.22,-25.26 559.63,-25.26 551.4,-25.26"/>
-<polygon fill="#000000" stroke="#000000" points="551.2,-21.76 541.2,-25.26 551.2,-28.76 551.2,-21.76"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M572.24,-25.27C564.08,-25.27 556.07,-25.27 548.38,-25.27"/>
+<polygon fill="#000000" stroke="#000000" points="548.47,-21.77 538.47,-25.27 548.47,-28.77 548.47,-21.77"/>
 </g>
 <!-- module~yaeos__models_ar&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_edge20" class="edge">
 <title>module~yaeos__models_ar&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M666.88,-150.95C639.68,-155.34 606.35,-161.52 577,-169.26 532.83,-180.91 523.8,-216.23 480,-203.26"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M478,-203.26C401.23,-180.53 404.15,-127.38 327.5,-104.26"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M662.15,-150.96C635.04,-155.35 601.83,-161.53 572.58,-169.27 528.57,-180.92 519.58,-216.27 475.94,-203.27"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M473.94,-203.27C397.61,-180.53 400.76,-127.45 324.55,-104.27"/>
 </g>
 <!-- module~yaeos__models_ar&#45;&gt;module~yaeos__models_base -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_edge21" class="edge">
 <title>module~yaeos__models_ar&#45;&gt;module~yaeos__models_base</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M696.12,-131.08C652.71,-109.83 563.1,-65.95 514,-41.91"/>
-<polygon fill="#000000" stroke="#000000" points="515.27,-38.63 504.75,-37.38 512.19,-44.92 515.27,-38.63"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M690.39,-130.64C647.33,-109.48 560.52,-66.83 511.59,-42.79"/>
+<polygon fill="#000000" stroke="#000000" points="513.34,-39.75 502.82,-38.48 510.25,-46.03 513.34,-39.75"/>
 </g>
 <!-- module~yaeos__models_base&#45;&gt;module~yaeos__substance -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_edge22" class="edge">
 <title>module~yaeos__models_base&#45;&gt;module~yaeos__substance</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M431.62,-37.28C416.6,-41.17 399.77,-45.54 384.09,-49.6"/>
-<polygon fill="#000000" stroke="#000000" points="382.79,-46.32 373.99,-52.22 384.55,-53.1 382.79,-46.32"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M425.85,-37.83C412.46,-41.32 397.75,-45.16 383.8,-48.8"/>
+<polygon fill="#000000" stroke="#000000" points="383.06,-45.38 374.27,-51.29 384.83,-52.15 383.06,-45.38"/>
 </g>
 <!-- module~yaeos__substance&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsesGraph_edge23" class="edge">
 <title>module~yaeos__substance&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M271.6,-64.26C263.38,-64.26 254.84,-64.26 246.46,-64.26"/>
-<polygon fill="#000000" stroke="#000000" points="246.35,-60.76 236.35,-64.26 246.35,-67.76 246.35,-60.76"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M269.61,-64.27C261.72,-64.27 253.51,-64.27 245.44,-64.27"/>
+<polygon fill="#000000" stroke="#000000" points="245.66,-60.77 235.66,-64.27 245.66,-67.77 245.66,-60.77"/>
 </g>
 </g>
 </svg>
@@ -487,49 +501,49 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="518pt" height="32pt"
- viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="511pt" height="32pt"
+ viewBox="0.00 0.00 511.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 506.88,-28.27 506.88,4 -4,4"/>
 <!-- Module -->
 <g id="node1" class="node">
 <title>Module</title>
-<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
 </g>
 <!-- Submodule -->
 <g id="node2" class="node">
 <title>Submodule</title>
-<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
-<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="144.13,-24.27 71.87,-24.27 71.87,0 144.13,0 144.13,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="108" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
 </g>
 <!-- Subroutine -->
 <g id="node3" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
-<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="231.63,-24.27 162.37,-24.27 162.37,0 231.63,0 231.63,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="197" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node4" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
-<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="306.26,-24.27 249.74,-24.27 249.74,0 306.26,0 306.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="278" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Program -->
 <g id="node5" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
-<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="381.26,-24.27 324.74,-24.27 324.74,0 381.26,0 381.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="353" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node6" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
-<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="502.88,-24.27 399.12,-24.27 399.12,0 502.88,0 502.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="451" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -555,79 +569,79 @@ modules which it uses.
               <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: module~~yaeos__models_ar_gerg2008~~UsedByGraph Pages: 1 -->
-<svg id="moduleyaeos__models_ar_gerg2008UsedByGraph" width="456pt" height="116pt"
- viewBox="0.00 0.00 456.00 116.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="module~~yaeos__models_ar_gerg2008~~UsedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 112)">
+<svg id="moduleyaeos__models_ar_gerg2008UsedByGraph" width="453pt" height="116pt"
+ viewBox="0.00 0.00 453.00 116.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~yaeos__models_ar_gerg2008~~UsedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 112.27)">
 <title>module~~yaeos__models_ar_gerg2008~~UsedByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-112 452,-112 452,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-112.27 448.81,-112.27 448.81,4 -4,4"/>
 <!-- module~yaeos__models_ar_gerg2008 -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsedByGraph_node1" class="node">
 <title>module~yaeos__models_ar_gerg2008</title>
-<polygon fill="none" stroke="black" points="167,-66 0,-66 0,-42 167,-42 167,-66"/>
-<text text-anchor="middle" x="83.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__models_ar_gerg2008</text>
+<polygon fill="none" stroke="black" points="166.02,-66.27 0,-66.27 0,-42 166.02,-42 166.02,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="83.01" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__models_ar_gerg2008</text>
 </g>
 <!-- module~yaeos__models -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsedByGraph_node2" class="node">
 <title>module~yaeos__models</title>
 <g id="a_module~~yaeos__models_ar_gerg2008~~UsedByGraph_node2"><a xlink:href="../module/yaeos__models.html" xlink:title="yaeos__models">
-<polygon fill="#337ab7" stroke="#337ab7" points="297,-66 203,-66 203,-42 297,-42 297,-66"/>
-<text text-anchor="middle" x="250" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="294.54,-66.27 202.02,-66.27 202.02,-42 294.54,-42 294.54,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="248.28" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__models&#45;&gt;module~yaeos__models_ar_gerg2008 -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsedByGraph_edge1" class="edge">
 <title>module~yaeos__models&#45;&gt;module~yaeos__models_ar_gerg2008</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M202.74,-54C194.66,-54 186.01,-54 177.19,-54"/>
-<polygon fill="#000000" stroke="#000000" points="177.19,-50.5 167.19,-54 177.19,-57.5 177.19,-50.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M201.8,-54.13C194.21,-54.13 186.1,-54.13 177.81,-54.13"/>
+<polygon fill="#000000" stroke="#000000" points="177.96,-50.64 167.96,-54.14 177.96,-57.64 177.96,-50.64"/>
 </g>
 <!-- module~yaeos -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsedByGraph_node3" class="node">
 <title>module~yaeos</title>
 <g id="a_module~~yaeos__models_ar_gerg2008~~UsedByGraph_node3"><a xlink:href="../module/yaeos.html" xlink:title="yaeos">
-<polygon fill="#337ab7" stroke="#337ab7" points="417.5,-108 363.5,-108 363.5,-84 417.5,-84 417.5,-108"/>
-<text text-anchor="middle" x="390.5" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="414.68,-108.27 360.68,-108.27 360.68,-84 414.68,-84 414.68,-108.27"/>
+<text xml:space="preserve" text-anchor="middle" x="387.68" y="-92.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos&#45;&gt;module~yaeos__models -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsedByGraph_edge2" class="edge">
 <title>module~yaeos&#45;&gt;module~yaeos__models</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M363.45,-88.1C345.79,-82.75 321.9,-75.5 300.68,-69.06"/>
-<polygon fill="#000000" stroke="#000000" points="301.42,-65.63 290.83,-66.08 299.39,-72.33 301.42,-65.63"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M360.18,-88.04C343.54,-82.95 321.49,-76.21 301.45,-70.08"/>
+<polygon fill="#000000" stroke="#000000" points="302.6,-66.77 292.01,-67.2 300.55,-73.47 302.6,-66.77"/>
 </g>
 <!-- module~yaeos__extra_fluids -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsedByGraph_node4" class="node">
 <title>module~yaeos__extra_fluids</title>
 <g id="a_module~~yaeos__models_ar_gerg2008~~UsedByGraph_node4"><a xlink:href="../module/yaeos__extra_fluids.html" xlink:title="yaeos__extra_fluids">
-<polygon fill="#337ab7" stroke="#337ab7" points="448,-66 333,-66 333,-42 448,-42 448,-66"/>
-<text text-anchor="middle" x="390.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__extra_fluids</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="444.81,-66.27 330.54,-66.27 330.54,-42 444.81,-42 444.81,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="387.68" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__extra_fluids</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__extra_fluids&#45;&gt;module~yaeos__models -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsedByGraph_edge3" class="edge">
 <title>module~yaeos__extra_fluids&#45;&gt;module~yaeos__models</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M332.77,-54C324.38,-54 315.73,-54 307.35,-54"/>
-<polygon fill="#000000" stroke="#000000" points="307.29,-50.5 297.29,-54 307.29,-57.5 307.29,-50.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M330.39,-54.13C322.43,-54.13 314.23,-54.13 306.25,-54.13"/>
+<polygon fill="#000000" stroke="#000000" points="306.28,-50.64 296.28,-54.14 306.28,-57.64 306.28,-50.64"/>
 </g>
 <!-- proc~co2_h2o_isop -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsedByGraph_node5" class="node">
 <title>proc~co2_h2o_isop</title>
 <g id="a_module~~yaeos__models_ar_gerg2008~~UsedByGraph_node5"><a xlink:href="../proc/co2_h2o_isop.html" xlink:title="co2_h2o_isop">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="433,-24 348,-24 348,0 433,0 433,-24"/>
-<text text-anchor="middle" x="390.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">co2_h2o_isop</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="429.44,-24.27 345.92,-24.27 345.92,0 429.44,0 429.44,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="387.68" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">co2_h2o_isop</text>
 </a>
 </g>
 </g>
 <!-- proc~co2_h2o_isop&#45;&gt;module~yaeos__models -->
 <g id="module~~yaeos__models_ar_gerg2008~~UsedByGraph_edge4" class="edge">
 <title>proc~co2_h2o_isop&#45;&gt;module~yaeos__models</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M349.81,-24.04C334.45,-28.69 316.71,-34.07 300.53,-38.98"/>
-<polygon fill="#000000" stroke="#000000" points="299.25,-35.71 290.69,-41.96 301.28,-42.41 299.25,-35.71"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M345.45,-24.74C331.59,-28.97 315.95,-33.75 301.37,-38.21"/>
+<polygon fill="#000000" stroke="#000000" points="300.46,-34.83 291.92,-41.1 302.51,-41.52 300.46,-34.83"/>
 </g>
 </g>
 </svg>
@@ -646,49 +660,49 @@ modules which it uses.
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="518pt" height="32pt"
- viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="511pt" height="32pt"
+ viewBox="0.00 0.00 511.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 506.88,-28.27 506.88,4 -4,4"/>
 <!-- Module -->
 <g id="node1" class="node">
 <title>Module</title>
-<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
 </g>
 <!-- Submodule -->
 <g id="node2" class="node">
 <title>Submodule</title>
-<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
-<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="144.13,-24.27 71.87,-24.27 71.87,0 144.13,0 144.13,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="108" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
 </g>
 <!-- Subroutine -->
 <g id="node3" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
-<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="231.63,-24.27 162.37,-24.27 162.37,0 231.63,0 231.63,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="197" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node4" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
-<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="306.26,-24.27 249.74,-24.27 249.74,0 306.26,0 306.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="278" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Program -->
 <g id="node5" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
-<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="381.26,-24.27 324.74,-24.27 324.74,0 381.26,0 381.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="353" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node6" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
-<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="502.88,-24.27 399.12,-24.27 399.12,0 502.88,0 502.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="451" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -735,7 +749,7 @@ modules which it uses.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Component identifiers for the GERG2008 model.</p>
             </td>
         </tr>
     </tbody>
@@ -759,7 +773,9 @@ modules which it uses.
       </h3>
     </div>
     <div class="card-body">
-      
+      <p>GERG2008 multifluid equation of state. Holds the pure-fluid and
+binary parameters of the selected components and an SRK model used
+to initialize the volume solver.</p><a href="../type/gerg2008.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
         <h4>Components</h4>
           <table class="table table-striped varlist">
@@ -774,7 +790,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-binaries"></span>
+              <span class="anchor" id="variable-binaries~2"></span>
               type(<a href='../type/gerg2008binary.html'>Gerg2008Binary</a>),
             </td>
               <td>public,</td>
@@ -786,7 +802,7 @@ modules which it uses.
                 <td></td>
                 <td></td>
             <td>
-
+<p>Pair interaction data indexed by component pair.</p>
             </td>
         </tr>
         <tr>
@@ -803,12 +819,12 @@ modules which it uses.
                 <td></td>
                 <td></td>
             <td>
-<p>Substances contained in the module</p>
+<p>Pure-component properties for the model&rsquo;s component order.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ids"></span>
+              <span class="anchor" id="variable-ids~2"></span>
               integer,
             </td>
               <td>public,</td>
@@ -820,7 +836,7 @@ modules which it uses.
                 <td></td>
                 <td></td>
             <td>
-
+<p>GERG2008 identifiers, in model component order.</p>
             </td>
         </tr>
         <tr>
@@ -842,7 +858,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-pures"></span>
+              <span class="anchor" id="variable-pures~2"></span>
               type(<a href='../type/gerg2008pure.html'>Gerg2008Pure</a>),
             </td>
               <td>public,</td>
@@ -854,7 +870,7 @@ modules which it uses.
                 <td></td>
                 <td></td>
             <td>
-
+<p>Pure-fluid Helmholtz parameters, in model component order.</p>
             </td>
         </tr>
         <tr>
@@ -871,7 +887,7 @@ modules which it uses.
                 <td></td>
                 <td></td>
             <td>
-
+<p>SRK helper used to initialize the volume root.</p>
             </td>
         </tr>
     </tbody>
@@ -910,7 +926,7 @@ modules which it uses.
               </tr>
               <tr>
                 <td>  procedure, public ::
-  <strong><a href='../type/gerg2008.html#boundprocedure-ar'>ar</a></strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/arfun.html'>arfun</a></td>
+  <strong><a href='../type/gerg2008.html#boundprocedure-ar~9'>ar</a></strong> => <a href='../proc/arfun.html'>arfun</a></td>
                   <td></td>
               </tr>
               <tr>
@@ -945,7 +961,7 @@ modules which it uses.
               </tr>
               <tr>
                 <td>  procedure, public ::
-  <strong><a href='../type/gerg2008.html#boundprocedure-get_v0'>get_v0</a></strong> => <a href='/home/runner/work/yaeos/yaeos/doc/ford_site/proc/volume_initalizer.html'>volume_initalizer</a></td>
+  <strong><a href='../type/gerg2008.html#boundprocedure-get_v0~3'>get_v0</a></strong> => <a href='../proc/volume_initalizer.html'>volume_initalizer</a></td>
                   <td></td>
               </tr>
               <tr>
@@ -990,7 +1006,7 @@ modules which it uses.
               </tr>
               <tr>
                 <td>  procedure, public ::
-  <strong><a href='../type/gerg2008.html#boundprocedure-ln_activity_coefficient'>ln_activity_coefficient</a></strong></td>
+  <strong><a href='../type/gerg2008.html#boundprocedure-ln_activity_coefficient~2'>ln_activity_coefficient</a></strong></td>
                   <td></td>
               </tr>
               <tr>
@@ -1015,12 +1031,12 @@ modules which it uses.
               </tr>
               <tr>
                 <td>  procedure, public ::
-  <strong><a href='../type/armodeladiff.html#boundprocedure-residual_helmholtz~4'>residual_helmholtz</a></strong></td>
+  <strong><a href='../type/armodeladiff.html#boundprocedure-residual_helmholtz~2'>residual_helmholtz</a></strong></td>
                   <td></td>
               </tr>
               <tr>
                 <td>  procedure, public ::
-  <strong><a href='../type/gerg2008.html#boundprocedure-volume'>volume</a></strong></td>
+  <strong><a href='../type/gerg2008.html#boundprocedure-volume~4'>volume</a></strong></td>
                   <td></td>
               </tr>
               <tr>
@@ -1043,7 +1059,7 @@ modules which it uses.
       </h3>
     </div>
     <div class="card-body">
-      
+      <p>Internal integer codes for the 21 components supported by GERG2008.</p><a href="../type/gerg2008selector.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
         <h4>Components</h4>
           <table class="table table-striped varlist">
@@ -1070,7 +1086,7 @@ modules which it uses.
 <td> =</td>
                 <td>21</td>
             <td>
-
+<p>Argon.</p>
             </td>
         </tr>
         <tr>
@@ -1087,7 +1103,7 @@ modules which it uses.
 <td> =</td>
                 <td>3</td>
             <td>
-
+<p>Carbon dioxide.</p>
             </td>
         </tr>
         <tr>
@@ -1104,7 +1120,7 @@ modules which it uses.
 <td> =</td>
                 <td>17</td>
             <td>
-
+<p>Carbon monoxide.</p>
             </td>
         </tr>
         <tr>
@@ -1121,7 +1137,7 @@ modules which it uses.
 <td> =</td>
                 <td>14</td>
             <td>
-
+<p>n-Decane.</p>
             </td>
         </tr>
         <tr>
@@ -1138,7 +1154,7 @@ modules which it uses.
 <td> =</td>
                 <td>4</td>
             <td>
-
+<p>Ethane.</p>
             </td>
         </tr>
         <tr>
@@ -1155,7 +1171,7 @@ modules which it uses.
 <td> =</td>
                 <td>20</td>
             <td>
-
+<p>Helium.</p>
             </td>
         </tr>
         <tr>
@@ -1172,7 +1188,7 @@ modules which it uses.
 <td> =</td>
                 <td>15</td>
             <td>
-
+<p>Hydrogen.</p>
             </td>
         </tr>
         <tr>
@@ -1189,7 +1205,7 @@ modules which it uses.
 <td> =</td>
                 <td>19</td>
             <td>
-
+<p>Hydrogen sulfide.</p>
             </td>
         </tr>
         <tr>
@@ -1206,7 +1222,7 @@ modules which it uses.
 <td> =</td>
                 <td>7</td>
             <td>
-
+<p>Isobutane.</p>
             </td>
         </tr>
         <tr>
@@ -1223,7 +1239,7 @@ modules which it uses.
 <td> =</td>
                 <td>9</td>
             <td>
-
+<p>Isopentane.</p>
             </td>
         </tr>
         <tr>
@@ -1240,7 +1256,7 @@ modules which it uses.
 <td> =</td>
                 <td>1</td>
             <td>
-
+<p>Methane.</p>
             </td>
         </tr>
         <tr>
@@ -1257,7 +1273,7 @@ modules which it uses.
 <td> =</td>
                 <td>6</td>
             <td>
-
+<p>n-Butane.</p>
             </td>
         </tr>
         <tr>
@@ -1274,7 +1290,7 @@ modules which it uses.
 <td> =</td>
                 <td>11</td>
             <td>
-
+<p>n-Heptane.</p>
             </td>
         </tr>
         <tr>
@@ -1291,7 +1307,7 @@ modules which it uses.
 <td> =</td>
                 <td>10</td>
             <td>
-
+<p>n-Hexane.</p>
             </td>
         </tr>
         <tr>
@@ -1308,7 +1324,7 @@ modules which it uses.
 <td> =</td>
                 <td>2</td>
             <td>
-
+<p>Nitrogen.</p>
             </td>
         </tr>
         <tr>
@@ -1325,7 +1341,7 @@ modules which it uses.
 <td> =</td>
                 <td>12</td>
             <td>
-
+<p>n-Octane.</p>
             </td>
         </tr>
         <tr>
@@ -1342,7 +1358,7 @@ modules which it uses.
 <td> =</td>
                 <td>13</td>
             <td>
-
+<p>n-Nonane.</p>
             </td>
         </tr>
         <tr>
@@ -1359,7 +1375,7 @@ modules which it uses.
 <td> =</td>
                 <td>8</td>
             <td>
-
+<p>n-Pentane.</p>
             </td>
         </tr>
         <tr>
@@ -1376,7 +1392,7 @@ modules which it uses.
 <td> =</td>
                 <td>16</td>
             <td>
-
+<p>Oxygen.</p>
             </td>
         </tr>
         <tr>
@@ -1393,7 +1409,7 @@ modules which it uses.
 <td> =</td>
                 <td>5</td>
             <td>
-
+<p>Propane.</p>
             </td>
         </tr>
         <tr>
@@ -1410,7 +1426,7 @@ modules which it uses.
 <td> =</td>
                 <td>18</td>
             <td>
-
+<p>Water.</p>
             </td>
         </tr>
     </tbody>
@@ -1432,7 +1448,7 @@ modules which it uses.
 </h3></div>
     <div class="card-body">
           
-  
+  <p>Evaluate the GERG2008 mixture residual Helmholtz energy.</p><a href="../proc/arfun.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -1447,7 +1463,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~4"></span>
+              <span class="anchor" id="variable-self~57"></span>
               class(<a href='../type/gerg2008.html'>Gerg2008</a>)
             </td>
 <td></td>
@@ -1457,12 +1473,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>self</strong></td>
             <td>
-
+<p>Model with component and binary parameter data.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~12"></span>
+              <span class="anchor" id="variable-n~93"></span>
               type(<a href='../type/hyperdual.html'>hyperdual</a>),
             </td>
 <td>intent(in)</td>
@@ -1472,12 +1488,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>n</strong>(:)</td>
             <td>
-
+<p>Component mole amounts [mol].</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v"></span>
+              <span class="anchor" id="variable-v~16"></span>
               type(<a href='../type/hyperdual.html'>hyperdual</a>),
             </td>
 <td>intent(in)</td>
@@ -1487,12 +1503,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>v</strong></td>
             <td>
-
+<p>Total volume [L].</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~5"></span>
+              <span class="anchor" id="variable-t~36"></span>
               type(<a href='../type/hyperdual.html'>hyperdual</a>),
             </td>
 <td>intent(in)</td>
@@ -1502,7 +1518,7 @@ modules which it uses.
             <td>::</td>
             <td><strong>t</strong></td>
             <td>
-
+<p>Temperature [K].</p>
             </td>
         </tr>
     </tbody>
@@ -1512,7 +1528,7 @@ modules which it uses.
     Return Value
     <small>type(<a href='../type/hyperdual.html'>hyperdual</a>)</small>
     </h4>
-    
+    <p>Mixture residual Helmholtz energy [bar L].</p>
 
     </div>
   </div>
@@ -1522,7 +1538,7 @@ modules which it uses.
 </h3></div>
     <div class="card-body">
           
-  
+  <p>Create a GERG2008 model from a list of component identifiers.</p><a href="../proc/gerg_2008.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -1537,7 +1553,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-ids~2"></span>
+              <span class="anchor" id="variable-ids~3"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -1547,7 +1563,7 @@ modules which it uses.
             <td>::</td>
             <td><strong>ids</strong>(:)</td>
             <td>
-
+<p>GERG2008 component identifiers</p>
             </td>
         </tr>
     </tbody>
@@ -1567,7 +1583,7 @@ modules which it uses.
 </h3></div>
     <div class="card-body">
           
-  
+  <p>Return the SRK covolume used as the initial volume estimate for GERG.</p><a href="../proc/volume_initalizer.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -1582,7 +1598,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~5"></span>
+              <span class="anchor" id="variable-self~58"></span>
               class(<a href='../type/gerg2008.html'>Gerg2008</a>),
             </td>
 <td>intent(in)</td>
@@ -1592,12 +1608,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>self</strong></td>
             <td>
-
+<p>GERG model containing its SRK helper.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~14"></span>
+              <span class="anchor" id="variable-n~95"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1607,12 +1623,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>n</strong>(:)</td>
             <td>
-
+<p>Component mole amounts [mol].</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p"></span>
+              <span class="anchor" id="variable-p~8"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1622,12 +1638,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>p</strong></td>
             <td>
-
+<p>Pressure [bar].</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~6"></span>
+              <span class="anchor" id="variable-t~37"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1637,7 +1653,7 @@ modules which it uses.
             <td>::</td>
             <td><strong>t</strong></td>
             <td>
-
+<p>Temperature [K].</p>
             </td>
         </tr>
     </tbody>
@@ -1647,7 +1663,7 @@ modules which it uses.
     Return Value
     <small>real(kind=pr)</small>
     </h4>
-    
+    <p>Initial total volume [L].</p>
 
     </div>
   </div>
@@ -1662,7 +1678,7 @@ modules which it uses.
 </h3></div>
     <div class="card-body">
           
-  
+  <p>Evaluate the GERG binary departure contribution for one component pair.</p><a href="../proc/ar_ij.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -1677,7 +1693,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-delta~2"></span>
+              <span class="anchor" id="variable-delta~4"></span>
               type(<a href='../type/hyperdual.html'>hyperdual</a>),
             </td>
 <td>intent(in)</td>
@@ -1687,12 +1703,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>delta</strong></td>
             <td>
-
+<p>Mixture reduced density.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~5"></span>
+              <span class="anchor" id="variable-tau~9"></span>
               type(<a href='../type/hyperdual.html'>hyperdual</a>),
             </td>
 <td>intent(in)</td>
@@ -1702,7 +1718,7 @@ modules which it uses.
             <td>::</td>
             <td><strong>tau</strong></td>
             <td>
-
+<p>Mixture reduced inverse temperature.</p>
             </td>
         </tr>
         <tr>
@@ -1717,12 +1733,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>binary</strong></td>
             <td>
-
+<p>Binary departure coefficients for the pair.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-aij"></span>
+              <span class="anchor" id="variable-aij~8"></span>
               type(<a href='../type/hyperdual.html'>hyperdual</a>),
             </td>
 <td>intent(out)</td>
@@ -1732,7 +1748,7 @@ modules which it uses.
             <td>::</td>
             <td><strong>aij</strong></td>
             <td>
-
+<p>Pair departure contribution.</p>
             </td>
         </tr>
     </tbody>
@@ -1747,7 +1763,7 @@ modules which it uses.
 </h3></div>
     <div class="card-body">
           
-  
+  <p>Evaluate one GERG pure-fluid residual Helmholtz contribution.</p><a href="../proc/ar_pure.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -1772,12 +1788,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>pure</strong></td>
             <td>
-
+<p>Pure-fluid coefficient arrays.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-delta"></span>
+              <span class="anchor" id="variable-delta~3"></span>
               type(<a href='../type/hyperdual.html'>hyperdual</a>),
             </td>
 <td>intent(in)</td>
@@ -1787,12 +1803,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>delta</strong></td>
             <td>
-
+<p>Reduced density.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tau~4"></span>
+              <span class="anchor" id="variable-tau~8"></span>
               type(<a href='../type/hyperdual.html'>hyperdual</a>),
             </td>
 <td>intent(in)</td>
@@ -1802,12 +1818,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>tau</strong></td>
             <td>
-
+<p>Reduced inverse temperature.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ar~2"></span>
+              <span class="anchor" id="variable-ar~10"></span>
               type(<a href='../type/hyperdual.html'>hyperdual</a>),
             </td>
 <td>intent(out)</td>
@@ -1817,7 +1833,7 @@ modules which it uses.
             <td>::</td>
             <td><strong>ar</strong></td>
             <td>
-
+<p>Pure-fluid residual Helmholtz contribution.</p>
             </td>
         </tr>
     </tbody>
@@ -1828,12 +1844,12 @@ modules which it uses.
   </div>
 
               <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-ln_activity_coefficient"></span> <h3>public  subroutine <a href='../proc/ln_activity_coefficient.html'>ln_activity_coefficient</a>(eos, n, P, T, root_type, lngamma, dlngammadP, dlngammadT, dlngammadn)  
+    <div class="card-header codesum"><span class="anchor" id="proc-ln_activity_coefficient~2"></span> <h3>public  subroutine <a href='../proc/ln_activity_coefficient~2.html'>ln_activity_coefficient</a>(eos, n, P, T, root_type, lngamma, dlngammadP, dlngammadT, dlngammadn)  
 </h3></div>
     <div class="card-body">
           
   <p>Calculate natural logarithm of activity coefficients and its
-derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coefficient.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coefficient~2.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -1848,7 +1864,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-eos~2"></span>
+              <span class="anchor" id="variable-eos~35"></span>
               class(<a href='../type/gerg2008.html'>Gerg2008</a>),
             </td>
 <td>intent(in)</td>
@@ -1863,7 +1879,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~15"></span>
+              <span class="anchor" id="variable-n~96"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1878,7 +1894,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~10"></span>
+              <span class="anchor" id="variable-p~73"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1893,7 +1909,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~13"></span>
+              <span class="anchor" id="variable-t~108"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -1908,7 +1924,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-root_type~2"></span>
+              <span class="anchor" id="variable-root_type~20"></span>
               character(len=*),
             </td>
 <td>intent(in)</td>
@@ -1924,7 +1940,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lngamma"></span>
+              <span class="anchor" id="variable-lngamma~5"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -1939,7 +1955,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dlngammadp"></span>
+              <span class="anchor" id="variable-dlngammadp~6"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -1956,7 +1972,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dlngammadt"></span>
+              <span class="anchor" id="variable-dlngammadt~6"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -1973,7 +1989,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dlngammadn"></span>
+              <span class="anchor" id="variable-dlngammadn~2"></span>
               real(kind=pr),
             </td>
 <td>intent(out),</td>
@@ -2000,7 +2016,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
 </h3></div>
     <div class="card-body">
           
-  
+  <p>Evaluate composition-dependent GERG reducing volume and temperature.</p><a href="../proc/reducing_functions.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -2015,7 +2031,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~3"></span>
+              <span class="anchor" id="variable-self~56"></span>
               class(<a href='../type/gerg2008.html'>Gerg2008</a>),
             </td>
 <td>intent(in)</td>
@@ -2025,12 +2041,12 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
             <td>::</td>
             <td><strong>self</strong></td>
             <td>
-
+<p>GERG model containing binary reducing data.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~11"></span>
+              <span class="anchor" id="variable-n~92"></span>
               type(<a href='../type/hyperdual.html'>hyperdual</a>),
             </td>
 <td>intent(in)</td>
@@ -2040,7 +2056,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
             <td>::</td>
             <td><strong>n</strong>(:)</td>
             <td>
-
+<p>Component mole amounts [mol].</p>
             </td>
         </tr>
         <tr>
@@ -2055,12 +2071,12 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
             <td>::</td>
             <td><strong>Vr</strong></td>
             <td>
-
+<p>Mixture reducing molar volume [L/mol].</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-tr"></span>
+              <span class="anchor" id="variable-tr~9"></span>
               type(<a href='../type/hyperdual.html'>hyperdual</a>),
             </td>
 <td>intent(out)</td>
@@ -2070,7 +2086,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
             <td>::</td>
             <td><strong>Tr</strong></td>
             <td>
-
+<p>Mixture reducing temperature [K].</p>
             </td>
         </tr>
     </tbody>
@@ -2081,11 +2097,11 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
   </div>
 
               <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-volume"></span> <h3>public  subroutine <a href='../proc/volume.html'>volume</a>(eos, n, P, T, V, root_type)  
+    <div class="card-header codesum"><span class="anchor" id="proc-volume~3"></span> <h3>public  subroutine <a href='../proc/volume~3.html'>volume</a>(eos, n, P, T, V, root_type)  
 </h3></div>
     <div class="card-body">
           
-  <p>Volume solver routine for the GERG2008.</p><a href="../proc/volume.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+  <p>Volume solver routine for the GERG2008.</p><a href="../proc/volume~3.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -2100,7 +2116,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-eos"></span>
+              <span class="anchor" id="variable-eos~34"></span>
               class(<a href='../type/gerg2008.html'>Gerg2008</a>),
             </td>
 <td>intent(in)</td>
@@ -2115,7 +2131,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~13"></span>
+              <span class="anchor" id="variable-n~94"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -2130,7 +2146,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~9"></span>
+              <span class="anchor" id="variable-p~72"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -2145,7 +2161,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~12"></span>
+              <span class="anchor" id="variable-t~107"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -2160,7 +2176,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~2"></span>
+              <span class="anchor" id="variable-v~46"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -2175,7 +2191,7 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-root_type"></span>
+              <span class="anchor" id="variable-root_type~19"></span>
               character(len=*),
             </td>
 <td>intent(in)</td>
@@ -2212,14 +2228,14 @@ derivatives given pressure and temperature.</p><a href="../proc/ln_activity_coef
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

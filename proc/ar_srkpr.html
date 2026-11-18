@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>ar_srkpr &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -135,8 +136,8 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/ar_srkpr.html#variable-nd~9">nd</a>
-            <a class="list-group-item" href="../proc/ar_srkpr.html#variable-nt~6">nt</a>
+            <a class="list-group-item" href="../proc/ar_srkpr.html#variable-nd">nd</a>
+            <a class="list-group-item" href="../proc/ar_srkpr.html#variable-nt~5">nt</a>
         </div>
       </div>
     </div>
@@ -170,7 +171,9 @@
 </h2>
     
 
-    <p>Wrapper subroutine to the SRK/PR Residula Helmholtz function to
+    <h1 id="ar_srkpr">ar_srkpr</h1>
+<h1 id="description">Description</h1>
+<p>Wrapper subroutine to the SRK/PR Residula Helmholtz function to
 use the general interface</p>
 
 
@@ -187,7 +190,7 @@ use the general interface</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-z~40"></span>
+              <span class="anchor" id="variable-z~50"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -202,7 +205,7 @@ use the general interface</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~19"></span>
+              <span class="anchor" id="variable-v~9"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -217,7 +220,7 @@ use the general interface</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~31"></span>
+              <span class="anchor" id="variable-t~22"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -232,7 +235,7 @@ use the general interface</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ar~5"></span>
+              <span class="anchor" id="variable-ar~3"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -247,7 +250,7 @@ use the general interface</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arv"></span>
+              <span class="anchor" id="variable-arv~3"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -262,7 +265,7 @@ use the general interface</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-artv"></span>
+              <span class="anchor" id="variable-artv~3"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -277,7 +280,7 @@ use the general interface</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arv2"></span>
+              <span class="anchor" id="variable-arv2~3"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -292,7 +295,7 @@ use the general interface</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arn~12"></span>
+              <span class="anchor" id="variable-arn~15"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -307,7 +310,7 @@ use the general interface</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arvn~11"></span>
+              <span class="anchor" id="variable-arvn~14"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -322,7 +325,7 @@ use the general interface</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-artn~11"></span>
+              <span class="anchor" id="variable-artn~14"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -337,7 +340,7 @@ use the general interface</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-arn2~8"></span>
+              <span class="anchor" id="variable-arn2~11"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -362,94 +365,94 @@ use the general interface</p>
   <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: proc~~ar_srkpr~~CallsGraph Pages: 1 -->
-<svg id="procar_srkprCallsGraph" width="465pt" height="74pt"
- viewBox="0.00 0.00 465.00 74.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~ar_srkpr~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 70)">
+<svg id="procar_srkprCallsGraph" width="461pt" height="74pt"
+ viewBox="0.00 0.00 461.00 74.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~ar_srkpr~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 70.27)">
 <title>proc~~ar_srkpr~~CallsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-70 461,-70 461,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-70.27 457.06,-70.27 457.06,4 -4,4"/>
 <!-- proc~ar_srkpr -->
 <g id="proc~~ar_srkpr~~CallsGraph_node1" class="node">
 <title>proc~ar_srkpr</title>
-<polygon fill="none" stroke="black" points="56,-45 0,-45 0,-21 56,-21 56,-45"/>
-<text text-anchor="middle" x="28" y="-30.6" font-family="Helvetica,sans-Serif" font-size="10.50">ar_srkpr</text>
+<polygon fill="none" stroke="black" points="55.02,-45.27 0,-45.27 0,-21 55.02,-21 55.02,-45.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27.51" y="-29.53" font-family="Helvetica,sans-Serif" font-size="10.50">ar_srkpr</text>
 </g>
 <!-- proc~helmsrkpr -->
 <g id="proc~~ar_srkpr~~CallsGraph_node2" class="node">
 <title>proc~helmsrkpr</title>
 <g id="a_proc~~ar_srkpr~~CallsGraph_node2"><a xlink:href="../proc/helmsrkpr.html" xlink:title="HelmSRKPR">
-<polygon fill="#d9534f" stroke="#d9534f" points="168,-45 92,-45 92,-21 168,-21 168,-45"/>
-<text text-anchor="middle" x="130" y="-30.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">HelmSRKPR</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="165.54,-45.27 91.02,-45.27 91.02,-21 165.54,-21 165.54,-45.27"/>
+<text xml:space="preserve" text-anchor="middle" x="128.28" y="-29.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">HelmSRKPR</text>
 </a>
 </g>
 </g>
 <!-- proc~ar_srkpr&#45;&gt;proc~helmsrkpr -->
 <g id="proc~~ar_srkpr~~CallsGraph_edge1" class="edge">
 <title>proc~ar_srkpr&#45;&gt;proc~helmsrkpr</title>
-<path fill="none" stroke="#000000" d="M56.06,-33C63.96,-33 72.83,-33 81.6,-33"/>
-<polygon fill="#000000" stroke="#000000" points="81.78,-36.5 91.78,-33 81.78,-29.5 81.78,-36.5"/>
+<path fill="none" stroke="#000000" d="M55.5,-33.13C62.88,-33.13 71.1,-33.13 79.27,-33.13"/>
+<polygon fill="#000000" stroke="#000000" points="79.18,-36.64 89.18,-33.14 79.18,-29.64 79.18,-36.64"/>
 </g>
 <!-- proc~bnder -->
 <g id="proc~~ar_srkpr~~CallsGraph_node3" class="node">
 <title>proc~bnder</title>
 <g id="a_proc~~ar_srkpr~~CallsGraph_node3"><a xlink:href="../proc/bnder.html" xlink:title="Bnder">
-<polygon fill="#d9534f" stroke="#d9534f" points="267.5,-66 213.5,-66 213.5,-42 267.5,-42 267.5,-66"/>
-<text text-anchor="middle" x="240.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Bnder</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="264.3,-66.27 210.3,-66.27 210.3,-42 264.3,-42 264.3,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="237.3" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Bnder</text>
 </a>
 </g>
 </g>
 <!-- proc~helmsrkpr&#45;&gt;proc~bnder -->
 <g id="proc~~ar_srkpr~~CallsGraph_edge2" class="edge">
 <title>proc~helmsrkpr&#45;&gt;proc~bnder</title>
-<path fill="none" stroke="#000000" d="M168.04,-40.17C179.41,-42.37 191.91,-44.79 203.23,-46.98"/>
-<polygon fill="#000000" stroke="#000000" points="202.75,-50.45 213.23,-48.92 204.08,-43.58 202.75,-50.45"/>
+<path fill="none" stroke="#000000" d="M165.81,-40.3C176.48,-42.4 188.16,-44.69 198.89,-46.79"/>
+<polygon fill="#000000" stroke="#000000" points="198.09,-50.2 208.57,-48.69 199.44,-43.33 198.09,-50.2"/>
 </g>
 <!-- proc~dandtnder -->
 <g id="proc~~ar_srkpr~~CallsGraph_node4" class="node">
 <title>proc~dandtnder</title>
 <g id="a_proc~~ar_srkpr~~CallsGraph_node4"><a xlink:href="../proc/dandtnder.html" xlink:title="DandTnder">
-<polygon fill="#d9534f" stroke="#d9534f" points="277,-24 204,-24 204,0 277,0 277,-24"/>
-<text text-anchor="middle" x="240.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">DandTnder</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="273.06,-24.27 201.54,-24.27 201.54,0 273.06,0 273.06,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="237.3" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">DandTnder</text>
 </a>
 </g>
 </g>
 <!-- proc~helmsrkpr&#45;&gt;proc~dandtnder -->
 <g id="proc~~ar_srkpr~~CallsGraph_edge3" class="edge">
 <title>proc~helmsrkpr&#45;&gt;proc~dandtnder</title>
-<path fill="none" stroke="#000000" d="M168.04,-25.83C176.33,-24.23 185.23,-22.5 193.83,-20.84"/>
-<polygon fill="#000000" stroke="#000000" points="194.58,-24.26 203.73,-18.92 193.25,-17.39 194.58,-24.26"/>
+<path fill="none" stroke="#000000" d="M165.81,-25.97C173.63,-24.43 181.99,-22.79 190.12,-21.2"/>
+<polygon fill="#000000" stroke="#000000" points="190.76,-24.64 199.89,-19.28 189.41,-17.77 190.76,-24.64"/>
 </g>
 <!-- proc~aijtder -->
 <g id="proc~~ar_srkpr~~CallsGraph_node5" class="node">
 <title>proc~aijtder</title>
 <g id="a_proc~~ar_srkpr~~CallsGraph_node5"><a xlink:href="../proc/aijtder.html" xlink:title="aijTder">
-<polygon fill="#d9534f" stroke="#d9534f" points="367,-24 313,-24 313,0 367,0 367,-24"/>
-<text text-anchor="middle" x="340" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">aijTder</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="363.06,-24.27 309.06,-24.27 309.06,0 363.06,0 363.06,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="336.06" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">aijTder</text>
 </a>
 </g>
 </g>
 <!-- proc~dandtnder&#45;&gt;proc~aijtder -->
 <g id="proc~~ar_srkpr~~CallsGraph_edge4" class="edge">
 <title>proc~dandtnder&#45;&gt;proc~aijtder</title>
-<path fill="none" stroke="#000000" d="M277.25,-12C285.51,-12 294.3,-12 302.58,-12"/>
-<polygon fill="#000000" stroke="#000000" points="302.72,-15.5 312.72,-12 302.72,-8.5 302.72,-15.5"/>
+<path fill="none" stroke="#000000" d="M273.51,-12.13C281.26,-12.13 289.5,-12.13 297.34,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="297.32,-15.64 307.32,-12.14 297.32,-8.64 297.32,-15.64"/>
 </g>
 <!-- proc~atder -->
 <g id="proc~~ar_srkpr~~CallsGraph_node6" class="node">
 <title>proc~atder</title>
 <g id="a_proc~~ar_srkpr~~CallsGraph_node6"><a xlink:href="../proc/atder.html" xlink:title="aTder">
-<polygon fill="#d9534f" stroke="#d9534f" points="457,-24 403,-24 403,0 457,0 457,-24"/>
-<text text-anchor="middle" x="430" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">aTder</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="453.06,-24.27 399.06,-24.27 399.06,0 453.06,0 453.06,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="426.06" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">aTder</text>
 </a>
 </g>
 </g>
 <!-- proc~aijtder&#45;&gt;proc~atder -->
 <g id="proc~~ar_srkpr~~CallsGraph_edge5" class="edge">
 <title>proc~aijtder&#45;&gt;proc~atder</title>
-<path fill="none" stroke="#000000" d="M367.4,-12C375.39,-12 384.31,-12 392.82,-12"/>
-<polygon fill="#000000" stroke="#000000" points="392.92,-15.5 402.92,-12 392.92,-8.5 392.92,-15.5"/>
+<path fill="none" stroke="#000000" d="M363.46,-12.13C370.95,-12.13 379.24,-12.13 387.26,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="387.16,-15.64 397.16,-12.14 387.16,-8.64 387.16,-15.64"/>
 </g>
 </g>
 </svg>
@@ -468,55 +471,55 @@ use the general interface</p>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
 <svg width="641pt" height="28pt"
- viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
 <!-- Subroutine -->
 <g id="node1" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node2" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Interface -->
 <g id="node3" class="node">
 <title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
 </g>
 <!-- Type Bound Procedure -->
 <g id="node4" class="node">
 <title>Type Bound Procedure</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
-<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
 </g>
 <!-- Unknown Procedure Type -->
 <g id="node5" class="node">
 <title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
-<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
 </g>
 <!-- Program -->
 <g id="node6" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node7" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
-<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -549,7 +552,7 @@ implementation in a submodule of an interface in a parent module.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-nd~9"></span>
+              <span class="anchor" id="variable-nd"></span>
               integer,
             </td>
               <td>public</td>
@@ -566,7 +569,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nt~6"></span>
+              <span class="anchor" id="variable-nt~5"></span>
               integer,
             </td>
               <td>public</td>
@@ -607,14 +610,14 @@ implementation in a submodule of an interface in a parent module.
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

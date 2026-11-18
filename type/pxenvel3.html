@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>PXEnvel3 &ndash; yaeos </title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -135,15 +136,15 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../type/pxenvel3.html#variable-p~66">P</a>
-            <a class="list-group-item" href="../type/pxenvel3.html#variable-s~34">S</a>
-            <a class="list-group-item" href="../type/pxenvel3.html#variable-t~102">T</a>
-            <a class="list-group-item" href="../type/pxenvel3.html#variable-alpha~29">alpha</a>
-            <a class="list-group-item" href="../type/pxenvel3.html#variable-beta~4">beta</a>
-            <a class="list-group-item" href="../type/pxenvel3.html#variable-ns~41">ns</a>
-            <a class="list-group-item" href="../type/pxenvel3.html#variable-w~26">w</a>
-            <a class="list-group-item" href="../type/pxenvel3.html#variable-x~27">x</a>
-            <a class="list-group-item" href="../type/pxenvel3.html#variable-y~21">y</a>
+            <a class="list-group-item" href="../type/pxenvel3.html#variable-p~81">P</a>
+            <a class="list-group-item" href="../type/pxenvel3.html#variable-s~50">S</a>
+            <a class="list-group-item" href="../type/pxenvel3.html#variable-t~126">T</a>
+            <a class="list-group-item" href="../type/pxenvel3.html#variable-alpha~39">alpha</a>
+            <a class="list-group-item" href="../type/pxenvel3.html#variable-beta~14">beta</a>
+            <a class="list-group-item" href="../type/pxenvel3.html#variable-ns~59">ns</a>
+            <a class="list-group-item" href="../type/pxenvel3.html#variable-w~43">w</a>
+            <a class="list-group-item" href="../type/pxenvel3.html#variable-x~32">x</a>
+            <a class="list-group-item" href="../type/pxenvel3.html#variable-y~31">y</a>
         </div>
       </div>
     </div>
@@ -175,7 +176,16 @@
     <div class="col-md-9" id='text'>
       <h2 id="type-def-statement">
         type, public :: PXEnvel3</h2>
-    
+    <h1 id="pxenvel3">PXEnvel3</h1>
+<p>Three-phase envelope at constant temperature. Each array stores one
+value per envelope point.</p>
+<h1 id="description">Description</h1>
+<p>Phase composition arrays use <code>(point, component)</code> indexing. The
+pressure, feed interpolation coordinate, phase fractions, and phase
+compositions correspond by point index.</p>
+<h1 id="examples">Examples</h1>
+<div class="codehilite"><pre><span></span><code><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">envelope</span><span class="p">%</span><span class="n">alpha</span><span class="p">,</span><span class="w"> </span><span class="n">envelope</span><span class="p">%</span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">envelope</span><span class="p">%</span><span class="n">beta</span>
+</code></pre></div>
     <br>
 
     <section>
@@ -192,7 +202,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~66"></span>
+              <span class="anchor" id="variable-p~81"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -209,7 +219,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-s~34"></span>
+              <span class="anchor" id="variable-s~50"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -226,7 +236,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~102"></span>
+              <span class="anchor" id="variable-t~126"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -243,7 +253,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-alpha~29"></span>
+              <span class="anchor" id="variable-alpha~39"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -260,7 +270,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-beta~4"></span>
+              <span class="anchor" id="variable-beta~14"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -277,7 +287,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns~41"></span>
+              <span class="anchor" id="variable-ns~59"></span>
               integer,
             </td>
               <td>public,</td>
@@ -294,7 +304,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-w~26"></span>
+              <span class="anchor" id="variable-w~43"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -306,12 +316,12 @@
                 <td></td>
                 <td></td>
             <td>
-                <p>Mole fraction of phase x</p>
+                <p>Mole fraction of phase w</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~27"></span>
+              <span class="anchor" id="variable-x~32"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -328,7 +338,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-y~21"></span>
+              <span class="anchor" id="variable-y~31"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -340,7 +350,7 @@
                 <td></td>
                 <td></td>
             <td>
-                <p>Mole fraction of phase x</p>
+                <p>Mole fraction of phase y</p>
             </td>
         </tr>
     </tbody>
@@ -364,14 +374,14 @@
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

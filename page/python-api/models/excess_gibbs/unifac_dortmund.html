@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>UNIFAC Dortmund &mdash; yaeos 4.5.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+  <title>UNIFAC Dortmund &mdash; yaeos 4.5.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=a284863f"></script>
+      <script src="../../_static/documentation_options.js?v=06fc0226"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,16 +56,19 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../init.html">Models</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../residual_helmholtz/init.html">Residual Helmholtz Models</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="init.html">Excess Gibbs Models</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="nrtl.html">NRTL</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unifacvle.html">UNIFACVLE</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">UNIFAC Dortmund</a></li>
-<li class="toctree-l3"><a class="reference internal" href="psrk_unifac.html">UNIFAC PSRK</a></li>
-<li class="toctree-l3"><a class="reference internal" href="uniquac.html">UNIQUAC</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../init.html#choose-the-model-before-the-solver">Choose the model before the solver</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../residual_helmholtz/init.html">Residual Helmholtz Models</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="init.html">Excess Gibbs Models</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="nrtl.html">NRTL</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unifacvle.html">UNIFACVLE</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">UNIFAC Dortmund</a></li>
+<li class="toctree-l4"><a class="reference internal" href="psrk_unifac.html">UNIFAC PSRK</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uniquac.html">UNIQUAC</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../groups.html">Groups module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../groups.html">Groups module</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -102,9 +105,20 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-yaeos.models.excess_gibbs.dortmund">
-<span id="unifac-dortmund"></span><h1>UNIFAC Dortmund<a class="headerlink" href="#module-yaeos.models.excess_gibbs.dortmund" title="Link to this heading"></a></h1>
-<p>UNIFAC Dortmund Module.</p>
+  <section id="unifac-dortmund">
+<h1>UNIFAC Dortmund<a class="headerlink" href="#unifac-dortmund" title="Link to this heading"></a></h1>
+<p>The Dortmund variant is a modified UNIFAC model with its own group and
+interaction parameterization. Use <code class="docutils literal notranslate"><span class="pre">UNIFACDortmund(molecules)</span></code> when your
+group decomposition and intended prediction match that variant; do not
+substitute its parameters into the original UNIFAC model.</p>
+<p><code class="docutils literal notranslate"><span class="pre">molecules</span></code> is a list of subgroup-count dictionaries, one per component
+in the order later used by <code class="docutils literal notranslate"><span class="pre">ln_gamma(n,</span> <span class="pre">T)</span></code>. The property call uses moles
+and K and returns natural-log activity coefficients, not gamma directly.
+Group counts are structural integers, not composition values.</p>
+<p>Read <a class="reference internal" href="../groups.html"><span class="doc">Groups module</span></a>, the
+<a class="reference internal" href="../../tutorial/gibbs_excess/models/unifac_models.html"><span class="doc">UNIFAC tutorial</span></a>, and
+<a class="reference internal" href="../../core.html"><span class="doc">Core Module</span></a> for excess-property units and liquid-liquid calculations.</p>
+<p id="module-yaeos.models.excess_gibbs.dortmund">UNIFAC Dortmund Module.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="yaeos.models.excess_gibbs.dortmund.UNIFACDortmund">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">UNIFACDortmund</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">molecules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/yaeos/models/excess_gibbs/dortmund.html#UNIFACDortmund"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.models.excess_gibbs.dortmund.UNIFACDortmund" title="Link to this definition"></a></dt>
@@ -118,7 +132,7 @@ model’s information: <a class="reference external" href="https://ipqa-research
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">UNIFACDortmund</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">UNIFACDortmund</span>
 
 <span class="c1"># Groups for water and ethanol</span>
 <span class="n">water</span> <span class="o">=</span> <span class="p">{</span><span class="mi">16</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>

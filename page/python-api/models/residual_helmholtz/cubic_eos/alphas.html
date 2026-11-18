@@ -1,0 +1,369 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alpha Functions &mdash; yaeos 4.5.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=06fc0226"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Mixing Rules" href="mixing_rules.html" />
+    <link rel="prev" title="Cubic EoS" href="cubic_eos.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            yaeos
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/tutorial_tree.html">Tutorial</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../core.html">Core Module</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../init.html">Models</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../init.html#choose-the-model-before-the-solver">Choose the model before the solver</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../init.html">Residual Helmholtz Models</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="init.html">Cubic Equations of State</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../multifluid/init.html">Multifluid Equations of State</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../saft/init.html">SAFT Equations of State</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../excess_gibbs/init.html">Excess Gibbs Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../groups.html">Groups module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../gpec.html">GPEC module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../envelopes.html">Envelopes Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fitting/init.html">EoS Fitting Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../tools/init.html">Tools</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">yaeos</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../init.html">Models</a></li>
+          <li class="breadcrumb-item"><a href="../init.html">Residual Helmholtz Models</a></li>
+          <li class="breadcrumb-item"><a href="init.html">Cubic Equations of State</a></li>
+      <li class="breadcrumb-item active">Alpha Functions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/models/residual_helmholtz/cubic_eos/alphas.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="alpha-functions">
+<h1>Alpha Functions<a class="headerlink" href="#alpha-functions" title="Link to this heading"></a></h1>
+<p>The alpha function sets the temperature dependence of a cubic EoS
+attractive parameter. Each cubic model has a default alpha function; an
+alternative can be set on an existing model with <code class="docutils literal notranslate"><span class="pre">model.set_alpha(...)</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">AlphaSoave</span></code> and <code class="docutils literal notranslate"><span class="pre">AlphaRKPR</span></code> take one dimensionless <code class="docutils literal notranslate"><span class="pre">k</span></code> value per
+component, and <code class="docutils literal notranslate"><span class="pre">AlphaMathiasCopeman</span></code> takes three coefficient vectors
+<code class="docutils literal notranslate"><span class="pre">c1</span></code>, <code class="docutils literal notranslate"><span class="pre">c2</span></code> and <code class="docutils literal notranslate"><span class="pre">c3</span></code>. All vectors follow the same component order as the
+critical constants. Changing the alpha function changes pure-component vapor
+pressures, so check them before fitting binary interactions.</p>
+<p>Follow the
+<a class="reference internal" href="../../../tutorial/equations_of_state/cubic_eos/cubic_alphas.html"><span class="doc">alpha-function notebook</span></a>
+for examples.</p>
+<p id="module-yaeos.models.residual_helmholtz.cubic_eos.alphas">Alpha Functions for CubicEoS.</p>
+<p>This module contains the setter functions for the different alpha
+functions existing in yaeos.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.alphas.CubicAlphaFunction">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">CubicAlphaFunction</span></span><a class="reference internal" href="../../../_modules/yaeos/models/residual_helmholtz/cubic_eos/alphas.html#CubicAlphaFunction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.alphas.CubicAlphaFunction" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Cubic Alpha Function abstract class.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.alphas.CubicAlphaFunction.set_alpha">
+<span class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">set_alpha</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ar_model_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../../_modules/yaeos/models/residual_helmholtz/cubic_eos/alphas.html#CubicAlphaFunction.set_alpha"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.alphas.CubicAlphaFunction.set_alpha" title="Link to this definition"></a></dt>
+<dd><p>Set the Alpha Function abstract method.</p>
+<p>Changes the default Alpha Function of the given cubic EoS model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ar_model_id</strong> (<em>int</em>) – ID of the cubic EoS model</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>NotImplementedError</strong> – Abstract error, this method must be implemented in the subclass</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.alphas.AlphaSoave">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">AlphaSoave</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/yaeos/models/residual_helmholtz/cubic_eos/alphas.html#AlphaSoave"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.alphas.AlphaSoave" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#yaeos.models.residual_helmholtz.cubic_eos.alphas.CubicAlphaFunction" title="yaeos.models.residual_helmholtz.cubic_eos.alphas.CubicAlphaFunction"><code class="xref py py-class docutils literal notranslate"><span class="pre">CubicAlphaFunction</span></code></a></p>
+<p>Soave’s Alpha Function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>k</strong> (<em>array_like</em>) – k constant for the function</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.alphas.AlphaSoave.k">
+<span class="sig-name descname"><span class="pre">k</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.alphas.AlphaSoave.k" title="Link to this definition"></a></dt>
+<dd><p>k constant for the function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">AlphaSoave</span><span class="p">,</span> <span class="n">SoaveRedlichKwong</span>
+
+<span class="n">k</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">]</span>
+
+<span class="n">alphasoave</span> <span class="o">=</span> <span class="n">AlphaSoave</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>  <span class="c1"># AlphaSoave with custom parameters</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="p">[</span><span class="mf">305.32</span><span class="p">,</span> <span class="mf">469.7</span><span class="p">]</span>        <span class="c1"># critical temperature [K]</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="p">[</span><span class="mf">48.72</span><span class="p">,</span> <span class="mf">33.7</span><span class="p">]</span>          <span class="c1"># critical pressure [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0995</span><span class="p">,</span> <span class="mf">0.152</span><span class="p">]</span>         <span class="c1"># acentric factor</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">SoaveRedlichKwong</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="n">alphasoave</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.alphas.AlphaSoave.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'AlphaSoave'</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.alphas.AlphaSoave.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.alphas.AlphaSoave.set_alpha">
+<span class="sig-name descname"><span class="pre">set_alpha</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ar_model_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/yaeos/models/residual_helmholtz/cubic_eos/alphas.html#AlphaSoave.set_alpha"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.alphas.AlphaSoave.set_alpha" title="Link to this definition"></a></dt>
+<dd><p>Set the Soave alpha function in the given cubic EoS model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ar_model_id</strong> (<em>int</em>) – ID of the cubic EoS model</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.alphas.AlphaRKPR">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">AlphaRKPR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/yaeos/models/residual_helmholtz/cubic_eos/alphas.html#AlphaRKPR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.alphas.AlphaRKPR" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#yaeos.models.residual_helmholtz.cubic_eos.alphas.CubicAlphaFunction" title="yaeos.models.residual_helmholtz.cubic_eos.alphas.CubicAlphaFunction"><code class="xref py py-class docutils literal notranslate"><span class="pre">CubicAlphaFunction</span></code></a></p>
+<p>RKPR’s Alpha Function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>k</strong> (<em>array_like</em>) – k constant for the function</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.alphas.AlphaRKPR.k">
+<span class="sig-name descname"><span class="pre">k</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.alphas.AlphaRKPR.k" title="Link to this definition"></a></dt>
+<dd><p>k constant for the function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">AlphaRKPR</span><span class="p">,</span> <span class="n">SoaveRedlichKwong</span>
+
+<span class="n">k</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">]</span>
+
+<span class="n">alphaRKPR</span> <span class="o">=</span> <span class="n">AlphaRKPR</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>    <span class="c1"># AlphaRKPR with custom parameters</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="p">[</span><span class="mf">305.32</span><span class="p">,</span> <span class="mf">469.7</span><span class="p">]</span>        <span class="c1"># critical temperature [K]</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="p">[</span><span class="mf">48.72</span><span class="p">,</span> <span class="mf">33.7</span><span class="p">]</span>          <span class="c1"># critical pressure [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0995</span><span class="p">,</span> <span class="mf">0.152</span><span class="p">]</span>         <span class="c1"># acentric factor</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">SoaveRedlichKwong</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="n">alphaRKPR</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.alphas.AlphaRKPR.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'AlphaRKPR'</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.alphas.AlphaRKPR.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.alphas.AlphaRKPR.set_alpha">
+<span class="sig-name descname"><span class="pre">set_alpha</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ar_model_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/yaeos/models/residual_helmholtz/cubic_eos/alphas.html#AlphaRKPR.set_alpha"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.alphas.AlphaRKPR.set_alpha" title="Link to this definition"></a></dt>
+<dd><p>Set the RKPR alpha function in the given cubic EoS model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ar_model_id</strong> (<em>int</em>) – ID of the cubic EoS model</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.alphas.AlphaMathiasCopeman">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">AlphaMathiasCopeman</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/yaeos/models/residual_helmholtz/cubic_eos/alphas.html#AlphaMathiasCopeman"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.alphas.AlphaMathiasCopeman" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#yaeos.models.residual_helmholtz.cubic_eos.alphas.CubicAlphaFunction" title="yaeos.models.residual_helmholtz.cubic_eos.alphas.CubicAlphaFunction"><code class="xref py py-class docutils literal notranslate"><span class="pre">CubicAlphaFunction</span></code></a></p>
+<p>Mathias Copeman’s Alpha Function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>c1</strong> (<em>array_like</em>) – c1 constant for the function</p></li>
+<li><p><strong>c2</strong> (<em>array_like</em>) – c2 constant for the function</p></li>
+<li><p><strong>c3</strong> (<em>array_like</em>) – c3 constant for the function</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.alphas.AlphaMathiasCopeman.c1">
+<span class="sig-name descname"><span class="pre">c1</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.alphas.AlphaMathiasCopeman.c1" title="Link to this definition"></a></dt>
+<dd><p>c1 constant for the function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.alphas.AlphaMathiasCopeman.c2">
+<span class="sig-name descname"><span class="pre">c2</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.alphas.AlphaMathiasCopeman.c2" title="Link to this definition"></a></dt>
+<dd><p>c2 constant for the function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.alphas.AlphaMathiasCopeman.c3">
+<span class="sig-name descname"><span class="pre">c3</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.alphas.AlphaMathiasCopeman.c3" title="Link to this definition"></a></dt>
+<dd><p>c3 constant for the function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>array_like</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Example</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">AlphaMathiasCopeman</span><span class="p">,</span> <span class="n">SoaveRedlichKwong</span>
+
+<span class="n">c1</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">]</span>
+<span class="n">c2</span> <span class="o">=</span> <span class="p">[</span><span class="mf">3.5</span><span class="p">,</span> <span class="mf">1.6</span><span class="p">]</span>
+<span class="n">c3</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+
+<span class="c1"># AlphaMathiasCopeman with custom parameters</span>
+<span class="n">alphamc</span> <span class="o">=</span> <span class="n">AlphaMathiasCopeman</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">,</span> <span class="n">c3</span><span class="p">)</span>
+
+<span class="n">tc</span> <span class="o">=</span> <span class="p">[</span><span class="mf">305.32</span><span class="p">,</span> <span class="mf">469.7</span><span class="p">]</span>        <span class="c1"># critical temperature [K]</span>
+<span class="n">pc</span> <span class="o">=</span> <span class="p">[</span><span class="mf">48.72</span><span class="p">,</span> <span class="mf">33.7</span><span class="p">]</span>          <span class="c1"># critical pressure [bar]</span>
+<span class="n">w</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0995</span><span class="p">,</span> <span class="mf">0.152</span><span class="p">]</span>         <span class="c1"># acentric factor</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">SoaveRedlichKwong</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span> <span class="n">pc</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="n">alphamc</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.alphas.AlphaMathiasCopeman.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'AlphaMathiasCopeman'</span></span><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.alphas.AlphaMathiasCopeman.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="yaeos.models.residual_helmholtz.cubic_eos.alphas.AlphaMathiasCopeman.set_alpha">
+<span class="sig-name descname"><span class="pre">set_alpha</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ar_model_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/yaeos/models/residual_helmholtz/cubic_eos/alphas.html#AlphaMathiasCopeman.set_alpha"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.models.residual_helmholtz.cubic_eos.alphas.AlphaMathiasCopeman.set_alpha" title="Link to this definition"></a></dt>
+<dd><p>Set the Mathias-Copeman alpha function in the given cubic EoS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ar_model_id</strong> (<em>int</em>) – ID of the cubic EoS model</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="cubic_eos.html" class="btn btn-neutral float-left" title="Cubic EoS" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mixing_rules.html" class="btn btn-neutral float-right" title="Mixing Rules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Federico E. Benelli.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

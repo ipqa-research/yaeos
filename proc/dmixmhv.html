@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>DmixMHV &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.6% of total for procedures.">94 statements</a>
+                 title=" 0.6% of total for procedures.">111 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -139,27 +140,27 @@
             <a class="list-group-item" href="../proc/dmixmhv.html#variable-get~6">GeT</a>
             <a class="list-group-item" href="../proc/dmixmhv.html#variable-get2~6">GeT2</a>
             <a class="list-group-item" href="../proc/dmixmhv.html#variable-getn~6">GeTn</a>
-            <a class="list-group-item" href="../proc/dmixmhv.html#variable-gen~6">Gen</a>
-            <a class="list-group-item" href="../proc/dmixmhv.html#variable-gen2~6">Gen2</a>
-            <a class="list-group-item" href="../proc/dmixmhv.html#variable-b~9">b</a>
-            <a class="list-group-item" href="../proc/dmixmhv.html#variable-bi~10">bi</a>
+            <a class="list-group-item" href="../proc/dmixmhv.html#variable-gen~7">Gen</a>
+            <a class="list-group-item" href="../proc/dmixmhv.html#variable-gen2~7">Gen2</a>
+            <a class="list-group-item" href="../proc/dmixmhv.html#variable-b~8">b</a>
+            <a class="list-group-item" href="../proc/dmixmhv.html#variable-bi~9">bi</a>
             <a class="list-group-item" href="../proc/dmixmhv.html#variable-d2logbi_nbi">d2logBi_nbi</a>
             <a class="list-group-item" href="../proc/dmixmhv.html#variable-dbi~2">dbi</a>
             <a class="list-group-item" href="../proc/dmixmhv.html#variable-dbij~2">dbij</a>
             <a class="list-group-item" href="../proc/dmixmhv.html#variable-dlogbi_nbi">dlogBi_nbi</a>
             <a class="list-group-item" href="../proc/dmixmhv.html#variable-dot_n_logb_nbi">dot_n_logB_nbi</a>
-            <a class="list-group-item" href="../proc/dmixmhv.html#variable-f~8">f</a>
+            <a class="list-group-item" href="../proc/dmixmhv.html#variable-f~9">f</a>
             <a class="list-group-item" href="../proc/dmixmhv.html#variable-fdi">fdi</a>
             <a class="list-group-item" href="../proc/dmixmhv.html#variable-fdij">fdij</a>
             <a class="list-group-item" href="../proc/dmixmhv.html#variable-fdit">fdit</a>
             <a class="list-group-item" href="../proc/dmixmhv.html#variable-fdt">fdt</a>
             <a class="list-group-item" href="../proc/dmixmhv.html#variable-fdt2">fdt2</a>
-            <a class="list-group-item" href="../proc/dmixmhv.html#variable-i~64">i</a>
-            <a class="list-group-item" href="../proc/dmixmhv.html#variable-j~40">j</a>
-            <a class="list-group-item" href="../proc/dmixmhv.html#variable-l~13">l</a>
+            <a class="list-group-item" href="../proc/dmixmhv.html#variable-i~46">i</a>
+            <a class="list-group-item" href="../proc/dmixmhv.html#variable-j~30">j</a>
+            <a class="list-group-item" href="../proc/dmixmhv.html#variable-l~11">l</a>
             <a class="list-group-item" href="../proc/dmixmhv.html#variable-logb_nbi">logB_nbi</a>
-            <a class="list-group-item" href="../proc/dmixmhv.html#variable-nc~47">nc</a>
-            <a class="list-group-item" href="../proc/dmixmhv.html#variable-q~4">q</a>
+            <a class="list-group-item" href="../proc/dmixmhv.html#variable-nc~27">nc</a>
+            <a class="list-group-item" href="../proc/dmixmhv.html#variable-q~3">q</a>
             <a class="list-group-item" href="../proc/dmixmhv.html#variable-totn~2">totn</a>
         </div>
       </div>
@@ -205,64 +206,64 @@
               <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: proc~~dmixmhv~~UsesGraph Pages: 1 -->
-<svg id="procdmixmhvUsesGraph" width="512pt" height="32pt"
- viewBox="0.00 0.00 512.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~dmixmhv~~UsesGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg id="procdmixmhvUsesGraph" width="507pt" height="32pt"
+ viewBox="0.00 0.00 507.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~dmixmhv~~UsesGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>proc~~dmixmhv~~UsesGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 508,-28 508,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 503.08,-28.27 503.08,4 -4,4"/>
 <!-- proc~dmixmhv -->
 <g id="proc~~dmixmhv~~UsesGraph_node1" class="node">
 <title>proc~dmixmhv</title>
-<polygon fill="none" stroke="black" points="504,-24 404,-24 404,0 504,0 504,-24"/>
-<text text-anchor="middle" x="454" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">MHV%DmixMHV</text>
+<polygon fill="none" stroke="black" points="499.08,-24.27 400.56,-24.27 400.56,0 499.08,0 499.08,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="449.82" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">MHV%DmixMHV</text>
 </g>
 <!-- module~hyperdual_mod -->
 <g id="proc~~dmixmhv~~UsesGraph_node2" class="node">
 <title>module~hyperdual_mod</title>
 <g id="a_proc~~dmixmhv~~UsesGraph_node2"><a xlink:href="../module/hyperdual_mod.html" xlink:title="hyperdual_mod">
-<polygon fill="#337ab7" stroke="#337ab7" points="368,-24 272,-24 272,0 368,0 368,-24"/>
-<text text-anchor="middle" x="320" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">hyperdual_mod</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="364.56,-24.27 269.79,-24.27 269.79,0 364.56,0 364.56,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="317.18" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">hyperdual_mod</text>
 </a>
 </g>
 </g>
 <!-- proc~dmixmhv&#45;&gt;module~hyperdual_mod -->
 <g id="proc~~dmixmhv~~UsesGraph_edge1" class="edge">
 <title>proc~dmixmhv&#45;&gt;module~hyperdual_mod</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M403.85,-12C395.51,-12 386.79,-12 378.26,-12"/>
-<polygon fill="#000000" stroke="#000000" points="378,-8.5 368,-12 378,-15.5 378,-8.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M400.17,-12.13C392.28,-12.13 384.05,-12.13 375.96,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="376.21,-8.64 366.21,-12.14 376.21,-15.64 376.21,-8.64"/>
 </g>
 <!-- module~yaeos__constants -->
 <g id="proc~~dmixmhv~~UsesGraph_node3" class="node">
 <title>module~yaeos__constants</title>
 <g id="a_proc~~dmixmhv~~UsesGraph_node3"><a xlink:href="../module/yaeos__constants.html" xlink:title="yaeos__constants">
-<polygon fill="#337ab7" stroke="#337ab7" points="236,-24 130,-24 130,0 236,0 236,-24"/>
-<text text-anchor="middle" x="183" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__constants</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="233.79,-24.27 129.27,-24.27 129.27,0 233.79,0 233.79,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="181.53" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__constants</text>
 </a>
 </g>
 </g>
 <!-- module~hyperdual_mod&#45;&gt;module~yaeos__constants -->
 <g id="proc~~dmixmhv~~UsesGraph_edge2" class="edge">
 <title>module~hyperdual_mod&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M271.78,-12C263.48,-12 254.72,-12 246.08,-12"/>
-<polygon fill="#000000" stroke="#000000" points="246.03,-8.5 236.03,-12 246.03,-15.5 246.03,-8.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M269.43,-12.13C261.66,-12.13 253.48,-12.13 245.38,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="245.55,-8.64 235.55,-12.14 245.55,-15.64 245.55,-8.64"/>
 </g>
 <!-- iso_fortran_env -->
 <g id="proc~~dmixmhv~~UsesGraph_node4" class="node">
 <title>iso_fortran_env</title>
 <g id="a_proc~~dmixmhv~~UsesGraph_node4"><a xlink:href="http://fortranwiki.org/fortran/show/iso_fortran_env" xlink:title="iso_fortran_env">
-<polygon fill="#337ab7" stroke="#337ab7" points="94,-24 0,-24 0,0 94,0 94,-24"/>
-<text text-anchor="middle" x="47" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="93.27,-24.27 0,-24.27 0,0 93.27,0 93.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="46.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__constants&#45;&gt;iso_fortran_env -->
 <g id="proc~~dmixmhv~~UsesGraph_edge3" class="edge">
 <title>module~yaeos__constants&#45;&gt;iso_fortran_env</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.81,-12C121.45,-12 112.77,-12 104.32,-12"/>
-<polygon fill="#000000" stroke="#000000" points="104.16,-8.5 94.16,-12 104.16,-15.5 104.16,-8.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.15,-12.13C121.3,-12.13 113.15,-12.13 105.18,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="105.19,-8.64 95.19,-12.14 105.19,-15.64 105.19,-8.64"/>
 </g>
 </g>
 </svg>
@@ -281,49 +282,49 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="518pt" height="32pt"
- viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="511pt" height="32pt"
+ viewBox="0.00 0.00 511.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 506.88,-28.27 506.88,4 -4,4"/>
 <!-- Module -->
 <g id="node1" class="node">
 <title>Module</title>
-<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
 </g>
 <!-- Submodule -->
 <g id="node2" class="node">
 <title>Submodule</title>
-<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
-<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="144.13,-24.27 71.87,-24.27 71.87,0 144.13,0 144.13,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="108" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
 </g>
 <!-- Subroutine -->
 <g id="node3" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
-<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="231.63,-24.27 162.37,-24.27 162.37,0 231.63,0 231.63,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="197" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node4" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
-<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="306.26,-24.27 249.74,-24.27 249.74,0 306.26,0 306.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="278" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Program -->
 <g id="node5" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
-<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="381.26,-24.27 324.74,-24.27 324.74,0 381.26,0 381.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="353" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node6" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
-<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="502.88,-24.27 399.12,-24.27 399.12,0 502.88,0 502.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="451" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -343,24 +344,21 @@ modules which it uses.
 
 
     <h1 id="michelsen-modified-huron-vidal-mixing-rule">Michelsen Modified Huron-Vidal mixing rule.</h1>
-<p>Mixing rule at infinite pressure as defined in the book of Michelsen and
-Møllerup.</p>
+<p>Mixing rule at the approximate zero-pressure limit as defined in the
+book of Michelsen and Møllerup.</p>
 <h1 id="description">Description</h1>
-<p>At the infinite pressure limit of a cubic equation of state it is possible to
-relate teh mixing rule for the attractive term with a excess Gibbs energy
+<p>At the approximate zero-pressure limit of a cubic equation of state it is
+possible to relate the mixing rule for the attractive term with an excess Gibbs energy
 model like NRTL with the expression:</p>
 <p>
 <script type="math/tex; mode=display">
-\frac{D}{RTB}(n, T) = \sum_i n_i \frac{a_i(T)}{b_i} + \frac{1}{q}
- \left(\frac{G^E(n, T)}{RT} + \sum_i n_i \ln \frac{B}{nb_i} \right)
+\frac{D}{RTB}(n, T) = \sum_i n_i \frac{a_i(T)}{RT b_i} + \frac{1}{q}
+ \left(\frac{G^E(n, T)}{RT} + \sum_i n_i \ln \frac{B}{n_T b_i} \right)
 </script>
 </p>
-<h1 id="examples">Examples</h1>
-<div class="codehilite"><pre><span></span><code><span class="w"> </span><span class="k">type</span><span class="p">(</span><span class="n">CubicEoS</span><span class="p">)</span>
-</code></pre></div>
-
 <h1 id="references">References</h1>
-<p>Autodiff injection until we can decipher this derivative</p>
+<p>Michelsen, M. L., <em>Fluid Phase Equilibria</em> 60 (1990) 213-219.
+Autodiff injection until we can decipher this derivative</p>
 
     <h3>Type Bound</h3>
     <p><a href='../type/mhv.html'>MHV</a></p>
@@ -378,7 +376,7 @@ model like NRTL with the expression:</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~38"></span>
+              <span class="anchor" id="variable-self~25"></span>
               class(<a href='../type/mhv.html'>MHV</a>),
             </td>
 <td>intent(in)</td>
@@ -388,12 +386,12 @@ model like NRTL with the expression:</p>
             <td>::</td>
             <td><strong>self</strong></td>
             <td>
-                
+                <p>Mixing rule object.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~52"></span>
+              <span class="anchor" id="variable-n~22"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -408,7 +406,7 @@ model like NRTL with the expression:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~7"></span>
+              <span class="anchor" id="variable-v~8"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -423,7 +421,7 @@ model like NRTL with the expression:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~43"></span>
+              <span class="anchor" id="variable-t~26"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -438,7 +436,7 @@ model like NRTL with the expression:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ai~7"></span>
+              <span class="anchor" id="variable-ai~3"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -454,7 +452,7 @@ model like NRTL with the expression:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-daidt~7"></span>
+              <span class="anchor" id="variable-daidt~3"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -471,7 +469,7 @@ model like NRTL with the expression:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-daidt2~7"></span>
+              <span class="anchor" id="variable-daidt2~3"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -488,7 +486,7 @@ model like NRTL with the expression:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-d~5"></span>
+              <span class="anchor" id="variable-d~3"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -504,7 +502,7 @@ model like NRTL with the expression:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dddv~4"></span>
+              <span class="anchor" id="variable-dddv~3"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -515,13 +513,12 @@ model like NRTL with the expression:</p>
             <td><strong>dDdV</strong></td>
             <td>
                 <p>
-<script type="math/tex">\frac{dD}{dT}</script>
-</p>
+<script type="math/tex">\frac{dD}{dV}</script> (not assigned)</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dddt~4"></span>
+              <span class="anchor" id="variable-dddt~3"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -532,13 +529,13 @@ model like NRTL with the expression:</p>
             <td><strong>dDdT</strong></td>
             <td>
                 <p>
-<script type="math/tex">\frac{dD}{dV}</script>
+<script type="math/tex">\frac{dD}{dT}</script>
 </p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dddv2~4"></span>
+              <span class="anchor" id="variable-dddv2~3"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -555,7 +552,7 @@ model like NRTL with the expression:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dddt2~4"></span>
+              <span class="anchor" id="variable-dddt2~3"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -572,7 +569,7 @@ model like NRTL with the expression:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ddi~4"></span>
+              <span class="anchor" id="variable-ddi~3"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -589,7 +586,7 @@ model like NRTL with the expression:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dddtv~4"></span>
+              <span class="anchor" id="variable-dddtv~3"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -600,13 +597,13 @@ model like NRTL with the expression:</p>
             <td><strong>dDdTV</strong></td>
             <td>
                 <p>
-<script type="math/tex">\frac{d^2D}{dTV</script>
+<script type="math/tex">\frac{d^2D}{dTV}</script>
 </p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ddidv~4"></span>
+              <span class="anchor" id="variable-ddidv~3"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -623,7 +620,7 @@ model like NRTL with the expression:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ddidt~4"></span>
+              <span class="anchor" id="variable-ddidt~3"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -640,7 +637,7 @@ model like NRTL with the expression:</p>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ddij~4"></span>
+              <span class="anchor" id="variable-ddij~3"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -667,73 +664,73 @@ model like NRTL with the expression:</p>
   <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: proc~~dmixmhv~~CallsGraph Pages: 1 -->
-<svg id="procdmixmhvCallsGraph" width="345pt" height="116pt"
- viewBox="0.00 0.00 345.00 116.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~dmixmhv~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 112)">
+<svg id="procdmixmhvCallsGraph" width="341pt" height="116pt"
+ viewBox="0.00 0.00 341.00 116.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~dmixmhv~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 112.27)">
 <title>proc~~dmixmhv~~CallsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-112 341,-112 341,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-112.27 337.06,-112.27 337.06,4 -4,4"/>
 <!-- proc~dmixmhv -->
 <g id="proc~~dmixmhv~~CallsGraph_node1" class="node">
 <title>proc~dmixmhv</title>
-<polygon fill="none" stroke="black" points="100,-66 0,-66 0,-42 100,-42 100,-66"/>
-<text text-anchor="middle" x="50" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50">MHV%DmixMHV</text>
+<polygon fill="none" stroke="black" points="98.52,-66.27 0,-66.27 0,-42 98.52,-42 98.52,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="49.26" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50">MHV%DmixMHV</text>
 </g>
 <!-- excess_gibbs -->
 <g id="proc~~dmixmhv~~CallsGraph_node2" class="node">
 <title>excess_gibbs</title>
-<polygon fill="#777777" stroke="#777777" points="226.5,-108 144.5,-108 144.5,-84 226.5,-84 226.5,-108"/>
-<text text-anchor="middle" x="185.5" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">excess_gibbs</text>
+<polygon fill="#777777" stroke="#777777" points="223.66,-108.27 143.14,-108.27 143.14,-84 223.66,-84 223.66,-108.27"/>
+<text xml:space="preserve" text-anchor="middle" x="183.4" y="-92.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">excess_gibbs</text>
 </g>
 <!-- proc~dmixmhv&#45;&gt;excess_gibbs -->
 <g id="proc~~dmixmhv~~CallsGraph_edge1" class="edge">
 <title>proc~dmixmhv&#45;&gt;excess_gibbs</title>
-<path fill="none" stroke="#000000" d="M89.26,-66.04C103.92,-70.65 120.84,-75.97 136.32,-80.84"/>
-<polygon fill="#000000" stroke="#000000" points="135.65,-84.3 146.24,-83.96 137.75,-77.62 135.65,-84.3"/>
+<path fill="none" stroke="#000000" d="M89.91,-66.74C103.11,-70.93 117.99,-75.66 131.89,-80.08"/>
+<polygon fill="#000000" stroke="#000000" points="130.75,-83.39 141.34,-83.08 132.87,-76.72 130.75,-83.39"/>
 </g>
 <!-- hn -->
 <g id="proc~~dmixmhv~~CallsGraph_node3" class="node">
 <title>hn</title>
-<polygon fill="#777777" stroke="#777777" points="212.5,-66 158.5,-66 158.5,-42 212.5,-42 212.5,-66"/>
-<text text-anchor="middle" x="185.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">hn</text>
+<polygon fill="#777777" stroke="#777777" points="210.4,-66.27 156.4,-66.27 156.4,-42 210.4,-42 210.4,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="183.4" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">hn</text>
 </g>
 <!-- proc~dmixmhv&#45;&gt;hn -->
 <g id="proc~~dmixmhv~~CallsGraph_edge2" class="edge">
 <title>proc~dmixmhv&#45;&gt;hn</title>
-<path fill="none" stroke="#000000" d="M100.33,-54C116.11,-54 133.29,-54 147.98,-54"/>
-<polygon fill="#000000" stroke="#000000" points="148.19,-57.5 158.19,-54 148.19,-50.5 148.19,-57.5"/>
+<path fill="none" stroke="#000000" d="M98.72,-54.13C113.91,-54.13 130.44,-54.13 144.77,-54.13"/>
+<polygon fill="#000000" stroke="#000000" points="144.7,-57.64 154.7,-54.14 144.69,-50.64 144.7,-57.64"/>
 </g>
 <!-- proc~bmixmhv -->
 <g id="proc~~dmixmhv~~CallsGraph_node4" class="node">
 <title>proc~bmixmhv</title>
 <g id="a_proc~~dmixmhv~~CallsGraph_node4"><a xlink:href="../proc/bmixmhv.html" xlink:title="MHV%BmixMHV">
-<polygon fill="#d9534f" stroke="#d9534f" points="235,-24 136,-24 136,0 235,0 235,-24"/>
-<text text-anchor="middle" x="185.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">MHV%BmixMHV</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="232.29,-24.27 134.52,-24.27 134.52,0 232.29,0 232.29,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="183.4" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">MHV%BmixMHV</text>
 </a>
 </g>
 </g>
 <!-- proc~dmixmhv&#45;&gt;proc~bmixmhv -->
 <g id="proc~~dmixmhv~~CallsGraph_edge3" class="edge">
 <title>proc~dmixmhv&#45;&gt;proc~bmixmhv</title>
-<path fill="none" stroke="#000000" d="M89.26,-41.96C103.92,-37.35 120.84,-32.03 136.32,-27.16"/>
-<polygon fill="#000000" stroke="#000000" points="137.75,-30.38 146.24,-24.04 135.65,-23.7 137.75,-30.38"/>
+<path fill="none" stroke="#000000" d="M89.91,-41.53C103.11,-37.34 117.99,-32.61 131.89,-28.19"/>
+<polygon fill="#000000" stroke="#000000" points="132.87,-31.55 141.34,-25.19 130.75,-24.88 132.87,-31.55"/>
 </g>
 <!-- proc~bmix_qmr -->
 <g id="proc~~dmixmhv~~CallsGraph_node5" class="node">
 <title>proc~bmix_qmr</title>
 <g id="a_proc~~dmixmhv~~CallsGraph_node5"><a xlink:href="../proc/bmix_qmr.html" xlink:title="bmix_qmr">
-<polygon fill="#d9534f" stroke="#d9534f" points="337,-24 271,-24 271,0 337,0 337,-24"/>
-<text text-anchor="middle" x="304" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">bmix_qmr</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="333.06,-24.27 268.29,-24.27 268.29,0 333.06,0 333.06,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="300.67" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">bmix_qmr</text>
 </a>
 </g>
 </g>
 <!-- proc~bmixmhv&#45;&gt;proc~bmix_qmr -->
 <g id="proc~~dmixmhv~~CallsGraph_edge4" class="edge">
 <title>proc~bmixmhv&#45;&gt;proc~bmix_qmr</title>
-<path fill="none" stroke="#000000" d="M235.23,-12C243.65,-12 252.34,-12 260.57,-12"/>
-<polygon fill="#000000" stroke="#000000" points="260.7,-15.5 270.7,-12 260.7,-8.5 260.7,-15.5"/>
+<path fill="none" stroke="#000000" d="M232.62,-12.13C240.57,-12.13 248.76,-12.13 256.58,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="256.54,-15.64 266.54,-12.14 256.54,-8.64 256.54,-15.64"/>
 </g>
 </g>
 </svg>
@@ -752,55 +749,55 @@ model like NRTL with the expression:</p>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
 <svg width="641pt" height="28pt"
- viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
 <!-- Subroutine -->
 <g id="node1" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node2" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Interface -->
 <g id="node3" class="node">
 <title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
 </g>
 <!-- Type Bound Procedure -->
 <g id="node4" class="node">
 <title>Type Bound Procedure</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
-<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
 </g>
 <!-- Unknown Procedure Type -->
 <g id="node5" class="node">
 <title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
-<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
 </g>
 <!-- Program -->
 <g id="node6" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node7" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
-<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -845,7 +842,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Excess Gibbs energy.</p>
             </td>
         </tr>
         <tr>
@@ -862,7 +859,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Temperature derivative of excess Gibbs energy.</p>
             </td>
         </tr>
         <tr>
@@ -879,7 +876,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Second temperature derivative of excess Gibbs energy.</p>
             </td>
         </tr>
         <tr>
@@ -896,12 +893,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Mixed temperature/mole-number derivative of excess Gibbs energy.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-gen~6"></span>
+              <span class="anchor" id="variable-gen~7"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -913,12 +910,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Mole-number gradient of excess Gibbs energy.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-gen2~6"></span>
+              <span class="anchor" id="variable-gen2~7"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -930,12 +927,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Mole-number Hessian of excess Gibbs energy.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~9"></span>
+              <span class="anchor" id="variable-b~8"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -952,7 +949,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-bi~10"></span>
+              <span class="anchor" id="variable-bi~9"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -1054,7 +1051,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-f~8"></span>
+              <span class="anchor" id="variable-f~9"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -1066,7 +1063,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Residual or scalar equation value.</p>
             </td>
         </tr>
         <tr>
@@ -1151,12 +1148,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Second-order intermediate quantity used by this procedure.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-i~64"></span>
+              <span class="anchor" id="variable-i~46"></span>
               integer,
             </td>
               <td>private</td>
@@ -1168,12 +1165,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Loop index <code>i</code>.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-j~40"></span>
+              <span class="anchor" id="variable-j~30"></span>
               integer,
             </td>
               <td>private</td>
@@ -1185,12 +1182,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Loop index <code>j</code>.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-l~13"></span>
+              <span class="anchor" id="variable-l~11"></span>
               integer,
             </td>
               <td>private</td>
@@ -1202,7 +1199,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Loop index <code>l</code>.</p>
             </td>
         </tr>
         <tr>
@@ -1226,7 +1223,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~47"></span>
+              <span class="anchor" id="variable-nc~27"></span>
               integer,
             </td>
               <td>private</td>
@@ -1238,12 +1235,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Number of components.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-q~4"></span>
+              <span class="anchor" id="variable-q~3"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -1301,14 +1298,14 @@ implementation in a submodule of an interface in a parent module.
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

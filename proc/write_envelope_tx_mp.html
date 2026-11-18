@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>write_envelope_TX_MP &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.1% of total for procedures.">21 statements</a>
+                 title=" 0.1% of total for procedures.">25 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -135,16 +136,16 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/write_envelope_tx_mp.html#variable-p~42">P</a>
-            <a class="list-group-item" href="../proc/write_envelope_tx_mp.html#variable-t~63">T</a>
-            <a class="list-group-item" href="../proc/write_envelope_tx_mp.html#variable-alpha~24">alpha</a>
-            <a class="list-group-item" href="../proc/write_envelope_tx_mp.html#variable-betas~13">betas</a>
-            <a class="list-group-item" href="../proc/write_envelope_tx_mp.html#variable-i~91">i</a>
-            <a class="list-group-item" href="../proc/write_envelope_tx_mp.html#variable-j~52">j</a>
-            <a class="list-group-item" href="../proc/write_envelope_tx_mp.html#variable-nc~81">nc</a>
-            <a class="list-group-item" href="../proc/write_envelope_tx_mp.html#variable-np~17">np</a>
-            <a class="list-group-item" href="../proc/write_envelope_tx_mp.html#variable-w~24">w</a>
-            <a class="list-group-item" href="../proc/write_envelope_tx_mp.html#variable-x_l~13">x_l</a>
+            <a class="list-group-item" href="../proc/write_envelope_tx_mp.html#variable-p~13">P</a>
+            <a class="list-group-item" href="../proc/write_envelope_tx_mp.html#variable-t~16">T</a>
+            <a class="list-group-item" href="../proc/write_envelope_tx_mp.html#variable-alpha~11">alpha</a>
+            <a class="list-group-item" href="../proc/write_envelope_tx_mp.html#variable-betas~10">betas</a>
+            <a class="list-group-item" href="../proc/write_envelope_tx_mp.html#variable-i~21">i</a>
+            <a class="list-group-item" href="../proc/write_envelope_tx_mp.html#variable-j~11">j</a>
+            <a class="list-group-item" href="../proc/write_envelope_tx_mp.html#variable-nc~15">nc</a>
+            <a class="list-group-item" href="../proc/write_envelope_tx_mp.html#variable-np~14">np</a>
+            <a class="list-group-item" href="../proc/write_envelope_tx_mp.html#variable-w~11">w</a>
+            <a class="list-group-item" href="../proc/write_envelope_tx_mp.html#variable-x_l~10">x_l</a>
         </div>
       </div>
     </div>
@@ -212,7 +213,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-unit~3"></span>
+              <span class="anchor" id="variable-unit~2"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -245,7 +246,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~42"></span>
+              <span class="anchor" id="variable-p~13"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -262,7 +263,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~63"></span>
+              <span class="anchor" id="variable-t~16"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -279,7 +280,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-alpha~24"></span>
+              <span class="anchor" id="variable-alpha~11"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -296,7 +297,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-betas~13"></span>
+              <span class="anchor" id="variable-betas~10"></span>
               real(kind=pr),
             </td>
               <td>private,</td>
@@ -308,12 +309,12 @@
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Phase fractions for the main phases.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-i~91"></span>
+              <span class="anchor" id="variable-i~21"></span>
               integer,
             </td>
               <td>private</td>
@@ -325,12 +326,12 @@
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Loop index <code>i</code>.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-j~52"></span>
+              <span class="anchor" id="variable-j~11"></span>
               integer,
             </td>
               <td>private</td>
@@ -342,12 +343,12 @@
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Loop index <code>j</code>.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~81"></span>
+              <span class="anchor" id="variable-nc~15"></span>
               integer,
             </td>
               <td>private</td>
@@ -359,12 +360,12 @@
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Number of components.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-np~17"></span>
+              <span class="anchor" id="variable-np~14"></span>
               integer,
             </td>
               <td>private</td>
@@ -376,12 +377,12 @@
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Number of phases.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-w~24"></span>
+              <span class="anchor" id="variable-w~11"></span>
               real(kind=pr),
             </td>
               <td>private,</td>
@@ -393,12 +394,12 @@
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Reference/trial phase composition.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x_l~13"></span>
+              <span class="anchor" id="variable-x_l~10"></span>
               real(kind=pr),
             </td>
               <td>private,</td>
@@ -410,7 +411,7 @@
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Main-phase compositions.</p>
             </td>
         </tr>
     </tbody>
@@ -439,14 +440,14 @@
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

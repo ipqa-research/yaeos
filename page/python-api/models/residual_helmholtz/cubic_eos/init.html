@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cubic Equations of State &mdash; yaeos 4.5.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+  <title>Cubic Equations of State &mdash; yaeos 4.5.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=a284863f"></script>
+      <script src="../../../_static/documentation_options.js?v=06fc0226"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,18 +56,17 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../init.html">Models</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="../init.html">Residual Helmholtz Models</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Cubic Equations of State</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="cubic_eos.html">Cubic EoS</a></li>
-<li class="toctree-l4"><a class="reference internal" href="mixing_rules.html">Mixing Rules</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../init.html#choose-the-model-before-the-solver">Choose the model before the solver</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../init.html">Residual Helmholtz Models</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Cubic Equations of State</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../multifluid/init.html">Multifluid Equations of State</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../saft/init.html">SAFT Equations of State</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../multifluid/init.html">Multifluid Equations of State</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../saft/init.html">SAFT Equations of State</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../excess_gibbs/init.html">Excess Gibbs Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../groups.html">Groups module</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../excess_gibbs/init.html">Excess Gibbs Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../groups.html">Groups module</a></li>
 </ul>
 </li>
 </ul>
@@ -104,9 +103,19 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-yaeos.models.residual_helmholtz.cubic_eos">
-<span id="cubic-equations-of-state"></span><h1>Cubic Equations of State<a class="headerlink" href="#module-yaeos.models.residual_helmholtz.cubic_eos" title="Link to this heading"></a></h1>
-<p>Cubic EoS module.</p>
+  <section id="cubic-equations-of-state">
+<h1>Cubic Equations of State<a class="headerlink" href="#cubic-equations-of-state" title="Link to this heading"></a></h1>
+<p>Cubic EoS are a practical starting point for compressible-fluid properties
+and vapor-liquid equilibrium. Supply one critical temperature (K), critical
+pressure (bar), and dimensionless acentric factor per component. The mixing
+rule then describes how unlike components interact.</p>
+<p>Start with <a class="reference internal" href="cubic_eos.html"><span class="doc">Cubic EoS</span></a>, then read <a class="reference internal" href="mixing_rules.html"><span class="doc">Mixing Rules</span></a> before adjusting
+binary interactions. Pure-component constants alone do not guarantee good
+mixture predictions. The
+<a class="reference internal" href="../../../tutorial/equations_of_state/cubic_eos/cubic_eos.html"><span class="doc">cubic tutorial</span></a>
+also introduces <a class="reference internal" href="alphas.html"><span class="doc">alpha functions</span></a>, which control temperature
+dependence of attraction. Shared calculations are documented in <a class="reference internal" href="../../../core.html"><span class="doc">Core Module</span></a>.</p>
+<p id="module-yaeos.models.residual_helmholtz.cubic_eos">Cubic EoS module.</p>
 <p>Implemented models:</p>
 <ul class="simple">
 <li><dl class="simple">
@@ -115,6 +124,16 @@
 <li><p>PengRobinson78: Peng-Robinson model (1978)</p></li>
 <li><p>SoaveRedlichKwong: Soave-Redlich-Kwong model</p></li>
 <li><p>RKPR: RKPR model</p></li>
+<li><p>PSRK: Predictive Soave-Redlich-Kwong model</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Alpha functions: alpha functions for cubic EoS</dt><dd><ul>
+<li><p>AlphaSoave: Soave alpha function</p></li>
+<li><p>AlphaRKPR: RKPR alpha function</p></li>
+<li><p>AlphaMathiasCopeman: Mathias-Copeman alpha function</p></li>
 </ul>
 </dd>
 </dl>
@@ -122,10 +141,11 @@
 <li><dl class="simple">
 <dt>Mixing rules: mixing rules for cubic EoS</dt><dd><ul>
 <li><p>QMR: quadratic mixing rule</p></li>
-<li><p>QMRTD: quadratic mixing rule with exponential temperature dependance</p></li>
+<li><p>QMRTD: quadratic mixing rule with exponential temperature dependence</p></li>
 <li><p>CMR: cubic mixing rule</p></li>
-<li><p>CMRTD: cubic mixing rule with exponential temperature dependance</p></li>
-<li><p>MHV1: modified Huron-Vidal mixing rule</p></li>
+<li><p>CMRTD: cubic mixing rule with exponential temperature dependence</p></li>
+<li><p>sDDLC: segmented density dependent local composition mixing rule</p></li>
+<li><p>MHV: modified Huron-Vidal mixing rule</p></li>
 <li><p>HV: Huron-Vidal mixing rule</p></li>
 <li><p>HVNRTL: Huron-Vidal mixing rule with NRTL excess Gibbs energy</p></li>
 </ul>
@@ -136,6 +156,7 @@
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="cubic_eos.html">Cubic EoS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="alphas.html">Alpha Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="mixing_rules.html">Mixing Rules</a></li>
 </ul>
 </div>

@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GPEC module &mdash; yaeos 4.5.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+  <title>GPEC module &mdash; yaeos 4.5.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=a284863f"></script>
+      <script src="_static/documentation_options.js?v=06fc0226"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -58,7 +58,11 @@
 <li class="toctree-l1"><a class="reference internal" href="models/init.html">Models</a></li>
 </ul>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">GPEC module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">GPEC module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#before-constructing-it">Before constructing it</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#reading-the-results">Reading the results</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="envelopes.html">Envelopes Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fitting/init.html">EoS Fitting Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tools/init.html">Tools</a></li>
@@ -88,9 +92,43 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-yaeos.gpec">
-<span id="gpec-module"></span><h1>GPEC module<a class="headerlink" href="#module-yaeos.gpec" title="Link to this heading"></a></h1>
-<p>Global Phase Equilibria Calculations.</p>
+  <section id="gpec-module">
+<h1>GPEC module<a class="headerlink" href="#gpec-module" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">GPEC</span></code> is a driver for global phase-diagram calculations of <strong>binary</strong>
+mixtures. Given an existing equation-of-state model, it traces critical lines
+and three-phase lines, and provides isothermal (Pxy) and isobaric (Txy)
+views of the mixture’s phase behavior. This is a broader task than
+a flash at one feed composition.</p>
+<section id="before-constructing-it">
+<h2>Before constructing it<a class="headerlink" href="#before-constructing-it" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Build and check a two-component model first: verify a property, a
+saturation point, and a flash. GPEC inherits every weakness of that model.</p></li>
+<li><p>Keep the component order fixed. The driver works with the first two
+components of the model, and its “first” and “second” component references
+(almost pure starting compositions, critical-line directions) follow that
+order.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_pressure</span></code> is in bar and bounds the tracing range; <code class="docutils literal notranslate"><span class="pre">max_points</span></code>
+limits the number of traced points, so a truncated curve usually means a
+numerical limit rather than a physical endpoint.</p></li>
+</ul>
+</section>
+<section id="reading-the-results">
+<h2>Reading the results<a class="headerlink" href="#reading-the-results" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">plot_gped</span></code> draws the pure saturation curves, the critical line, and any
+three-phase lines it found. <code class="docutils literal notranslate"><span class="pre">calc_pxy</span></code> and <code class="docutils literal notranslate"><span class="pre">calc_txy</span></code> return the
+underlying phase-equilibrium data used for those views; <code class="docutils literal notranslate"><span class="pre">plot_pxy</span></code> and
+<code class="docutils literal notranslate"><span class="pre">plot_txy</span></code> add the plot. Composition coordinates are mole fractions in the
+model’s fixed order.</p>
+<p>Continuation steps (<code class="docutils literal notranslate"><span class="pre">step_12</span></code>, <code class="docutils literal notranslate"><span class="pre">step_21</span></code>), starting compositions
+(<code class="docutils literal notranslate"><span class="pre">x10</span></code>, <code class="docutils literal notranslate"><span class="pre">x20</span></code>), and the <code class="docutils literal notranslate"><span class="pre">stability_analysis</span></code> switch influence which
+branches are discovered. A missing branch is not proof that it does not
+exist, and a traced branch is not proof that it is globally stable: check
+against stability analysis and, where relevant, experimental data.</p>
+<p>Read the <a class="reference internal" href="tutorial/equations_of_state/gpec/gpec.html"><span class="doc">GPEC tutorial</span></a> for a
+worked example, <a class="reference internal" href="core.html"><span class="doc">Core Module</span></a> for the underlying equilibrium methods, and
+<a class="reference internal" href="envelopes.html"><span class="doc">Envelopes Module</span></a> for the data structures used by envelope calculations.</p>
+<p id="module-yaeos.gpec">Global Phase Equilibria Calculations.</p>
 <p>Module that implements the GPEC algorithm for calculation of GPEDs and its
 derivatives to obtain isopleths, isotherms and isobars.</p>
 <dl class="py class">
@@ -106,7 +144,7 @@ that implements the necessary methods for phase equilibria calculations.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>model</strong> (<a class="reference internal" href="core.html#yaeos.core.ArModel" title="yaeos.core.ArModel"><em>ArModel</em></a>) – The thermodynamic model to be used for phase equilibria calculations.</p></li>
-<li><p><strong>max_pressure</strong> (<em>float</em><em>, </em><em>optional</em>) – The maximum pressure for the calculations (default is 2500).</p></li>
+<li><p><strong>max_pressure</strong> (<em>float</em><em>, </em><em>optional</em>) – The maximum pressure for the calculations [bar] (default is 2500).</p></li>
 <li><p><strong>max_points</strong> (<em>int</em><em>, </em><em>optional</em>) – The maximum number of points to be calculated in the critical line
 (default is 10000).</p></li>
 <li><p><strong>stability_analysis</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to perform stability analysis (default is True).</p></li>
@@ -117,7 +155,7 @@ component (default is 1e-5).</p></li>
 <li><p><strong>x20</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial mole fraction of the second component for the critical line
 starting from the almost pure second component (default is 0.9999).</p></li>
 <li><p><strong>x10</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial mole fraction of the first component for the critical line
-starting from the almost pure first component (default is 0.99999).</p></li>
+starting from the almost pure first component (default is 1 - 1e-9).</p></li>
 </ul>
 </dd>
 </dl>
@@ -254,11 +292,11 @@ to determine the phase behavior of the system.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>temperature</strong> (<em>float</em>) – The temperature at which to calculate the Pxy phase diagram.</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – The temperature at which to calculate the Pxy phase diagram [K].</p></li>
 <li><p><strong>x10</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial molar fraction of the first component for the line that
-starts from the almost pure first component (default is 1e-5).</p></li>
+starts from the almost pure first component (default is 0.9999).</p></li>
 <li><p><strong>x20</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial molar fraction of the second component for the line that
-starts from the almost pure second component (default is 1e-5).</p></li>
+starts from the almost pure second component (default is 0.9999).</p></li>
 <li><p><strong>dx10</strong> (<em>float</em><em>, </em><em>optional</em>) – Step size for the line that starts from the almost pure first
 component (default is 1e-3).</p></li>
 <li><p><strong>dx20</strong> (<em>float</em><em>, </em><em>optional</em>) – Step size for the line that starts from the almost pure second
@@ -292,11 +330,11 @@ different compositions of the components.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>temperature</strong> (<em>float</em>) – The temperature at which to plot the Pxy phase diagram.</p></li>
+<li><p><strong>temperature</strong> (<em>float</em>) – The temperature at which to plot the Pxy phase diagram [K].</p></li>
 <li><p><strong>x10</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial molar fraction of the first component for the line that
-starts from the almost pure first component (default is 1e-5).</p></li>
+starts from the almost pure first component (default is 0.9999).</p></li>
 <li><p><strong>x20</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial molar fraction of the second component for the line that
-starts from the almost pure second component (default is 1e-5).</p></li>
+starts from the almost pure second component (default is 0.9999).</p></li>
 <li><p><strong>dx10</strong> (<em>float</em><em>, </em><em>optional</em>) – Step size for the line that starts from the almost pure first
 component (default is 1e-3).</p></li>
 <li><p><strong>dx20</strong> (<em>float</em><em>, </em><em>optional</em>) – Step size for the line that starts from the almost pure second
@@ -319,13 +357,13 @@ determine the phase behavior of the system.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pressure</strong> (<em>float</em>) – The pressure at which to calculate the Txy phase diagram.</p></li>
+<li><p><strong>pressure</strong> (<em>float</em>) – The pressure at which to calculate the Txy phase diagram [bar].</p></li>
 <li><p><strong>y10</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial molar fraction of the first component for the line that
-starts from the almost pure first component (default is 1e-5).</p></li>
+starts from the almost pure first component (default is 0.9999).</p></li>
 <li><p><strong>y20</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial molar fraction of the second component for the line that
-starts from the almost pure second component (default is 1e-5).</p></li>
+starts from the almost pure second component (default is 0.9999).</p></li>
 <li><p><strong>dy10</strong> (<em>float</em><em>, </em><em>optional</em>) – Step size for the line that starts from the almost pure first
-component (default is -1e-3).</p></li>
+component (default is 1e-3).</p></li>
 <li><p><strong>dy20</strong> (<em>float</em><em>, </em><em>optional</em>) – Step size for the line that starts from the almost pure second
 component (default is 1e-3).</p></li>
 <li><p><strong>dyll0</strong> (<em>float</em><em>, </em><em>optional</em>) – Step size for the line that starts from the liquid-liquid critical
@@ -357,13 +395,13 @@ pressure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>pressure</strong> (<em>float</em>) – The pressure at which to plot the Txy phase diagram.</p></li>
+<li><p><strong>pressure</strong> (<em>float</em>) – The pressure at which to plot the Txy phase diagram [bar].</p></li>
 <li><p><strong>y10</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial molar fraction of the first component for the line that
 starts from the almost pure first component (default is 0.9999).</p></li>
 <li><p><strong>y20</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial molar fraction of the second component for the line that
 starts from the almost pure second component (default is 0.9999).</p></li>
 <li><p><strong>dy10</strong> (<em>float</em><em>, </em><em>optional</em>) – Step size for the line that starts from the almost pure first
-component (default is -1e-3).</p></li>
+component (default is 1e-3).</p></li>
 <li><p><strong>dy20</strong> (<em>float</em><em>, </em><em>optional</em>) – Step size for the line that starts from the almost pure second
 component (default is 1e-3).</p></li>
 <li><p><strong>dyll0</strong> (<em>float</em><em>, </em><em>optional</em>) – Step size for the line that starts from the liquid-liquid critical
@@ -376,6 +414,7 @@ point (default is 1e-4).</p></li>
 
 </dd></dl>
 
+</section>
 </section>
 
 

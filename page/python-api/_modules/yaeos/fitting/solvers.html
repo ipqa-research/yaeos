@@ -5,15 +5,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>yaeos.fitting.solvers &mdash; yaeos 4.5.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+  <title>yaeos.fitting.solvers &mdash; yaeos 4.5.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=a284863f"></script>
+      <script src="../../../_static/documentation_options.js?v=06fc0226"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -88,20 +88,38 @@
   <h1>Source code for yaeos.fitting.solvers</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Solvers.</span>
 
-<span class="sd">Module that contains different solvers for specific porpouses.</span>
+<span class="sd">Module that contains different solvers for specific purposes.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">argrelmax</span><span class="p">,</span> <span class="n">argrelmin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.signal</span><span class="w"> </span><span class="kn">import</span> <span class="n">argrelmax</span><span class="p">,</span> <span class="n">argrelmin</span>
 
-<span class="kn">from</span> <span class="nn">yaeos.core</span> <span class="kn">import</span> <span class="n">ArModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArModel</span>
 
 
 <div class="viewcode-block" id="binary_isofugacity_x1y1pt">
 <a class="viewcode-back" href="../../../fitting/solvers.html#yaeos.fitting.solvers.binary_isofugacity_x1y1pt">[docs]</a>
-<span class="k">def</span> <span class="nf">binary_isofugacity_x1y1pt</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">ArModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Isofugacity evaluation at a given P and T.&quot;&quot;&quot;</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">binary_isofugacity_x1y1pt</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">model</span><span class="p">:</span> <span class="n">ArModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Isofugacity evaluation at a given P and T.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : array_like</span>
+<span class="sd">        Mole fractions of component 1 in both phases, ordered as</span>
+<span class="sd">        ``[y1, x1]``.</span>
+<span class="sd">    p : float</span>
+<span class="sd">        Pressure [bar].</span>
+<span class="sd">    t : float</span>
+<span class="sd">        Temperature [K].</span>
+<span class="sd">    model : ArModel</span>
+<span class="sd">        yaeos ArModel object.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.ndarray</span>
+<span class="sd">        Squared isofugacity residual of each component.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">y1</span><span class="p">,</span> <span class="n">x1</span> <span class="o">=</span> <span class="n">x</span>
 
     <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">x1</span><span class="p">])</span>
@@ -118,7 +136,7 @@
 
 <div class="viewcode-block" id="solve_pt">
 <a class="viewcode-back" href="../../../fitting/solvers.html#yaeos.fitting.solvers.solve_pt">[docs]</a>
-<span class="k">def</span> <span class="nf">solve_pt</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">solve_pt</span><span class="p">(</span>
     <span class="n">model</span><span class="p">:</span> <span class="n">ArModel</span><span class="p">,</span> <span class="n">pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Solve a point at a given P and T.</span>
@@ -137,6 +155,7 @@
 <span class="sd">        Temperature [K].</span>
 <span class="sd">    kind : str</span>
 <span class="sd">        Kind of phase equilibrium calculation. Options are:</span>
+
 <span class="sd">        - &quot;liquid-liquid&quot;: liquid-liquid equilibrium calculation.</span>
 <span class="sd">        - &quot;PT&quot;: pressure-temperature calculation.</span>
 
@@ -166,7 +185,7 @@
 
 <div class="viewcode-block" id="find_init_binary_ll">
 <a class="viewcode-back" href="../../../fitting/solvers.html#yaeos.fitting.solvers.find_init_binary_ll">[docs]</a>
-<span class="k">def</span> <span class="nf">find_init_binary_ll</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_init_binary_ll</span><span class="p">(</span>
     <span class="n">model</span><span class="p">:</span> <span class="n">ArModel</span><span class="p">,</span> <span class="n">pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Find initial guess for a binary liquid-liquid system.</span>
@@ -181,6 +200,7 @@
 <span class="sd">        Temperature [K].</span>
 <span class="sd">    kind : str</span>
 <span class="sd">        Kind of phase equilibrium calculation. Options are:</span>
+
 <span class="sd">        - &quot;liquid-liquid&quot;: liquid-liquid equilibrium calculation.</span>
 <span class="sd">        - &quot;PT&quot;: pressure-temperature calculation.</span>
 

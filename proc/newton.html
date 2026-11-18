@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>newton &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.7% of total for procedures.">114 statements</a>
+                 title=" 0.7% of total for procedures.">123 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -135,30 +136,30 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/newton.html#variable-f~11">F</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-f~38">F</a>
             <a class="list-group-item" href="../proc/newton.html#variable-f_new">F_new</a>
-            <a class="list-group-item" href="../proc/newton.html#variable-j~2">J</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-j~5">J</a>
             <a class="list-group-item" href="../proc/newton.html#variable-j_new">J_new</a>
             <a class="list-group-item" href="../proc/newton.html#variable-x_old">X_old</a>
             <a class="list-group-item" href="../proc/newton.html#variable-cond_est~2">cond_est</a>
-            <a class="list-group-item" href="../proc/newton.html#variable-converged">converged</a>
-            <a class="list-group-item" href="../proc/newton.html#variable-dx~4">dX</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-converged~2">converged</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-dx~17">dX</a>
             <a class="list-group-item" href="../proc/newton.html#variable-dx_norm~2">dx_norm</a>
             <a class="list-group-item" href="../proc/newton.html#variable-dx_norm_prev">dx_norm_prev</a>
-            <a class="list-group-item" href="../proc/newton.html#variable-f_norm~2">f_norm</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-f_norm~3">f_norm</a>
             <a class="list-group-item" href="../proc/newton.html#variable-f_norm_new">f_norm_new</a>
             <a class="list-group-item" href="../proc/newton.html#variable-hist_buf">hist_buf</a>
-            <a class="list-group-item" href="../proc/newton.html#variable-its~3">its</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-its~23">its</a>
             <a class="list-group-item" href="../proc/newton.html#variable-jscale">jscale</a>
-            <a class="list-group-item" href="../proc/newton.html#variable-lambda~2">lambda</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-lambda~3">lambda</a>
             <a class="list-group-item" href="../proc/newton.html#variable-ls_failed">ls_failed</a>
-            <a class="list-group-item" href="../proc/newton.html#variable-n~19">n</a>
-            <a class="list-group-item" href="../proc/newton.html#variable-res">res</a>
-            <a class="list-group-item" href="../proc/newton.html#variable-s~3">s</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-n~87">n</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-res~4">res</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-s~4">s</a>
             <a class="list-group-item" href="../proc/newton.html#variable-small_step">small_step</a>
             <a class="list-group-item" href="../proc/newton.html#variable-stag_count">stag_count</a>
             <a class="list-group-item" href="../proc/newton.html#variable-stagnated">stagnated</a>
-            <a class="list-group-item" href="../proc/newton.html#variable-t~7">t</a>
+            <a class="list-group-item" href="../proc/newton.html#variable-t~34">t</a>
         </div>
       </div>
     </div>
@@ -192,6 +193,16 @@
 </h2>
     
 
+    <h1 id="newton">newton</h1>
+<p>Find a root of a dense nonlinear system.</p>
+<h1 id="description">Description</h1>
+<p>Solve <script type="math/tex">F(x)=0</script> with safeguarded Newton and LM fallback.
+Newton steps use Armijo backtracking; ill-conditioned Jacobians
+trigger Levenberg-Marquardt regularization. Diagnostics are returned
+even when the iteration does not converge.</p>
+<h1 id="examples">Examples</h1>
+<div class="codehilite"><pre><span></span><code><span class="k">call </span><span class="n">newton</span><span class="p">(</span><span class="n">residual_and_jacobian</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">settings</span><span class="p">,</span><span class="w"> </span><span class="k">result</span><span class="p">)</span>
+</code></pre></div>
 
 
     <h3>Arguments</h3>
@@ -217,12 +228,12 @@
             <td>::</td>
             <td><strong>sub</strong></td>
             <td>
-                
+                <p>User-supplied residual/Jacobian routine (matches to_solve interface)</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~12"></span>
+              <span class="anchor" id="variable-x~27"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -232,7 +243,7 @@
             <td>::</td>
             <td><strong>x</strong>(:)</td>
             <td>
-                
+                <p>[in]  Initial guess, length n</p>
             </td>
         </tr>
         <tr>
@@ -247,7 +258,7 @@
             <td>::</td>
             <td><strong>settings</strong></td>
             <td>
-                
+                <p>Solver configuration; defaults are used for any absent fields</p>
             </td>
         </tr>
         <tr>
@@ -262,7 +273,7 @@
             <td>::</td>
             <td><strong>result</strong></td>
             <td>
-                
+                <p>Diagnostic output: status, iteration count, norms, history</p>
             </td>
         </tr>
     </tbody>
@@ -277,232 +288,232 @@
   <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: proc~~newton~~CallsGraph Pages: 1 -->
-<svg id="procnewtonCallsGraph" width="355pt" height="446pt"
- viewBox="0.00 0.00 355.00 445.54" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~newton~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 441.54)">
+<svg id="procnewtonCallsGraph" width="353pt" height="446pt"
+ viewBox="0.00 0.00 353.00 446.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~newton~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 441.51)">
 <title>proc~~newton~~CallsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-441.54 351,-441.54 351,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-441.51 348.79,-441.51 348.79,4 -4,4"/>
 <!-- proc~newton -->
 <g id="proc~~newton~~CallsGraph_node1" class="node">
 <title>proc~newton</title>
-<polygon fill="none" stroke="black" points="54,-306 0,-306 0,-282 54,-282 54,-306"/>
-<text text-anchor="middle" x="27" y="-291.6" font-family="Helvetica,sans-Serif" font-size="10.50">newton</text>
+<polygon fill="none" stroke="black" points="54,-306.27 0,-306.27 0,-282 54,-282 54,-306.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-290.53" font-family="Helvetica,sans-Serif" font-size="10.50">newton</text>
 </g>
 <!-- proc~armijo_backtrack -->
 <g id="proc~~newton~~CallsGraph_node2" class="node">
 <title>proc~armijo_backtrack</title>
 <g id="a_proc~~newton~~CallsGraph_node2"><a xlink:href="../proc/armijo_backtrack.html" xlink:title="armijo_backtrack">
-<polygon fill="#d9534f" stroke="#d9534f" points="195,-408 90,-408 90,-384 195,-384 195,-408"/>
-<text text-anchor="middle" x="142.5" y="-393.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">armijo_backtrack</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="193.77,-408.27 90,-408.27 90,-384 193.77,-384 193.77,-408.27"/>
+<text xml:space="preserve" text-anchor="middle" x="141.88" y="-392.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">armijo_backtrack</text>
 </a>
 </g>
 </g>
 <!-- proc~newton&#45;&gt;proc~armijo_backtrack -->
 <g id="proc~~newton~~CallsGraph_edge1" class="edge">
 <title>proc~newton&#45;&gt;proc~armijo_backtrack</title>
-<path fill="none" stroke="#000000" d="M34.45,-306.06C44.31,-323.47 64.67,-355.65 90,-375 91.84,-376.4 93.79,-377.73 95.8,-378.98"/>
-<polygon fill="#000000" stroke="#000000" points="94.53,-382.27 104.99,-383.98 97.88,-376.12 94.53,-382.27"/>
+<path fill="none" stroke="#000000" d="M34.79,-306.77C44.79,-324.28 64.99,-355.95 90,-375.13 91.3,-376.13 92.66,-377.1 94.06,-378.02"/>
+<polygon fill="#000000" stroke="#000000" points="92.01,-380.88 102.43,-382.79 95.48,-374.8 92.01,-380.88"/>
 </g>
 <!-- proc~has_nan_inf -->
 <g id="proc~~newton~~CallsGraph_node3" class="node">
 <title>proc~has_nan_inf</title>
 <g id="a_proc~~newton~~CallsGraph_node3"><a xlink:href="../proc/has_nan_inf.html" xlink:title="has_nan_inf">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="327,-428 251,-428 251,-404 327,-404 327,-428"/>
-<text text-anchor="middle" x="289" y="-413.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">has_nan_inf</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="324.54,-428.27 250.02,-428.27 250.02,-404 324.54,-404 324.54,-428.27"/>
+<text xml:space="preserve" text-anchor="middle" x="287.28" y="-412.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">has_nan_inf</text>
 </a>
 </g>
 </g>
 <!-- proc~newton&#45;&gt;proc~has_nan_inf -->
 <g id="proc~~newton~~CallsGraph_edge2" class="edge">
 <title>proc~newton&#45;&gt;proc~has_nan_inf</title>
-<path fill="none" stroke="#000000" d="M29.9,-306.26C34.64,-332.17 49.68,-392.17 90,-417 135.39,-444.95 198.44,-438.67 241.1,-429.38"/>
-<polygon fill="#000000" stroke="#000000" points="242,-432.76 250.95,-427.1 240.42,-425.94 242,-432.76"/>
+<path fill="none" stroke="#000000" d="M29.9,-306.39C34.64,-332.31 49.68,-392.31 90,-417.13 134.52,-444.55 196.18,-438.74 238.44,-429.69"/>
+<polygon fill="#000000" stroke="#000000" points="239.11,-433.13 248.08,-427.48 237.55,-426.31 239.11,-433.13"/>
 </g>
 <!-- proc~jacobian_scale -->
 <g id="proc~~newton~~CallsGraph_node4" class="node">
 <title>proc~jacobian_scale</title>
 <g id="a_proc~~newton~~CallsGraph_node4"><a xlink:href="../proc/jacobian_scale.html" xlink:title="jacobian_scale">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="188,-366 97,-366 97,-342 188,-342 188,-366"/>
-<text text-anchor="middle" x="142.5" y="-351.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">jacobian_scale</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="187.02,-366.27 96.75,-366.27 96.75,-342 187.02,-342 187.02,-366.27"/>
+<text xml:space="preserve" text-anchor="middle" x="141.88" y="-350.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">jacobian_scale</text>
 </a>
 </g>
 </g>
 <!-- proc~newton&#45;&gt;proc~jacobian_scale -->
 <g id="proc~~newton~~CallsGraph_edge3" class="edge">
 <title>proc~newton&#45;&gt;proc~jacobian_scale</title>
-<path fill="none" stroke="#000000" d="M49.71,-306.14C61.56,-312.71 76.53,-320.91 90,-328 95.82,-331.06 102.03,-334.26 108.07,-337.33"/>
-<polygon fill="#000000" stroke="#000000" points="106.81,-340.61 117.31,-342 109.96,-334.37 106.81,-340.61"/>
+<path fill="none" stroke="#000000" d="M50.59,-306.73C62.3,-313.21 76.87,-321.18 90,-328.13 95.13,-330.85 100.57,-333.68 105.92,-336.44"/>
+<polygon fill="#000000" stroke="#000000" points="104.12,-339.45 114.62,-340.89 107.31,-333.22 104.12,-339.45"/>
 </g>
 <!-- proc~norm_inf -->
 <g id="proc~~newton~~CallsGraph_node5" class="node">
 <title>proc~norm_inf</title>
 <g id="a_proc~~newton~~CallsGraph_node5"><a xlink:href="../proc/norm_inf.html" xlink:title="norm_inf">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="319,-356 259,-356 259,-332 319,-332 319,-356"/>
-<text text-anchor="middle" x="289" y="-341.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">norm_inf</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="316.66,-356.27 257.89,-356.27 257.89,-332 316.66,-332 316.66,-356.27"/>
+<text xml:space="preserve" text-anchor="middle" x="287.28" y="-340.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">norm_inf</text>
 </a>
 </g>
 </g>
 <!-- proc~newton&#45;&gt;proc~norm_inf -->
 <g id="proc~~newton~~CallsGraph_edge4" class="edge">
 <title>proc~newton&#45;&gt;proc~norm_inf</title>
-<path fill="none" stroke="#000000" d="M54.36,-299.07C100.33,-307.91 195.35,-326.18 248.97,-336.49"/>
-<polygon fill="#000000" stroke="#000000" points="248.32,-339.93 258.8,-338.38 249.64,-333.06 248.32,-339.93"/>
+<path fill="none" stroke="#000000" d="M54.19,-299.2C99.59,-307.99 193.17,-326.11 246.6,-336.45"/>
+<polygon fill="#000000" stroke="#000000" points="245.7,-339.84 256.19,-338.31 247.03,-332.97 245.7,-339.84"/>
 </g>
 <!-- proc~pack_result -->
 <g id="proc~~newton~~CallsGraph_node6" class="node">
 <title>proc~pack_result</title>
 <g id="a_proc~~newton~~CallsGraph_node6"><a xlink:href="../proc/pack_result.html" xlink:title="pack_result">
-<polygon fill="#d9534f" stroke="#d9534f" points="179,-286 106,-286 106,-262 179,-262 179,-286"/>
-<text text-anchor="middle" x="142.5" y="-271.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">pack_result</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="177.64,-286.27 106.12,-286.27 106.12,-262 177.64,-262 177.64,-286.27"/>
+<text xml:space="preserve" text-anchor="middle" x="141.88" y="-270.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">pack_result</text>
 </a>
 </g>
 </g>
 <!-- proc~newton&#45;&gt;proc~pack_result -->
 <g id="proc~~newton~~CallsGraph_edge5" class="edge">
 <title>proc~newton&#45;&gt;proc~pack_result</title>
-<path fill="none" stroke="#000000" d="M54.04,-289.41C66.36,-287.24 81.45,-284.58 95.6,-282.09"/>
-<polygon fill="#000000" stroke="#000000" points="96.45,-285.49 105.69,-280.31 95.24,-278.6 96.45,-285.49"/>
+<path fill="none" stroke="#000000" d="M54.47,-289.45C66.48,-287.32 81.05,-284.74 94.77,-282.3"/>
+<polygon fill="#000000" stroke="#000000" points="95.3,-285.77 104.54,-280.57 94.08,-278.87 95.3,-285.77"/>
 </g>
 <!-- proc~print_header -->
 <g id="proc~~newton~~CallsGraph_node7" class="node">
 <title>proc~print_header</title>
 <g id="a_proc~~newton~~CallsGraph_node7"><a xlink:href="../proc/print_header.html" xlink:title="print_header">
-<polygon fill="#d9534f" stroke="#d9534f" points="183,-244 102,-244 102,-220 183,-220 183,-244"/>
-<text text-anchor="middle" x="142.5" y="-229.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">print_header</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="181.77,-244.27 102,-244.27 102,-220 181.77,-220 181.77,-244.27"/>
+<text xml:space="preserve" text-anchor="middle" x="141.88" y="-228.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">print_header</text>
 </a>
 </g>
 </g>
 <!-- proc~newton&#45;&gt;proc~print_header -->
 <g id="proc~~newton~~CallsGraph_edge6" class="edge">
 <title>proc~newton&#45;&gt;proc~print_header</title>
-<path fill="none" stroke="#000000" d="M44.29,-281.94C56.49,-273.23 73.79,-261.55 90,-253 93.13,-251.35 96.41,-249.74 99.75,-248.2"/>
-<polygon fill="#000000" stroke="#000000" points="101.45,-251.27 109.19,-244.04 98.62,-244.87 101.45,-251.27"/>
+<path fill="none" stroke="#000000" d="M45.08,-281.54C57.24,-272.91 74.16,-261.54 90,-253.13 92.47,-251.82 95.05,-250.53 97.67,-249.28"/>
+<polygon fill="#000000" stroke="#000000" points="98.83,-252.6 106.5,-245.29 95.95,-246.22 98.83,-252.6"/>
 </g>
 <!-- proc~print_summary -->
 <g id="proc~~newton~~CallsGraph_node8" class="node">
 <title>proc~print_summary</title>
 <g id="a_proc~~newton~~CallsGraph_node8"><a xlink:href="../proc/print_summary.html" xlink:title="print_summary">
-<polygon fill="#d9534f" stroke="#d9534f" points="189,-202 96,-202 96,-178 189,-178 189,-202"/>
-<text text-anchor="middle" x="142.5" y="-187.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">print_summary</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="187.77,-202.27 96,-202.27 96,-178 187.77,-178 187.77,-202.27"/>
+<text xml:space="preserve" text-anchor="middle" x="141.88" y="-186.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">print_summary</text>
 </a>
 </g>
 </g>
 <!-- proc~newton&#45;&gt;proc~print_summary -->
 <g id="proc~~newton~~CallsGraph_edge7" class="edge">
 <title>proc~newton&#45;&gt;proc~print_summary</title>
-<path fill="none" stroke="#000000" d="M34.22,-281.93C43.92,-264.16 64.25,-230.91 90,-211 91.8,-209.61 93.7,-208.29 95.68,-207.06"/>
-<polygon fill="#000000" stroke="#000000" points="97.61,-209.99 104.68,-202.11 94.23,-203.86 97.61,-209.99"/>
+<path fill="none" stroke="#000000" d="M34.39,-281.78C44.17,-263.96 64.43,-230.99 90,-211.13 91.3,-210.13 92.65,-209.16 94.04,-208.23"/>
+<polygon fill="#000000" stroke="#000000" points="95.47,-211.45 102.4,-203.43 91.99,-205.38 95.47,-211.45"/>
 </g>
 <!-- proc~solve_lm -->
 <g id="proc~~newton~~CallsGraph_node9" class="node">
 <title>proc~solve_lm</title>
 <g id="a_proc~~newton~~CallsGraph_node9"><a xlink:href="../proc/solve_lm.html" xlink:title="solve_lm">
-<polygon fill="#d9534f" stroke="#d9534f" points="172,-129 113,-129 113,-105 172,-105 172,-129"/>
-<text text-anchor="middle" x="142.5" y="-114.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">solve_lm</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="170.89,-129.27 112.88,-129.27 112.88,-105 170.89,-105 170.89,-129.27"/>
+<text xml:space="preserve" text-anchor="middle" x="141.88" y="-113.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">solve_lm</text>
 </a>
 </g>
 </g>
 <!-- proc~newton&#45;&gt;proc~solve_lm -->
 <g id="proc~~newton~~CallsGraph_edge8" class="edge">
 <title>proc~newton&#45;&gt;proc~solve_lm</title>
-<path fill="none" stroke="#000000" d="M32.48,-281.93C41.38,-258.77 62.82,-207.04 90,-169 98.51,-157.09 109.79,-145.37 119.62,-136.08"/>
-<polygon fill="#000000" stroke="#000000" points="122.12,-138.54 127.12,-129.19 117.39,-133.38 122.12,-138.54"/>
+<path fill="none" stroke="#000000" d="M32.64,-281.71C41.66,-258.41 63.07,-207.06 90,-169.13 98.06,-157.78 108.62,-146.56 118.02,-137.47"/>
+<polygon fill="#000000" stroke="#000000" points="120.23,-140.2 125.13,-130.81 115.44,-135.09 120.23,-140.2"/>
 </g>
 <!-- proc~armijo_backtrack&#45;&gt;proc~has_nan_inf -->
 <g id="proc~~newton~~CallsGraph_edge9" class="edge">
 <title>proc~armijo_backtrack&#45;&gt;proc~has_nan_inf</title>
-<path fill="none" stroke="#000000" d="M195.26,-403.16C209.99,-405.2 225.95,-407.41 240.42,-409.41"/>
-<polygon fill="#000000" stroke="#000000" points="240.26,-412.93 250.65,-410.83 241.22,-405.99 240.26,-412.93"/>
+<path fill="none" stroke="#000000" d="M194.25,-403.3C208.71,-405.32 224.37,-407.5 238.6,-409.48"/>
+<polygon fill="#000000" stroke="#000000" points="237.77,-412.9 248.16,-410.82 238.74,-405.97 237.77,-412.9"/>
 </g>
 <!-- proc~armijo_backtrack&#45;&gt;proc~norm_inf -->
 <g id="proc~~newton~~CallsGraph_edge10" class="edge">
 <title>proc~armijo_backtrack&#45;&gt;proc~norm_inf</title>
-<path fill="none" stroke="#000000" d="M177.01,-383.94C198.51,-376.2 226.5,-366.13 249,-358.04"/>
-<polygon fill="#000000" stroke="#000000" points="250.36,-361.27 258.58,-354.59 247.99,-354.68 250.36,-361.27"/>
+<path fill="none" stroke="#000000" d="M177.6,-383.55C198.59,-375.94 225.4,-366.21 247.14,-358.33"/>
+<polygon fill="#000000" stroke="#000000" points="248.04,-361.73 256.25,-355.03 245.65,-355.14 248.04,-361.73"/>
 </g>
 <!-- proc~newton_status_msg -->
 <g id="proc~~newton~~CallsGraph_node15" class="node">
 <title>proc~newton_status_msg</title>
 <g id="a_proc~~newton~~CallsGraph_node15"><a xlink:href="../proc/newton_status_msg.html" xlink:title="newton_status_msg">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="347,-234 231,-234 231,-210 347,-210 347,-234"/>
-<text text-anchor="middle" x="289" y="-219.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">newton_status_msg</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="344.79,-234.27 229.77,-234.27 229.77,-210 344.79,-210 344.79,-234.27"/>
+<text xml:space="preserve" text-anchor="middle" x="287.28" y="-218.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">newton_status_msg</text>
 </a>
 </g>
 </g>
 <!-- proc~print_summary&#45;&gt;proc~newton_status_msg -->
 <g id="proc~~newton~~CallsGraph_edge11" class="edge">
 <title>proc~print_summary&#45;&gt;proc~newton_status_msg</title>
-<path fill="none" stroke="#000000" d="M189.22,-200.12C200.16,-202.55 212.03,-205.18 223.64,-207.75"/>
-<polygon fill="#000000" stroke="#000000" points="223.21,-211.24 233.73,-209.98 224.72,-204.4 223.21,-211.24"/>
+<path fill="none" stroke="#000000" d="M188.26,-200.26C197.96,-202.42 208.41,-204.76 218.74,-207.06"/>
+<polygon fill="#000000" stroke="#000000" points="217.86,-210.45 228.39,-209.22 219.39,-203.62 217.86,-210.45"/>
 </g>
 <!-- dgecon -->
 <g id="proc~~newton~~CallsGraph_node10" class="node">
 <title>dgecon</title>
-<polygon fill="#777777" stroke="#777777" points="316,-192 262,-192 262,-168 316,-168 316,-192"/>
-<text text-anchor="middle" x="289" y="-177.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dgecon</text>
+<polygon fill="#777777" stroke="#777777" points="314.28,-192.27 260.28,-192.27 260.28,-168 314.28,-168 314.28,-192.27"/>
+<text xml:space="preserve" text-anchor="middle" x="287.28" y="-176.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dgecon</text>
 </g>
 <!-- proc~solve_lm&#45;&gt;dgecon -->
 <g id="proc~~newton~~CallsGraph_edge12" class="edge">
 <title>proc~solve_lm&#45;&gt;dgecon</title>
-<path fill="none" stroke="#000000" d="M166.99,-129.02C184.45,-137.77 208.96,-149.68 231,-159 237.88,-161.91 245.31,-164.82 252.47,-167.5"/>
-<polygon fill="#000000" stroke="#000000" points="251.38,-170.83 261.98,-171 253.8,-164.26 251.38,-170.83"/>
+<path fill="none" stroke="#000000" d="M167.32,-129.71C184.57,-138.4 208.35,-150 229.77,-159.13 236,-161.79 242.69,-164.45 249.21,-166.93"/>
+<polygon fill="#000000" stroke="#000000" points="247.9,-170.18 258.49,-170.39 250.35,-163.62 247.9,-170.18"/>
 </g>
 <!-- dgetrf -->
 <g id="proc~~newton~~CallsGraph_node11" class="node">
 <title>dgetrf</title>
-<polygon fill="#777777" stroke="#777777" points="316,-150 262,-150 262,-126 316,-126 316,-150"/>
-<text text-anchor="middle" x="289" y="-135.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dgetrf</text>
+<polygon fill="#777777" stroke="#777777" points="314.28,-150.27 260.28,-150.27 260.28,-126 314.28,-126 314.28,-150.27"/>
+<text xml:space="preserve" text-anchor="middle" x="287.28" y="-134.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dgetrf</text>
 </g>
 <!-- proc~solve_lm&#45;&gt;dgetrf -->
 <g id="proc~~newton~~CallsGraph_edge13" class="edge">
 <title>proc~solve_lm&#45;&gt;dgetrf</title>
-<path fill="none" stroke="#000000" d="M172.05,-121.15C194.93,-124.47 227.19,-129.16 251.87,-132.75"/>
-<polygon fill="#000000" stroke="#000000" points="251.54,-136.24 261.94,-134.21 252.55,-129.31 251.54,-136.24"/>
+<path fill="none" stroke="#000000" d="M171.22,-121.28C193.38,-124.53 224.4,-129.07 248.65,-132.62"/>
+<polygon fill="#000000" stroke="#000000" points="248.04,-136.07 258.45,-134.06 249.06,-129.15 248.04,-136.07"/>
 </g>
 <!-- dgetrs -->
 <g id="proc~~newton~~CallsGraph_node12" class="node">
 <title>dgetrs</title>
-<polygon fill="#777777" stroke="#777777" points="316,-108 262,-108 262,-84 316,-84 316,-108"/>
-<text text-anchor="middle" x="289" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dgetrs</text>
+<polygon fill="#777777" stroke="#777777" points="314.28,-108.27 260.28,-108.27 260.28,-84 314.28,-84 314.28,-108.27"/>
+<text xml:space="preserve" text-anchor="middle" x="287.28" y="-92.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dgetrs</text>
 </g>
 <!-- proc~solve_lm&#45;&gt;dgetrs -->
 <g id="proc~~newton~~CallsGraph_edge14" class="edge">
 <title>proc~solve_lm&#45;&gt;dgetrs</title>
-<path fill="none" stroke="#000000" d="M172.05,-112.85C194.93,-109.53 227.19,-104.84 251.87,-101.25"/>
-<polygon fill="#000000" stroke="#000000" points="252.55,-104.69 261.94,-99.79 251.54,-97.76 252.55,-104.69"/>
+<path fill="none" stroke="#000000" d="M171.22,-112.99C193.38,-109.74 224.4,-105.2 248.65,-101.65"/>
+<polygon fill="#000000" stroke="#000000" points="249.06,-105.12 258.45,-100.21 248.04,-98.2 249.06,-105.12"/>
 </g>
 <!-- proc~add_diagonal -->
 <g id="proc~~newton~~CallsGraph_node13" class="node">
 <title>proc~add_diagonal</title>
 <g id="a_proc~~newton~~CallsGraph_node13"><a xlink:href="../proc/add_diagonal.html" xlink:title="add_diagonal">
-<polygon fill="#d9534f" stroke="#d9534f" points="331.5,-66 246.5,-66 246.5,-42 331.5,-42 331.5,-66"/>
-<text text-anchor="middle" x="289" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">add_diagonal</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="329.04,-66.27 245.52,-66.27 245.52,-42 329.04,-42 329.04,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="287.28" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">add_diagonal</text>
 </a>
 </g>
 </g>
 <!-- proc~solve_lm&#45;&gt;proc~add_diagonal -->
 <g id="proc~~newton~~CallsGraph_edge15" class="edge">
 <title>proc~solve_lm&#45;&gt;proc~add_diagonal</title>
-<path fill="none" stroke="#000000" d="M166.99,-104.98C184.45,-96.23 208.96,-84.32 231,-75 235.21,-73.22 239.63,-71.44 244.07,-69.71"/>
-<polygon fill="#000000" stroke="#000000" points="245.64,-72.86 253.73,-66.03 243.14,-66.32 245.64,-72.86"/>
+<path fill="none" stroke="#000000" d="M167.32,-104.56C184.57,-95.87 208.35,-84.27 229.77,-75.14 233.14,-73.7 236.64,-72.26 240.18,-70.85"/>
+<polygon fill="#000000" stroke="#000000" points="241.34,-74.16 249.4,-67.28 238.81,-67.63 241.34,-74.16"/>
 </g>
 <!-- proc~mat1norm -->
 <g id="proc~~newton~~CallsGraph_node14" class="node">
 <title>proc~mat1norm</title>
 <g id="a_proc~~newton~~CallsGraph_node14"><a xlink:href="../proc/mat1norm.html" xlink:title="mat1norm">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="323.5,-24 254.5,-24 254.5,0 323.5,0 323.5,-24"/>
-<text text-anchor="middle" x="289" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">mat1norm</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="321.16,-24.27 253.39,-24.27 253.39,0 321.16,0 321.16,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="287.28" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">mat1norm</text>
 </a>
 </g>
 </g>
 <!-- proc~solve_lm&#45;&gt;proc~mat1norm -->
 <g id="proc~~newton~~CallsGraph_edge16" class="edge">
 <title>proc~solve_lm&#45;&gt;proc~mat1norm</title>
-<path fill="none" stroke="#000000" d="M153.31,-104.8C168.33,-86.83 198.69,-53.21 231,-33 235.36,-30.27 240.12,-27.82 244.98,-25.64"/>
-<polygon fill="#000000" stroke="#000000" points="246.45,-28.83 254.36,-21.78 243.78,-22.35 246.45,-28.83"/>
+<path fill="none" stroke="#000000" d="M152.86,-104.64C167.84,-86.62 197.82,-53.26 229.77,-33.13 233.76,-30.62 238.09,-28.35 242.52,-26.3"/>
+<polygon fill="#000000" stroke="#000000" points="243.66,-29.62 251.53,-22.52 240.95,-23.16 243.66,-29.62"/>
 </g>
 </g>
 </svg>
@@ -521,55 +532,55 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
 <svg width="641pt" height="28pt"
- viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
 <!-- Subroutine -->
 <g id="node1" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node2" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Interface -->
 <g id="node3" class="node">
 <title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
 </g>
 <!-- Type Bound Procedure -->
 <g id="node4" class="node">
 <title>Type Bound Procedure</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
-<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
 </g>
 <!-- Unknown Procedure Type -->
 <g id="node5" class="node">
 <title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
-<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
 </g>
 <!-- Program -->
 <g id="node6" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node7" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
-<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -602,7 +613,7 @@ implementation in a submodule of an interface in a parent module.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-f~11"></span>
+              <span class="anchor" id="variable-f~38"></span>
               real(kind=pr),
             </td>
               <td>private,</td>
@@ -614,7 +625,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Residual at current x, size n</p>
             </td>
         </tr>
         <tr>
@@ -631,12 +642,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Residual at trial point x+t*dX</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-j~2"></span>
+              <span class="anchor" id="variable-j~5"></span>
               real(kind=pr),
             </td>
               <td>private,</td>
@@ -648,7 +659,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Jacobian at current x, shape (n,n)</p>
             </td>
         </tr>
         <tr>
@@ -665,7 +676,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Jacobian at trial point x+t*dX</p>
             </td>
         </tr>
         <tr>
@@ -682,7 +693,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>x saved before applying the step</p>
             </td>
         </tr>
         <tr>
@@ -699,12 +710,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Estimated cond(J) from dgecon</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-converged"></span>
+              <span class="anchor" id="variable-converged~2"></span>
               logical,
             </td>
               <td>private</td>
@@ -716,12 +727,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>.true. when a convergence criterion is met</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dx~4"></span>
+              <span class="anchor" id="variable-dx~17"></span>
               real(kind=pr),
             </td>
               <td>private,</td>
@@ -733,7 +744,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Newton (or LM) step, size n</p>
             </td>
         </tr>
         <tr>
@@ -750,7 +761,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>||dX||_inf of current Newton step</p>
             </td>
         </tr>
         <tr>
@@ -767,12 +778,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>||dX||_inf from previous iteration</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-f_norm~2"></span>
+              <span class="anchor" id="variable-f_norm~3"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -784,7 +795,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>||F(x)||_inf at current iterate</p>
             </td>
         </tr>
         <tr>
@@ -801,7 +812,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>||F(x + t*dX)||_inf after line search</p>
             </td>
         </tr>
         <tr>
@@ -818,12 +829,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Scratch buffer for f_history</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-its~3"></span>
+              <span class="anchor" id="variable-its~23"></span>
               integer,
             </td>
               <td>private</td>
@@ -835,7 +846,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Current iteration counter</p>
             </td>
         </tr>
         <tr>
@@ -852,12 +863,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>||J||_F^2/n; scale for lambda floor/ceiling</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lambda~2"></span>
+              <span class="anchor" id="variable-lambda~3"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -869,7 +880,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>LM regularization parameter (absolute)</p>
             </td>
         </tr>
         <tr>
@@ -886,12 +897,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>.true. when line search returned failed=.true.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~19"></span>
+              <span class="anchor" id="variable-n~87"></span>
               integer,
             </td>
               <td>private</td>
@@ -903,12 +914,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Problem size (number of unknowns)</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-res"></span>
+              <span class="anchor" id="variable-res~4"></span>
               type(<a href='../type/newton_result.html'>newton_result</a>),
             </td>
               <td>private</td>
@@ -920,12 +931,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Internal result accumulator</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-s~3"></span>
+              <span class="anchor" id="variable-s~4"></span>
               type(<a href='../type/newton_settings.html'>newton_settings</a>),
             </td>
               <td>private</td>
@@ -937,7 +948,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Active settings (defaults or user)</p>
             </td>
         </tr>
         <tr>
@@ -954,7 +965,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>.true. when accepted t is numerically tiny</p>
             </td>
         </tr>
         <tr>
@@ -971,7 +982,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Consecutive stagnant iterations</p>
             </td>
         </tr>
         <tr>
@@ -988,12 +999,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>.true. when stag_count &gt;= stagnation_nits</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~7"></span>
+              <span class="anchor" id="variable-t~34"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -1005,7 +1016,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Current line-search step length in (0,1]</p>
             </td>
         </tr>
     </tbody>
@@ -1034,14 +1045,14 @@ implementation in a submodule of an interface in a parent module.
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

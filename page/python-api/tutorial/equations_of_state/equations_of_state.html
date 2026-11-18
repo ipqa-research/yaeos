@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Equations of State (EoS) &mdash; yaeos 4.5.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+  <title>Equations of State (EoS) &mdash; yaeos 4.5.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=a284863f"></script>
+      <script src="../../_static/documentation_options.js?v=06fc0226"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -51,18 +51,21 @@
               <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../tutorial_tree.html">Tutorial</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Equations of State (EoS)</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="bulk_properties.html">Bulk Properties</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cubic_eos/cubic_eos.html">Cubic Equations of State</a></li>
-<li class="toctree-l3"><a class="reference internal" href="multifluid_eos/multifluid_eos.html">Multifluid Equations of State</a></li>
-<li class="toctree-l3"><a class="reference internal" href="saft_eos/saft_eos.html">SAFT Equations of State</a></li>
-<li class="toctree-l3"><a class="reference internal" href="phase_equilibrium/phase_equilibrium.html">Phase Equilibrium Calculations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gpec/gpec.html">GPEC (Global Phase Equilibrium Calculations)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="fitting/fitting.html">Fitting Equations of State</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../tutorial_tree.html#suggested-route">Suggested route</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Equations of State (EoS)</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="bulk_properties.html">Bulk Properties</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cubic_eos/cubic_eos.html">Cubic Equations of State</a></li>
+<li class="toctree-l4"><a class="reference internal" href="multifluid_eos/multifluid_eos.html">Multifluid Equations of State</a></li>
+<li class="toctree-l4"><a class="reference internal" href="saft_eos/saft_eos.html">SAFT Equations of State</a></li>
+<li class="toctree-l4"><a class="reference internal" href="phase_equilibrium/phase_equilibrium.html">Phase Equilibrium Calculations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gpec/gpec.html">GPEC (Global Phase Equilibrium Calculations)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fitting/fitting.html">Fitting Equations of State</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../gibbs_excess/gibbs_excess.html">Excess Gibbs models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../gibbs_excess/gibbs_excess.html">Excess Gibbs models</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -107,6 +110,18 @@
              
   <section id="equations-of-state-eos">
 <h1>Equations of State (EoS)<a class="headerlink" href="#equations-of-state-eos" title="Link to this heading"></a></h1>
+<p>Use this route for pressure, density, and phase behavior of compressible
+fluids. First construct a model from component parameters, then use <strong>Bulk
+properties</strong> to evaluate a single homogeneous state. Only then move to
+phase equilibrium, where phase compositions become additional unknowns.</p>
+<p>The model chapters explain different parameter inputs: critical constants
+for cubics, component names for GERG2008, and segment parameters for PC-SAFT.
+They share the <a class="reference internal" href="../../core.html"><span class="doc">Core Module</span></a> interface. Keep temperature in K, pressure in
+bar, and volume in L; a property evaluated at a liquid root is not by itself
+evidence that the feed remains entirely liquid.</p>
+<p>After a single saturation point and flash are understood, try envelopes,
+global binary diagrams, or fitting. Those tasks depend more strongly on
+initial guesses and on the model’s suitability for the mixture.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="bulk_properties.html">Bulk Properties</a><ul>
@@ -188,34 +203,38 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="phase_equilibrium/phase_equilibrium.html">Phase Equilibrium Calculations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html">Calculating an isotherm</a></li>
-<li class="toctree-l2"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#Calculate-a-saturation-pressure">Calculate a saturation pressure</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#Pure-compound">Pure compound</a></li>
-<li class="toctree-l3"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#Mixture">Mixture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phase_equilibrium/phase_equilibrium.html#which-question-are-you-asking">Which question are you asking?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="phase_equilibrium/phase_equilibrium.html#prerequisites-and-interpretation">Prerequisites and interpretation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html">Calculating an isotherm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#Calculate-a-saturation-pressure">Calculate a saturation pressure</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#Pure-compound">Pure compound</a></li>
+<li class="toctree-l4"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#Mixture">Mixture</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#Pxy-diagram-for-a-mixture">Pxy diagram for a mixture</a></li>
-<li class="toctree-l2"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#Flash-calculation">Flash calculation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#Phase-envelopes">Phase envelopes</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#Model-definition">Model definition</a></li>
-<li class="toctree-l3"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#PT-phase-envelope-calculation">PT phase envelope calculation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#Px-phase-envelopes">Px phase envelopes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#Tx-phase-envelopes">Tx phase envelopes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#Pxy-diagram-for-a-mixture">Pxy diagram for a mixture</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#Flash-calculation">Flash calculation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#Phase-envelopes">Phase envelopes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#Model-definition">Model definition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#PT-phase-envelope-calculation">PT phase envelope calculation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#Px-phase-envelopes">Px phase envelopes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#Tx-phase-envelopes">Tx phase envelopes</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#Critical-lines">Critical lines</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#Calculation-of-critical-points">Calculation of critical points</a></li>
-<li class="toctree-l3"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#Calculation-of-critical-lines">Calculation of critical lines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#Critical-lines">Critical lines</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#Calculation-of-critical-points">Calculation of critical points</a></li>
+<li class="toctree-l4"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#Calculation-of-critical-lines">Calculation of critical lines</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#Stability-analysis">Stability analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#Pure-components-saturation-lines">Pure components saturation lines</a></li>
-<li class="toctree-l2"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#Three-phase-envelopes">Three-phase envelopes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#Stability-analysis">Stability analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#Pure-components-saturation-lines">Pure components saturation lines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="phase_equilibrium/phase_equilibrium_tutorial.html#Three-phase-envelopes">Three-phase envelopes</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="gpec/gpec.html">GPEC (Global Phase Equilibrium Calculations)</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="gpec/gpec_tutorial.html">Binary Systems Diagrams</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="gpec/gpec_tutorial.html#Global-Phase-Equilibria-Diagram-(GPED)">Global Phase Equilibria Diagram (GPED)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="gpec/gpec_tutorial.html#Global-Phase-Equilibrium-Diagrams-(GPED)">Global Phase Equilibrium Diagrams (GPED)</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="gpec/gpec_tutorial.html#Plotting-diagrams">Plotting diagrams</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gpec/gpec_tutorial.html#Plotting-isotherms-(Pxy-diagrams)">Plotting isotherms (Pxy diagrams)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gpec/gpec_tutorial.html#Pxy-regions-with-LL-equilibria">Pxy regions with LL equilibria</a></li>

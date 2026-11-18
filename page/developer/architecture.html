@@ -1,0 +1,476 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
+    <link rel="icon" href="../../favicon.png">
+
+    <title>Architecture and repository map &ndash; yaeos</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../../css/brands.min.css" rel="stylesheet">
+    <link href="../../css/regular.min.css" rel="stylesheet">
+    <link href="../../css/solid.min.css" rel="stylesheet">
+    <link href="../../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../../css/local.css" rel="stylesheet">
+    <link href="../../css/pygments.css" rel="stylesheet">
+      <link href="../../css/user.css" rel="stylesheet">
+    <script src="../../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../../index.html">yaeos </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="../index.html">User documentation</a></li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>Architecture and repository map</h1>
+    <div class="container p-2 mb-4 bg-light border rounded-3">
+      <div class="row align-items-center justify-content-between">
+        <div class="col">
+          <ul class="list-inline" style="margin-bottom:0px; display:inline">
+          </ul>
+        </div>
+        <div class="col">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../index.html'>User documentation</a></li>
+                <li class="breadcrumb-item"><a href='index.html'>Becoming a yaeos developer</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Architecture and repository map</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+      <div class="col-3">
+        <div class="card card-body bg-light" id="sidebar-toc">
+          <ul class="nav flex-column align-items">
+            <li class="nav-item">
+              <a class="nav-link" href="../index.html">User documentation</a>
+            </li>
+          </ul>
+          <hr>
+          <nav class="nav nav-pills flex-column">
+              <a class="nav-link" href="../usage/index.html">Getting started</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/fundamentals.html">Thermodynamics essentials</a>
+              <a class="nav-link" href="../usage/eos/index.html">Equations of State</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/eos/cubics/index.html">Cubics</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/eos/cubics/alpha.html">Alpha functions</a>
+              <a class="nav-link" href="../usage/eos/cubics/mixing.html">Mixing Rules</a>
+
+                </nav>
+              <a class="nav-link" href="../usage/eos/gerg2008.html">GERG2008</a>
+              <a class="nav-link" href="../usage/eos/gerg2008_parameters.html">GERG2008 parameters</a>
+              <a class="nav-link" href="../usage/eos/pc_saft.html">PC-SAFT</a>
+
+                </nav>
+              <a class="nav-link" href="../usage/excessmodels/index.html">Gibbs Excess Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/excessmodels/nrtl.html">NRTL</a>
+              <a class="nav-link" href="../usage/excessmodels/nrtl-hv.html">NRTL-HV</a>
+              <a class="nav-link" href="../usage/excessmodels/uniquac.html">UNIQUAC</a>
+              <a class="nav-link" href="../usage/excessmodels/unifac_models/index.html">UNIFAC Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
+              <a class="nav-link" href="../usage/excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
+              <a class="nav-link" href="../usage/excessmodels/unifac_models/psrk.html">UNIFAC-PSRK</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../usage/phase_equilibrium/index.html">Phase Equilibrium</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/phase_equilibrium/flash.html">Flash calculations</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/saturation_points.html">Saturation Points</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/stability.html">Stability analysis</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/critical.html">Critical points</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/multiphase.html">Multiphase flash</a>
+
+                </nav>
+              <a class="nav-link" href="../usage/newmodels/index.html">Adding your own models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/newmodels/analtical.html">Analytical derivatives</a>
+              <a class="nav-link" href="../usage/newmodels/autodiff.html">Automatic differentiation</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../python-api/index.html">Python-API</a>
+              <a class="nav-link" href="index.html">Becoming a yaeos developer</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link active disabled" href="architecture.html">Architecture and repository map</a>
+              <a class="nav-link" href="workflow.html">Developer workflow</a>
+              <a class="nav-link" href="fortran.html">Working in the Fortran core</a>
+              <a class="nav-link" href="numerics.html">Working on numerical algorithms</a>
+              <a class="nav-link" href="c_interface.html">C interface layer</a>
+              <a class="nav-link" href="python_interface.html">Python interface layer</a>
+              <a class="nav-link" href="testing.html">Tests and numerical validation</a>
+              <a class="nav-link" href="walkthrough.html">An end-to-end change</a>
+
+                </nav>
+              <a class="nav-link" href="../contributing/index.html">Contributing</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../contributing/styleguide.html">Style guide</a>
+
+                </nav>
+          </nav>
+        </div>
+      </div>
+
+    <div class="col-9" id='text'>
+      <div class="toc">
+<ul>
+<li><a href="#find-your-way-around-the-codebase">Find your way around the codebase</a><ul>
+<li><a href="#the-repository-in-one-table">The repository in one table</a></li>
+<li><a href="#public-modules-are-entry-points-not-separate-model-implementations">Public modules are entry points, not separate model implementations</a></li>
+<li><a href="#the-model-family-tree">The model family tree</a><ul>
+<li><a href="#why-use-an-energy-function-contract">Why use an energy-function contract?</a></li>
+</ul>
+</li>
+<li><a href="#trace-a-native-pressure-calculation">Trace a native pressure calculation</a></li>
+<li><a href="#trace-an-equilibrium-calculation">Trace an equilibrium calculation</a></li>
+<li><a href="#the-language-boundary-is-another-layer">The language boundary is another layer</a></li>
+<li><a href="#choose-the-right-place-for-a-change">Choose the right place for a change</a></li>
+<li><a href="#a-short-source-reading-exercise">A short source-reading exercise</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h1 id="find-your-way-around-the-codebase">Find your way around the codebase</h1>
+<p>The central design idea in <code>yaeos</code> is to keep a thermodynamic model separate
+from the calculations that use it. An equilibrium algorithm needs pressure,
+fugacity, or derivatives; it should not have to know whether they came from
+Peng–Robinson, GERG2008, or another compatible energy model.</p>
+<p>That separation is implemented through Fortran modules, abstract derived types,
+and type-bound procedures. This page explains those layers and gives a
+concrete route from a user call to the mathematical kernel.</p>
+<h2 id="the-repository-in-one-table">The repository in one table</h2>
+<p>Paths in this handbook are relative to the repository root.</p>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Responsibility</th>
+<th>Start here when…</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/yaeos.f90</code></td>
+<td>Top-level public imports</td>
+<td>A name is missing from <code>use yaeos</code></td>
+</tr>
+<tr>
+<td><code>src/constants.f90</code></td>
+<td>Precision, gas constant, selectors, shared settings</td>
+<td>Units, kinds, or root conventions matter</td>
+</tr>
+<tr>
+<td><code>src/models/</code></td>
+<td>Model base types and implementations</td>
+<td>Adding or diagnosing property calculations</td>
+</tr>
+<tr>
+<td><code>src/equilibria/</code></td>
+<td>Stability, saturation, flash, critical and boundary calculations</td>
+<td>A phase calculation is wrong or fails</td>
+</tr>
+<tr>
+<td><code>src/math/</code></td>
+<td>Linear systems, nonlinear solvers, continuation, numerical helpers</td>
+<td>Diagnosing an algorithm&rsquo;s numerical machinery</td>
+</tr>
+<tr>
+<td><code>src/adiff/</code></td>
+<td>Hyperdual arithmetic and derivative adapters</td>
+<td>Implementing automatic differentiation</td>
+</tr>
+<tr>
+<td><code>src/consistency/</code></td>
+<td>Derivative and thermodynamic consistency checks</td>
+<td>Validating a new energy function</td>
+</tr>
+<tr>
+<td><code>src/extra/</code></td>
+<td>Example/test fluid fixtures</td>
+<td>Reusing a documented mixture</td>
+</tr>
+<tr>
+<td><code>src/legacy/</code></td>
+<td>Older global-state implementations</td>
+<td>Maintaining an existing legacy caller</td>
+</tr>
+<tr>
+<td><code>c_interface/yaeos_c.f90</code></td>
+<td>Flat wrapper procedures and model-handle storage</td>
+<td>Changing a language-facing call</td>
+</tr>
+<tr>
+<td><code>python/yaeos/</code></td>
+<td>Python classes, conversion, fitting and tools</td>
+<td>Changing Python user behavior</td>
+</tr>
+<tr>
+<td><code>test/</code> and <code>python/tests/</code></td>
+<td>Native and Python regression tests</td>
+<td>Proving behavior across layers</td>
+</tr>
+<tr>
+<td><code>example/</code></td>
+<td>Demonstration programs</td>
+<td>Learning a call sequence or adding a runnable example</td>
+</tr>
+<tr>
+<td><code>tools/</code></td>
+<td>Development/generation utilities</td>
+<td>Regenerating differentiated code</td>
+</tr>
+<tr>
+<td><code>doc/page/</code> and <code>python/docs/source/</code></td>
+<td>FORD guides and Sphinx documentation</td>
+<td>Explaining a feature to users</td>
+</tr>
+</tbody>
+</table>
+<p>The actual compiled source sets differ by build. <code>fpm.toml</code> describes the
+native package; <code>python/meson.build</code> adds the interface and extension build.
+Finding a file in the repository does not establish that every target builds
+it. See <a href="workflow.html">workflow</a> for the separate build paths.</p>
+<h2 id="public-modules-are-entry-points-not-separate-model-implementations">Public modules are entry points, not separate model implementations</h2>
+<p><code>src/yaeos.f90</code> imports broad API groups. <code>src/models/models.f90</code> gathers model
+types and constructors; <code>src/equilibria/equilibria.f90</code> gathers equilibrium
+routines and result types. These modules are often called <strong>facades</strong>: they
+make common names convenient to import without duplicating the underlying
+calculation.</p>
+<p>For example, these are alternative import styles, not different flash
+algorithms:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span>
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos__equilibria</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">flash</span>
+</code></pre></div>
+
+<p>The directory hierarchy is reflected in names such as
+<code>yaeos__models_ar_genericcubic</code>. These are ordinary modules. Do not confuse an
+organizational “submodule” in prose with the Fortran language&rsquo;s specific
+<code>submodule</code> construct.</p>
+<p>When adding a public feature, check both its defining module&rsquo;s visibility and
+the relevant facade&rsquo;s <code>use ..., only:</code> list. Implementing a procedure does not
+automatically make it available through every facade or through Python.</p>
+<h2 id="the-model-family-tree">The model family tree</h2>
+<div class="codehilite"><pre><span></span><code>Substances: component metadata
+    stored in BaseModel%components
+
+BaseModel
+    +-- ArModel: residual Helmholtz energy A^r(n,V,T)
+    |     +-- CubicEoS
+    |     +-- ArModelAdiff -&gt; hyperdual models, including Gerg2008
+    |     +-- ArModelTapenade -&gt; source-differentiated models, including PCSAFT
+    |
+    +-- GeModel: excess Gibbs energy G^E(n,T)
+          +-- analytical activity models, such as NRTL and UNIQUAC
+          +-- hyperdual/source-differentiation adapter families
+</code></pre></div>
+
+<p>The tree shows implementation families, not a list of every concrete type.
+<code>Substances</code> is a container of arrays in component order, not a parent class
+of <code>BaseModel</code>.</p>
+<h3 id="why-use-an-energy-function-contract">Why use an energy-function contract?</h3>
+<p>An <code>ArModel</code> supplies residual Helmholtz energy and requested derivatives.
+Shared methods use them to calculate pressure, fugacity coefficients, residual
+enthalpy, and other properties. A new compatible model can therefore reuse
+property relations and equilibrium algorithms instead of independently
+implementing each property.</p>
+<p><code>GeModel</code> follows the same idea for excess Gibbs energy. Its input does not
+include volume or pressure in the base energy interface. It is not an EOS
+implementation with a few arguments omitted: it describes a different
+thermodynamic reference and different capabilities.</p>
+<p>The detailed <a href="fortran.html">Fortran contract guide</a> explains which methods are
+deferred, how optional derivatives work, and why extensive energy matters.</p>
+<h2 id="trace-a-native-pressure-calculation">Trace a native pressure calculation</h2>
+<p>Consider a user program that constructs <code>PengRobinson76</code> and calls
+<code>model%pressure(n, V, T, P)</code>. Follow this sequence in the source:</p>
+<ol>
+<li><strong>Construction:</strong> <code>src/models/residual_helmholtz/cubic/implementations/implementations.f90</code>
+   defines <code>PengRobinson76</code>. It configures a <code>CubicEoS</code> using component data,
+   pure-component parameters, an alpha function, and a mixing rule.</li>
+<li><strong>Shared property:</strong> <code>pressure</code> in
+   <code>src/models/residual_helmholtz/ar_models.f90</code> requests the volume derivative
+   of residual Helmholtz energy and forms the pressure relation.</li>
+<li><strong>Dynamic dispatch:</strong> the call to the model&rsquo;s <code>residual_helmholtz</code> binding
+   reaches the cubic implementation in <code>cubic/generic_cubic.f90</code>. The concrete
+   type, not the declared <code>class(ArModel)</code> variable, determines that binding.</li>
+<li><strong>Model composition:</strong> the cubic implementation evaluates its alpha and
+   mixture parameters, then calls the algebraic energy kernel in
+   <code>cubic/base.f90</code> for the requested quantities.</li>
+</ol>
+<p>The same user pressure call on a hyperdual model goes through its AD adapter
+instead of the cubic energy kernel. The shared pressure identity does not
+change. This is the practical meaning of polymorphism in this library.</p>
+<h2 id="trace-an-equilibrium-calculation">Trace an equilibrium calculation</h2>
+<p>For a saturation pressure, begin in <code>src/equilibria/saturations_points.f90</code>
+(note the existing filename spelling). The routine organizes initialization,
+phase/root selection, iterations, and construction of <code>EquilibriumState</code>.
+Lower-level simultaneous saturation equations live in
+<code>src/models/solvers/saturation_point.f90</code>.</p>
+<p>Those equations call model property methods. They do not contain a separate
+Peng–Robinson thermodynamic implementation. If a residual is wrong, first
+identify whether the error is in unpacking the solver variables, calling the
+right phase/root, evaluating model derivatives, or assembling the residual.
+Changing a generic Newton tolerance is rarely the first useful diagnosis.</p>
+<p>Phase boundaries add continuation: predict a nearby state, correct the
+equilibrium equations, choose a specification, and store the point. The
+<code>src/equilibria/boundaries/</code> modules contain several specialized formulations;
+not all of them use the same driver or unknown-vector layout. Read the
+specific routine rather than assuming a single universal envelope algorithm.</p>
+<h2 id="the-language-boundary-is-another-layer">The language boundary is another layer</h2>
+<p>Native polymorphic model objects do not pass directly into Python. The
+<code>yaeos_c</code> module stores model objects behind integer handles and offers flat
+procedures. f2py generates a Python extension around that module; Python
+classes hold the handle and present a more idiomatic user API.</p>
+<p>The native <code>ArModel</code> class and the Python <code>ArModel</code> class have related purposes,
+but they are not the same object in two syntaxes. Shapes, option flags, result
+containers, and memory lifetime need explicit adaptation. Read the
+<a href="c_interface.html">C-facing layer</a> and <a href="python_interface.html">Python layer</a>
+before changing a wrapper signature.</p>
+<h2 id="choose-the-right-place-for-a-change">Choose the right place for a change</h2>
+<table>
+<thead>
+<tr>
+<th>Proposed change</th>
+<th>Likely starting point</th>
+<th>Check downstream</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>New cubic alpha correlation</td>
+<td><code>cubic/alphas/</code></td>
+<td>Constructor/configuration, derivatives, wrappers</td>
+</tr>
+<tr>
+<td>New mixture combining rule</td>
+<td><code>cubic/mixing_rules/</code></td>
+<td>Composition/state derivatives and pure limits</td>
+</tr>
+<tr>
+<td>Entirely new EOS energy expression</td>
+<td>Model implementation and derivative adapter</td>
+<td>Shared property use, volume initialization, exports</td>
+</tr>
+<tr>
+<td>Incorrect flash material balance</td>
+<td>Equilibrium residual/phase reconstruction</td>
+<td>Result conventions and cross-language wrappers</td>
+</tr>
+<tr>
+<td>Wrong NumPy output shape</td>
+<td>Python method and flat wrapper</td>
+<td>Fortran dimensions and memory ordering</td>
+</tr>
+<tr>
+<td>Missing argument explanation</td>
+<td>User guide and defining procedure&rsquo;s FORD comments</td>
+<td>Generated API and Python documentation</td>
+</tr>
+</tbody>
+</table>
+<h2 id="a-short-source-reading-exercise">A short source-reading exercise</h2>
+<p>Choose a property you already use. Find its public export, defining procedure,
+the model method it calls, and a regression test. Write down the units and
+shape at each step. Then repeat through Python and mark where its arguments
+are converted. This small exercise gives a more useful mental model than
+reading the repository alphabetically.</p>
+<p>Continue with <a href="fortran.html">Fortran contracts</a>, or use the
+<a href="walkthrough.html">end-to-end change walkthrough</a> to turn that map into a
+contribution plan.</p>
+    </div>
+  </div>
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              yaeos
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2026-11-18 15:31 +0000             </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

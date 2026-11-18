@@ -1,4 +1,16 @@
 module yaeos__models_ge_group_contribution_groups
+   !! # Group definitions
+   !!
+   !! # Description
+   !! The [[Groups]] type stores the UNIFAC subgroups of a molecule and their
+   !! occurrence counts. It is used by all group-contribution models.
+   !! A molecule is represented by matching subgroup-ID and count arrays.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! molecule%groups_ids = [1, 14]
+   !! molecule%number_of_groups = [1, 1]
+   !! ```
    use yaeos__constants, only: pr
    implicit none
 
@@ -25,8 +37,7 @@ module yaeos__models_ge_group_contribution_groups
       !! ```
       !!
       !! # References
-      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst
-      !! .com/published-parameters-unifac.html)
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst.com/published-parameters-unifac.html)
       integer, allocatable :: groups_ids(:)
       !! Indexes (ids) of each subgroup in the main group matrix
       integer, allocatable :: number_of_groups(:)

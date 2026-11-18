@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>continuation &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.3% of total for procedures.">51 statements</a>
+                 title=" 0.3% of total for procedures.">56 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -135,17 +136,17 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/continuation.html#variable-s~48">S</a>
-            <a class="list-group-item" href="../proc/continuation.html#variable-x~72">X</a>
-            <a class="list-group-item" href="../proc/continuation.html#variable-df~27">dF</a>
-            <a class="list-group-item" href="../proc/continuation.html#variable-dfds~16">dFdS</a>
-            <a class="list-group-item" href="../proc/continuation.html#variable-ds~24">dS</a>
-            <a class="list-group-item" href="../proc/continuation.html#variable-dxds~23">dXdS</a>
-            <a class="list-group-item" href="../proc/continuation.html#variable-fval~2">fval</a>
-            <a class="list-group-item" href="../proc/continuation.html#variable-i~125">i</a>
-            <a class="list-group-item" href="../proc/continuation.html#variable-max_iters~13">max_iters</a>
+            <a class="list-group-item" href="../proc/continuation.html#variable-s~9">S</a>
+            <a class="list-group-item" href="../proc/continuation.html#variable-x~11">X</a>
+            <a class="list-group-item" href="../proc/continuation.html#variable-df~4">dF</a>
+            <a class="list-group-item" href="../proc/continuation.html#variable-dfds~3">dFdS</a>
+            <a class="list-group-item" href="../proc/continuation.html#variable-ds~7">dS</a>
+            <a class="list-group-item" href="../proc/continuation.html#variable-dxds~7">dXdS</a>
+            <a class="list-group-item" href="../proc/continuation.html#variable-fval">fval</a>
+            <a class="list-group-item" href="../proc/continuation.html#variable-i~13">i</a>
+            <a class="list-group-item" href="../proc/continuation.html#variable-max_iters~3">max_iters</a>
             <a class="list-group-item" href="../proc/continuation.html#variable-newton_its">newton_its</a>
-            <a class="list-group-item" href="../proc/continuation.html#variable-ns~56">ns</a>
+            <a class="list-group-item" href="../proc/continuation.html#variable-ns~11">ns</a>
         </div>
       </div>
     </div>
@@ -179,17 +180,26 @@
 </h2>
     
 
-    <p>Numerical continuation of a function.</p>
-<p>Uses Algower method of numerical continuation to trace a line that
-solves a system of the kind:</p>
+    <h1 id="continuation">continuation</h1>
+<p>Trace a one-dimensional solution manifold of a nonlinear system.</p>
+<h1 id="description">Description</h1>
+<p>At each point the tangent is obtained from</p>
 <p>
-<script type="math/tex; mode=display"> F(X,S) = 0 </script>
+<script type="math/tex; mode=display"> \frac{dX}{dS} = -\left(\frac{\partial F}{\partial X}\right)^{-1}
+      \frac{\partial F}{\partial S}. </script>
 </p>
-<p>Where <script type="math/tex">X</script> is the variables vector and (S)\ is the value of the
-specification.
-The method works with by providing a good set of initial points to
-solve the system of equations with an extrapolation using the previous
-solved point information.</p>
+<p>The tangent predicts the next point; <code>solver</code> (or the default Newton
+corrector) then solves the residual equations there. The default
+specification update selects the component of the tangent with the
+largest magnitude, rescales the tangent to it and converts the step to
+that variable (no step-size limit is applied). Tracing stops when the
+corrector reaches its iteration limit (500), the residual is NaN,
+<code>dS</code> becomes zero, or <code>stop</code> returns true. The returned array has <code>max_points</code> rows; rows not reached
+before termination remain zero.</p>
+<h1 id="examples">Examples</h1>
+<div class="codehilite"><pre><span></span><code><span class="n">curve</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">continuation</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span><span class="w"> </span><span class="n">X0</span><span class="p">,</span><span class="w"> </span><span class="n">ns0</span><span class="p">,</span><span class="w"> </span><span class="n">S0</span><span class="p">,</span><span class="w"> </span><span class="n">dS0</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">   </span><span class="n">max_points</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="n">solver_tol</span><span class="o">=</span><span class="mf">1.0e-8_pr</span><span class="p">)</span>
+</code></pre></div>
 
 
     <h3>Arguments</h3>
@@ -205,7 +215,7 @@ solved point information.</p>
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-f~18"></span>
+              <span class="anchor" id="variable-f"></span>
               procedure(<a href='../interface/continuation_function.html'>continuation_function</a>)
             </td>
 <td></td>
@@ -215,12 +225,12 @@ solved point information.</p>
             <td>::</td>
             <td><strong>f</strong></td>
             <td>
-                <p>Function to trace</p>
+                <p>Residual and derivative callback for <script type="math/tex">F(X,S)=0</script>.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x0~8"></span>
+              <span class="anchor" id="variable-x0~3"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -230,12 +240,12 @@ solved point information.</p>
             <td>::</td>
             <td><strong>X0</strong>(:)</td>
             <td>
-                <p>Initial point</p>
+                <p>Initial converged unknown vector.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns0~6"></span>
+              <span class="anchor" id="variable-ns0~2"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -245,12 +255,12 @@ solved point information.</p>
             <td>::</td>
             <td><strong>ns0</strong></td>
             <td>
-                <p>Initial specification</p>
+                <p>Index of the initially specified variable in <code>X0</code>.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-s0~6"></span>
+              <span class="anchor" id="variable-s0"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -260,12 +270,12 @@ solved point information.</p>
             <td>::</td>
             <td><strong>S0</strong></td>
             <td>
-                <p>Initial specification value</p>
+                <p>Initial value of the specified variable.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ds0~9"></span>
+              <span class="anchor" id="variable-ds0~2"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -275,13 +285,12 @@ solved point information.</p>
             <td>::</td>
             <td><strong>dS0</strong></td>
             <td>
-                <p>Initial <script type="math/tex">\deltaS</script>
-</p>
+                <p>Signed first step in the specification.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-max_points~7"></span>
+              <span class="anchor" id="variable-max_points"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -291,7 +300,7 @@ solved point information.</p>
             <td>::</td>
             <td><strong>max_points</strong></td>
             <td>
-                <p>Maximum number of points to trace</p>
+                <p>Maximum number of continuation points to store.</p>
             </td>
         </tr>
         <tr>
@@ -306,7 +315,7 @@ solved point information.</p>
             <td>::</td>
             <td><strong>solver_tol</strong></td>
             <td>
-                <p>Point solver tolerance</p>
+                <p>Residual tolerance for the point corrector.</p>
             </td>
         </tr>
         <tr>
@@ -321,12 +330,12 @@ solved point information.</p>
             <td>::</td>
             <td><strong>update_specification</strong></td>
             <td>
-                <p>Procedure to select the new specification and define the next step
-(\DeltaS)\, defaults to:</p>
+                <p>Optional callback to select the next specification and step. If absent,
+the tangent component of largest magnitude is selected and the step is
+scaled using that component:</p>
 <div class="codehilite"><pre><span></span><code><span class="n">ns</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">maxloc</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">dXdS</span><span class="p">),</span><span class="w"> </span><span class="nb">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">dS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dXdS</span><span class="p">(</span><span class="n">ns</span><span class="p">)</span><span class="o">*</span><span class="n">dS</span>
 <span class="n">dXdS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dXdS</span><span class="o">/</span><span class="n">dXdS</span><span class="p">(</span><span class="n">ns</span><span class="p">)</span>
-<span class="n">dS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">sign</span><span class="p">(</span><span class="nb">minval</span><span class="p">(</span><span class="nb">abs</span><span class="p">([</span><span class="mf">0.05_pr</span><span class="p">,</span><span class="w"> </span><span class="n">dS</span><span class="p">])),</span><span class="w"> </span><span class="n">dS</span><span class="p">)</span>
 </code></pre></div>
             </td>
         </tr>
@@ -342,13 +351,13 @@ solved point information.</p>
             <td>::</td>
             <td><strong>postprocess</strong></td>
             <td>
-                <p>Any kind of postprocess that could be done after defining the
-next step</p>
+                <p>Optional callback to modify the state or step after specification
+selection, for example to enforce bounds or change step direction.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-solver~4"></span>
+              <span class="anchor" id="variable-solver"></span>
               procedure(<a href='../interface/continuation_solver.html'>continuation_solver</a>),
             </td>
 <td></td>
@@ -358,7 +367,7 @@ next step</p>
             <td>::</td>
             <td><strong>solver</strong></td>
             <td>
-                <p>Solver procedures, uses Newton-Raphson by default</p>
+                <p>Optional point corrector. The built-in Newton solver is used by default.</p>
             </td>
         </tr>
         <tr>
@@ -373,7 +382,8 @@ next step</p>
             <td>::</td>
             <td><strong>stop</strong></td>
             <td>
-                <p>Stopping procedure</p>
+                <p>Optional callback evaluated after each accepted point; true terminates
+continuation.</p>
             </td>
         </tr>
     </tbody>
@@ -381,11 +391,11 @@ next step</p>
 
       <h3>Return Value
         <small>
-          <span class="anchor" id="variable-xs~5"></span>
+          <span class="anchor" id="variable-xs"></span>
           real(kind=pr), (max_points,size(X0))
         </small>
       </h3>
-      
+      <p>Stored solution vectors, one per row.</p>
     <br>
     <div class="card">
       <div class="card-header">
@@ -395,67 +405,67 @@ next step</p>
   <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: proc~~continuation~~CallsGraph Pages: 1 -->
-<svg id="proccontinuationCallsGraph" width="405pt" height="52pt"
- viewBox="0.00 0.00 405.00 52.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~continuation~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 48)">
+<svg id="proccontinuationCallsGraph" width="403pt" height="52pt"
+ viewBox="0.00 0.00 403.00 52.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~continuation~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 48.27)">
 <title>proc~~continuation~~CallsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-48 401,-48 401,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-48.27 398.56,-48.27 398.56,4 -4,4"/>
 <!-- proc~continuation -->
 <g id="proc~~continuation~~CallsGraph_node1" class="node">
 <title>proc~continuation</title>
-<polygon fill="none" stroke="black" points="79,-24 0,-24 0,0 79,0 79,-24"/>
-<text text-anchor="middle" x="39.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">continuation</text>
+<polygon fill="none" stroke="black" points="78.27,-24.27 0,-24.27 0,0 78.27,0 78.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="39.13" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">continuation</text>
 </g>
 <!-- proc~full_newton -->
 <g id="proc~~continuation~~CallsGraph_node2" class="node">
 <title>proc~full_newton</title>
 <g id="a_proc~~continuation~~CallsGraph_node2"><a xlink:href="../proc/full_newton.html" xlink:title="full_newton">
-<polygon fill="#d9534f" stroke="#d9534f" points="188,-44 115,-44 115,-20 188,-20 188,-44"/>
-<text text-anchor="middle" x="151.5" y="-29.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">full_newton</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="186.54,-44.27 114.27,-44.27 114.27,-20 186.54,-20 186.54,-44.27"/>
+<text xml:space="preserve" text-anchor="middle" x="150.4" y="-28.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">full_newton</text>
 </a>
 </g>
 </g>
 <!-- proc~continuation&#45;&gt;proc~full_newton -->
 <g id="proc~~continuation~~CallsGraph_edge1" class="edge">
 <title>proc~continuation&#45;&gt;proc~full_newton</title>
-<path fill="none" stroke="#000000" d="M79.28,-19.05C87.46,-20.54 96.17,-22.12 104.58,-23.65"/>
-<polygon fill="#000000" stroke="#000000" points="104.18,-27.14 114.64,-25.48 105.43,-20.25 104.18,-27.14"/>
+<path fill="none" stroke="#000000" d="M78.66,-19.19C86.43,-20.61 94.67,-22.12 102.69,-23.58"/>
+<polygon fill="#000000" stroke="#000000" points="101.83,-26.99 112.3,-25.34 103.09,-20.1 101.83,-26.99"/>
 </g>
 <!-- proc~solve_system -->
 <g id="proc~~continuation~~CallsGraph_node3" class="node">
 <title>proc~solve_system</title>
 <g id="a_proc~~continuation~~CallsGraph_node3"><a xlink:href="../proc/solve_system.html" xlink:title="solve_system">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="307,-24 224,-24 224,0 307,0 307,-24"/>
-<text text-anchor="middle" x="265.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">solve_system</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="304.56,-24.27 222.54,-24.27 222.54,0 304.56,0 304.56,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="263.55" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">solve_system</text>
 </a>
 </g>
 </g>
 <!-- proc~continuation&#45;&gt;proc~solve_system -->
 <g id="proc~~continuation~~CallsGraph_edge2" class="edge">
 <title>proc~continuation&#45;&gt;proc~solve_system</title>
-<path fill="none" stroke="#000000" d="M79.17,-11.38C90.69,-11.22 103.36,-11.08 115,-11 147.44,-10.78 155.56,-10.79 188,-11 196.22,-11.05 204.93,-11.14 213.41,-11.24"/>
-<polygon fill="#000000" stroke="#000000" points="213.57,-14.74 223.61,-11.37 213.65,-7.74 213.57,-14.74"/>
+<path fill="none" stroke="#000000" d="M78.61,-11.52C90.08,-11.36 102.69,-11.21 114.27,-11.13 146.39,-10.92 154.42,-10.92 186.54,-11.13 194.43,-11.19 202.79,-11.27 210.96,-11.36"/>
+<polygon fill="#000000" stroke="#000000" points="210.76,-14.86 220.8,-11.49 210.85,-7.86 210.76,-14.86"/>
 </g>
 <!-- proc~full_newton&#45;&gt;proc~solve_system -->
 <g id="proc~~continuation~~CallsGraph_edge3" class="edge">
 <title>proc~full_newton&#45;&gt;proc~solve_system</title>
-<path fill="none" stroke="#000000" d="M188.25,-25.62C196.34,-24.17 205.1,-22.61 213.68,-21.07"/>
-<polygon fill="#000000" stroke="#000000" points="214.41,-24.5 223.64,-19.3 213.18,-17.61 214.41,-24.5"/>
+<path fill="none" stroke="#000000" d="M186.88,-25.75C194.65,-24.35 203.03,-22.84 211.29,-21.36"/>
+<polygon fill="#000000" stroke="#000000" points="211.68,-24.84 220.9,-19.63 210.44,-17.96 211.68,-24.84"/>
 </g>
 <!-- none~dgesv -->
 <g id="proc~~continuation~~CallsGraph_node4" class="node">
 <title>none~dgesv</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="397,-24 343,-24 343,0 397,0 397,-24"/>
-<text text-anchor="middle" x="370" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dgesv</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="394.56,-24.27 340.56,-24.27 340.56,0 394.56,0 394.56,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="367.56" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dgesv</text>
 </g>
 <!-- proc~solve_system&#45;&gt;none~dgesv -->
 <g id="proc~~continuation~~CallsGraph_edge4" class="edge">
 <title>proc~solve_system&#45;&gt;none~dgesv</title>
-<path fill="none" stroke="#000000" d="M307.01,-12C315.51,-12 324.42,-12 332.75,-12"/>
-<polygon fill="#000000" stroke="#000000" points="332.92,-15.5 342.92,-12 332.92,-8.5 332.92,-15.5"/>
+<path fill="none" stroke="#000000" d="M304.87,-12.13C312.78,-12.13 321.05,-12.13 328.88,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="328.79,-15.64 338.79,-12.14 328.79,-8.64 328.79,-15.64"/>
 </g>
 </g>
 </svg>
@@ -474,55 +484,55 @@ next step</p>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
 <svg width="641pt" height="28pt"
- viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
 <!-- Subroutine -->
 <g id="node1" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node2" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Interface -->
 <g id="node3" class="node">
 <title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
 </g>
 <!-- Type Bound Procedure -->
 <g id="node4" class="node">
 <title>Type Bound Procedure</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
-<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
 </g>
 <!-- Unknown Procedure Type -->
 <g id="node5" class="node">
 <title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
-<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
 </g>
 <!-- Program -->
 <g id="node6" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node7" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
-<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -546,49 +556,49 @@ implementation in a submodule of an interface in a parent module.
   <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: proc~~continuation~~CalledByGraph Pages: 1 -->
-<svg id="proccontinuationCalledByGraph" width="229pt" height="74pt"
- viewBox="0.00 0.00 229.00 74.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~continuation~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 70)">
+<svg id="proccontinuationCalledByGraph" width="227pt" height="74pt"
+ viewBox="0.00 0.00 227.00 74.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~continuation~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 70.27)">
 <title>proc~~continuation~~CalledByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-70 225,-70 225,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-70.27 222.79,-70.27 222.79,4 -4,4"/>
 <!-- proc~continuation -->
 <g id="proc~~continuation~~CalledByGraph_node1" class="node">
 <title>proc~continuation</title>
-<polygon fill="none" stroke="black" points="221,-45 142,-45 142,-21 221,-21 221,-45"/>
-<text text-anchor="middle" x="181.5" y="-30.6" font-family="Helvetica,sans-Serif" font-size="10.50">continuation</text>
+<polygon fill="none" stroke="black" points="218.79,-45.27 140.52,-45.27 140.52,-21 218.79,-21 218.79,-45.27"/>
+<text xml:space="preserve" text-anchor="middle" x="179.65" y="-29.53" font-family="Helvetica,sans-Serif" font-size="10.50">continuation</text>
 </g>
 <!-- proc~px_envelope_2ph -->
 <g id="proc~~continuation~~CalledByGraph_node2" class="node">
 <title>proc~px_envelope_2ph</title>
 <g id="a_proc~~continuation~~CalledByGraph_node2"><a xlink:href="../proc/px_envelope_2ph.html" xlink:title="px_envelope_2ph">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="106,-66 0,-66 0,-42 106,-42 106,-66"/>
-<text text-anchor="middle" x="53" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">px_envelope_2ph</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="104.52,-66.27 0,-66.27 0,-42 104.52,-42 104.52,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="52.26" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">px_envelope_2ph</text>
 </a>
 </g>
 </g>
 <!-- proc~px_envelope_2ph&#45;&gt;proc~continuation -->
 <g id="proc~~continuation~~CalledByGraph_edge1" class="edge">
 <title>proc~px_envelope_2ph&#45;&gt;proc~continuation</title>
-<path fill="none" stroke="#000000" d="M106.18,-45.34C114.7,-43.92 123.49,-42.46 131.92,-41.07"/>
-<polygon fill="#000000" stroke="#000000" points="132.67,-44.49 141.97,-39.4 131.53,-37.58 132.67,-44.49"/>
+<path fill="none" stroke="#000000" d="M104.99,-45.47C112.87,-44.15 121,-42.79 128.84,-41.48"/>
+<polygon fill="#000000" stroke="#000000" points="129.3,-44.95 138.58,-39.85 128.14,-38.05 129.3,-44.95"/>
 </g>
 <!-- proc~tx_envelope_2ph -->
 <g id="proc~~continuation~~CalledByGraph_node3" class="node">
 <title>proc~tx_envelope_2ph</title>
 <g id="a_proc~~continuation~~CalledByGraph_node3"><a xlink:href="../proc/tx_envelope_2ph.html" xlink:title="tx_envelope_2ph">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="104.5,-24 1.5,-24 1.5,0 104.5,0 104.5,-24"/>
-<text text-anchor="middle" x="53" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">tx_envelope_2ph</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="103.02,-24.27 1.5,-24.27 1.5,0 103.02,0 103.02,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="52.26" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">tx_envelope_2ph</text>
 </a>
 </g>
 </g>
 <!-- proc~tx_envelope_2ph&#45;&gt;proc~continuation -->
 <g id="proc~~continuation~~CalledByGraph_edge2" class="edge">
 <title>proc~tx_envelope_2ph&#45;&gt;proc~continuation</title>
-<path fill="none" stroke="#000000" d="M104.72,-20.42C113.62,-21.9 122.85,-23.43 131.69,-24.9"/>
-<polygon fill="#000000" stroke="#000000" points="131.4,-28.4 141.84,-26.58 132.55,-21.49 131.4,-28.4"/>
+<path fill="none" stroke="#000000" d="M103.18,-20.5C111.63,-21.91 120.41,-23.38 128.86,-24.8"/>
+<polygon fill="#000000" stroke="#000000" points="128.18,-28.23 138.62,-26.43 129.34,-21.33 128.18,-28.23"/>
 </g>
 </g>
 </svg>
@@ -607,55 +617,55 @@ implementation in a submodule of an interface in a parent module.
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
 <svg width="641pt" height="28pt"
- viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
 <!-- Subroutine -->
 <g id="node1" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node2" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Interface -->
 <g id="node3" class="node">
 <title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
 </g>
 <!-- Type Bound Procedure -->
 <g id="node4" class="node">
 <title>Type Bound Procedure</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
-<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
 </g>
 <!-- Unknown Procedure Type -->
 <g id="node5" class="node">
 <title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
-<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
 </g>
 <!-- Program -->
 <g id="node6" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node7" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
-<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -688,7 +698,7 @@ implementation in a submodule of an interface in a parent module.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-s~48"></span>
+              <span class="anchor" id="variable-s~9"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -705,7 +715,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~72"></span>
+              <span class="anchor" id="variable-x~11"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -722,7 +732,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-df~27"></span>
+              <span class="anchor" id="variable-df~4"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -739,7 +749,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dfds~16"></span>
+              <span class="anchor" id="variable-dfds~3"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -756,7 +766,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ds~24"></span>
+              <span class="anchor" id="variable-ds~7"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -773,7 +783,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dxds~23"></span>
+              <span class="anchor" id="variable-dxds~7"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -790,7 +800,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-fval~2"></span>
+              <span class="anchor" id="variable-fval"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -807,7 +817,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-i~125"></span>
+              <span class="anchor" id="variable-i~13"></span>
               integer,
             </td>
               <td>public</td>
@@ -819,12 +829,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Loop/index variable.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-max_iters~13"></span>
+              <span class="anchor" id="variable-max_iters~3"></span>
               integer,
             </td>
               <td>public</td>
@@ -858,7 +868,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ns~56"></span>
+              <span class="anchor" id="variable-ns~11"></span>
               integer,
             </td>
               <td>public</td>
@@ -899,14 +909,14 @@ implementation in a submodule of an interface in a parent module.
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

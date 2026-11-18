@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Residual Helmholtz Models &mdash; yaeos 4.5.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+  <title>Residual Helmholtz Models &mdash; yaeos 4.5.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=a284863f"></script>
+      <script src="../../_static/documentation_options.js?v=06fc0226"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,14 +56,17 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../init.html">Models</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Residual Helmholtz Models</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="cubic_eos/init.html">Cubic Equations of State</a></li>
-<li class="toctree-l3"><a class="reference internal" href="multifluid/init.html">Multifluid Equations of State</a></li>
-<li class="toctree-l3"><a class="reference internal" href="saft/init.html">SAFT Equations of State</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../init.html#choose-the-model-before-the-solver">Choose the model before the solver</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Residual Helmholtz Models</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cubic_eos/init.html">Cubic Equations of State</a></li>
+<li class="toctree-l4"><a class="reference internal" href="multifluid/init.html">Multifluid Equations of State</a></li>
+<li class="toctree-l4"><a class="reference internal" href="saft/init.html">SAFT Equations of State</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../excess_gibbs/init.html">Excess Gibbs Models</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../groups.html">Groups module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../excess_gibbs/init.html">Excess Gibbs Models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../groups.html">Groups module</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -99,9 +102,21 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-yaeos.models.residual_helmholtz">
-<span id="residual-helmholtz-models"></span><h1>Residual Helmholtz Models<a class="headerlink" href="#module-yaeos.models.residual_helmholtz" title="Link to this heading"></a></h1>
-<p>Residual Helmholtz energy models module.</p>
+  <section id="residual-helmholtz-models">
+<h1>Residual Helmholtz Models<a class="headerlink" href="#residual-helmholtz-models" title="Link to this heading"></a></h1>
+<p>An equation of state relates temperature, volume, composition, and pressure.
+Its residual Helmholtz energy measures departure from ideal-gas behavior;
+derivatives provide properties and fugacity coefficients used in equilibrium
+calculations.</p>
+<p>Start with <a class="reference internal" href="cubic_eos/init.html"><span class="doc">Cubic Equations of State</span></a> when you have critical constants and
+acentric factors. <a class="reference internal" href="multifluid/init.html"><span class="doc">Multifluid Equations of State</span></a> provides a component-database model;
+<a class="reference internal" href="saft/init.html"><span class="doc">SAFT Equations of State</span></a> uses molecular segment parameters instead. These parameter
+sets are not interchangeable.</p>
+<p>All inherit the property and equilibrium methods in <a class="reference internal" href="../../core.html"><span class="doc">Core Module</span></a>. Read the
+<a class="reference internal" href="../../tutorial/equations_of_state/equations_of_state.html"><span class="doc">EoS tutorial</span></a> for a
+calculation sequence, and distinguish a homogeneous volume root from a
+stable multiphase state before interpreting density or energy results.</p>
+<p id="module-yaeos.models.residual_helmholtz">Residual Helmholtz energy models module.</p>
 <p>Yaeos Residual Helmholtz module. This module provides the following submodules:</p>
 <ul class="simple">
 <li><dl class="simple">
@@ -121,7 +136,7 @@
 </li>
 <li><dl class="simple">
 <dt>Mixing rules: mixing rules for cubic EoS</dt><dd><ul>
-<li><p>QMR: cuadratic mixing rule</p></li>
+<li><p>QMR: quadratic mixing rule</p></li>
 <li><p>HV: Huron-Vidal mixing rule</p></li>
 <li><p>MHV: Michelsen’s modified Huron-Vidal mixing rule</p></li>
 <li><p>HVNRTL: Huron-Vidal NRTL mixing rule</p></li>

@@ -1,0 +1,570 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
+    <link rel="icon" href="../../favicon.png">
+
+    <title>Tests and numerical validation &ndash; yaeos</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../../css/brands.min.css" rel="stylesheet">
+    <link href="../../css/regular.min.css" rel="stylesheet">
+    <link href="../../css/solid.min.css" rel="stylesheet">
+    <link href="../../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../../css/local.css" rel="stylesheet">
+    <link href="../../css/pygments.css" rel="stylesheet">
+      <link href="../../css/user.css" rel="stylesheet">
+    <script src="../../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../../index.html">yaeos </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="../index.html">User documentation</a></li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>Tests and numerical validation</h1>
+    <div class="container p-2 mb-4 bg-light border rounded-3">
+      <div class="row align-items-center justify-content-between">
+        <div class="col">
+          <ul class="list-inline" style="margin-bottom:0px; display:inline">
+          </ul>
+        </div>
+        <div class="col">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../index.html'>User documentation</a></li>
+                <li class="breadcrumb-item"><a href='index.html'>Becoming a yaeos developer</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Tests and numerical validation</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+      <div class="col-3">
+        <div class="card card-body bg-light" id="sidebar-toc">
+          <ul class="nav flex-column align-items">
+            <li class="nav-item">
+              <a class="nav-link" href="../index.html">User documentation</a>
+            </li>
+          </ul>
+          <hr>
+          <nav class="nav nav-pills flex-column">
+              <a class="nav-link" href="../usage/index.html">Getting started</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/fundamentals.html">Thermodynamics essentials</a>
+              <a class="nav-link" href="../usage/eos/index.html">Equations of State</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/eos/cubics/index.html">Cubics</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/eos/cubics/alpha.html">Alpha functions</a>
+              <a class="nav-link" href="../usage/eos/cubics/mixing.html">Mixing Rules</a>
+
+                </nav>
+              <a class="nav-link" href="../usage/eos/gerg2008.html">GERG2008</a>
+              <a class="nav-link" href="../usage/eos/gerg2008_parameters.html">GERG2008 parameters</a>
+              <a class="nav-link" href="../usage/eos/pc_saft.html">PC-SAFT</a>
+
+                </nav>
+              <a class="nav-link" href="../usage/excessmodels/index.html">Gibbs Excess Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/excessmodels/nrtl.html">NRTL</a>
+              <a class="nav-link" href="../usage/excessmodels/nrtl-hv.html">NRTL-HV</a>
+              <a class="nav-link" href="../usage/excessmodels/uniquac.html">UNIQUAC</a>
+              <a class="nav-link" href="../usage/excessmodels/unifac_models/index.html">UNIFAC Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
+              <a class="nav-link" href="../usage/excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
+              <a class="nav-link" href="../usage/excessmodels/unifac_models/psrk.html">UNIFAC-PSRK</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../usage/phase_equilibrium/index.html">Phase Equilibrium</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/phase_equilibrium/flash.html">Flash calculations</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/saturation_points.html">Saturation Points</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/stability.html">Stability analysis</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/critical.html">Critical points</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/multiphase.html">Multiphase flash</a>
+
+                </nav>
+              <a class="nav-link" href="../usage/newmodels/index.html">Adding your own models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/newmodels/analtical.html">Analytical derivatives</a>
+              <a class="nav-link" href="../usage/newmodels/autodiff.html">Automatic differentiation</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../python-api/index.html">Python-API</a>
+              <a class="nav-link" href="index.html">Becoming a yaeos developer</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="architecture.html">Architecture and repository map</a>
+              <a class="nav-link" href="workflow.html">Developer workflow</a>
+              <a class="nav-link" href="fortran.html">Working in the Fortran core</a>
+              <a class="nav-link" href="numerics.html">Working on numerical algorithms</a>
+              <a class="nav-link" href="c_interface.html">C interface layer</a>
+              <a class="nav-link" href="python_interface.html">Python interface layer</a>
+              <a class="nav-link active disabled" href="testing.html">Tests and numerical validation</a>
+              <a class="nav-link" href="walkthrough.html">An end-to-end change</a>
+
+                </nav>
+              <a class="nav-link" href="../contributing/index.html">Contributing</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../contributing/styleguide.html">Style guide</a>
+
+                </nav>
+          </nav>
+        </div>
+      </div>
+
+    <div class="col-9" id='text'>
+      <div class="toc">
+<ul>
+<li><a href="#write-a-test-that-catches-the-bug-you-fixed">Write a test that catches the bug you fixed</a><ul>
+<li><a href="#where-tests-live-and-how-they-run">Where tests live and how they run</a></li>
+<li><a href="#add-a-small-native-regression">Add a small native regression</a><ul>
+<li><a href="#1-write-a-standalone-program">1. Write a standalone program</a></li>
+<li><a href="#2-register-and-run-the-program">2. Register and run the program</a></li>
+</ul>
+</li>
+<li><a href="#decide-what-kind-of-evidence-a-test-provides">Decide what kind of evidence a test provides</a></li>
+<li><a href="#derivatives-test-the-variables-the-interface-actually-uses">Derivatives: test the variables the interface actually uses</a></li>
+<li><a href="#thermodynamic-checks-that-expose-amount-or-reference-errors">Thermodynamic checks that expose amount or reference errors</a><ul>
+<li><a href="#scaling-and-homogeneity">Scaling and homogeneity</a></li>
+<li><a href="#heat-capacity-identity">Heat-capacity identity</a></li>
+<li><a href="#symmetry-gibbsduhem-and-limits">Symmetry, Gibbs–Duhem, and limits</a></li>
+</ul>
+</li>
+<li><a href="#phase-calculations-check-physics-as-well-as-termination">Phase calculations: check physics as well as termination</a></li>
+<li><a href="#cross-language-checks-shapes-before-values">Cross-language checks: shapes before values</a></li>
+<li><a href="#choose-tolerances-to-match-the-claim">Choose tolerances to match the claim</a></li>
+<li><a href="#a-minimal-pre-review-test-plan">A minimal pre-review test plan</a><ul>
+<li><a href="#measure-coverage">Measure coverage</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<h1 id="write-a-test-that-catches-the-bug-you-fixed">Write a test that catches the bug you fixed</h1>
+<p>A useful test distinguishes correct behavior from a plausible wrong answer.
+For <code>yaeos</code>, that means testing mathematical contracts, units, array shapes,
+phase balances, and failure handling—not only checking that an iteration
+finished or a value is finite.</p>
+<p>This guide starts with a small native test, then adds the independent checks
+needed for thermodynamic and cross-language work. Use
+<a href="workflow.html">workflow</a> for prerequisites and build commands.</p>
+<h2 id="where-tests-live-and-how-they-run">Where tests live and how they run</h2>
+<p>The native tests are standalone Fortran programs under <code>test/</code>, one file per
+program (<code>test_&lt;feature&gt;.f90</code>). The project no longer uses test-drive suites or
+a collector program. Every test is an independent executable, so a failure can
+be run and debugged on its own.</p>
+<p><strong>The directories under <code>test/</code> mirror <code>src/</code>.</strong> A test goes in the directory
+that corresponds to the source it exercises. For example, tests of
+<code>src/equilibria/flash.f90</code> are in <code>test/equilibria/</code>, and tests of the cubic
+mixing rules in <code>src/models/residual_helmholtz/cubic/mixing_rules/</code> are in
+<code>test/models/residual_helmholtz/cubic/mixing_rules/</code>. A test that exercises
+several files goes in the directory of the routine it is mainly about.</p>
+<p>Shared helpers are in the local package <code>test/support/</code>, which <code>fpm.toml</code>
+lists as a dev-dependency. It holds <code>testing_aux</code> (<code>assert</code>, <code>test_title</code>, in
+<code>test/support/src/yaeos_testing.f90</code>) and the model fixtures. It is a separate
+package because fpm only lets a test program use modules from its own
+directory or below. A helper module used by tests in a single directory can
+stay next to them.</p>
+<p><code>auto-tests</code> is off: every test program has a <code>[[test]]</code> entry in <code>fpm.toml</code>,
+generated by <code>tools/dev/test_to_toml.py</code>. Each test is named after its file
+without the <code>test_</code> prefix (<code>test_flash.f90</code> is the target <code>flash</code>), so file
+names must be unique across all directories. CI runs the script with
+<code>--check</code> and fails if <code>fpm.toml</code> is out of date.</p>
+<p>Python tests are under <code>python/tests/</code>. Some compare directly with native
+Fortran calls by generating small programs in <code>app/</code>. Those tests need a
+checkout, <code>fpm</code>, and a working native build as well as the Python package.</p>
+<h2 id="add-a-small-native-regression">Add a small native regression</h2>
+<h3 id="1-write-a-standalone-program">1. Write a standalone program</h3>
+<p>Save this complete program as <code>test_my_feature.f90</code>, in the <code>test/</code>
+subdirectory that mirrors the source it tests (here a residual-model
+calculation, so <code>test/models/residual_helmholtz/</code>), in a working development
+branch. It follows the program-based pattern used by
+<code>test/models/residual_helmholtz/cubic/mixing_rules/test_huron_vidal.f90</code>,
+<code>test/models/residual_helmholtz/cubic/mixing_rules/test_sddlc.f90</code>, and
+<code>test/equilibria/test_flash_optional_iters.f90</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">program </span><span class="n">test_my_feature</span>
+<span class="w">   </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">ArModel</span><span class="p">,</span><span class="w"> </span><span class="n">PengRobinson76</span>
+<span class="w">   </span><span class="k">use </span><span class="n">testing_aux</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">assert</span><span class="p">,</span><span class="w"> </span><span class="n">test_title</span>
+<span class="w">   </span><span class="k">use</span><span class="p">,</span><span class="w"> </span><span class="k">intrinsic</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ieee_arithmetic</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">ieee_is_finite</span>
+<span class="w">   </span><span class="k">implicit none</span>
+<span class="k">   class</span><span class="p">(</span><span class="n">ArModel</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">specified_pressure</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">calculated_pressure</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">volume</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">temperature</span>
+
+<span class="w">   </span><span class="k">write</span><span class="p">(</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="n">test_title</span><span class="p">(</span><span class="s2">&quot;Volume/pressure regression&quot;</span><span class="p">)</span>
+<span class="w">   </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">([</span><span class="mi">19</span><span class="mf">0.564_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="mf">5.32_pr</span><span class="p">],</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="p">[</span><span class="mi">4</span><span class="mf">5.99_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="mf">8.72_pr</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="mf">0.01142_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0995_pr</span><span class="p">])</span>
+<span class="w">   </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.3_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">specified_pressure</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="mf">0.0_pr</span>
+<span class="w">   </span><span class="n">temperature</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">32</span><span class="mf">0.0_pr</span>
+
+<span class="w">   </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">volume</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">specified_pressure</span><span class="p">,</span><span class="w"> </span><span class="n">temperature</span><span class="p">,</span><span class="w"> </span><span class="n">volume</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="n">root_type</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span><span class="p">)</span>
+<span class="w">   </span><span class="k">call </span><span class="n">assert</span><span class="p">(</span><span class="n">ieee_is_finite</span><span class="p">(</span><span class="n">volume</span><span class="p">),</span><span class="w"> </span><span class="s2">&quot;Volume must be finite&quot;</span><span class="p">)</span>
+<span class="w">   </span><span class="k">call </span><span class="n">assert</span><span class="p">(</span><span class="n">volume</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Volume must be positive&quot;</span><span class="p">)</span>
+
+<span class="w">   </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">volume</span><span class="p">,</span><span class="w"> </span><span class="n">temperature</span><span class="p">,</span><span class="w"> </span><span class="n">calculated_pressure</span><span class="p">)</span>
+<span class="w">   </span><span class="k">call </span><span class="n">assert</span><span class="p">(</span><span class="n">ieee_is_finite</span><span class="p">(</span><span class="n">calculated_pressure</span><span class="p">),</span><span class="w"> </span><span class="s2">&quot;Pressure must be finite&quot;</span><span class="p">)</span>
+<span class="w">   </span><span class="k">call </span><span class="n">assert</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">calculated_pressure</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">specified_pressure</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">1.0e-7_pr</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="s2">&quot;Volume reproduces the specified pressure&quot;</span><span class="p">)</span>
+<span class="k">end program </span><span class="n">test_my_feature</span>
+</code></pre></div>
+
+<p><code>testing_aux</code> is the repository&rsquo;s test helper module, defined in
+<code>test/support/src/yaeos_testing.f90</code>, not part of the installed public <code>yaeos</code>
+API.
+<code>test_title</code> formats a heading; <code>assert(condition, message)</code> reports a passing
+check or terminates the program with <code>error stop</code> on failure. A failing
+prerequisite therefore stops before later calculations use an invalid result.
+Printing a warning without a nonzero exit status is not a failing test.</p>
+<p>For a group of related checks, put private test subroutines after <code>contains</code>
+and call them explicitly from the program body. There is no collector or
+suite registry to update.</p>
+<h3 id="2-register-and-run-the-program">2. Register and run the program</h3>
+<p>From the repository root, after saving the file in the directory that mirrors
+the source it tests:</p>
+<div class="codehilite"><pre><span></span><code>python<span class="w"> </span>tools/dev/test_to_toml.py<span class="w">   </span><span class="c1"># adds the [[test]] entry to fpm.toml</span>
+fpm<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--list
+fpm<span class="w"> </span><span class="nb">test</span><span class="w"> </span>my_feature
+</code></pre></div>
+
+<p>The target name is the filename without <code>test_</code>, so use a descriptive and
+unique <code>test_*.f90</code> name. The script only registers files that contain a
+<code>program</code> unit and its <code>end program</code>, and it refuses duplicate names. Commit
+the <code>fpm.toml</code> change with the test. Run the focused target first, then
+<code>fpm test</code> before review.</p>
+<h2 id="decide-what-kind-of-evidence-a-test-provides">Decide what kind of evidence a test provides</h2>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>What it establishes</th>
+<th>What it does not establish</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Compare with independent data</td>
+<td>Agreement for specified states and parameters</td>
+<td>Accuracy everywhere</td>
+</tr>
+<tr>
+<td>Numerical derivative check</td>
+<td>Local agreement of derivatives and energy evaluation</td>
+<td>That the energy equation is the intended physical model</td>
+</tr>
+<tr>
+<td>Thermodynamic identity</td>
+<td>Internal consistency of related quantities</td>
+<td>Independence of shared implementation errors</td>
+</tr>
+<tr>
+<td>Material balance and isofugacity</td>
+<td>A candidate phase split satisfies its equations</td>
+<td>Global stability against all other splits</td>
+</tr>
+<tr>
+<td>Native/Python comparison</td>
+<td>Agreement across wrapper paths</td>
+<td>Independent verification of their shared native kernel</td>
+</tr>
+<tr>
+<td>Regression reproducer</td>
+<td>A particular failure remains fixed</td>
+<td>Coverage of unrelated edge cases</td>
+</tr>
+</tbody>
+</table>
+<p>Use more than one kind of evidence for a new model or solver. Two routines
+that share the same incorrect derivative can agree perfectly.</p>
+<h2 id="derivatives-test-the-variables-the-interface-actually-uses">Derivatives: test the variables the interface actually uses</h2>
+<p>For a scalar property <script type="math/tex">f(X)</script>, a central-difference estimate is</p>
+<p>
+<script type="math/tex; mode=display">
+\frac{\partial f}{\partial X_j}\approx
+\frac{f(X+h_j e_j)-f(X-h_j e_j)}{2h_j}.
+</script>
+</p>
+<p>Choose steps with both an absolute and relative scale so that a zero input
+still gets a nonzero perturbation. Repeat at several step sizes. Small steps
+amplify cancellation; large steps introduce truncation error. Neither choosing
+the smallest possible number nor copying another test&rsquo;s step blindly is a
+reliable validation strategy.</p>
+<p>Test the <strong>amount derivatives</strong> required by <code>ArModel</code> and <code>GeModel</code>, not
+derivatives of normalized mole fractions. For an equilibrium Jacobian in log
+coordinates, perturb the packed log variable and include its chain-rule
+factor. Avoid changing volume-root branches during a derivative check intended
+for a single smooth branch.</p>
+<p>Useful native helpers include <code>numeric_ar_derivatives</code>, <code>ar_consistency</code>,
+<code>numeric_ge_derivatives</code>, <code>ge_consistency</code>, and <code>individual_ar_calls</code> under
+<code>src/consistency/</code>. Read their interfaces and the cases that call them:
+different outputs have different scalar, vector, and matrix shapes.
+<code>individual_ar_calls</code> helps check optional-output combinations; it does not
+replace a mathematical accuracy check.</p>
+<p>For a derivative implementation, cover energy only, each derivative separately,
+all outputs together, mixed-output requests, and repeated calls at different
+states. AD implementations need these checks too: differentiation propagates
+the program&rsquo;s operations, including mistakes in its primal expression.</p>
+<h2 id="thermodynamic-checks-that-expose-amount-or-reference-errors">Thermodynamic checks that expose amount or reference errors</h2>
+<h3 id="scaling-and-homogeneity">Scaling and homogeneity</h3>
+<p>For residual Helmholtz energy at fixed temperature,</p>
+<p>
+<script type="math/tex; mode=display">
+A^r(\lambda\mathbf n,\lambda V,T)=\lambda A^r(\mathbf n,V,T).
+</script>
+</p>
+<p>Pressure and fugacity coefficients should stay unchanged under that same
+joint scaling. Scaling amounts without volume changes the density, so it is
+not the same test.</p>
+<p>For an excess-Gibbs model,
+<script type="math/tex">G^E(\lambda\mathbf n,T)=\lambda G^E(\mathbf n,T)</script>, whereas activity
+coefficients are unchanged. These checks help catch a missing total-amount
+factor or an inappropriate normalization.</p>
+<h3 id="heat-capacity-identity">Heat-capacity identity</h3>
+<p>At fixed component amounts, define
+<script type="math/tex">P_T=(\partial P/\partial T)_{V,\mathbf n}</script> and
+<script type="math/tex">P_V=(\partial P/\partial V)_{T,\mathbf n}</script>. The total heat capacities
+satisfy <script type="math/tex">C_p-C_v=-T(P_T)^2/P_V</script>. Subtracting the ideal-gas difference gives</p>
+<p>
+<script type="math/tex; mode=display">
+C_p^r-C_v^r=-T\frac{(P_T)^2}{P_V}-n_{\mathrm{tot}}R.
+</script>
+</p>
+<p>Here <script type="math/tex">P_T=n_{\mathrm{tot}}R/V-A^r_{VT}</script> and
+<script type="math/tex">P_V=-n_{\mathrm{tot}}RT/V^2-A^r_{VV}</script>. First derivatives of residual
+Helmholtz energy cannot simply be multiplied to obtain this identity.</p>
+<p>This <strong>insertable test fragment</strong> assumes an initialized model and declared
+<code>n</code>, <code>V</code>, and <code>T</code>; import <code>pr</code> and <code>R</code> from <code>yaeos</code> and <code>assert</code> from
+<code>testing_aux</code>. Place the declarations before executable statements.
+Choose a regular state where <code>dPdV</code> is nonzero:</p>
+<div class="codehilite"><pre><span></span><code><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">P</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">dPdT</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">dPdV</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Cp</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Cv</span>
+<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">expected_difference</span>
+
+<span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">dPdT</span><span class="o">=</span><span class="n">dPdT</span><span class="p">,</span><span class="w"> </span><span class="n">dPdV</span><span class="o">=</span><span class="n">dPdV</span><span class="p">)</span>
+<span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">Cp_residual_vt</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">Cp</span><span class="o">=</span><span class="n">Cp</span><span class="p">)</span>
+<span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">Cv_residual_vt</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">Cv</span><span class="o">=</span><span class="n">Cv</span><span class="p">)</span>
+<span class="n">expected_difference</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">-</span><span class="n">T</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">dPdT</span><span class="o">**</span><span class="mi">2</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">dPdV</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">R</span>
+<span class="k">call </span><span class="n">assert</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">Cp</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Cv</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">expected_difference</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">1.0e-8_pr</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">   </span><span class="s2">&quot;Residual heat capacities satisfy the pressure-derivative identity&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<p>This tests consistency of property relations and derivative paths. An
+independent derivative check is still needed to diagnose a shared model error.
+Near singular states, conditioning and cancellation can make this a poor
+choice of numerical test even when the identity is valid.</p>
+<h3 id="symmetry-gibbsduhem-and-limits">Symmetry, Gibbs–Duhem, and limits</h3>
+<p>For a smooth excess-Gibbs model, the Hessian of <script type="math/tex">G^E</script> is symmetric and
+<script type="math/tex">\sum_i n_i\partial\ln\gamma_i/\partial n_j=0</script>. <code>ge_consistency</code> checks
+these relations and the link between energy and activity coefficients. The
+matrix of first mole derivatives of <script type="math/tex">\ln\gamma</script> is a <strong>Jacobian</strong>, not a
+Hessian of <script type="math/tex">\ln\gamma</script>.</p>
+<p>Check dilute-gas limits where applicable: <script type="math/tex">Z\to1</script>, <script type="math/tex">\ln\phi_i\to0</script>,
+and residual energy tends to zero as density tends to zero at fixed amount
+and temperature. For activity models using pure-component reference states,
+check appropriate pure limits and parameter conventions. Use a sufficiently
+dilute finite state, not a singular zero-volume or zero-amount calculation.</p>
+<h2 id="phase-calculations-check-physics-as-well-as-termination">Phase calculations: check physics as well as termination</h2>
+<p>For an accepted two-phase result, check:</p>
+<ul>
+<li>Finite, nonnegative phase compositions, each summing to one.</li>
+<li>Finite phase fractions in their intended domain.</li>
+<li>Component balance: <code>z = (1-beta)*x + beta*y</code>.</li>
+<li>Volume balance for a VT flash, on the routine&rsquo;s specified molar basis.</li>
+<li>Log-fugacity agreement on the same roots used by the solver.</li>
+<li>Distinct phases when the requested calculation should not be trivial.</li>
+</ul>
+<p>For multiphase output, reconstruct the feed using <strong>all</strong> phase fractions,
+including the reference phase. <code>MPEquilibriumState%np</code> counts main phases in
+the current representation; read the corresponding routine&rsquo;s contract rather
+than assuming it is the total count.</p>
+<p>Test ordinary cases, relevant boundaries, and a failure path. Keep
+near-critical conditioning tests distinct from ordinary accuracy tests. A
+converged root can be metastable, and a finite search that finds no destabilizing
+trial phase is not a proof of global stability.</p>
+<p>Failure conventions differ. Some routines return a sentinel, some return an
+early result or status field, and some terminate with <code>error stop</code>. Test the
+specific contract; do not read uninitialized result arrays after a failed
+call. To test an <strong>expected</strong> terminating failure, use a subprocess and check
+its exit status from a harness. Do not add a program that always exits nonzero
+as an ordinary passing <code>fpm test</code> target: <code>fpm</code> correctly treats that exit as
+a test failure.</p>
+<h2 id="cross-language-checks-shapes-before-values">Cross-language checks: shapes before values</h2>
+<p>Python tests under <code>python/tests/</code> include native-reference comparisons. Some
+generate Fortran programs in <code>app/</code>, execute them with <code>fpm</code>, and parse their
+output with helpers such as <code>parse_vec</code> and <code>parse_mat</code>. Inspect an existing
+test for the exact protocol instead of inventing another incompatible one.</p>
+<p>For an interface change, check:</p>
+<ol>
+<li>The same model parameters, state, units, and component ordering on both sides.</li>
+<li>Scalar/vector/matrix shape before comparing values.</li>
+<li>Matrix orientation with a nonsymmetric test case where appropriate.</li>
+<li>Dtype, contiguous layout, and Fortran-order buffers where the wrapper requires them.</li>
+<li>Each optional derivative alone and in combination.</li>
+<li>The return container and unrequested-output convention, not only its numbers.</li>
+<li>Model creation/deletion and invalid-handle behavior where safely defined.</li>
+</ol>
+<p>A Python test that agrees with native Fortran validates the adaptation layer,
+not the physical model independently. Test an installed build after changes to
+the compiled wrapper; a stale extension can conceal or mimic a regression.</p>
+<h2 id="choose-tolerances-to-match-the-claim">Choose tolerances to match the claim</h2>
+<p>A practical floating-point comparison uses both scales:</p>
+<p>
+<script type="math/tex; mode=display">
+|a-b|\leq \mathrm{atol}+\mathrm{rtol}|b|.
+</script>
+</p>
+<p>Choose <code>atol</code> in the quantity&rsquo;s units and <code>rtol</code> for its expected scale.
+Near-zero consistency residuals need an absolute criterion. Properties spanning
+orders of magnitude often need a relative criterion too. Do not compare
+log-fugacity mismatch, temperature error, and material balance with a single
+unexplained tolerance.</p>
+<p>State the reason for a reference value and its tolerance in the test. Consider
+rounding in published parameters, conditioning, compiler differences, and
+finite-difference error. Do not loosen a tolerance until a failure disappears
+without understanding why.</p>
+<p>CI runs on both an older and the newest Ubuntu image. The newest images use
+x86-64-v3 (AVX2/FMA) builds of gfortran and BLAS/LAPACK, and fused
+multiply-add changes the last bits of results. A limit of a few units in the
+last place, such as <code>1e-15</code> on a thermodynamic identity, can then fail on one
+machine and pass on another. Two measured examples set the scale:</p>
+<ul>
+<li>second derivatives compared with central finite differences (step about
+  <code>1e-4</code>) agree to about <code>1e-6</code> relative in every build;</li>
+<li>the Michelsen-Mollerup identities hold to about <code>1e-15</code>.</li>
+</ul>
+<p>The cubic EoS tests therefore use <code>1e-5</code> and <code>1e-13</code>. Those limits sit well
+above the rounding noise, and real derivative bugs give errors of order one.
+To check a test against FMA rounding locally:</p>
+<div class="codehilite"><pre><span></span><code>fpm<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--profile<span class="w"> </span>release<span class="w"> </span>--flag<span class="w"> </span><span class="s2">&quot;-g -ffree-line-length-0 -march=x86-64-v3&quot;</span><span class="w"> </span>my_feature
+</code></pre></div>
+
+<p>Adding <code>-ffp-contract=off</code> to the same command disables FMA contraction. If
+the failure then disappears, rounding is the cause and the tolerance is too
+tight.</p>
+<h2 id="a-minimal-pre-review-test-plan">A minimal pre-review test plan</h2>
+<p>Run the affected target first, then the native suite. Rebuild the Python
+extension and run relevant Python tests for an interface change. Build the
+documentation and run or compile its complete examples separately: successful
+site generation does not execute the tutorial.</p>
+<p>In the review summary, report which layers were tested, the revision and
+environment, and anything unavailable. Coverage is useful for finding unvisited
+branches, but it cannot establish that the equations, reference data, or
+assertions are correct.</p>
+<h3 id="measure-coverage">Measure coverage</h3>
+<p>CI measures line coverage from the release-profile test run and uploads it to
+Codecov. The project target is 95%, and generated code such as the Tapenade
+PC-SAFT derivatives counts toward it. To reproduce the measurement locally
+(it needs <code>gcovr</code>):</p>
+<div class="codehilite"><pre><span></span><code>fpm<span class="w"> </span><span class="nb">test</span><span class="w"> </span>--profile<span class="w"> </span>release<span class="w"> </span>--flag<span class="w"> </span><span class="s2">&quot;-g -coverage -ffree-line-length-0&quot;</span>
+bash<span class="w"> </span>ci/ci.sh<span class="w"> </span>coverage
+</code></pre></div>
+
+<p><code>ci/ci.sh coverage</code> applies the same exclusions as CI: tests, examples,
+<code>app/</code>, <code>tools/</code>, the legacy API and the vendored hyperdual module. Use
+<code>gcovr --html-details</code> with those exclusions to see the uncovered lines. A new
+test should check a result, not just execute lines.</p>
+<p>Continue with <a href="workflow.html">workflow</a>, <a href="numerics.html">numerical implementation</a>,
+or <a href="walkthrough.html">the end-to-end change walkthrough</a>.</p>
+    </div>
+  </div>
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              yaeos
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2026-11-18 15:31 +0000             </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

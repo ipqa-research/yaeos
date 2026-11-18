@@ -1,0 +1,399 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
+    <link rel="icon" href="../../favicon.png">
+
+    <title>Working on numerical algorithms &ndash; yaeos</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../../css/brands.min.css" rel="stylesheet">
+    <link href="../../css/regular.min.css" rel="stylesheet">
+    <link href="../../css/solid.min.css" rel="stylesheet">
+    <link href="../../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../../css/local.css" rel="stylesheet">
+    <link href="../../css/pygments.css" rel="stylesheet">
+      <link href="../../css/user.css" rel="stylesheet">
+    <script src="../../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../../index.html">yaeos </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="../index.html">User documentation</a></li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>Working on numerical algorithms</h1>
+    <div class="container p-2 mb-4 bg-light border rounded-3">
+      <div class="row align-items-center justify-content-between">
+        <div class="col">
+          <ul class="list-inline" style="margin-bottom:0px; display:inline">
+          </ul>
+        </div>
+        <div class="col">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../index.html'>User documentation</a></li>
+                <li class="breadcrumb-item"><a href='index.html'>Becoming a yaeos developer</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Working on numerical algorithms</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+      <div class="col-3">
+        <div class="card card-body bg-light" id="sidebar-toc">
+          <ul class="nav flex-column align-items">
+            <li class="nav-item">
+              <a class="nav-link" href="../index.html">User documentation</a>
+            </li>
+          </ul>
+          <hr>
+          <nav class="nav nav-pills flex-column">
+              <a class="nav-link" href="../usage/index.html">Getting started</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/fundamentals.html">Thermodynamics essentials</a>
+              <a class="nav-link" href="../usage/eos/index.html">Equations of State</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/eos/cubics/index.html">Cubics</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/eos/cubics/alpha.html">Alpha functions</a>
+              <a class="nav-link" href="../usage/eos/cubics/mixing.html">Mixing Rules</a>
+
+                </nav>
+              <a class="nav-link" href="../usage/eos/gerg2008.html">GERG2008</a>
+              <a class="nav-link" href="../usage/eos/gerg2008_parameters.html">GERG2008 parameters</a>
+              <a class="nav-link" href="../usage/eos/pc_saft.html">PC-SAFT</a>
+
+                </nav>
+              <a class="nav-link" href="../usage/excessmodels/index.html">Gibbs Excess Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/excessmodels/nrtl.html">NRTL</a>
+              <a class="nav-link" href="../usage/excessmodels/nrtl-hv.html">NRTL-HV</a>
+              <a class="nav-link" href="../usage/excessmodels/uniquac.html">UNIQUAC</a>
+              <a class="nav-link" href="../usage/excessmodels/unifac_models/index.html">UNIFAC Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
+              <a class="nav-link" href="../usage/excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
+              <a class="nav-link" href="../usage/excessmodels/unifac_models/psrk.html">UNIFAC-PSRK</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../usage/phase_equilibrium/index.html">Phase Equilibrium</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/phase_equilibrium/flash.html">Flash calculations</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/saturation_points.html">Saturation Points</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/stability.html">Stability analysis</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/critical.html">Critical points</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/multiphase.html">Multiphase flash</a>
+
+                </nav>
+              <a class="nav-link" href="../usage/newmodels/index.html">Adding your own models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/newmodels/analtical.html">Analytical derivatives</a>
+              <a class="nav-link" href="../usage/newmodels/autodiff.html">Automatic differentiation</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../python-api/index.html">Python-API</a>
+              <a class="nav-link" href="index.html">Becoming a yaeos developer</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="architecture.html">Architecture and repository map</a>
+              <a class="nav-link" href="workflow.html">Developer workflow</a>
+              <a class="nav-link" href="fortran.html">Working in the Fortran core</a>
+              <a class="nav-link active disabled" href="numerics.html">Working on numerical algorithms</a>
+              <a class="nav-link" href="c_interface.html">C interface layer</a>
+              <a class="nav-link" href="python_interface.html">Python interface layer</a>
+              <a class="nav-link" href="testing.html">Tests and numerical validation</a>
+              <a class="nav-link" href="walkthrough.html">An end-to-end change</a>
+
+                </nav>
+              <a class="nav-link" href="../contributing/index.html">Contributing</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../contributing/styleguide.html">Style guide</a>
+
+                </nav>
+          </nav>
+        </div>
+      </div>
+
+    <div class="col-9" id='text'>
+      <div class="toc">
+<ul>
+<li><a href="#from-thermodynamic-equations-to-a-reliable-solver">From thermodynamic equations to a reliable solver</a><ul>
+<li><a href="#1-write-the-problem-down-before-editing-the-loop">1. Write the problem down before editing the loop</a><ul>
+<li><a href="#log-coordinates-change-the-jacobian">Log coordinates change the Jacobian</a></li>
+</ul>
+</li>
+<li><a href="#2-know-which-numerical-implementation-you-are-calling">2. Know which numerical implementation you are calling</a></li>
+<li><a href="#3-verify-the-jacobian-independently">3. Verify the Jacobian independently</a></li>
+<li><a href="#4-understand-continuation-as-a-sequence-of-local-solves">4. Understand continuation as a sequence of local solves</a></li>
+<li><a href="#5-separate-three-meanings-of-good-result">5. Separate three meanings of “good result”</a></li>
+<li><a href="#6-build-a-minimal-failure-case">6. Build a minimal failure case</a></li>
+<li><a href="#7-review-numerical-changes-as-behavioral-changes">7. Review numerical changes as behavioral changes</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h1 id="from-thermodynamic-equations-to-a-reliable-solver">From thermodynamic equations to a reliable solver</h1>
+<p>A phase calculation combines several independently fallible pieces: a physical
+model, a choice of unknowns, residual equations, derivatives, a nonlinear
+algorithm, and result interpretation. Treat these as separate layers when
+debugging. Otherwise, a unit error can look like a convergence problem, and a
+small residual can hide convergence to the wrong branch.</p>
+<p>This page is a source-reading and modification guide. The
+<a href="../usage/phase_equilibrium/index.html">user equilibrium pages</a> explain which
+calculation to choose; the <a href="testing.html">testing guide</a> explains how to verify
+an implementation.</p>
+<h2 id="1-write-the-problem-down-before-editing-the-loop">1. Write the problem down before editing the loop</h2>
+<p>For the routine you are changing, identify:</p>
+<ul>
+<li><strong>Fixed inputs:</strong> feed, pressure, temperature, or other constraints.</li>
+<li><strong>Unknown vector:</strong> exactly which physical quantity each entry represents.</li>
+<li><strong>Transformations:</strong> for example log pressure instead of pressure, or a
+  phase-composition ratio instead of a mole fraction.</li>
+<li><strong>Residuals:</strong> one equation per unknown, including normalization and
+  continuation constraints.</li>
+<li><strong>Acceptance rules:</strong> residual tolerance, valid domain, iteration limit,
+  branch tests, and stability checks.</li>
+<li><strong>Returned state:</strong> which arrays and flags are meaningful on failure.</li>
+</ul>
+<p>Search for both the routine that packs <code>X</code> and the routine that unpacks it.
+Index positions are part of the internal contract. PT, PX, TX, three-phase,
+and general multiphase equations do not all use the same layout.</p>
+<h3 id="log-coordinates-change-the-jacobian">Log coordinates change the Jacobian</h3>
+<p>Suppose <script type="math/tex">u=\ln P</script>. A residual derivative with respect to the packed unknown
+is not simply its pressure derivative:</p>
+<p>
+<script type="math/tex; mode=display">
+\frac{\partial F}{\partial u}=P\frac{\partial F}{\partial P}.
+</script>
+</p>
+<p>Log coordinates keep pressure positive, but they do not by themselves make the
+iteration well scaled or prevent overflow. A finite-difference check must
+perturb <code>u</code>, not physical pressure, if the Jacobian is defined with respect to
+the packed vector.</p>
+<h2 id="2-know-which-numerical-implementation-you-are-calling">2. Know which numerical implementation you are calling</h2>
+<p>Several solver families coexist. Similar routine names do not imply identical
+interfaces or guarantees.</p>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Role to inspect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>src/math/newton.f90</code></td>
+<td>Configurable Newton solver with diagnostics and safeguarding</td>
+</tr>
+<tr>
+<td><code>src/math/nonlineal.f90</code></td>
+<td>Another multivariate Newton implementation and homotopy helpers</td>
+</tr>
+<tr>
+<td><code>src/math/math.f90</code></td>
+<td>Scalar Newton, numerical helpers, and MINPACK adapters</td>
+</tr>
+<tr>
+<td><code>src/math/linalg.f90</code></td>
+<td>Dense linear-system and eigenproblem wrappers</td>
+</tr>
+<tr>
+<td><code>src/math/continuation.f90</code></td>
+<td>Predictor/corrector driver with callback interfaces</td>
+</tr>
+<tr>
+<td><code>src/models/solvers/saturation_point.f90</code></td>
+<td>Saturation equations and local point correctors</td>
+</tr>
+<tr>
+<td><code>src/equilibria/</code></td>
+<td>Problem-specific loops and phase logic</td>
+</tr>
+</tbody>
+</table>
+<p>When reading an unqualified <code>call newton(...)</code>, follow its <code>use</code> association
+to the actual module. Before replacing a solver, compare callback signatures,
+output status conventions, scaling, maximum-iteration behavior, and which
+quantities the caller assumes were filled on return.</p>
+<p>Do not infer that a low-level linear solve propagates all LAPACK errors simply
+because it calls LAPACK. Check whether the wrapper exposes or handles the
+status. If you need stronger error reporting, plan that as an explicit
+interface change with tests rather than quietly changing a caller&rsquo;s assumed
+semantics.</p>
+<h2 id="3-verify-the-jacobian-independently">3. Verify the Jacobian independently</h2>
+<p>For <script type="math/tex">F(X)=0</script>, Newton&rsquo;s method solves
+<script type="math/tex">J\Delta X=-F</script>, where <script type="math/tex">J_{ij}=\partial F_i/\partial X_j</script>. A useful
+central-difference check of column <script type="math/tex">j</script> is</p>
+<p>
+<script type="math/tex; mode=display">
+J_{:,j}\approx\frac{F(X+h_j e_j)-F(X-h_j e_j)}{2h_j}.
+</script>
+</p>
+<p>Use a relative and absolute scale for <script type="math/tex">h_j</script> so a zero coordinate still gets
+a nonzero perturbation. Try more than one step size: an extremely small step
+can amplify roundoff, while a large step measures curvature rather than the
+local derivative. Avoid crossing invalid domains or switching volume branches
+when comparing derivatives intended for one smooth branch.</p>
+<p>If the Jacobian is wrong, inspect unpacking, chain-rule factors, component
+ordering, and phase conventions before changing damping. In particular, the
+user convention <script type="math/tex">K_i=y_i/x_i</script> may be represented internally as an incipient
+phase divided by the feed phase; dew calculations can therefore use inverted
+ratios. Check the actual reconstruction equations.</p>
+<h2 id="4-understand-continuation-as-a-sequence-of-local-solves">4. Understand continuation as a sequence of local solves</h2>
+<p>A phase boundary is a curve, not a single root. A continuation method fixes
+one specification <script type="math/tex">S</script> to select a point, corrects the equilibrium equations,
+then predicts a nearby point using a tangent. For equations <script type="math/tex">F(X,S)=0</script>,</p>
+<p>
+<script type="math/tex; mode=display">
+J\frac{dX}{dS}=-\frac{\partial F}{\partial S}.
+</script>
+</p>
+<p>The generic driver in <code>src/math/continuation.f90</code> exposes callbacks for
+residuals/derivatives, optional specification updates, postprocessing, point
+correction, and stopping. Read the call site to see which callbacks a given
+envelope actually supplies.</p>
+<p>The current generic driver&rsquo;s default specification update selects the largest
+absolute tangent component and rescales the tangent and step. It does <strong>not</strong>
+apply the <code>0.05</code> step cap shown in an example comment. If a branch needs a
+physical step limit, identify the active callback that supplies it or add a
+tested policy deliberately.</p>
+<p>The generic result has a fixed row count, with unfilled rows initialized to
+zero. That is a storage convention, not proof that every requested point was
+accepted. Specialized envelope routines can use other storage conventions.
+Do not interpret padding as a zero-temperature equilibrium point.</p>
+<h2 id="5-separate-three-meanings-of-good-result">5. Separate three meanings of “good result”</h2>
+<ol>
+<li><strong>Numerical convergence:</strong> the algorithm met its stated termination test.</li>
+<li><strong>Physical admissibility:</strong> compositions, phase fractions, volumes, and
+   temperatures lie in the intended domain and balances close.</li>
+<li><strong>Physical relevance:</strong> the branch is stable or otherwise appropriate for
+   the task, and the model/parameters are valid for the system.</li>
+</ol>
+<p>A converged negative phase fraction can be useful in a mathematical
+continuation formulation but is not an ordinary physical phase split.
+Likewise, forcing a liquid root may intentionally follow a metastable branch.
+Preserve the distinction in names, documentation, tests, and wrappers.</p>
+<p>Near a critical point, phases become indistinguishable and the equations may
+be nearly singular. Tolerances and step control matter, but singularity can
+also reflect the formulation itself. A full mixture criticality condition
+includes the ideal contribution to the stability matrix; a residual-energy
+Hessian alone is not the general mixture condition.</p>
+<h2 id="6-build-a-minimal-failure-case">6. Build a minimal failure case</h2>
+<p>When an envelope fails at point 137, save the last accepted state, the
+predictor, selected specification, residual norms, and relevant parameters.
+Try to reproduce the <strong>single point correction</strong> before rerunning a long
+curve. This makes it easier to tell whether the problem began with a bad
+predictor, an invalid phase reconstruction, or a broken residual/Jacobian.</p>
+<p>For a flash regression, check the feed balance in addition to a solver flag:</p>
+<p>
+<script type="math/tex; mode=display">
+z_i=(1-\beta)x_i+\beta y_i.
+</script>
+</p>
+<p>For multiple phases, use the representation and reference-phase convention of
+that routine rather than extrapolating the two-phase array layout. Never
+compare two implementations&rsquo; raw packed vectors until you have checked that
+they pack the same variables in the same order.</p>
+<h2 id="7-review-numerical-changes-as-behavioral-changes">7. Review numerical changes as behavioral changes</h2>
+<p>Changing a tolerance, line search, initial guess, or root choice can change
+which solution is found. Record why the change is needed and test more than
+the failing example: one ordinary case, the regression, a relevant limiting
+case, and a failure path. For performance changes, compare both outputs and
+timings under the same compiler/profile.</p>
+<p>Avoid broadly increasing iteration limits to hide unexplained regressions.
+Preserve a minimal test of the failure and document any remaining limitation.
+The <a href="walkthrough.html">end-to-end walkthrough</a> shows how to carry that evidence
+through a contribution.</p>
+    </div>
+  </div>
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              yaeos
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2026-11-18 15:31 +0000             </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

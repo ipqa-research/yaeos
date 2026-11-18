@@ -1,4 +1,15 @@
 module yaeos__equilibria_rachford_rice
+   !! # Rachford-Rice equation
+   !!
+   !! # Description
+   !! Utilities to solve the Rachford-Rice equation for the phase fraction
+   !! of a two-phase flash, and to keep the K-factors within a range where a
+   !! valid phase fraction exists.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! call solve_rr(z, K, beta, beta_min, beta_max)
+   !! ```
    use yaeos__constants, only: pr
    implicit none
 contains
@@ -11,7 +22,8 @@ contains
       real(pr), intent(in) :: z(:) !! Molar fractions of the system
       real(pr) :: K(:) !! K factors \(\frac{y_i}{x_i}\)
 
-      real(pr) :: g0, g1  ! function g valuated at beta=0 and 1, based on K factors
+      real(pr) :: g0 !! function g valuated at beta=0 and 1, based on K factors
+      real(pr) :: g1 !! function g valuated at beta=0 and 1, based on K factors
 
       g1 = 1.0
       do while (g0 < 0 .or. g1 > 0)
@@ -44,9 +56,10 @@ contains
       real(pr), intent(in) :: z(:) !! Molar fractions vector
       real(pr), intent(in) :: K(:) !! K-factors
       real(pr), intent(out) :: bmin !! Minimum beta value
-      real(pr), intent(out) :: bmax  !! Maximum beta value
+      real(pr), intent(out) :: bmax !! Maximum beta value
 
-      real(pr), dimension(size(z)) :: vmin, vmax
+      real(pr), dimension(size(z)) :: vmin
+      real(pr), dimension(size(z)) :: vmax
 
       vmin = 0.d0
       ! max=1.001d0    ! modified  3/3/15 (not to generate false separations with beta 0.9999...)
@@ -96,9 +109,10 @@ contains
       real(pr), intent(in) :: K(:) !! K-factors
       real(pr), intent(out) :: beta_min !! Lower limit for \(\beta\)
       real(pr), intent(out) :: beta_max !! Upper limit for \(\beta\)
-      real(pr), intent(out) :: beta !! \(\beta\) value
+      real(pr), intent(in out) :: beta !! \(\beta\): initial guess on entry, solution on exit
 
-      real(pr) :: g, dgdb
+      real(pr) :: g
+      real(pr) :: dgdb
       real(pr) :: step
 
       g = 1.0

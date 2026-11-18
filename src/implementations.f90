@@ -1,14 +1,25 @@
 module yaeos__models_ar_cubic_implementations
+   !! # Implemented cubic equations of state
+   !!
+   !! # Description
+   !! Constructors for the cubic equations implemented in `yaeos`:
+   !!
+   !! - [[PengRobinson76]]
+   !! - [[PengRobinson78]]
+   !! - [[SoaveRedlichKwong]]
+   !! - [[RKPR]]
+   !! - [[PSRK]]
+   !! Each constructor returns a configured [[CubicEoS]] with its standard
+   !! alpha function, critical-property correlation, and default mixing rule.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! model = PengRobinson76(Tc, Pc, omega)
+   !! ```
    use yaeos__constants, only: pr, R
    use yaeos__models_ar_genericcubic, only: CubicEoS
    use yaeos__substance, only: Substances
    implicit none
-   !! Implemented Cubic Equations of State.
-   !!
-   !! - PengRobinson76
-   !! - PengRobinson78
-   !! - SoaveRedlichKwong
-   !! - RKPR
 
    private
 
@@ -22,19 +33,22 @@ module yaeos__models_ar_cubic_implementations
 contains
 
    type(CubicEoS) function PengRobinson76(tc, pc, w, kij, lij) result(model)
+      !! # PengRobinson76
+      !!
+      !! # Description
       !! PengRobinson76.
       !!
       !! Using the critical constants setup the parameters to use the
       !! PengRobinson Equation of State
       !!
       !! - \[\alpha(T_r) = (1 + k (1 - \sqrt{T_r}))^2\]
-      !! - \[k = 0.37464 + 1.54226 * \omega - 0.26993 \omega^2 \]
+      !! - \[k = 0.37464 + 1.54226 \omega - 0.26993 \omega^2 \]
       !! - \[a_c = 0.45723553  R^2 T_c^2 / P_c\]
-      !! - \[b = 0.07779607r  R T_c/P_c\]
+      !! - \[b = 0.07779607  R T_c/P_c\]
       !! - \[\delta_1 = 1 + \sqrt{2}\]
       !! - \[\delta_2 = 1 - \sqrt{2}\]
       !!
-      !! There is also the optional posibility to include the \(k_{ij}\) and
+      !! There is also the optional possibility to include the \(k_{ij}\) and
       !! \(l_{ij}\) matrices. Using by default Classic Van der Waals mixing
       !! rules.
       !!
@@ -54,9 +68,9 @@ contains
 
       type(Substances) :: composition
       type(QMR) :: mixrule
-      type(AlphaSoave) :: alpha
-      integer :: nc
-      integer :: i
+      type(AlphaSoave) :: alpha !! Soave alpha function
+      integer :: nc !! Number of components.
+      integer :: i !! Loop/index variable.
 
       nc = size(tc)
 
@@ -91,6 +105,9 @@ contains
    end function PengRobinson76
 
    type(CubicEoS) function PengRobinson78(tc, pc, w, kij, lij) result(model)
+      !! # PengRobinson78
+      !!
+      !! # Description
       !! PengRobinson78.
       !!
       !! Using the critical constants setup the parameters to use the
@@ -98,13 +115,13 @@ contains
       !!
       !! - \[\alpha(T_r) = (1 + k (1 - \sqrt{T_r}))^2\]
       !! - \[k = 0.37464 + 1.54226 \omega - 0.26992 \omega^2  \text{ where } \omega <=0.491\]
-      !! - \[k = 0.37464 + 1.48503 \omega - 0.16442 \omega^2  + 0.016666 \omega^3 \text{ where } \omega > 0.491\]
+      !! - \[k = 0.379642 + 1.48503 \omega - 0.164423 \omega^2  + 0.016666 \omega^3 \text{ where } \omega > 0.491\]
       !! - \[a_c = 0.45723553  R^2 T_c^2 / P_c\]
-      !! - \[b = 0.07779607r  R T_c/P_c\]
+      !! - \[b = 0.07779607  R T_c/P_c\]
       !! - \[\delta_1 = 1 + \sqrt{2}\]
       !! - \[\delta_2 = 1 - \sqrt{2}\]
       !!
-      !! There is also the optional posibility to include the \(k_{ij}\) and
+      !! There is also the optional possibility to include the \(k_{ij}\) and
       !! \(l_{ij}\) matrices. Using by default Classic Van der Waals mixing
       !! rules.
       !!
@@ -124,9 +141,9 @@ contains
 
       type(Substances) :: composition
       type(QMR) :: mixrule
-      type(AlphaSoave) :: alpha
-      integer :: nc
-      integer :: i
+      type(AlphaSoave) :: alpha !! Soave alpha function
+      integer :: nc !! Number of components.
+      integer :: i !! Loop/index variable.
 
       nc = size(tc)
 
@@ -164,6 +181,9 @@ contains
    end function PengRobinson78
 
    type(CubicEoS) function SoaveRedlichKwong(tc, pc, w, kij, lij) result(model)
+      !! # SoaveRedlichKwong
+      !!
+      !! # Description
       !! SoaveRedlichKwong.
       !!
       !! Using the critical constants setup the parameters to use the
@@ -171,12 +191,12 @@ contains
       !!
       !! - \[\alpha(T_r) = (1 + k (1 - \sqrt{T_r}))^2\]
       !! - \[k = 0.48 + 1.574 \omega - 0.175 \omega^2 \]
-      !! - \[a_c = 0.427480  R^2 * T_c^2/P_c\]
+      !! - \[a_c = 0.427480  R^2 T_c^2/P_c\]
       !! - \[b = 0.086640  R T_c/P_c\]
       !! - \[\delta_1 = 1\]
       !! - \[\delta_2 = 0\]
       !!
-      !! There is also the optional posibility to include the k_{ij} and l_{ij}
+      !! There is also the optional possibility to include the \(k_{ij}\) and \(l_{ij}\)
       !! matrices. Using by default Classic Van der Waals mixing rules.
       !!
       !! After setting up the model, it is possible to redefine either the
@@ -193,9 +213,9 @@ contains
 
       type(Substances) :: composition
       type(QMR) :: mixrule
-      type(AlphaSoave) :: alpha
-      integer :: nc
-      integer :: i
+      type(AlphaSoave) :: alpha !! Soave alpha function
+      integer :: nc !! Number of components.
+      integer :: i !! Loop/index variable.
 
       nc = size(tc)
 
@@ -228,6 +248,15 @@ contains
    end function SoaveRedlichKwong
 
    type(CubicEoS) function PSRK(tc, pc, w, molecules, c1, c2, c3) result(model)
+      !! # PSRK
+      !!
+      !! # Description
+      !! Predictive Soave-Redlich-Kwong (PSRK).
+      !!
+      !! SRK equation combined with the modified Huron-Vidal mixing rule at
+      !! \(q = -0.64663\) and a PSRK UNIFAC excess Gibbs model. The alpha
+      !! function is Soave by default, or Mathias-Copeman when `c1`, `c2`, and
+      !! `c3` are provided.
       use yaeos__models_ar_genericcubic, only: CubicEoS
       use yaeos__models_ar_cubic_alphas, only: AlphaMathiasCopeman, AlphaSoave
       use yaeos__models_cubic_mixing_rules_huron_vidal, only: MHV
@@ -236,16 +265,19 @@ contains
       real(pr), intent(in) :: tc(:) !! Critical temperature [K]
       real(pr), intent(in) :: pc(:) !! Critical pressure [bar]
       real(pr), intent(in) :: w(:) !! Acentric factor
-      type(Groups), intent(in) :: molecules(:)
-      real(pr), optional, intent(in) :: c1(:), c2(:), c3(:)
+      type(Groups), intent(in) :: molecules(:) !! UNIFAC group assignment
+      real(pr), optional, intent(in) :: c1(:)
+      real(pr), optional, intent(in) :: c2(:)
+      real(pr), optional, intent(in) :: c3(:)
+      !! Mathias-Copeman alpha parameters
 
       type(UNIFAC) :: ge
       type(Substances) :: composition
       type(MHV) :: mixrule
-      type(AlphaSoave) :: alpha
+      type(AlphaSoave) :: alpha !! Soave alpha function
       type(AlphaMathiasCopeman) :: alpha_mc
-      integer :: nc
-      integer :: i
+      integer :: nc !! Number of components.
+      integer :: i !! Loop/index variable.
 
       nc = size(tc)
 
@@ -276,6 +308,9 @@ contains
    end function PSRK
 
    type(CubicEoS) function RKPR(tc, pc, w, zc, kij, lij, delta_1, k) result(model)
+      !! # RKPR
+      !!
+      !! # Description
       !! RKPR Equation of State
       !!
       !! The RKPR EoS extends the classical formulation of Cubic Equations
@@ -284,7 +319,7 @@ contains
       !! of other Cubic EoS (like PR and SRK) which are limited to definition
       !! of their critical constants.
       !!
-      !! Besides that extra parameter, the RKRR includes another \(\alpha\)
+      !! Besides that extra parameter, the RKPR includes another \(\alpha\)
       !! function:
       !! \[
       !!  \alpha(T_r) = \left(\frac{3}{2+T_r}\right)^k
@@ -294,31 +329,37 @@ contains
       !! the extra parameter to the critical compressibility factor \(Z_c\) and
       !! the \(k\) parameter of the \(\alpha\) function to \(Z_c\) and \(\omega\):
       !!
-      !! \[\delta_1 = d_1 + d_2 (d_3 - Z_c)^d_4 + d_5 (d_3 - Z_c) ^ d_6\]
-      !! \[k = (A_1  Z_c + A_0)\omega^2 + (B_1 Z_c + B_0)\omega + (C_1 Z_c + C_0)\]
+      !! \[\delta_1 = d_1 + d_2 (d_3 - Z_c^{eos})^{d_4} + d_5 (d_3 - Z_c^{eos})^{d_6}\]
+      !! \[k = (A_1 Z_c^{eos} + A_0)\omega^2 + (B_1 Z_c + B_0)\omega + (C_1 Z_c^{eos} + C_0)\]
+      !!
+      !! where \(Z_c^{eos} = 1.168 Z_c\). When `delta_1` or `k` are given they
+      !! replace the correlations. When `k` is not given, each component's
+      !! \(k\) is afterwards refitted with `refit_rkpr_k` so that the model
+      !! reproduces the acentric factor.
       use yaeos__models_ar_cubic_quadratic_mixing, only: QMR
       use yaeos__models_ar_cubic_alphas, only: AlphaRKPR
       real(pr), intent(in) :: tc(:) !! Critical Temperature [K]
       real(pr), intent(in) :: pc(:) !! Critical Pressure [bar]
       real(pr), intent(in) :: w(:) !! Acentric Factor
       real(pr), intent(in) :: zc(:) !! Critical compressibility
-      real(pr), optional, intent(in) :: kij(:, :) !! k_{ij} matrix
-      real(pr), optional, intent(in) :: lij(:, :) !! l_{ij} matrix
-      real(pr), optional, intent(in) :: delta_1(:)
-      real(pr), optional, intent(in) :: k(:)
+      real(pr), optional, intent(in) :: kij(:, :) !! \(k_{ij}\) matrix
+      real(pr), optional, intent(in) :: lij(:, :) !! \(l_{ij}\) matrix
+      real(pr), optional, intent(in) :: delta_1(:) !! Pure-component \(\delta_1\) values (overrides the correlation)
+      real(pr), optional, intent(in) :: k(:) !! Alpha-function \(k\) values (overrides correlation and refit)
 
-      type(AlphaRKPR) :: alpha
+      type(AlphaRKPR) :: alpha !! RKPR alpha function
       type(QMR) :: mixrule
       type(Substances) :: composition
 
-      integer :: i, nc
+      integer :: i !! Loop/index variable.
+      integer :: nc !! Number of components.
 
-      real(pr), parameter :: d1 = 0.428364, &
-         d2 = 18.496215, &
-         d3=0.338426, &
-         d4=0.66, &
-         d5 = 789.723105, &
-         d6=2.512392
+      real(pr), parameter :: d1 = 0.428364 !! Constant term in the RKPR delta-one correlation.
+      real(pr), parameter :: d2 = 18.496215 !! Amplitude of the first compressibility-dependent term.
+      real(pr), parameter :: d3=0.338426 !! Reference compressibility in both power-law terms.
+      real(pr), parameter :: d4=0.66 !! Exponent of the first compressibility-dependent term.
+      real(pr), parameter :: d5 = 789.723105 !! Amplitude of the second compressibility-dependent term.
+      real(pr), parameter :: d6=2.512392 !! Exponent of the second compressibility-dependent term.
 
       real(pr), parameter :: A1 = -2.4407
       real(pr), parameter :: A0 = 0.0017
@@ -327,9 +368,11 @@ contains
       real(pr), parameter :: C1 =12.504
       real(pr), parameter :: C0 =-2.6238
 
-      real(pr) :: OMa(size(pc)), OMb(size(pc))
+      real(pr) :: OMa(size(pc))
+      real(pr) :: OMb(size(pc))
       real(pr) :: Zc_eos(size(pc))
-      real(pr) :: Psat_i, diff
+      real(pr) :: Psat_i
+      real(pr) :: diff
 
       nc = size(tc)
 
@@ -386,7 +429,12 @@ contains
       !! # refit_rkpr_k
       !!
       !! Refit the \(k\) parameter of the RKPR EoS to match the acentric
-      !! factor
+      !! factor.
+      !!
+      !! # Description
+      !! Uses a secant iteration on \(k\) so that the model's
+      !! \(\omega = -1 - \log_{10}(P^{sat}(0.7T_c)/P_c)\) matches the stored
+      !! acentric factor of `component`.
       use yaeos__models_ar_cubic_alphas, only: AlphaRKPR
       use yaeos__equilibria_boundaries_pure_saturation, only: &
          PurePsat, pure_saturation_line
@@ -394,14 +442,23 @@ contains
       type(CubicEoS), intent(in out) :: model !! The model to be refitted
       integer, intent(in) :: component !! Component index to refit
 
-      real(pr) :: Psat_i, Tc, Pc, w
+      real(pr) :: Psat_i
+      real(pr) :: Tc
+      real(pr) :: Pc
+      real(pr) :: w !! Experimental acentric factor of the component
       real(pr) :: Vv !! Volume of vapor [L]
       real(pr) :: VL !! Volume of liquid [L]
       real(pr) :: w_eos
-      real(pr) :: f_prev, f_curr, k_prev, k_curr, k_next, step
+      real(pr) :: f_prev
+      real(pr) :: f_curr
+      real(pr) :: k_prev
+      real(pr) :: k_curr
+      real(pr) :: k_next
+      real(pr) :: step
 
-      integer :: i, iter
-      type(AlphaRKPR) :: alpha
+      integer :: i !! Loop/index variable.
+      integer :: iter !! Iteration count.
+      type(AlphaRKPR) :: alpha !! RKPR alpha function
       type(PurePsat) :: Psat
 
       associate(a => model%alpha)
@@ -469,11 +526,21 @@ contains
    end subroutine refit_rkpr_k
 
    subroutine get_OMa_OMb(del1, OMa, OMb)
-      real(pr), intent(in) :: del1(:)
-      real(pr), intent(out) :: OMa(size(del1))
-      real(pr), intent(out) :: OMb(size(del1))
+      !! # get_OMa_OMb
+      !!
+      !! # Description
+      !! Universal critical constants for a cubic equation with a free
+      !! \(\delta_1\) parameter.
+      !!
+      !! Returns the \(\Omega_a\) and \(\Omega_b\) parameters that make the
+      !! equation satisfy the critical-point conditions for each value of
+      !! `del1`.
+      real(pr), intent(in) :: del1(:) !! \(\delta_1\) parameter
+      real(pr), intent(out) :: OMa(size(del1)) !! \(\Omega_a\)
+      real(pr), intent(out) :: OMb(size(del1)) !! \(\Omega_b\)
 
-      real(pr) :: d1(size(del1)), y(size(del1))
+      real(pr) :: d1(size(del1))
+      real(pr) :: y(size(del1)) !! Auxiliary root \(y = 1 + (2(1+\delta_1))^{1/3} + (4/(1+\delta_1))^{1/3}\)
 
       d1 = (1._pr + del1**2._pr)/(1._pr + del1)
       y = 1._pr + (2._pr*(1._pr + del1))**(1.0_pr/3._pr) + (4._pr/(1._pr + del1))**(1.0_pr/3)

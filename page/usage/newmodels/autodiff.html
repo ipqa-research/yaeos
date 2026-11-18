@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../../../favicon.png">
 
     <title>Automatic differentiation &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../../../css/local.css" rel="stylesheet">
     <link href="../../../css/pygments.css" rel="stylesheet">
+      <link href="../../../css/user.css" rel="stylesheet">
     <script src="../../../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -92,7 +93,7 @@
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb justify-content-end mb-0">
                 <li class="breadcrumb-item"><a href='../../index.html'>User documentation</a></li>
-                <li class="breadcrumb-item"><a href='../index.html'>Using yaeos</a></li>
+                <li class="breadcrumb-item"><a href='../index.html'>Getting started</a></li>
                 <li class="breadcrumb-item"><a href='index.html'>Adding your own models</a></li>
               <li class="breadcrumb-item active" aria-current="page">Automatic differentiation</li>
             </ol>
@@ -112,9 +113,10 @@
           </ul>
           <hr>
           <nav class="nav nav-pills flex-column">
-              <a class="nav-link" href="../index.html">Using yaeos</a>
+              <a class="nav-link" href="../index.html">Getting started</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../eos/index.html">Equations of State</a>
+                                <a class="nav-link" href="../fundamentals.html">Thermodynamics essentials</a>
+              <a class="nav-link" href="../eos/index.html">Equations of State</a>
                 <nav class="nav nav-pills flex-column">
                                 <a class="nav-link" href="../eos/cubics/index.html">Cubics</a>
                 <nav class="nav nav-pills flex-column">
@@ -122,27 +124,33 @@
               <a class="nav-link" href="../eos/cubics/mixing.html">Mixing Rules</a>
 
                 </nav>
+              <a class="nav-link" href="../eos/gerg2008.html">GERG2008</a>
+              <a class="nav-link" href="../eos/gerg2008_parameters.html">GERG2008 parameters</a>
+              <a class="nav-link" href="../eos/pc_saft.html">PC-SAFT</a>
 
                 </nav>
               <a class="nav-link" href="../excessmodels/index.html">Gibbs Excess Models</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../excessmodels/nrtl-hv.html">NRTL-HV</a>
-              <a class="nav-link" href="../excessmodels/nrtl.html">NRTL</a>
+                                <a class="nav-link" href="../excessmodels/nrtl.html">NRTL</a>
+              <a class="nav-link" href="../excessmodels/nrtl-hv.html">NRTL-HV</a>
+              <a class="nav-link" href="../excessmodels/uniquac.html">UNIQUAC</a>
               <a class="nav-link" href="../excessmodels/unifac_models/index.html">UNIFAC Models</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
+                                <a class="nav-link" href="../excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
+              <a class="nav-link" href="../excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
               <a class="nav-link" href="../excessmodels/unifac_models/psrk.html">UNIFAC-PSRK</a>
-              <a class="nav-link" href="../excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
 
                 </nav>
-              <a class="nav-link" href="../excessmodels/uniquac.html">UNIQUAC</a>
 
                 </nav>
               <a class="nav-link" href="../phase_equilibrium/index.html">Phase Equilibrium</a>
                 <nav class="nav nav-pills flex-column">
-                                <a class="nav-link" href="../phase_equilibrium/envelopes.html">Phase envelopes</a>
-              <a class="nav-link" href="../phase_equilibrium/flash.html">Flash calculations</a>
+                                <a class="nav-link" href="../phase_equilibrium/flash.html">Flash calculations</a>
               <a class="nav-link" href="../phase_equilibrium/saturation_points.html">Saturation Points</a>
+              <a class="nav-link" href="../phase_equilibrium/envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="../phase_equilibrium/stability.html">Stability analysis</a>
+              <a class="nav-link" href="../phase_equilibrium/critical.html">Critical points</a>
+              <a class="nav-link" href="../phase_equilibrium/multiphase.html">Multiphase flash</a>
 
                 </nav>
               <a class="nav-link" href="index.html">Adding your own models</a>
@@ -153,58 +161,135 @@
                 </nav>
 
                 </nav>
+              <a class="nav-link" href="../../python-api/index.html">Python-API</a>
+              <a class="nav-link" href="../../developer/index.html">Becoming a yaeos developer</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../developer/architecture.html">Architecture and repository map</a>
+              <a class="nav-link" href="../../developer/workflow.html">Developer workflow</a>
+              <a class="nav-link" href="../../developer/fortran.html">Working in the Fortran core</a>
+              <a class="nav-link" href="../../developer/numerics.html">Working on numerical algorithms</a>
+              <a class="nav-link" href="../../developer/c_interface.html">C interface layer</a>
+              <a class="nav-link" href="../../developer/python_interface.html">Python interface layer</a>
+              <a class="nav-link" href="../../developer/testing.html">Tests and numerical validation</a>
+              <a class="nav-link" href="../../developer/walkthrough.html">An end-to-end change</a>
+
+                </nav>
               <a class="nav-link" href="../../contributing/index.html">Contributing</a>
                 <nav class="nav nav-pills flex-column">
                                 <a class="nav-link" href="../../contributing/styleguide.html">Style guide</a>
 
                 </nav>
-              <a class="nav-link" href="../../python-api/index.html">Python-API</a>
           </nav>
         </div>
       </div>
 
     <div class="col-9" id='text'>
-      <h1 id="autodiff">Autodiff</h1>
-<p>The implementation of new models and all their required derivatives can be
-an endeavours and error-prone task. A tool that helps with this, at a small
-performance cost, can be automatic differentiation. </p>
-<p>Automatic differentiation can be implemented in two ways:</p>
+      <div class="toc">
 <ul>
-<li>Forward Differentiation</li>
-<li>Backward Differentiation</li>
+<li><a href="#hyperdual-autodiff">Hyperdual autodiff</a><ul>
+<li><a href="#armodeladiff">ArModelAdiff</a></li>
+<li><a href="#step-by-step-hyperdual-workflow">Step-by-step hyperdual workflow</a></li>
+<li><a href="#example">Example</a></li>
 </ul>
-<p>With can be combined to obtain higher order derivatives.</p>
-<p>In <code>yaeos</code> it is possible to add new models via two different kind of
-implementations. Operator overloading with <code>hyperdual</code> numbers and
-source-to-source automatic differentiation with <code>tapenade</code>.</p>
+</li>
+<li><a href="#tapenade-source-to-source-ad">Tapenade source-to-source AD</a><ul>
+<li><a href="#what-the-yaeos-wrapper-needs">What the yaeos wrapper needs</a></li>
+<li><a href="#write-and-prepare-the-primal-routine">Write and prepare the primal routine</a></li>
+<li><a href="#generate-the-derivative-source">Generate the derivative source</a></li>
+<li><a href="#review-and-integrate-the-result">Review and integrate the result</a></li>
+<li><a href="#seeds-adjoints-and-repeated-calls">Seeds, adjoints, and repeated calls</a></li>
+<li><a href="#validate-the-derivatives">Validate the derivatives</a></li>
+<li><a href="#choosing-between-the-two-approaches">Choosing between the two approaches</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<p>Implementing a new model and all its required derivatives can be tedious and
+error-prone. Automatic differentiation (AD) avoids most of that work. Its
+runtime cost depends on the equation, derivative requests, and implementation;
+measure it before choosing an approach solely for speed.</p>
+<p>Automatic differentiation applies the chain rule to the operations in a program,
+so it computes derivatives of the implemented equations rather than
+approximating them with finite differences. Forward mode propagates directional
+derivatives from inputs to outputs; reverse mode propagates sensitivities back
+from outputs to inputs. Combining modes gives mixed and second derivatives.
+This is useful here because thermodynamic properties and phase-equilibrium
+calculations require several derivatives of the residual Helmholtz energy.</p>
+<p>In <code>yaeos</code> there are two ways to add a model with automatic differentiation:
+operator overloading with <code>hyperdual</code> numbers and source-to-source
+differentiation with Tapenade.</p>
 <p>@warn
-Remember to use the <code>R</code>constant from <code>yaeos__constants</code>, and all models
-should have a <code>type(Substances)</code> attribute!
+Remember to use the <code>R</code> constant from <code>yaeos__constants</code>. The base model already
+provides a <code>type(Substances)</code> attribute named <code>components</code>; initialize it rather
+than redeclaring it. Return extensive energy in bar L, not <code>Ar/(RT)</code> or molar
+energy. Inputs are mole amounts [mol], total volume [L], and temperature [K].
 @endwarn</p>
 <h2 id="hyperdual-autodiff">Hyperdual autodiff</h2>
-<h3 id="armodel">ArModel</h3>
-<p>Automatic differentiation with <code>hyperdual</code> numbers can be done with the
-<a href="../../../type/armodeladiff.html">ArModelAdiff</a> derived type. This implementation requires just to extend
-that derived type with your own implementation and a volume initializer.</p>
+<h3 id="armodeladiff"><code>ArModelAdiff</code></h3>
+<p>Automatic differentiation with <code>hyperdual</code> numbers is available through the
+<a href="../../../type/armodeladiff.html">ArModelAdiff</a> derived type. A new model extends it and provides:</p>
+<ul>
+<li><code>Ar</code>: a function returning the residual Helmholtz energy as a <code>hyperdual</code>
+  value.</li>
+<li><code>get_v0</code>: a volume initializer.</li>
+</ul>
+<p>The interface of <code>Ar</code> is:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="k">function </span><span class="n">Ar</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">)</span>
+<span class="w">   </span><span class="k">class</span><span class="p">(</span><span class="n">ArModelAdiff</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">self</span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(:)</span><span class="w">  </span><span class="c">!! Number of moles</span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">v</span><span class="w">      </span><span class="c">!! Volume [L]</span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">t</span><span class="w">      </span><span class="c">!! Temperature [K]</span>
+<span class="k">end function </span><span class="n">Ar</span>
+</code></pre></div>
+
+<p>This is an interface sketch. In a concrete implementation, replace
+<code>class(ArModelAdiff)</code> by your concrete model type. Match the actual deferred
+interface: its passed-object dummy has no <code>intent</code> attribute. In particular,
+do not add <code>intent(in)</code> here just because the analytic API uses it.</p>
+<p>The <a href="../../../type/armodeladiff.html">ArModelAdiff</a> type implements <code>residual_helmholtz</code> by evaluating <code>Ar</code>
+with hyperdual perturbations and extracting the first and second derivatives.
+The model therefore gets all the derivatives required by the rest of the
+library automatically.</p>
+<h3 id="step-by-step-hyperdual-workflow">Step-by-step hyperdual workflow</h3>
+<ol>
+<li>Write down the extensive primal equation and test its units and domain with
+   real arithmetic. AD differentiates what you wrote, not what you intended.</li>
+<li>Extend <code>ArModelAdiff</code>, store real-valued parameters, and bind its <code>Ar</code>
+   <strong>function</strong> and the inherited real-valued <code>get_v0</code> <strong>function</strong>.</li>
+<li>Import <code>hyperdual_mod</code>, including its overloaded operators and intrinsics.
+   Keep every intermediate depending on <code>n</code>, <code>v</code>, or <code>t</code> hyperdual-valued.
+   Converting it to a real discards the derivative information. Model constants
+   and inactive parameters may remain real.</li>
+<li>Express the energy with supported operations such as <code>log</code>, <code>sqrt</code>, <code>sum</code>,
+   and arithmetic. An external real-only helper will not automatically become
+   differentiable: overload it or express its calculation in hyperdual form.</li>
+<li>Let the adapter manage seeds; request properties through the ordinary
+   <code>ArModel</code> API. Test each derivative and optional-output combination using
+   the <a href="analtical.html#validating-a-new-model">validation ladder</a>.</li>
+</ol>
+<p>Branches and clipping deserve particular care. A branch selects the derivative
+of the executed path; a discontinuity does not acquire a meaningful smooth
+derivative simply because AD is used. Test both sides of regime changes.</p>
+<h3 id="example">Example</h3>
+<p>The following module implements a Peng-Robinson 1976 model with quadratic
+mixing rules:</p>
 <div class="codehilite"><pre><span></span><code><span class="k">module </span><span class="n">hyperdual_pr76</span>
-<span class="w">   </span><span class="k">use </span><span class="n">yaeos__adiff_hyperdual_ar_api</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">ArModelAdiff</span>
 <span class="w">   </span><span class="k">use </span><span class="n">yaeos__constants</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">R</span>
+<span class="w">   </span><span class="k">use </span><span class="n">yaeos__adiff_hyperdual_ar_api</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">ArModelAdiff</span>
 <span class="w">   </span><span class="k">use </span><span class="n">yaeos__substance</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">Substances</span>
+<span class="w">   </span><span class="k">use </span><span class="n">hyperdual_mod</span>
 <span class="w">   </span><span class="k">implicit none</span>
 
 <span class="k">   type</span><span class="p">,</span><span class="w"> </span><span class="k">extends</span><span class="p">(</span><span class="n">ArModelAdiff</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">PR76</span>
-<span class="w">      </span><span class="c">!! PengRobinson 76 EoS</span>
-
-<span class="w">      </span><span class="c">! Mixing rule Parameters</span>
-<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">kij</span><span class="p">(:,</span><span class="w"> </span><span class="p">:),</span><span class="w"> </span><span class="n">lij</span><span class="p">(:,</span><span class="w"> </span><span class="p">:)</span>
-
-<span class="w">      </span><span class="c">! EoS parameters</span>
-<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ac</span><span class="p">(:),</span><span class="w"> </span><span class="n">b</span><span class="p">(:),</span><span class="w"> </span><span class="n">k</span><span class="p">(:)</span>
-<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">tc</span><span class="p">(:),</span><span class="w"> </span><span class="n">pc</span><span class="p">(:),</span><span class="w"> </span><span class="n">w</span><span class="p">(:)</span>
+<span class="w">      </span><span class="c">!! Peng-Robinson 1976 model with hyperdual derivatives.</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">kij</span><span class="p">(:,</span><span class="w"> </span><span class="p">:)</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">lij</span><span class="p">(:,</span><span class="w"> </span><span class="p">:)</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ac</span><span class="p">(:)</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">b</span><span class="p">(:)</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">k</span><span class="p">(:)</span>
 <span class="w">   </span><span class="k">contains</span>
 <span class="k">      procedure</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Ar</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">arfun</span>
 <span class="w">      </span><span class="k">procedure</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">get_v0</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">v0</span>
-<span class="w">      </span><span class="k">procedure</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">volume</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">volume</span>
 <span class="w">   </span><span class="k">end type </span><span class="n">PR76</span>
 
 <span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">del1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1._pr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">sqrt</span><span class="p">(</span><span class="mf">2._pr</span><span class="p">)</span>
@@ -212,161 +297,335 @@ that derived type with your own implementation and a volume initializer.</p>
 
 <span class="k">contains</span>
 
-<span class="k">    type</span><span class="p">(</span><span class="n">PR76</span><span class="p">)</span><span class="w"> </span><span class="k">function </span><span class="n">setup</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span><span class="w"> </span><span class="n">pc</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="n">kij</span><span class="p">,</span><span class="w"> </span><span class="n">lij</span><span class="p">)</span><span class="w"> </span><span class="k">result</span><span class="p">(</span><span class="n">self</span><span class="p">)</span>
-<span class="w">        </span><span class="c">!! Function to obtain a defined PR76 model with setted up parameters</span>
-<span class="w">        </span><span class="c">!! as function of Tc, Pc, and w</span>
-<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">tc</span><span class="p">(:)</span>
-<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">pc</span><span class="p">(:)</span>
-<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">w</span><span class="p">(:)</span>
-<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">kij</span><span class="p">(:,</span><span class="w"> </span><span class="p">:)</span>
-<span class="w">        </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">lij</span><span class="p">(:,</span><span class="w"> </span><span class="p">:)</span>
+<span class="k">   type</span><span class="p">(</span><span class="n">PR76</span><span class="p">)</span><span class="w"> </span><span class="k">function </span><span class="n">setup</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span><span class="w"> </span><span class="n">pc</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="n">kij</span><span class="p">,</span><span class="w"> </span><span class="n">lij</span><span class="p">)</span><span class="w"> </span><span class="k">result</span><span class="p">(</span><span class="n">self</span><span class="p">)</span>
+<span class="w">      </span><span class="c">!! Set up the model from critical constants and interaction matrices.</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">tc</span><span class="p">(:)</span><span class="w"> </span><span class="c">!! Critical temperatures [K]</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">pc</span><span class="p">(:)</span><span class="w"> </span><span class="c">!! Critical pressures [bar]</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">w</span><span class="p">(:)</span><span class="w">  </span><span class="c">!! Acentric factors</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">kij</span><span class="p">(:,</span><span class="w"> </span><span class="p">:)</span><span class="w"> </span><span class="c">!! \(k_{ij}\) matrix</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">lij</span><span class="p">(:,</span><span class="w"> </span><span class="p">:)</span><span class="w"> </span><span class="c">!! \(l_{ij}\) matrix</span>
 
-<span class="w">        </span><span class="n">self</span><span class="p">%</span><span class="n">composition</span><span class="p">%</span><span class="n">tc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tc</span>
-<span class="w">        </span><span class="n">self</span><span class="p">%</span><span class="n">composition</span><span class="p">%</span><span class="n">pc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pc</span>
-<span class="w">        </span><span class="n">self</span><span class="p">%</span><span class="n">composition</span><span class="p">%</span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">w</span>
+<span class="w">      </span><span class="n">self</span><span class="p">%</span><span class="n">components</span><span class="p">%</span><span class="n">tc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">tc</span>
+<span class="w">      </span><span class="n">self</span><span class="p">%</span><span class="n">components</span><span class="p">%</span><span class="n">pc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pc</span>
+<span class="w">      </span><span class="n">self</span><span class="p">%</span><span class="n">components</span><span class="p">%</span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">w</span>
 
-<span class="w">        </span><span class="n">self</span><span class="p">%</span><span class="n">ac</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.45723553_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">R</span><span class="o">**</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">tc</span><span class="o">**</span><span class="mi">2</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">pc</span>
-<span class="w">        </span><span class="n">self</span><span class="p">%</span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.07779607_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">R</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">tc_in</span><span class="o">/</span><span class="n">pc_in</span>
-<span class="w">        </span><span class="n">self</span><span class="p">%</span><span class="n">k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.37464_pr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1.54226_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">0.26993_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">w</span><span class="o">**</span><span class="mi">2</span>
+<span class="w">      </span><span class="n">self</span><span class="p">%</span><span class="n">ac</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.45723553_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">R</span><span class="o">**</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">tc</span><span class="o">**</span><span class="mi">2</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">pc</span>
+<span class="w">      </span><span class="n">self</span><span class="p">%</span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.07779607_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">R</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">tc</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">pc</span>
+<span class="w">      </span><span class="n">self</span><span class="p">%</span><span class="n">k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.37464_pr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mf">1.54226_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">0.26993_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">w</span><span class="o">**</span><span class="mi">2</span>
 
-<span class="w">        </span><span class="n">self</span><span class="p">%</span><span class="n">kij</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kij</span>
-<span class="w">        </span><span class="n">self</span><span class="p">%</span><span class="n">lij</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lij</span>
-<span class="w">    </span><span class="k">end function</span>
+<span class="w">      </span><span class="n">self</span><span class="p">%</span><span class="n">kij</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kij</span>
+<span class="w">      </span><span class="n">self</span><span class="p">%</span><span class="n">lij</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lij</span>
+<span class="w">   </span><span class="k">end function </span><span class="n">setup</span>
 
-<span class="k">    function </span><span class="n">arfun</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">)</span><span class="w"> </span><span class="k">result</span><span class="p">(</span><span class="n">ar</span><span class="p">)</span>
-<span class="w">        </span><span class="c">!! Residual Helmholtz calculation for a generic cubic with</span>
-<span class="w">        </span><span class="c">!! quadratic mixing rules.</span>
-<span class="w">        </span><span class="k">class</span><span class="p">(</span><span class="n">PR76</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">self</span>
-<span class="w">        </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(:),</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">t</span>
-<span class="w">        </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ar</span>
+<span class="w">   </span><span class="k">function </span><span class="n">arfun</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">)</span><span class="w"> </span><span class="k">result</span><span class="p">(</span><span class="n">ar</span><span class="p">)</span>
+<span class="w">      </span><span class="k">class</span><span class="p">(</span><span class="n">PR76</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">self</span>
+<span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(:)</span>
+<span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">v</span>
+<span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">t</span>
+<span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ar</span>
 
-<span class="w">        </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">amix</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">)),</span><span class="w"> </span><span class="n">ai</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">)),</span><span class="w"> </span><span class="n">n2</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
-<span class="w">        </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">bmix</span>
-<span class="w">        </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">b_v</span><span class="p">,</span><span class="w"> </span><span class="n">nij</span>
+<span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">amix</span>
+<span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">a</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+<span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ai</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+<span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">nij</span>
+<span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">bmix</span>
+<span class="w">      </span><span class="k">type</span><span class="p">(</span><span class="n">hyperdual</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">b_v</span>
+<span class="w">      </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">i</span>
+<span class="w">      </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">j</span>
 
-<span class="w">        </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span>
+<span class="w">      </span><span class="k">associate</span><span class="p">(</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">         </span><span class="n">ac</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">ac</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">         </span><span class="n">kij</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">kij</span><span class="p">,</span><span class="w"> </span><span class="n">lij</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">lij</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">         </span><span class="n">tc</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">components</span><span class="p">%</span><span class="n">tc</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">         </span><span class="p">)</span>
 
-<span class="w">        </span><span class="c">! Associate allows us to keep the later expressions simple.</span>
-<span class="w">        </span><span class="k">associate</span><span class="p">(&amp;</span>
-<span class="w">            </span><span class="n">pc</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">composition</span><span class="p">%</span><span class="n">pc</span><span class="p">,</span><span class="w"> </span><span class="n">ac</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">ac</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">k</span><span class="p">,&amp;</span>
-<span class="w">            </span><span class="n">kij</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">kij</span><span class="p">,</span><span class="w"> </span><span class="n">lij</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">lij</span><span class="p">,</span><span class="w"> </span><span class="n">tc</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">compostion</span><span class="p">%</span><span class="n">tc</span><span class="w"> </span><span class="p">&amp;</span><span class="w"> </span>
-<span class="w">            </span><span class="p">)</span>
+<span class="w">         </span><span class="c">! Soave alpha function</span>
+<span class="w">         </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">sqrt</span><span class="p">(</span><span class="n">t</span><span class="o">/</span><span class="n">tc</span><span class="p">))</span>
+<span class="w">         </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ac</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">a</span><span class="o">**</span><span class="mi">2</span>
+<span class="w">         </span><span class="n">ai</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">sqrt</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
-<span class="w">            </span><span class="c">! Soave alpha function</span>
-<span class="w">            </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">sqrt</span><span class="p">(</span><span class="n">t</span><span class="o">/</span><span class="n">tc</span><span class="p">))</span>
-<span class="w">            </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ac</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">**</span><span class="w"> </span><span class="mi">2</span>
-<span class="w">            </span><span class="n">ai</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">sqrt</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="w">         </span><span class="c">! Quadratic mixing rule</span>
+<span class="w">         </span><span class="n">amix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
+<span class="w">         </span><span class="n">bmix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
 
-<span class="w">            </span><span class="c">! Quadratic Mixing Rule</span>
-<span class="w">            </span><span class="n">amix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
-<span class="w">            </span><span class="n">bmix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0_pr</span>
-
-<span class="w">            </span><span class="k">do </span><span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
-<span class="w">                </span><span class="k">do </span><span class="n">j</span><span class="o">=</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
-<span class="w">                    </span><span class="n">nij</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
-<span class="w">                    </span><span class="n">amix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">amix</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">nij</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">ai</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">ai</span><span class="p">(</span><span class="n">j</span><span class="p">))</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">kij</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">))</span>
-<span class="w">                    </span><span class="n">bmix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bmix</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">nij</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">b</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="p">(</span><span class="n">j</span><span class="p">))</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">lij</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">))</span>
-<span class="w">                </span><span class="k">end do</span>
-<span class="k">            end do</span>
+<span class="w">         </span><span class="k">do </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">            </span><span class="k">do </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="w">               </span><span class="n">nij</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+<span class="w">               </span><span class="n">amix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">amix</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">nij</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">ai</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">ai</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">kij</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">))</span>
+<span class="w">               </span><span class="n">bmix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bmix</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">nij</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">b</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="p">(</span><span class="n">j</span><span class="p">))</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">lij</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">))</span>
+<span class="w">            </span><span class="k">end do</span>
 <span class="k">         end do</span>
 
-<span class="k">         </span><span class="n">amix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">amix</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">)</span>
+<span class="k">         </span><span class="n">amix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">amix</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="o">**</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">a</span><span class="p">)</span>
 <span class="w">         </span><span class="n">bmix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bmix</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="o">**</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">b</span><span class="p">)</span>
+<span class="w">         </span><span class="n">bmix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bmix</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
 
-<span class="w">         </span><span class="n">bmix</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bmix</span><span class="o">/</span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="w">         </span><span class="n">b_v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bmix</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">v</span>
 
-<span class="w">         </span><span class="n">b_v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">bmix</span><span class="o">/</span><span class="n">v</span>
-
-<span class="w">         </span><span class="c">! Generic Cubic Ar function</span>
-<span class="w">         </span><span class="n">ar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(&amp;</span>
-<span class="w">            </span><span class="o">-</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">log</span><span class="p">(</span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">b_v</span><span class="p">)</span><span class="w"> </span><span class="p">&amp;</span>
-<span class="w">            </span><span class="o">-</span><span class="w"> </span><span class="n">amix</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">R</span><span class="o">*</span><span class="n">T</span><span class="o">*</span><span class="n">bmix</span><span class="p">)</span><span class="o">*</span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">del1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">del2</span><span class="p">)</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">         </span><span class="n">ar</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">            </span><span class="o">-</span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nb">log</span><span class="p">(</span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">b_v</span><span class="p">)</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">            </span><span class="o">-</span><span class="w"> </span><span class="n">amix</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">R</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">bmix</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">del1</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">del2</span><span class="p">)</span><span class="w"> </span><span class="p">&amp;</span>
 <span class="w">            </span><span class="o">*</span><span class="w"> </span><span class="nb">log</span><span class="p">((</span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">del1</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">b_v</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">del2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">b_v</span><span class="p">))</span><span class="w"> </span><span class="p">&amp;</span>
-<span class="w">            </span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">R</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">T</span><span class="p">)</span>
-
+<span class="w">            </span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">R</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">t</span><span class="p">)</span>
 <span class="w">      </span><span class="k">end associate</span>
 <span class="k">   end function </span><span class="n">arfun</span>
 
-<span class="w">   </span><span class="k">function </span><span class="n">v0</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">)</span>
-<span class="w">      </span><span class="c">!! Initialization of liquid volume solving with covolume. This also</span>
-<span class="w">      </span><span class="c">!! helps the Michelsen volume solver</span>
+<span class="w">   </span><span class="k">function </span><span class="n">v0</span><span class="p">(</span><span class="n">self</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">)</span><span class="w"> </span><span class="k">result</span><span class="p">(</span><span class="n">v0out</span><span class="p">)</span>
+<span class="w">      </span><span class="c">!! Covolume initializer for the liquid root.</span>
 <span class="w">      </span><span class="k">class</span><span class="p">(</span><span class="n">PR76</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">self</span>
 <span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(:)</span>
 <span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">p</span>
 <span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">t</span>
-<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">v0</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">v0out</span>
+<span class="w">      </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">i</span>
+<span class="w">      </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">j</span>
 
-<span class="w">      </span><span class="n">v0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="w">      </span><span class="c">! Same extensive covolume as in arfun, including lij.</span>
+<span class="w">      </span><span class="n">v0out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="o">**</span><span class="mi">2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">b</span><span class="p">)</span>
+<span class="w">      </span><span class="k">do </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">         </span><span class="k">do </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+<span class="w">            </span><span class="n">v0out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v0out</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">*</span><span class="n">n</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">self</span><span class="p">%</span><span class="n">b</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">b</span><span class="p">(</span><span class="n">j</span><span class="p">))</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">               </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mf">1.0_pr</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">self</span><span class="p">%</span><span class="n">lij</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">j</span><span class="p">))</span>
+<span class="w">         </span><span class="k">end do</span>
+<span class="k">      end do</span>
+<span class="k">      </span><span class="n">v0out</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v0out</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
 <span class="w">   </span><span class="k">end function </span><span class="n">v0</span>
 
-<span class="w">   </span><span class="k">subroutine </span><span class="n">volume</span><span class="p">(</span><span class="n">eos</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">root_type</span><span class="p">)</span>
-<span class="w">      </span><span class="c">!! In the case of models that have a &quot;covolume&quot; value, using the solver</span>
-<span class="w">      </span><span class="c">!! of Michelsen is a better option that the default.</span>
-<span class="w">      </span><span class="k">use </span><span class="n">yaeos__models_solvers</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">volume_michelsen</span>
-<span class="w">      </span><span class="k">class</span><span class="p">(</span><span class="n">PR76</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">eos</span>
-<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w">  </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(:),</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span>
-<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">V</span>
-<span class="w">      </span><span class="kt">character</span><span class="p">(</span><span class="nb">len</span><span class="o">=*</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">root_type</span>
-
-<span class="w">      </span><span class="k">call </span><span class="n">volume_michelsen</span><span class="p">(</span><span class="n">eos</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">root_type</span><span class="p">)</span>
-<span class="w">   </span><span class="k">end subroutine</span>
 <span class="k">end module </span><span class="n">hyperdual_pr76</span>
 </code></pre></div>
 
-<h2 id="tapenade-adiff">Tapenade Adiff</h2>
-<p>And alternative to <code>hyperdual</code> that takes a bit more work, but can end in a more
-performant model, is doing <code>tapenade</code> source-to-source differentiation. For
-this <code>tapenade</code> must be installed and accessible from a terminal 
-<a href="https://tapenade.gitlabpages.inria.fr/userdoc/build/html/download.html">donwload link</a>.</p>
-<h1 id="tapenade-diff">tapenade diff</h1>
-<p>Tapenade is an automatic differentiation tool developed by researchers at
-<a href="https://team.inria.fr/ecuador/en/tapenade/">INRIA</a> (the French National
-Institute for Research in Computer Science and Automation).</p>
-<p>Tapenade is designed to automatically generate derivative code for numerical
-simulation programs written in Fortran or C. It enables the computation of
-gradients, Hessians, and other derivatives efficiently, which is particularly
-useful in fields such as optimization, sensitivity analysis, and scientific
-computing.</p>
-<p>By analyzing the source code of the original program, Tapenade generates code
-that computes the derivatives of the program&rsquo;s outputs with respect to its
-inputs. This capability is crucial in many scientific and engineering
-applications where the ability to efficiently compute derivatives is essential.</p>
-<p>Overall, Tapenade simplifies the process of incorporating automatic
-differentiation into existing numerical simulation codes, making it a valuable
-tool for researchers and developers working in computational science and
-engineering.</p>
-<h2 id="how-we-use-it">How we use it</h2>
-<p>In <code>yaeos</code> we developed a wrapper object that receives a set of routines from
-a differentiated module and uses and internal logic to get the desired $A_r$ 
-derivatives.</p>
-<h2 id="obtain-a-tapenade-differentiated-eos">Obtain a tapenade differentiated EoS</h2>
-<p>Getting a usable $A_r$ equation of state with <code>tapenade</code> is fairly easy.</p>
-<ol>
-<li>Install <code>tapenade</code> and assure that you have the <code>tapenade</code> executable in
-   your <code>PATH</code>.</li>
-<li>Setup your new model following the <a href="./template.f90">template file</a>.
-   a full implementation of the PengRobinson EoS can be seen at
-   <a href="./pr.f90">pr.f90</a> as an example.</li>
-<li>Run the script <code>gen_tapemodel.sh</code>, providing your file as an argument:
-   <code>bash
-   bash gen_tapemodel.sh &lt;your_model_file.f90&gt;</code>
-   This will generate a new folder <code>tapeout</code>, with your differentiated model
-   inside.</li>
-<li>Some little post-process must be done due to some details in the <code>tapenade</code>
-   implementation. These are described in the base template but can also
-   be checked on the <a href="./tapeout/pr_diff.f90">differentiated PR76 result after fixing the last details</a></li>
-</ol>
-<p>To add your new tapenade model just include the file in your <code>src</code> folder and
-use it with</p>
-<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">ArModel</span><span class="p">,</span><span class="w"> </span><span class="n">pressure</span>
-<span class="k">use </span><span class="n">your_module_name</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">setup_model</span>
+<p>Use symmetric interaction matrices with zero diagonals for this example and
+check that the mixed covolume remains positive. The compact constructor assumes
+matching array sizes and positive critical constants. <code>get_v0</code> returns the
+same <strong>total covolume</strong> used by <code>arfun</code>, including <code>lij</code>. Dividing the linear
+sum <code>sum(n*b)</code> by <code>sum(n)</code> would return a molar volume and only appear correct
+on a one-mole basis. See the analytic guide for the default solver&rsquo;s <code>B/V</code>
+transformation and domain obligations.</p>
+<p>Once the model is defined, it can be used like any other <code>ArModel</code>:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">program </span><span class="n">main</span>
+<span class="w">   </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">ArModel</span>
+<span class="w">   </span><span class="k">use </span><span class="n">hyperdual_pr76</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">PR76</span><span class="p">,</span><span class="w"> </span><span class="n">setup</span>
+<span class="w">   </span><span class="k">implicit none</span>
 
-<span class="k">class</span><span class="p">(</span><span class="n">ArModel</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="k">   class</span><span class="p">(</span><span class="n">ArModel</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">tc</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">pc</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">w</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">kij</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">lij</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">V</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">P</span>
 
-<span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">setup_model</span><span class="p">(</span><span class="o">&lt;</span><span class="n">your</span><span class="w"> </span><span class="n">parameters</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="w">   </span><span class="n">tc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">19</span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">31</span><span class="mf">0.0_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">pc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="mf">4.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="mf">0.0_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.001_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.03_pr</span><span class="p">]</span>
 
-<span class="k">call </span><span class="n">pressure</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">)</span>
+<span class="w">   </span><span class="n">kij</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">reshape</span><span class="p">([</span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.1_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.1_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0_pr</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">])</span>
+<span class="w">   </span><span class="n">lij</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kij</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">2.0_pr</span>
+
+<span class="w">   </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">setup</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span><span class="w"> </span><span class="n">pc</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="n">kij</span><span class="p">,</span><span class="w"> </span><span class="n">lij</span><span class="p">)</span>
+
+<span class="w">   </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.3_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">V</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0_pr</span>
+<span class="w">   </span><span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">15</span><span class="mf">0.0_pr</span>
+
+<span class="w">   </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">)</span>
+<span class="k">end program </span><span class="n">main</span>
 </code></pre></div>
+
+<p>A related complete implementation is available in
+<code>example/extra/adiff_pr76.f90</code>. The example here makes the total-volume
+initializer explicit; compare conventions rather than copying a molar
+initializer unchanged into a new extensive model.</p>
+<div class="alert alert-info">
+<p class="alert-title h4">Note</p>
+<p>The <code>Ar</code> function must be a function returning <code>type(hyperdual)</code>, not a
+subroutine with an output argument. The return value is the residual Helmholtz
+energy itself, not a derivative array.</p>
+</div>
+<h2 id="tapenade-source-to-source-ad">Tapenade source-to-source AD</h2>
+<p>Tapenade reads a conventional Fortran routine and writes new Fortran routines
+that evaluate derivatives. Unlike hyperdual numbers, the derivative operations
+are explicit in the generated source. This can improve runtime performance,
+but requires a separate generation step and review of the generated code.
+Tapenade must be installed and available as <code>tapenade</code> in <code>PATH</code>; see the
+<a href="https://tapenade.gitlabpages.inria.fr/userdoc/build/html/download.html">Tapenade download and user documentation</a>.</p>
+<h3 id="what-the-yaeos-wrapper-needs">What the <code>yaeos</code> wrapper needs</h3>
+<p>The abstract type <a href="../../../type/armodeltapenade.html">ArModelTapenade</a> adapts generated routines to the standard
+<code>ArModel</code> derivative interface. A concrete model supplies the primal routine
+<code>ar</code> and four derivative routines:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Binding</th>
+<th style="text-align: left;">Role in the wrapper</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>ar</code></td>
+<td style="text-align: left;">Evaluate the residual Helmholtz energy <script type="math/tex">A^r</script>.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ar_d</code></td>
+<td style="text-align: left;">Forward directional derivatives.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ar_b</code></td>
+<td style="text-align: left;">Reverse-mode derivatives with respect to the input variables.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ar_d_b</code></td>
+<td style="text-align: left;">Mixed forward/reverse derivatives, used for composition Hessians and mixed derivatives.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ar_d_d</code></td>
+<td style="text-align: left;">Second forward directional derivatives.</td>
+</tr>
+</tbody>
+</table>
+<p>The routines have strict interfaces; use the library API and the working PC-SAFT
+implementation as references rather than guessing argument order:
+<code>src/adiff/autodiff_api/tapenade_ar_api.f90</code> and
+<code>src/models/residual_helmholtz/saft/pc_saft.f90</code>.
+The derived type must also implement the inherited <code>get_v0</code> initializer, which
+provides a liquid-volume starting estimate to the volume solver.</p>
+<h3 id="write-and-prepare-the-primal-routine">Write and prepare the primal routine</h3>
+<p>Start from <code>tools/tapenade_diff/template.f90</code> in the repository.
+The template is a scaffold, not a compilable model: replace its placeholders,
+implement the model parameters and constructor, and write the primal routine
+with the expected argument names and order:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">subroutine </span><span class="n">ar</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">arval</span><span class="p">)</span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">ModelName</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(:)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">v</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">t</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">arval</span>
+<span class="w">   </span><span class="c">! Calculate A^r(n, v, t) here.</span>
+<span class="k">end subroutine </span><span class="n">ar</span>
+</code></pre></div>
+
+<p>The example uses <code>real(8)</code> because the generator workflow expects that kind in
+its input. Its post-processing script converts generated declarations to
+<code>real(pr)</code>. Keep the interface names unchanged: the script and Tapenade
+directives refer to them. The residual Helmholtz routine should compute the
+primal value only; do not hand-code derivatives in <code>ar</code>.</p>
+<p>For derived-type parameters, the template recommends copying values to local
+variables with explicit shapes based on <code>size(n)</code>. This gives Tapenade clear
+shape information during differentiation. Keep the routine deterministic and
+avoid I/O, hidden state changes, and unsupported external calls in the
+differentiated calculation.</p>
+<h3 id="generate-the-derivative-source">Generate the derivative source</h3>
+<p>Inspect the script <strong>before running it</strong>, in a disposable working copy. Its
+paths are relative to the current directory. The intended invocation from the
+generator directory is:</p>
+<div class="codehilite"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>tools/tapenade_diff
+bash<span class="w"> </span>gen_tapemodel.sh<span class="w"> </span>/absolute/path/to/your_model.f90
+</code></pre></div>
+
+<p>There is a path caveat in the checked-in script: <code>ADFirstAidKitDIR</code> is
+<code>../src/adiff/autodiff_api/tapenade</code>, but from <code>tools/tapenade_diff/</code> the source
+tree is at <code>../../src/adiff/autodiff_api/tapenade</code>. Correct the helper path in
+your working copy (or otherwise supply the expected layout) before invoking
+the generator. The command above is not a promise of an unattended build.</p>
+<p>The script performs a sequence of tangent and reverse Tapenade passes and
+post-processes the result into <code>tapeout/your_model_diff.f90</code>. <strong>It clears files
+in its <code>tapeout/</code> directory before generating output.</strong> Save any work there
+elsewhere before running it. Check the script and the installed Tapenade version
+before use; this is a developer workflow, not a command to run on an existing
+project output directory. The script also removes intermediate sources and
+Tapenade message files; preserve diagnostics separately when investigating
+generation problems. It does not use fail-fast shell handling, so check every
+pass for errors rather than treating the final file&rsquo;s existence as success.</p>
+<p>The current pass sequence is tangent, nested tangent, third tangent,
+reverse-of-tangent, then reverse of the primal. The final file is renamed and
+post-processed: module flags are stripped, <code>REAL*8</code>/kind suffixes are adjusted,
+derived-type dummy declarations are changed toward polymorphic <code>class</code>, and
+external declarations are removed. These textual substitutions are not a
+Fortran interface checker; inspect the result, including <code>use</code> statements and
+the availability of the Tapenade support interfaces.</p>
+<h3 id="review-and-integrate-the-result">Review and integrate the result</h3>
+<p>Generation is not the end of the process. Review the output against the wrapper
+interfaces, then make the necessary project-specific fixes:</p>
+<ol>
+<li>Put the generated routines in a module that can access the model type and
+   <code>pr</code> kind.</li>
+<li>Bind <code>ar</code>, <code>ar_d</code>, <code>ar_b</code>, <code>ar_d_b</code>, and <code>ar_d_d</code> to the derived type.</li>
+<li>Check that <code>model</code> is the passed-object argument and that all other dummy
+   arguments match the deferred interfaces exactly.</li>
+<li>Check array extents, kinds, and <code>intent</code> declarations; ensure the generated
+   code uses the correct component count and does not retain temporary
+   Tapenade-specific names or flags.</li>
+<li>Add the required <code>get_v0</code> implementation and compile the model with the
+   library.</li>
+</ol>
+<p><code>tools/tapenade_diff/tapeout/pr_diff.f90</code> is a post-processed Peng-Robinson
+example. The production PC-SAFT implementation
+is another reference, but its generated derivatives are integrated into a
+larger module and should not be treated as raw Tapenade output.</p>
+<h3 id="seeds-adjoints-and-repeated-calls">Seeds, adjoints, and repeated calls</h3>
+<p>Normally call <code>residual_helmholtz</code> and let the adapter manage these details.
+When testing generated callbacks directly, follow
+<code>src/adiff/autodiff_api/tapenade_ar_api.f90</code> exactly. The generated reference
+implementation in <code>tools/tapenade_diff/tapeout/pr_diff.f90</code> shows the
+conventions concretely.</p>
+<p>A tangent seed selects a direction. Zero all tangent inputs, then set, for
+example, <code>vd = 1</code> to obtain the volume derivative in <code>arvald</code>.</p>
+<p>Reverse sweeps consume their output seed. In the generated <code>ar_b</code>, the
+incoming energy seed <code>arvalb</code> is set to zero before the routine returns, and
+in <code>ar_d_b</code> both <code>arvalb</code> and <code>arvaldb</code> are zeroed. A seed value read after
+the call is therefore not the value you passed in.</p>
+<p>Do not rely on how a particular generated routine initializes its input
+adjoints. In the checked-in <code>ar_b</code> routines, <code>nb</code> and <code>tb</code> are first assigned
+and then incremented within the routine (for example <code>tb = tb + SUM(...)</code>),
+but other generated code or a hand-edited copy may accumulate onto the incoming
+value instead. The safe rule is the one the wrapper follows: clear <code>nb</code>, <code>vb</code>, and <code>tb</code> before <strong>each</strong> independent reverse sweep,
+and set <code>arvalb = 1</code> again before every <code>ar_b</code> call.</p>
+<p>For <code>ar_d_b</code>, clear both adjoint families and all unused seeds. Set a tangent
+direction and <code>arvaldb = 1</code>, leaving <code>arvalb = 0</code>. With <code>nd(i) = 1</code>, the
+wrapper reads a composition-Hessian row from <code>nb</code>; <code>ndb</code> supplies the mole
+gradient. Volume and temperature adjoints provide the corresponding mixed
+derivatives. <code>arvalb</code> and <code>arvaldb</code> are not interchangeable.</p>
+<p>Nested forward calls use two seed directions: <code>vd = vd0 = 1</code> gives <code>ArV2</code>;
+<code>vd = 1</code> and <code>td0 = 1</code> gives <code>ArTV</code>, with all other seeds zero. Read the
+second derivative from <code>arvaldd</code>, not from a first-tangent output.</p>
+<p>Do not assume a reverse sweep returns the primal energy. The wrapper calls
+the primal routine separately when <code>Ar</code> is requested. All five Tapenade
+bindings are <strong>subroutines</strong>, unlike the hyperdual <code>Ar</code> function.</p>
+<p>The adapter&rsquo;s <code>reset_vars</code> clears tangent, adjoint, mixed, and scalar workspace
+before independent sweeps. Preserve that behavior in custom wrappers. Nonzero
+stale adjoints can make a first call look correct but repeated calls or requests
+for several derivatives fail. Test repeated calls and combined requests, not
+only a single isolated Hessian evaluation.</p>
+<h3 id="validate-the-derivatives">Validate the derivatives</h3>
+<p>Compare generated derivatives with <code>numeric_ar_derivatives</code> at multiple
+compositions, temperatures, and volumes; see the analytic guide for its required
+energy output and finite-difference step choices. Thermodynamic identities are
+a separate check. In a program with a declared scalar <code>eq31</code>, for example:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos__consistency_armodel</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">ar_consistency</span>
+
+<span class="k">call </span><span class="n">ar_consistency</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">eq31</span><span class="o">=</span><span class="n">eq31</span><span class="p">)</span>
+<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Fugacity/Gibbs identity residual:&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">eq31</span>
+</code></pre></div>
+
+<p>Collect all five identity outputs and check independent optional calls as shown
+in the analytic guide. Small identity residuals do not by themselves prove that
+the derivatives match the intended primal equation or experimental data.</p>
+<p>Also test limiting cases (pure-component compositions, dilute components, and
+volumes near the model&rsquo;s lower limit) and verify that the model returns finite
+pressures and properties before using it in flash or envelope calculations.</p>
+<p>Turn these checks into a permanent regression test once they pass. The
+<a href="../../developer/testing.html">testing page of the developer handbook</a> shows how
+the existing models are tested, which tolerances the suite uses, and how to
+choose a step size that does not hide a wrong derivative.</p>
+<h3 id="choosing-between-the-two-approaches">Choosing between the two approaches</h3>
+<p>Hyperdual AD is usually simpler for prototyping and keeps the derivative
+implementation close to the primal equations. Tapenade takes more setup and
+maintenance, but can generate efficient routines for production models. Both
+approaches need validation; neither makes an incorrect primal equation
+thermodynamically correct.</p>
     </div>
   </div>
       <hr>
@@ -377,14 +636,14 @@ use it with</p>
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

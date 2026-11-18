@@ -1,0 +1,419 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
+    <link rel="icon" href="../../favicon.png">
+
+    <title>An end-to-end change &ndash; yaeos</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../../css/brands.min.css" rel="stylesheet">
+    <link href="../../css/regular.min.css" rel="stylesheet">
+    <link href="../../css/solid.min.css" rel="stylesheet">
+    <link href="../../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../../css/local.css" rel="stylesheet">
+    <link href="../../css/pygments.css" rel="stylesheet">
+      <link href="../../css/user.css" rel="stylesheet">
+    <script src="../../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../../index.html">yaeos </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="../index.html">User documentation</a></li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>An end-to-end change</h1>
+    <div class="container p-2 mb-4 bg-light border rounded-3">
+      <div class="row align-items-center justify-content-between">
+        <div class="col">
+          <ul class="list-inline" style="margin-bottom:0px; display:inline">
+          </ul>
+        </div>
+        <div class="col">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../index.html'>User documentation</a></li>
+                <li class="breadcrumb-item"><a href='index.html'>Becoming a yaeos developer</a></li>
+              <li class="breadcrumb-item active" aria-current="page">An end-to-end change</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+      <div class="col-3">
+        <div class="card card-body bg-light" id="sidebar-toc">
+          <ul class="nav flex-column align-items">
+            <li class="nav-item">
+              <a class="nav-link" href="../index.html">User documentation</a>
+            </li>
+          </ul>
+          <hr>
+          <nav class="nav nav-pills flex-column">
+              <a class="nav-link" href="../usage/index.html">Getting started</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/fundamentals.html">Thermodynamics essentials</a>
+              <a class="nav-link" href="../usage/eos/index.html">Equations of State</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/eos/cubics/index.html">Cubics</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/eos/cubics/alpha.html">Alpha functions</a>
+              <a class="nav-link" href="../usage/eos/cubics/mixing.html">Mixing Rules</a>
+
+                </nav>
+              <a class="nav-link" href="../usage/eos/gerg2008.html">GERG2008</a>
+              <a class="nav-link" href="../usage/eos/gerg2008_parameters.html">GERG2008 parameters</a>
+              <a class="nav-link" href="../usage/eos/pc_saft.html">PC-SAFT</a>
+
+                </nav>
+              <a class="nav-link" href="../usage/excessmodels/index.html">Gibbs Excess Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/excessmodels/nrtl.html">NRTL</a>
+              <a class="nav-link" href="../usage/excessmodels/nrtl-hv.html">NRTL-HV</a>
+              <a class="nav-link" href="../usage/excessmodels/uniquac.html">UNIQUAC</a>
+              <a class="nav-link" href="../usage/excessmodels/unifac_models/index.html">UNIFAC Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
+              <a class="nav-link" href="../usage/excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
+              <a class="nav-link" href="../usage/excessmodels/unifac_models/psrk.html">UNIFAC-PSRK</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../usage/phase_equilibrium/index.html">Phase Equilibrium</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/phase_equilibrium/flash.html">Flash calculations</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/saturation_points.html">Saturation Points</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/stability.html">Stability analysis</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/critical.html">Critical points</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/multiphase.html">Multiphase flash</a>
+
+                </nav>
+              <a class="nav-link" href="../usage/newmodels/index.html">Adding your own models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/newmodels/analtical.html">Analytical derivatives</a>
+              <a class="nav-link" href="../usage/newmodels/autodiff.html">Automatic differentiation</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../python-api/index.html">Python-API</a>
+              <a class="nav-link" href="index.html">Becoming a yaeos developer</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="architecture.html">Architecture and repository map</a>
+              <a class="nav-link" href="workflow.html">Developer workflow</a>
+              <a class="nav-link" href="fortran.html">Working in the Fortran core</a>
+              <a class="nav-link" href="numerics.html">Working on numerical algorithms</a>
+              <a class="nav-link" href="c_interface.html">C interface layer</a>
+              <a class="nav-link" href="python_interface.html">Python interface layer</a>
+              <a class="nav-link" href="testing.html">Tests and numerical validation</a>
+              <a class="nav-link active disabled" href="walkthrough.html">An end-to-end change</a>
+
+                </nav>
+              <a class="nav-link" href="../contributing/index.html">Contributing</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../contributing/styleguide.html">Style guide</a>
+
+                </nav>
+          </nav>
+        </div>
+      </div>
+
+    <div class="col-9" id='text'>
+      <div class="toc">
+<ul>
+<li><a href="#plan-a-small-feature-from-calculation-to-public-api">Plan a small feature from calculation to public API</a><ul>
+<li><a href="#1-define-a-contract-in-a-few-sentences">1. Define a contract in a few sentences</a></li>
+<li><a href="#2-make-the-calculation-work-outside-the-library-first">2. Make the calculation work outside the library first</a></li>
+<li><a href="#3-choose-tests-that-can-catch-your-own-mistakes">3. Choose tests that can catch your own mistakes</a></li>
+<li><a href="#4-decide-where-the-core-feature-belongs">4. Decide where the core feature belongs</a></li>
+<li><a href="#5-add-language-exposure-only-when-it-is-needed">5. Add language exposure only when it is needed</a></li>
+<li><a href="#6-review-compatibility-before-changing-an-existing-signature">6. Review compatibility before changing an existing signature</a></li>
+<li><a href="#7-submit-evidence-not-just-a-passing-screenshot">7. Submit evidence, not just a passing screenshot</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h1 id="plan-a-small-feature-from-calculation-to-public-api">Plan a small feature from calculation to public API</h1>
+<p>This walkthrough uses a small property helper to show how a contribution
+grows across the codebase. The mathematical task is deliberately simple:
+calculate the compressibility factor</p>
+<p>
+<script type="math/tex; mode=display">
+Z=\frac{PV}{n_{\mathrm{tot}}RT}.
+</script>
+</p>
+<p>
+<script type="math/tex">Z</script> is dimensionless and equals one for an ideal gas. It is not the same
+quantity as the isothermal compressibility, which is a derivative of volume
+with respect to pressure. Naming the desired property precisely is the first
+part of a good feature proposal.</p>
+<p>The helper below is <strong>application code</strong>, not a new method already supplied by
+<code>ArModel</code>. No library modification is necessary to run it. The later sections
+describe a possible contribution plan, not commands that silently add that
+method to your checkout.</p>
+<h2 id="1-define-a-contract-in-a-few-sentences">1. Define a contract in a few sentences</h2>
+<p>Given an EOS model, component mole amounts <code>n</code>, total volume <code>V</code> in L, and
+temperature <code>T</code> in K, evaluate model pressure in bar and return <script type="math/tex">Z</script>. Use the
+total amount, not the length of the composition array or an implicit one-mole
+normalization. The physical state is homogeneous: the helper does not perform
+a flash or decide whether the mixture is stable.</p>
+<p>Before adding a method to the library, search for equivalent functionality and
+discuss whether a helper is useful enough to publish. A one-line application
+calculation can be preferable to expanding a maintained public interface.</p>
+<h2 id="2-make-the-calculation-work-outside-the-library-first">2. Make the calculation work outside the library first</h2>
+<p>The following is a complete Fortran source file. Put it in an application&rsquo;s
+<code>app/main.f90</code> after configuring the <code>yaeos</code> dependency as in
+<a href="../usage/index.html">getting started</a>:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">module </span><span class="n">application_properties</span>
+<span class="w">   </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">R</span><span class="p">,</span><span class="w"> </span><span class="n">ArModel</span>
+<span class="w">   </span><span class="k">implicit none</span>
+<span class="k">   private</span>
+<span class="k">   public</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">z_factor</span>
+<span class="k">contains</span>
+<span class="k">   function </span><span class="n">z_factor</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">)</span><span class="w"> </span><span class="k">result</span><span class="p">(</span><span class="n">Z</span><span class="p">)</span>
+<span class="w">      </span><span class="k">class</span><span class="p">(</span><span class="n">ArModel</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(:)</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">V</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Z</span>
+<span class="w">      </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">P</span>
+
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">any</span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mf">0.0_pr</span><span class="p">)</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mf">0.0_pr</span><span class="p">)</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">         </span><span class="k">error stop</span><span class="w"> </span><span class="s2">&quot;Invalid mole amounts&quot;</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">V</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mf">0.0_pr</span><span class="w"> </span><span class="p">.</span><span class="nb">or</span><span class="p">.</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mf">0.0_pr</span><span class="p">)</span><span class="w"> </span><span class="k">error stop</span><span class="w"> </span><span class="s2">&quot;Invalid V or T&quot;</span>
+<span class="w">      </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">)</span>
+<span class="w">      </span><span class="n">Z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">P</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">V</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">R</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">T</span><span class="p">)</span>
+<span class="w">   </span><span class="k">end function </span><span class="n">z_factor</span>
+<span class="k">end module </span><span class="n">application_properties</span>
+
+<span class="k">program </span><span class="n">check_property_helper</span>
+<span class="w">   </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">ArModel</span><span class="p">,</span><span class="w"> </span><span class="n">PengRobinson76</span>
+<span class="w">   </span><span class="k">use </span><span class="n">application_properties</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">z_factor</span>
+<span class="w">   </span><span class="k">implicit none</span>
+
+<span class="k">   class</span><span class="p">(</span><span class="n">ArModel</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Z</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Z_scaled</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Z_dilute</span>
+
+<span class="w">   </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">([</span><span class="mi">19</span><span class="mf">0.564_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">30</span><span class="mf">5.32_pr</span><span class="p">],</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="p">[</span><span class="mi">4</span><span class="mf">5.99_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="mf">8.72_pr</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="mf">0.01142_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0995_pr</span><span class="p">])</span>
+<span class="w">   </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.3_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">Z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">z_factor</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="mf">0.0_pr</span><span class="p">)</span>
+<span class="w">   </span><span class="n">Z_scaled</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">z_factor</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="mf">0.0_pr</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="mf">0.0_pr</span><span class="p">)</span>
+<span class="w">   </span><span class="n">Z_dilute</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">z_factor</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="mi">1000</span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="mf">0.0_pr</span><span class="p">)</span>
+
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">Z</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Z_scaled</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">1.0e-10_pr</span><span class="p">)</span><span class="w"> </span><span class="k">error stop</span><span class="w"> </span><span class="s2">&quot;Scaling check failed&quot;</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">Z_dilute</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">1.0_pr</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">1.0e-3_pr</span><span class="p">)</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="k">error stop</span><span class="w"> </span><span class="s2">&quot;Dilute-gas check failed&quot;</span>
+<span class="w">   </span><span class="k">write</span><span class="p">(</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;(A,F12.8)&#39;</span><span class="p">)</span><span class="w"> </span><span class="s2">&quot;Z at the test state: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Z</span>
+<span class="w">   </span><span class="k">write</span><span class="p">(</span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;(A,F12.8)&#39;</span><span class="p">)</span><span class="w"> </span><span class="s2">&quot;Z in the dilute limit: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Z_dilute</span>
+<span class="k">end program </span><span class="n">check_property_helper</span>
+</code></pre></div>
+
+<p>The <code>error stop</code> checks are convenient in this demonstration application. They
+are not a recommendation to terminate every host process from a public
+library routine. A production API needs deliberate invalid-input and failure
+reporting, especially when called from Python or another language.</p>
+<h2 id="3-choose-tests-that-can-catch-your-own-mistakes">3. Choose tests that can catch your own mistakes</h2>
+<p>This example checks two independent properties:</p>
+<ul>
+<li><strong>Scaling:</strong> multiplying amounts and total volume by ten must leave <script type="math/tex">Z</script>
+  unchanged. This catches accidental normalization of only one input.</li>
+<li><strong>Dilute behavior:</strong> at a sufficiently large volume, a suitable EOS should
+  approach ideal-gas behavior. This catches some unit and formula errors.</li>
+</ul>
+<p>Neither check proves the EOS is accurate for methane–ethane at all conditions.
+Add an ordinary regression state and a known reference calculation if the
+property becomes public. Also test the one-component case, different amount
+bases, component reordering with corresponding model reordering, and relevant
+invalid inputs. Use an appropriate tolerance for each claim, not one absolute
+tolerance for every physical quantity.</p>
+<p>For a bug fix, preserve the smallest input that previously failed. Keep the
+regression test after the fix, and explain the failure mechanism in the change
+description. See <a href="testing.html">testing</a> for native test-program and Python
+test conventions.</p>
+<h2 id="4-decide-where-the-core-feature-belongs">4. Decide where the core feature belongs</h2>
+<p>There are two plausible designs: a standalone utility that accepts
+<code>class(ArModel)</code>, or a shared type-bound method that uses the existing pressure
+binding. Neither needs a separate implementation for each cubic EOS.</p>
+<p>If choosing a type-bound method, inspect
+<code>src/models/residual_helmholtz/ar_models.f90</code> for the surrounding conventions.
+If choosing a standalone public utility, check the relevant facade exports.
+Document units, the amount basis, whether pressure is computed or supplied,
+and whether a volume-root choice exists.</p>
+<p>Do not simultaneously change all neighboring code to a new style. Keep the
+functional change small enough that a reviewer can distinguish its contract
+from unrelated refactoring.</p>
+<h2 id="5-add-language-exposure-only-when-it-is-needed">5. Add language exposure only when it is needed</h2>
+<p>A Python-only convenience method can already calculate this quantity using
+the existing pressure wrapper:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">PengRobinson76</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span>
+    <span class="p">[</span><span class="mf">190.564</span><span class="p">,</span> <span class="mf">305.32</span><span class="p">],</span> <span class="p">[</span><span class="mf">45.99</span><span class="p">,</span> <span class="mf">48.72</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.01142</span><span class="p">,</span> <span class="mf">0.0995</span><span class="p">]</span>
+<span class="p">)</span>
+<span class="n">moles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">])</span>
+<span class="n">volume</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">temperature</span> <span class="o">=</span> <span class="mf">320.0</span>
+<span class="n">pressure</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">pressure</span><span class="p">(</span><span class="n">moles</span><span class="p">,</span> <span class="n">volume</span><span class="p">,</span> <span class="n">temperature</span><span class="p">)</span>
+<span class="n">gas_constant</span> <span class="o">=</span> <span class="mf">0.08314462618</span>  <span class="c1"># bar L / (mol K), matching the Fortran library</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">pressure</span> <span class="o">*</span> <span class="n">volume</span> <span class="o">/</span> <span class="p">(</span><span class="n">moles</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">*</span> <span class="n">gas_constant</span> <span class="o">*</span> <span class="n">temperature</span><span class="p">)</span>
+</code></pre></div>
+
+<p>This is a complete Python example when an appropriate <code>yaeos</code> installation is
+available. A user-level convenience calculation does not automatically justify
+another compiled entry point.</p>
+<p>For a feature that <strong>does</strong> need a new native wrapper, make an explicit plan:</p>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Change to consider</th>
+<th>Evidence to add</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Fortran kernel/shared property</td>
+<td>Implement the mathematical contract</td>
+<td>Native regression and limiting cases</td>
+</tr>
+<tr>
+<td>Fortran public API</td>
+<td>Add binding/export if needed</td>
+<td>A small external caller compiles</td>
+</tr>
+<tr>
+<td><code>yaeos_c</code> wrapper</td>
+<td>Adapt handles, kinds, dimensions, and optional results</td>
+<td>Wrapper matches native values and shapes</td>
+</tr>
+<tr>
+<td>Python method</td>
+<td>Convert inputs and preserve result/derivative conventions</td>
+<td>Python regression and invalid-input tests</td>
+</tr>
+<tr>
+<td>Package/build metadata</td>
+<td>Export or install new modules if necessary</td>
+<td>A fresh installation imports them</td>
+</tr>
+<tr>
+<td>FORD and Sphinx guides</td>
+<td>Explain usage, restrictions, and references</td>
+<td>Both documentation builds and links checked</td>
+</tr>
+</tbody>
+</table>
+<p>Use existing wrappers as patterns, but verify their assumptions. Avoid adding
+a supposedly C-callable routine solely by using <code>real(c_double)</code>: interoperability
+also depends on binding, shapes, argument passing, and ownership. See the
+<a href="c_interface.html">C-facing interface guide</a>.</p>
+<h2 id="6-review-compatibility-before-changing-an-existing-signature">6. Review compatibility before changing an existing signature</h2>
+<p>Adding a native optional argument can affect a generated wrapper&rsquo;s signature,
+even if old Fortran calls still compile. Changing array orientation can
+silently transpose a result in Python. Renaming a result field can break
+plotting and fitting tools that never call the Fortran routine directly.</p>
+<p>Search both native and Python call sites, examples, tests, and documentation.
+For a new model type, also check constructors, facade exports, handle storage,
+Python package exports, source-install lists in Meson, and object lifetime.</p>
+<h2 id="7-submit-evidence-not-just-a-passing-screenshot">7. Submit evidence, not just a passing screenshot</h2>
+<p>Explain the intended behavior, the affected layers, the numerical basis of the
+tests, and the validation commands actually run. State any unavailable check,
+such as an unbuilt Python extension. A helpful review summary distinguishes
+“native Fortran tests pass”, “Python wrapper tests pass”, and “documentation
+examples compile”; none is a substitute for the others.</p>
+<p>Use <a href="workflow.html">workflow</a> for the build commands and
+<a href="index.html">the developer landing page</a> to choose the next area to learn.</p>
+    </div>
+  </div>
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              yaeos
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2026-11-18 15:31 +0000             </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

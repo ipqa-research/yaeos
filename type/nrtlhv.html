@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>NRTLHV &ndash; yaeos </title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title="<p> 1.2% of total for derived types.</p>Including implementation: 81 statements,  0.8% of total for derived types.">8 statements</a>
+                 title="<p> 1.2% of total for derived types.</p>Including implementation: 99 statements,  0.9% of total for derived types.">8 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -135,8 +136,8 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../type/nrtlhv.html#variable-alpha~32">alpha</a>
-            <a class="list-group-item" href="../type/nrtlhv.html#variable-b~13">b</a>
+            <a class="list-group-item" href="../type/nrtlhv.html#variable-alpha~28">alpha</a>
+            <a class="list-group-item" href="../type/nrtlhv.html#variable-b~15">b</a>
             <a class="list-group-item" href="../type/nrtlhv.html#variable-components">components</a>
             <a class="list-group-item" href="../type/nrtlhv.html#variable-gji0~2">gji0</a>
             <a class="list-group-item" href="../type/nrtlhv.html#variable-gjit~2">gjiT</a>
@@ -170,7 +171,7 @@
             <a class="list-group-item" href="../type/nrtlhv.html#boundprocedure-excess_enthalpy">excess_enthalpy</a>
             <a class="list-group-item" href="../type/nrtlhv.html#boundprocedure-excess_entropy">excess_entropy</a>
             <a class="list-group-item" href="../type/nrtlhv.html#boundprocedure-excess_gibbs~5">excess_gibbs</a>
-            <a class="list-group-item" href="../type/nrtlhv.html#boundprocedure-ln_activity_coefficient~2">ln_activity_coefficient</a>
+            <a class="list-group-item" href="../type/nrtlhv.html#boundprocedure-ln_activity_coefficient~3">ln_activity_coefficient</a>
         </div>
       </div>
     </div>
@@ -191,14 +192,21 @@
 <h1 id="description">Description</h1>
 <p>Huron-Vidal modified the NRTL model, including the covolume parameter
 into the model. This helps when running the model coupled with a cubic
-equation of state. Because it can be reduced to the classical
-quadratic mixing rules when some parameters are defined accordingly</p>
+equation of state, because it can be reduced to the classical
+quadratic mixing rules when its parameters are defined accordingly.</p>
 <p>It uses the temperature function:</p>
 <p>
 <script type="math/tex; mode=display"> \tau_{ij}(T) =  \frac{g_{ij}^0}{RT} + \frac{g_{ij}^T T}{RT} </script>
 </p>
+<p>There is no custom constructor; use the default structure
+constructor. Energy parameters must be in the units of <script type="math/tex">RT</script>
+(<code>R</code> in bar L / (mol K)).</p>
 <h1 id="examples">Examples</h1>
+<div class="codehilite"><pre><span></span><code><span class="n">ge</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NRTLHV</span><span class="p">(</span><span class="n">b</span><span class="o">=</span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span><span class="w"> </span><span class="n">gji0</span><span class="o">=</span><span class="n">gji0</span><span class="p">,</span><span class="w"> </span><span class="n">gjiT</span><span class="o">=</span><span class="n">gjiT</span><span class="p">)</span>
+</code></pre></div>
+
 <h1 id="references">References</h1>
+<p>Huron, M.-J., and J. Vidal (1979). <em>Fluid Phase Equilibria</em>, 3, 255-271.</p>
 <br>      <div class="card">
         <div class="card-header">
           <h3 class="card-title">Inherits</h3>
@@ -207,65 +215,65 @@ quadratic mixing rules when some parameters are defined accordingly</p>
           <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: type~~nrtlhv~~InheritsGraph Pages: 1 -->
-<svg id="typenrtlhvInheritsGraph" width="437pt" height="32pt"
- viewBox="0.00 0.00 437.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="type~~nrtlhv~~InheritsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg id="typenrtlhvInheritsGraph" width="433pt" height="32pt"
+ viewBox="0.00 0.00 433.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="type~~nrtlhv~~InheritsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>type~~nrtlhv~~InheritsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 433,-28 433,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 428.58,-28.27 428.58,4 -4,4"/>
 <!-- type~nrtlhv -->
 <g id="type~~nrtlhv~~InheritsGraph_node1" class="node">
 <title>type~nrtlhv</title>
-<polygon fill="none" stroke="black" points="429,-24 374,-24 374,0 429,0 429,-24"/>
-<text text-anchor="middle" x="401.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">NRTLHV</text>
+<polygon fill="none" stroke="black" points="424.58,-24.27 370.31,-24.27 370.31,0 424.58,0 424.58,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="397.44" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">NRTLHV</text>
 </g>
 <!-- type~gemodel -->
 <g id="type~~nrtlhv~~InheritsGraph_node2" class="node">
 <title>type~gemodel</title>
 <g id="a_type~~nrtlhv~~InheritsGraph_node2"><a xlink:href="../type/gemodel.html" xlink:title="GeModel">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="337,-24 277,-24 277,0 337,0 337,-24"/>
-<text text-anchor="middle" x="307" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">GeModel</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="333.31,-24.27 274.54,-24.27 274.54,0 333.31,0 333.31,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.92" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">GeModel</text>
 </a>
 </g>
 </g>
 <!-- type~nrtlhv&#45;&gt;type~gemodel -->
 <g id="type~~nrtlhv~~InheritsGraph_edge1" class="edge">
 <title>type~nrtlhv&#45;&gt;type~gemodel</title>
-<path fill="none" stroke="#000000" d="M373.75,-12C365.54,-12 356.33,-12 347.46,-12"/>
-<polygon fill="#000000" stroke="#000000" points="347.29,-8.5 337.29,-12 347.29,-15.5 347.29,-8.5"/>
+<path fill="none" stroke="#000000" d="M369.97,-12.13C362.13,-12.13 353.37,-12.13 344.88,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="345.09,-8.64 335.09,-12.14 345.09,-15.64 345.09,-8.64"/>
 </g>
 <!-- type~basemodel -->
 <g id="type~~nrtlhv~~InheritsGraph_node3" class="node">
 <title>type~basemodel</title>
 <g id="a_type~~nrtlhv~~InheritsGraph_node3"><a xlink:href="../type/basemodel.html" xlink:title="BaseModel">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="240,-24 169,-24 169,0 240,0 240,-24"/>
-<text text-anchor="middle" x="204.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">BaseModel</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="237.54,-24.27 167.52,-24.27 167.52,0 237.54,0 237.54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="202.53" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">BaseModel</text>
 </a>
 </g>
 </g>
 <!-- type~gemodel&#45;&gt;type~basemodel -->
 <g id="type~~nrtlhv~~InheritsGraph_edge2" class="edge">
 <title>type~gemodel&#45;&gt;type~basemodel</title>
-<path fill="none" stroke="#000000" d="M276.93,-12C268.59,-12 259.3,-12 250.25,-12"/>
-<polygon fill="#000000" stroke="#000000" points="250.19,-8.5 240.19,-12 250.19,-15.5 250.19,-8.5"/>
+<path fill="none" stroke="#000000" d="M274.18,-12.13C266.37,-12.13 257.72,-12.13 249.23,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="249.36,-8.64 239.36,-12.14 249.36,-15.64 249.36,-8.64"/>
 </g>
 <!-- type~substances -->
 <g id="type~~nrtlhv~~InheritsGraph_node4" class="node">
 <title>type~substances</title>
 <g id="a_type~~nrtlhv~~InheritsGraph_node4"><a xlink:href="../type/substances.html" xlink:title="Substances">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="73,-24 0,-24 0,0 73,0 73,-24"/>
-<text text-anchor="middle" x="36.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Substances</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="72.27,-24.27 0,-24.27 0,0 72.27,0 72.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="36.13" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Substances</text>
 </a>
 </g>
 </g>
 <!-- type~basemodel&#45;&gt;type~substances -->
 <g id="type~~nrtlhv~~InheritsGraph_edge3" class="edge">
 <title>type~basemodel&#45;&gt;type~substances</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M168.7,-12C143.94,-12 110.42,-12 83.47,-12"/>
-<polygon fill="#000000" stroke="#000000" points="83.11,-8.5 73.11,-12 83.11,-15.5 83.11,-8.5"/>
-<text text-anchor="middle" x="121" y="-14.4" font-family="Helvetica,sans-Serif" font-size="9.50">components</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M167.07,-12.13C142.95,-12.13 110.46,-12.13 83.99,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="84.2,-8.64 74.2,-12.14 84.2,-15.64 84.2,-8.64"/>
+<text xml:space="preserve" text-anchor="middle" x="119.89" y="-14.36" font-family="Helvetica,sans-Serif" font-size="9.50">components</text>
 </g>
 </g>
 </svg>
@@ -284,25 +292,25 @@ quadratic mixing rules when some parameters are defined accordingly</p>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="186pt" height="32pt"
- viewBox="0.00 0.00 185.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="184pt" height="32pt"
+ viewBox="0.00 0.00 184.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 181.5,-28 181.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 179.88,-28.27 179.88,4 -4,4"/>
 <!-- Type -->
 <g id="node1" class="node">
 <title>Type</title>
-<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node2" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="177.5,-24 72.5,-24 72.5,0 177.5,0 177.5,-24"/>
-<text text-anchor="middle" x="125" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="175.88,-24.27 72.12,-24.27 72.12,0 175.88,0 175.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="124" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -326,35 +334,35 @@ said component(s).
           <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: type~~nrtlhv~~InheritedByGraph Pages: 1 -->
-<svg id="typenrtlhvInheritedByGraph" width="173pt" height="32pt"
- viewBox="0.00 0.00 173.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="type~~nrtlhv~~InheritedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg id="typenrtlhvInheritedByGraph" width="170pt" height="32pt"
+ viewBox="0.00 0.00 170.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="type~~nrtlhv~~InheritedByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>type~~nrtlhv~~InheritedByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 169,-28 169,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 165.79,-28.27 165.79,4 -4,4"/>
 <!-- type~nrtlhv -->
 <g id="type~~nrtlhv~~InheritedByGraph_node1" class="node">
 <title>type~nrtlhv</title>
-<polygon fill="none" stroke="black" points="55,-24 0,-24 0,0 55,0 55,-24"/>
-<text text-anchor="middle" x="27.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">NRTLHV</text>
+<polygon fill="none" stroke="black" points="54.27,-24.27 0,-24.27 0,0 54.27,0 54.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27.13" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">NRTLHV</text>
 </g>
 <!-- type~hv_nrtl -->
 <g id="type~~nrtlhv~~InheritedByGraph_node2" class="node">
 <title>type~hv_nrtl</title>
 <g id="a_type~~nrtlhv~~InheritedByGraph_node2"><a xlink:href="../type/hv_nrtl.html" xlink:title="HV_NRTL">
-<polygon fill="#5cb85c" stroke="#5cb85c" points="165,-24 104,-24 104,0 165,0 165,-24"/>
-<text text-anchor="middle" x="134.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">HV_NRTL</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="161.79,-24.27 102.27,-24.27 102.27,0 161.79,0 161.79,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="132.03" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">HV_NRTL</text>
 </a>
 </g>
 </g>
 <!-- type~hv_nrtl&#45;&gt;type~nrtlhv -->
 <g id="type~~nrtlhv~~InheritedByGraph_edge1" class="edge">
 <title>type~hv_nrtl&#45;&gt;type~nrtlhv</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M103.97,-12C92.03,-12 78.11,-12 65.51,-12"/>
-<polygon fill="#000000" stroke="#000000" points="65.3,-8.5 55.3,-12 65.3,-15.5 65.3,-8.5"/>
-<text text-anchor="middle" x="79.5" y="-14.4" font-family="Helvetica,sans-Serif" font-size="9.50">ge</text>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M101.82,-12.13C90.68,-12.13 77.82,-12.13 65.99,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="66.12,-8.64 56.12,-12.14 66.12,-15.64 66.12,-8.64"/>
+<text xml:space="preserve" text-anchor="middle" x="78.27" y="-14.36" font-family="Helvetica,sans-Serif" font-size="9.50">ge</text>
 </g>
 </g>
 </svg>
@@ -373,25 +381,25 @@ said component(s).
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="186pt" height="32pt"
- viewBox="0.00 0.00 185.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="184pt" height="32pt"
+ viewBox="0.00 0.00 184.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 181.5,-28 181.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 179.88,-28.27 179.88,4 -4,4"/>
 <!-- Type -->
 <g id="node1" class="node">
 <title>Type</title>
-<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
+<polygon fill="#5cb85c" stroke="#5cb85c" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node2" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="177.5,-24 72.5,-24 72.5,0 177.5,0 177.5,-24"/>
-<text text-anchor="middle" x="125" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="175.88,-24.27 72.12,-24.27 72.12,0 175.88,0 175.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="124" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -423,7 +431,7 @@ said component(s).
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-alpha~32"></span>
+              <span class="anchor" id="variable-alpha~28"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -441,7 +449,7 @@ said component(s).
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-b~13"></span>
+              <span class="anchor" id="variable-b~15"></span>
               real(kind=pr),
             </td>
               <td>public,</td>
@@ -470,7 +478,7 @@ said component(s).
                 <td></td>
                 <td></td>
             <td>
-                <p>Substances contained in the module</p>
+                <p>Pure-component properties for the model&rsquo;s component order.</p>
             </td>
         </tr>
         <tr>
@@ -897,7 +905,7 @@ said component(s).
       <ul class="list-group">
           <li class="list-group-item">
                     <h3>
-    public  subroutine <a href='../proc/excess_gibbs~4.html'>excess_gibbs</a>(self, n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)  
+    public  subroutine <a href='../proc/excess_gibbs~5.html'>excess_gibbs</a>(self, n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)  
 </h3>
     
 
@@ -1037,7 +1045,7 @@ said component(s).
             <td>::</td>
             <td><strong>GeTn</strong>(size(n))</td>
             <td>
-
+<p>Mixed temperature-mole-number derivative.</p>
             </td>
         </tr>
         <tr>
@@ -1052,7 +1060,7 @@ said component(s).
             <td>::</td>
             <td><strong>Gen2</strong>(size(n),size(n))</td>
             <td>
-
+<p>Hessian with respect to mole amounts.</p>
             </td>
         </tr>
     </tbody>
@@ -1067,7 +1075,7 @@ said component(s).
           <div class="row">
               <div class="card mt-3">
     <div class="card-header codesum">
-      <span class="anchor" id="boundprocedure-ln_activity_coefficient~2"></span>
+      <span class="anchor" id="boundprocedure-ln_activity_coefficient~3"></span>
       <h3>
           procedure, public ::
   <strong>ln_activity_coefficient</strong>
@@ -1077,11 +1085,11 @@ said component(s).
       <ul class="list-group">
           <li class="list-group-item">
                     <h3>
-    public  subroutine <a href='../proc/ln_activity_coefficient~2.html'>ln_activity_coefficient</a>(self, n, T, lngamma, dlngammadT, dlngammadn)  
+    public  subroutine <a href='../proc/ln_activity_coefficient~3.html'>ln_activity_coefficient</a>(self, n, T, lngamma, dlngammadT, dlngammadn)  
 </h3>
     
 
-  <p>Calculate natural logarithm of activity coefficients.</p><a href="../proc/ln_activity_coefficient~2.html" class="pull-right"><emph>Read more&hellip;</emph></a>
+  <p>Calculate natural logarithm of activity coefficients.</p><a href="../proc/ln_activity_coefficient~3.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -1211,14 +1219,14 @@ said component(s).
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

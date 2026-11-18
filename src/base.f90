@@ -1,294 +1,580 @@
-module yaeos__models_ar_genericcubic_base
-   use yaeos__constants, only: pr, R
+module yaeos__models_ar_cubic_mixing_base
+   !! # Mixing rules core math
+   !! Procedures of the core calculations of CubicEoS mixing rules.
+   !!
+   !! # Description
+   !! This module holds all the basic math to use mixing rules in other codes.
+   !! Keeping it simple and accessible.
+   !!
+   !! # Examples
+   !!
+   !! ```fortran
+   !! bi = [0.2_pr, 0.3_pr]
+   !! lij = reshape([0.0_pr, 0.2_pr, 0.2_pr, 0.0_pr], [2,2])
+   !!
+   !! ! Calculate B parameter with Quadratic Mixing Rules.
+   !! call bmix_qmr(n, bi, lij, b, dbi, dbij)
+   !!
+   !! ```
+   !!
+   !! # References
+   use yaeos__constants, only: pr, solving_volume
    implicit none
-
 contains
 
-   subroutine GenericCubic_Ar(&
-      n, V, T, &
-      B, dBi, dBij, &
-      D, dDi, dDij, dDidT, dDdT, dDdT2, &
-      D1, dD1i, dD1ij, &
-      Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2&
-      )
-      !! Residual Helmholtz Energy for a generic Cubic Equation of State.
+   pure subroutine bmix_linear(n, bi, b, dbi, dbij)
+      !! # bmix_linear
+      !! Calculate the linear mixture covolume and composition derivatives.
       !!
-      !! Calculates the residual Helmholtz Energy for a generic Cubic EoS as
-      !! defined by Michelsen and Møllerup:
+      !! # Description
+      !! Uses \(B=\sum_i n_i b_i\), so its mole-number gradient is `bi` and
+      !! its Hessian is zero.
       !!
-      !! \[
-      !!   P = \frac{RT}{V-B}
-      !!       - \frac{D(T)}{(V+B \delta_1)(V+B\delta_2)}
-      !! \]
+      !! # Examples
+      !! ```fortran
+      !! call bmix_linear(n, bi, B, dBdn, d2Bdn2)
+      !! ```
+      real(pr), intent(in) :: n(:) !! Component mole amounts.
+      real(pr), intent(in) :: bi(:) !! Pure-component covolumes.
+      real(pr), intent(out) :: b !! Mixture covolume.
+      real(pr), intent(out) :: dbi(:) !! Mole-number gradient of the mixture covolume.
+      real(pr), intent(out) :: dbij(:, :) !! Mole-number Hessian of the mixture covolume.
+
+      b = sum(n*bi)
+      dbi = bi
+      dbij = 0
+   end subroutine bmix_linear
+
+   pure subroutine bmix_qmr(n, bi, lij, b, dbi, dbij)
+      !! # bmix_qmr
+      !! Calculate the QMR covolume and its first and second mole derivatives.
       !!
-      !! This routine assumes that the \(\delta_1\) is not a constant parameter
-      !! (as it uses to be in classical Cubic EoS) to be compatible with the
-      !! three parameter EoS RKPR where \(delta_1\) is not a constant and
-      !! has its own mixing rule.
-      use yaeos__constants, only: R
-      real(pr), intent(in) :: n(:) !! Number of moles
-      real(pr), intent(in) :: v !! Volume [L]
-      real(pr), intent(in) :: t !! Temperature [K]
+      !! # Description
+      !! Forms pair covolumes \(b_{ij}=\frac{b_i+b_j}{2}(1-l_{ij})\) and
+      !! evaluates \(B=\sum_{ij}n_i n_j b_{ij}/\sum_i n_i\). The derivatives
+      !! are returned with respect to the component mole amounts.
+      !!
+      !! # Examples
+      !! ```fortran
+      !! call bmix_qmr(n, bi, lij, B, dBdn, d2Bdn2)
+      !! ```
+      real(pr), intent(in) :: n(:) !! Component mole amounts.
+      real(pr), intent(in) :: bi(:) !! Pure-component covolumes.
+      real(pr), intent(in) :: lij(:, :) !! Repulsive binary interaction matrix.
+      real(pr), intent(out) :: b !! Mixture covolume.
+      real(pr), intent(out) :: dbi(:) !! Mole-number gradient of the mixture covolume.
+      real(pr), intent(out) :: dbij(:, :) !! Mole-number Hessian of the mixture covolume.
 
-      real(pr), intent(in) :: B !! Repulsive parameter [L]
-      real(pr), intent(in) :: dBi(size(n)) !! \(dB/dn_i\)
-      real(pr), intent(in) :: dBij(size(n), size(n)) !! \(d^2B/dn_{ij}\)
+      real(pr) :: bij(size(n), size(n))
 
-      real(pr), intent(in) :: D !! Attractive parameter
-      real(pr), intent(in) :: dDi(size(n)) !! \(dD/dn_i\)
-      real(pr), intent(in) :: dDij(size(n), size(n)) !! \(d^2D/dn_{ij}\)
-      real(pr), intent(in) :: dDidT(size(n)) !! \(d^2D/dTdn_i\)
-      real(pr), intent(in) :: dDdT !! \(\frac{dD}{dT}\)
-      real(pr), intent(in) :: dDdT2 !! \(\frac{d^2D}{dT^2}\)
+      real(pr) :: totn !! Total number of moles.
+      real(pr) :: aux(size(n)) !! Intermediate accumulator.
 
-      real(pr), intent(in) :: D1 !! \(\delta_1\) parameter
-      real(pr), intent(in) :: dD1i(size(n)) !! \(d\delta_1/dn_i\)
-      real(pr), intent(in) :: dD1ij(size(n), size(n)) !! \(d^2\delta_1/dn_{ij}\)
-
-      real(pr), optional, intent(out) :: ar !! Residual Helmholtz
-      real(pr), optional, intent(out) :: arv !! \(\frac{dAr}{dV}\)
-      real(pr), optional, intent(out) :: ArT !! \(\frac{dAr}{dT}\)
-      real(pr), optional, intent(out) :: artv !! \(\frac{d^2Ar}{dTdV}\)
-      real(pr), optional, intent(out) :: arv2 !! \(\frac{d^2Ar}{dV^2}\)
-      real(pr), optional, intent(out) :: ArT2 !! \(\frac{d^2Ar}{dT^2}\)
-      real(pr), optional, intent(out) :: Arn(size(n)) !! \(\frac{dAr}{dn_i}\)
-      real(pr), optional, intent(out) :: ArVn(size(n)) !! \(\frac{d^2Ar}{dVdn_i}\)
-      real(pr), optional, intent(out) :: ArTn(size(n)) !! \(\frac{d^2Ar}{dTdn_i}\)
-      real(pr), optional, intent(out) :: Arn2(size(n), size(n)) !! \(\frac{d^2Ar}{dn_{ij}}\)
-
-
-      real(pr) :: totn
-      real(pr) :: auxD2, fD1, fBD1, fVD1, fD1D1
-      real(pr) d2
-
-      real(pr) :: f, g, fv, fB, gv, fv2, gv2, AUX, FFB, FFBV, FFBB
-
-      integer :: i, j, nc
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: nc !! Number of components.
 
       nc = size(n)
-      TOTN = sum(n)
+      totn = sum(n)
+      B = 0
+      dBi = 0
+      dBij = 0
+      aux = 0
 
-      ! Delta 2 parameter is calculated from Delta 1
-      D2 = (1._pr - D1)/(1._pr + D1)
-
-      ! ========================================================================
-      ! Main functions defined by Møllerup
-      ! The f's and g's used here are for Ar, not F (reduced Ar)
-      ! This requires to multiply by R all g, f
-      ! ------------------------------------------------------------------------
-      f = log((V + D1*B)/(V + D2*B))/B/(D1 - D2)
-      g = R*log(1 - B/V)
-      fv = -1/((V + D1*B)*(V + D2*B))
-      fB = -(f + V*fv)/B
-      gv = R*B/(V*(V - B))
-      fv2 = (-1/(V + D1*B)**2 + 1/(V + D2*B)**2)/B/(D1 - D2)
-      gv2 = R*(1/V**2 - 1/(V - B)**2)
-
-      ! DERIVATIVES OF f WITH RESPECT TO DELTA1
-      auxD2 = (1 + 2/(1 + D1)**2)
-      fD1 = (1/(V + D1*B) + 2/(V + D2*B)/(1 + D1)**2) - f*auxD2
-      fD1 = fD1/(D1 - D2)
-      fBD1 = -(fB*auxD2 + D1/(V + D1*B)**2 + 2*D2/(V + D2*B)**2/(1 + D1)**2)
-      fBD1 = fBD1/(D1 - D2)
-      fVD1 = -(fV*auxD2 + 1/(V + D1*B)**2 + 2/(V + D2*B)**2/(1 + D1)**2)/(D1 - D2)
-      fD1D1 = 4*(f - 1/(V + D2*B))/(1 + D1)**3 + B*(-1/(V + D1*B)**2 &
-         + 4/(V + D2*B)**2/(1 + D1)**4) - 2*fD1*(1 + 2/(1 + D1)**2)
-      fD1D1 = fD1D1/(D1 - D2)
-
-      AUX = R*T/(V - B)
-      FFB = TOTN*AUX - D*fB
-      FFBV = -TOTN*AUX/(V - B) + D*(2*fv + V*fv2)/B
-      FFBB = TOTN*AUX/(V - B) - D*(2*f + 4*V*fv + V**2*fv2)/B**2
-
-      ! ========================================================================
-      ! Reduced Helmholtz Energy and derivatives
-      ! ------------------------------------------------------------------------
-      if (present(Ar)) Ar = -TOTN*g*T - D*f
-      if (present(ArV)) ArV = -TOTN*gv*T - D*fv
-      if (present(ArV2)) ArV2 = -TOTN*gv2*T - D*fv2
-
-      if (present(Arn))  Arn(:)  = -g*T + FFB*dBi(:) - f*dDi(:) - D*fD1 * dD1i(:)
-      if (present(ArVn)) ArVn(:) = -gv*T + FFBV*dBi(:) - fv*dDi(:) - D*fVD1*dD1i(:)
-      if (present(ArTn)) ArTn(:) = -g + (TOTN*AUX/T - dDdT*fB)*dBi(:) - f*dDidT(:) - dDdT*fD1*dD1i(:)
-
-      if (present(Arn2)) then
-         do i = 1, nc
-            do j = 1, i
-               Arn2(i, j) = AUX*(dBi(i) + dBi(j)) - fB*(dBi(i)*dDi(j) + dBi(j)*dDi(i)) &
-                  + FFB*dBij(i, j) + FFBB*dBi(i)*dBi(j) - f*dDij(i, j)
-               Arn2(i, j) = Arn2(i, j) - D*fBD1*(dBi(i)*dD1i(j) + dBi(j)*dD1i(i)) &
-                  - fD1*(dDi(i)*dD1i(j) + dDi(j)*dD1i(i)) &
-                  - D*fD1*dD1ij(i, j) - D*fD1D1*dD1i(i)*dD1i(j)
-               Arn2(j, i) = Arn2(i, j)
-            end do
+      do i = 1, nc
+         do j = 1, nc
+            bij(i, j) = 0.5_pr * (bi(i) + bi(j)) * (1.0_pr - lij(i,j))
+            aux(i) = aux(i) + n(j) * bij(i, j)
          end do
-      end if
+         B = B + n(i)*aux(i)
+      end do
 
-      ! TEMPERATURE DERIVATIVES
-      if (present(ArT))  ArT = -TOTN*g - dDdT*f
-      if (present(ArTV)) ArTV = -TOTN*gv - dDdT*fV
-      if (present(ArT2)) ArT2 = -dDdT2*f
-   end subroutine GenericCubic_Ar
+      B = B/totn
 
-   subroutine GenericCubic_Ar_dddlc(&
-      n, V, T, &
-      B, dBi, dBij, &
-      D, &
-      dDdV, dDdV2, dDdT, dDdT2, &
-      dDdTV, dDi, dDidV, dDidT, dDij, &
-      D1, dD1i, dD1ij, &
-      Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2 &
-      )
-      !! Residual Helmholtz Energy for a generic Cubic Equation of State.
+      if (solving_volume) return
+
+      do i = 1, nc
+         dBi(i) = (2*aux(i) - B)/totn
+         do j = 1, i
+            dBij(i, j) = (2*bij(i, j) - dBi(i) - dBi(j))/totn
+            dBij(j, i) = dBij(i, j)
+         end do
+      end do
+   end subroutine bmix_qmr
+
+   pure subroutine d1mix_rkpr(n, d1i, d1, dd1i, dd1ij)
+      !! # d1mix_rkpr
       !!
-      !! Calculates the residual Helmholtz Energy for a generic Cubic EoS as
-      !! defined by Michelsen and Møllerup:
+      !! # Description
+      !! RKPR \(\delta_1\) parameter mixing rule.
+      !!
+      !! The RKPR EoS doesn't have a constant \(\delta_1\) value for each
+      !! component, so a proper mixing rule should be provided. A linear
+      !! combination is used.
       !!
       !! \[
-      !!   P = \frac{RT}{V-B}
-      !!       - \frac{D(T,V,n)}{(V+B \delta_1)(V+B\delta_2)}
+      !!     \Delta_1 = \frac{\sum_i^N n_i \delta_{1i}}{\sum_i^N n_i}
       !! \]
       !!
-      !! When the mixing rule produces a D that depends on volume (e.g. the
-      !! s-DDLC local composition rule), the non-zero volume derivatives
-      !! `dDdV`, `dDdV2`, `dDdTV`, and `dDidV` drive additional correction
-      !! terms that are added to `ArV`, `ArV2`, `ArTV`, and `ArVn`.
-      !! For standard mixing rules all four inputs should be passed as zero,
-      !! and the correction block is skipped entirely at run time.
-      use yaeos__constants, only: R
-      real(pr), intent(in) :: n(:)  !! Mole numbers
-      real(pr), intent(in) :: V     !! Volume [L]
-      real(pr), intent(in) :: T     !! Temperature [K]
+      real(pr), intent(in) :: n(:) !! Component mole amounts [mol]
+      real(pr), intent(in) :: d1i(:) !! Pure-component \(\delta_{1i}\) values
+      real(pr), intent(out) :: D1 !! Mixture \(\Delta_1\)
+      real(pr), intent(out) :: dD1i(:) !! \(\partial \Delta_1/\partial n_i\)
+      real(pr), intent(out) :: dD1ij(:, :) !! \(\partial^2 \Delta_1/\partial n_i \partial n_j\)
 
-      real(pr), intent(in) :: B             !! Repulsive parameter [L]
-      real(pr), intent(in) :: dBi(size(n)) !! \(dB/dn_i\)
-      real(pr), intent(in) :: dBij(size(n), size(n)) !! \(d^2B/dn_{ij}\)
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: nc !! Number of components.
+      real(pr) :: totn !! Total number of moles.
 
-      real(pr), intent(in) :: D                       !! Attractive parameter
-      real(pr), intent(in) :: dDi(size(n))            !! \(dD/dn_i\)
-      real(pr), intent(in) :: dDij(size(n), size(n))  !! \(d^2D/dn_{ij}\)
-      real(pr), intent(in) :: dDidT(size(n))          !! \(d^2D/dT\,dn_i\)
-      real(pr), intent(in) :: dDidV(size(n))          !! \(d^2D/dV\,dn_i\)
-      real(pr), intent(in) :: dDdT  !! \(dD/dT\)
-      real(pr), intent(in) :: dDdT2 !! \(d^2D/dT^2\)
-      real(pr), intent(in) :: dDdV  !! \(dD/dV\) — zero for V-independent mixing rules
-      real(pr), intent(in) :: dDdV2 !! \(d^2D/dV^2\) — zero for V-independent mixing rules
-      real(pr), intent(in) :: dDdTV !! \(d^2D/dT\,dV\) — zero for V-independent mixing rules
+      nc = size(n)
+      totn = sum(n)
 
-      real(pr), intent(in) :: D1              !! \(\delta_1\) parameter
-      real(pr), intent(in) :: dD1i(size(n))   !! \(d\delta_1/dn_i\)
-      real(pr), intent(in) :: dD1ij(size(n), size(n)) !! \(d^2\delta_1/dn_{ij}\)
+      D1 = sum(n * d1i)/totn
 
-      real(pr), optional, intent(out) :: Ar              !! Residual Helmholtz
-      real(pr), optional, intent(out) :: ArV             !! \(dAr/dV\)
-      real(pr), optional, intent(out) :: ArT             !! \(dAr/dT\)
-      real(pr), optional, intent(out) :: ArTV            !! \(d^2Ar/dT\,dV\)
-      real(pr), optional, intent(out) :: ArV2            !! \(d^2Ar/dV^2\)
-      real(pr), optional, intent(out) :: ArT2            !! \(d^2Ar/dT^2\)
-      real(pr), optional, intent(out) :: Arn(size(n))    !! \(dAr/dn_i\)
-      real(pr), optional, intent(out) :: ArVn(size(n))   !! \(d^2Ar/dV\,dn_i\)
-      real(pr), optional, intent(out) :: ArTn(size(n))   !! \(d^2Ar/dT\,dn_i\)
-      real(pr), optional, intent(out) :: Arn2(size(n), size(n)) !! \(d^2Ar/dn_{ij}\)
+      if (solving_volume) return
 
-      real(pr) :: totn
-      real(pr) :: auxD2, fD1, fBD1, fVD1, fD1D1
-      real(pr) :: D2
-      real(pr) :: f, g, fv, fB, gv, fv2, gv2, AUX, FFB, FFBV, FFBB
+      do i = 1, nc
+         dD1i(i) = (d1i(i) - D1)/totn
+         do j = 1, nc
+            dD1ij(i, j) = (2 * D1 - d1i(i) - d1i(j))/totn**2
+         end do
+      end do
+   end subroutine d1mix_rkpr
 
-      integer :: i, j, nc
+   subroutine lamdba_hv(nc, d1, dd1i, dd1ij, L, dLi, dLij)
+      !! # lamdba_hv
+      !!
+      !! # Description
+      !! Infinite pressure limit parameter \(\Lambda\)
+      !!
+      !! \[
+      !! \Lambda = \frac{1}{\delta_1 - \delta_2} \ln \frac{1 + \delta_1}{1 + \delta_2}
+      !! \]
+      !!
+      !! with \(\delta_2 = (1-\delta_1)/(1+\delta_1)\). The mole derivatives
+      !! are only computed when `dLij` is present and no volume solve is active.
+      integer, intent(in) :: nc !! Number of components
+      real(pr), intent(in) :: d1 !! Mixture \(\delta_1\)
+      real(pr), optional, intent(in) :: dd1i(nc) !! \(\partial \delta_1/\partial n_i\)
+      real(pr), optional, intent(in) :: dd1ij(nc, nc) !! \(\partial^2 \delta_1/\partial n_i \partial n_j\)
+      real(pr), intent(out) :: L !! \(\Lambda\)
+      real(pr), optional, intent(out) :: dLi(nc) !! \(\partial \Lambda/\partial n_i\)
+      real(pr), optional, intent(out) :: dLij(nc, nc) !! \(\partial^2 \Lambda/\partial n_i \partial n_j\)
 
-      nc   = size(n)
-      TOTN = sum(n)
+      real(pr) :: f !! Residual or scalar equation value.
+      real(pr) :: g
+      real(pr) :: h
+      real(pr), dimension(nc) :: df
+      real(pr), dimension(nc) :: dg
+      real(pr), dimension(nc) :: dh
+      real(pr), dimension(nc, nc) :: d2f
+      real(pr), dimension(nc, nc) :: d2g
+      real(pr), dimension(nc, nc) :: d2h
 
-      ! Delta 2 from Delta 1
-      ! -----------------------------------------------------------------------
-      D2 = (1._pr - D1)/(1._pr + D1)
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
 
-      ! =======================================================================
-      ! Møllerup auxiliary functions  (for Ar, not reduced F, so all g/f × R)
-      ! -----------------------------------------------------------------------
-      f   = log((V + D1*B)/(V + D2*B))/B/(D1 - D2)
-      g   = R*log(1 - B/V)
-      fv  = -1/((V + D1*B)*(V + D2*B))
-      fB  = -(f + V*fv)/B
-      gv  = R*B/(V*(V - B))
-      fv2 = (-1/(V + D1*B)**2 + 1/(V + D2*B)**2)/B/(D1 - D2)
-      gv2 = R*(1/V**2 - 1/(V - B)**2)
+      f = d1 + 1
+      g = (d1 + 1)*d1 + d1 - 1
+      h = log((d1+1)**2 / 2)
 
-      ! Derivatives of f with respect to delta1
-      auxD2 = (1 + 2/(1 + D1)**2)
-      fD1   = (1/(V + D1*B) + 2/(V + D2*B)/(1 + D1)**2) - f*auxD2
-      fD1   = fD1/(D1 - D2)
-      fBD1  = -(fB*auxD2 + D1/(V + D1*B)**2 + 2*D2/(V + D2*B)**2/(1 + D1)**2)
-      fBD1  = fBD1/(D1 - D2)
-      fVD1  = -(fV*auxD2 + 1/(V + D1*B)**2 + 2/(V + D2*B)**2/(1 + D1)**2)/(D1 - D2)
-      fD1D1 = 4*(f - 1/(V + D2*B))/(1 + D1)**3 &
-         + B*(-1/(V + D1*B)**2 + 4/(V + D2*B)**2/(1 + D1)**4) &
-         - 2*fD1*(1 + 2/(1 + D1)**2)
-      fD1D1 = fD1D1/(D1 - D2)
+      L = f/g * h
 
-      AUX  = R*T/(V - B)
-      FFB  =  TOTN*AUX - D*fB
-      FFBV = -TOTN*AUX/(V - B) + D*(2*fv + V*fv2)/B
-      FFBB =  TOTN*AUX/(V - B) - D*(2*f + 4*V*fv + V**2*fv2)/B**2
+      if (solving_volume .or. .not. present(dLij)) return
 
-      ! ========================================================================
-      ! Reduced Helmholtz Energy and derivatives
-      ! ------------------------------------------------------------------------
-      if (present(Ar))   Ar   = -TOTN*g*T - D*f
+      df = dd1i
+      dg = 2*(d1 + 1)*dd1i
+      dh = 2 * dd1i/(d1 + 1)
 
-      if (present(ArV)) then
-         ArV = -TOTN*gv*T - D*fv
-         ! s-DDLC correction: ArV += (-f)*dDdV
-         ArV = ArV - f*dDdV
-      end if
+      dLi = f/g * dh - f*h*dg/g**2 + h * df/g
 
-      if (present(ArV2)) then
-         ArV2 = -TOTN*gv2*T - D*fv2
-         ! s-DDLC correction: ArV2 += 2*(-fv)*dDdV + (-f)*dDdV2
-         ArV2 = ArV2 - 2*fv*dDdV - f*dDdV2
-      end if
+      do concurrent (i=1:nc, j=1:nc)
+         d2f(i, j) = dd1ij(i, j)
+         d2g(i, j) = 2*dd1ij(i, j)*(d1 + 1) + 2*dd1i(i)*dd1i(j)
+         d2h(i, j) = 2*(dd1ij(i, j)/(d1 + 1) - dd1i(i)*dd1i(j)/(d1 + 1)**2)
+      end do
 
-      ! =======================================================================
-      ! Composition derivatives
-      ! -----------------------------------------------------------------------
-      if (present(Arn)) &
-         Arn(:) = -g*T + FFB*dBi(:) - f*dDi(:) - D*fD1*dD1i(:)
+      ! This derivative probably could be simplifyied
+      do concurrent (i=1:nc, j=1:nc)
+         dLij(i, j) = &
+            f * d2h(i,j)/g - &
+            f * h *d2g(i, j)/g**2 - &
+            f * dg(i) * dh(j)/g**2 - &
+            f * dg(j) * dh(i)/g**2 + &
+            2 * f * h * dg(i) * dg(j)/g**3 + &
+            h * d2f(i, j)/g + &
+            df(i)*dh(j)/g + &
+            df(j)*dh(i)/g - &
+            h * df(i)*dg(j)/g**2 - &
+            h * df(j) * dg(i)/g**2
+      end do
+   end subroutine lamdba_hv
 
-      if (present(ArVn)) then
-         ArVn(:) = -gv*T + FFBV*dBi(:) - fv*dDi(:) - D*fVD1*dD1i(:)
-         ArVn(:) = ArVn(:) - fB*dBi(:)*dDdV - f*dDidV(:)
-      end if
+   subroutine DmixHV(n, T, &
+      bi, B, dBi, dBij, &
+      D1, dD1i, dD1ij, &
+      ai, daidt, daidt2, &
+      Ge, GeT, GeT2, Gen, GeTn, Gen2, &
+      D, dDdT, dDdT2, dDi, dDidT, dDij &
+      )
+      !! # `DmixHV`
+      !! Attractive parameter calculation for the Huron-Vidal mixing rule.
+      !!
+      !! # Description
+      !! This subroutine calculates the attractive parameter \(D\) and its
+      !! derivatives for a mixture using the Huron-Vidal mixing rule.
+      !! The Huron-Vidal mixing rule combines the pure component parameters
+      !! using an excess Gibbs energy model.
+      !! The expression of the attractive parameter is:
+      !!
+      !! \[
+      !!   D(n, T) =
+      !!     B\left(\sum_i n_i\frac{a_i}{b_i}
+      !!     - \frac{G^E}{\Lambda}\right)
+      !! \]
+      !!
+      !! where \(\Lambda\) is evaluated by `lamdba_hv` from the mixture
+      !! \(\delta_1\). The excess Gibbs energy and its derivatives are supplied
+      !! by the caller, normally from a `GeModel` evaluated at \(T\).
+      !!
+      !! # References
+      !! Huron, M.-J., and J. Vidal, *Fluid Phase Equilibria* 3 (1979) 255-271.
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), intent(in) :: n(:) !! Component mole amounts [mol]
+      real(pr), intent(in) :: bi(:) !! Pure-component covolumes [L/mol]
+      real(pr), intent(in) :: B !! Mixture covolume \(B\) [L]
+      real(pr), intent(in) :: dBi(:) !! \(\partial B/\partial n_i\)
+      real(pr), intent(in) :: dBij(:, :) !! \(\partial^2 B/\partial n_i \partial n_j\)
+      real(pr), intent(in) :: D1 !! Mixture \(\delta_1\)
+      real(pr), intent(in) :: dD1i(:) !! \(\partial \delta_1/\partial n_i\)
+      real(pr), intent(in) :: dD1ij(:, :) !! \(\partial^2 \delta_1/\partial n_i \partial n_j\)
+      real(pr), intent(in) :: ai(:) !! Pure-component attractive parameters \(a_i(T)\)
+      real(pr), intent(in) :: daidt(:) !! \(da_i/dT\)
+      real(pr), intent(in) :: daidt2(:) !! \(d^2a_i/dT^2\)
+      real(pr), intent(in) :: Ge !! Excess Gibbs energy \(G^E\) [bar L]
+      real(pr), intent(in) :: GeT !! \(\partial G^E/\partial T\)
+      real(pr), intent(in) :: GeT2 !! \(\partial^2 G^E/\partial T^2\)
+      real(pr), intent(in) :: Gen(:) !! \(\partial G^E/\partial n_i\)
+      real(pr), intent(in) :: GeTn(:) !! \(\partial^2 G^E/\partial T \partial n_i\)
+      real(pr), intent(in) :: Gen2(:, :) !! \(\partial^2 G^E/\partial n_i \partial n_j\)
+      real(pr), intent(out) :: D !! Mixture attractive parameter \(D\) [bar L^2]
+      real(pr), intent(out) :: dDdT !! \(\partial D/\partial T\)
+      real(pr), intent(out) :: dDdT2 !! \(\partial^2 D/\partial T^2\)
+      real(pr), intent(out) :: dDi(:) !! \(\partial D/\partial n_i\)
+      real(pr), intent(out) :: dDidT(:) !! \(\partial^2 D/\partial T \partial n_i\)
+      real(pr), intent(out) :: dDij(:, :) !! \(\partial^2 D/\partial n_i \partial n_j\)
 
-      if (present(Arn2)) then
-         do i = 1, nc
-            do j = 1, i
-               Arn2(i, j) = AUX*(dBi(i) + dBi(j)) &
-                  - fB*(dBi(i)*dDi(j) + dBi(j)*dDi(i)) &
-                  + FFB*dBij(i, j) + FFBB*dBi(i)*dBi(j) &
-                  - f*dDij(i, j) &
-                  - D*fBD1*(dBi(i)*dD1i(j) + dBi(j)*dD1i(i)) &
-                  - fD1*(dDi(i)*dD1i(j) + dDi(j)*dD1i(i)) &
-                  - D*fD1*dD1ij(i, j) - D*fD1D1*dD1i(i)*dD1i(j)
-               Arn2(j, i) = Arn2(i, j)
+      real(pr) :: f !! Residual or scalar equation value.
+      real(pr) :: fdt
+      real(pr) :: fdt2 !! Second-order intermediate quantity used by this procedure.
+      real(pr) :: fdi(size(n))
+      real(pr) :: fdit(size(n))
+      real(pr) :: fdij(size(n), size(n))
+      real(pr) :: totn !! Total number of moles
+
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: nc !! Number of components.
+      real(pr) :: L !! Infinite-pressure parameter \(\Lambda\)
+      real(pr) :: dL(size(n))
+      real(pr) :: dL2(size(n), size(n))
+
+      nc = size(n)
+      totn = sum(n)
+
+      call lamdba_hv(nc, D1, dD1i, dD1ij, L, dL, dL2)
+
+      f    = sum(n*ai/bi) - Ge/L
+      fdt  = sum(n*daidt/bi) - GeT/L
+      fdt2 = sum(n*daidt2/bi) - GeT2/L
+
+      fdi = ai/bi - (Gen/L - dL * Ge/L**2)
+      fdiT = daidt/bi - (GeTn/L - dL * GeT/L**2)
+
+      do concurrent(i=1:nc, j=1:nc)
+         fdij(i, j) = &
+            Ge * dL2(i, j) / L**2 &
+            - 2 * Ge * dL(i) * dL(j) / L**3 &
+            - Gen2(i, j) / L &
+            + Gen(i) * dL(j) / L**2 &
+            + Gen(j) * dL(i) / L**2
+      end do
+
+      dDi = B*fdi + f*dBi
+      dDidT = B*fdiT + fdT*dBi
+
+      D = f*B
+      dDdT = fdT*B
+      dDdT2 = fdT2*B
+      dDij = fdij
+
+      do i=1,nc
+         do j=1,nc
+            dDij(i, j) = dBi(j)*fdi(i) + B*fdij(j, i) + f*dBij(i, j) + fdi(j)*dBi(i)
+         end do
+      end do
+
+   end subroutine DmixHV
+
+   ! ===========================================================================
+   ! Cubic Mixing Rules
+   ! ---------------------------------------------------------------------------
+
+   pure subroutine CMR_aijk(&
+      ai, daidt, daidt2, k, dkdt, dkdt2, &
+      a, dadt, dadt2 &
+      )
+      !! # `CMR_aijk`
+      !! Calculate the \(a_{ijk}\) tensor of the CMR.
+      !!
+      !! # Description
+      !! \(a_{ijk} = (a_i a_j a_k)^{1/3}(1 - k_{ijk})\), symmetric in its
+      !! three indices, together with its first two temperature derivatives.
+      real(pr), intent(in) :: ai(:) !! \(a_i\)
+      real(pr), intent(in) :: daidt(:) !! \( \frac{da_i}{dT} \)
+      real(pr), intent(in) :: daidt2(:) !! \( \frac{d^2a_i}{dT^2} \)
+      real(pr), intent(in) :: k(:, :, :) !! \(k_{ijk}\) tensor
+      real(pr), intent(in) :: dkdt(:, :, :) !! \(  \frac{d k_{ijk}}{dT} \)
+      real(pr), intent(in) :: dkdt2(:, :, :) !! \(  \frac{d^2k_{ijk}}{dT^2} \)
+      real(pr), intent(out) :: a(:, :, :) !! \(a_{ijk}\) matrix
+      real(pr), intent(out) :: dadt(:, :, :) !! \(\frac{da_{ijk}}{dT}\) matrix
+      real(pr), intent(out) :: dadt2(:, :, :) !! \(\frac{d^2a_{ijk}}{dT^2}\) matrix
+
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: l !! Loop index `l`.
+      integer :: nc !! Number of components.
+
+      real(pr) :: aijk_3
+      real(pr) :: aaa
+      real(pr) :: daaadt
+
+      real(pr), parameter :: third = 1._pr/3._pr
+
+      a = 0
+      dadt = 0
+      dadt2 = 0
+
+      nc = size(ai)
+
+      do i = 1,nc
+         aaa = ai(i) * ai(i) * ai(i)
+         aijk_3 = aaa ** third
+
+         a(i, i, i) =  aijk_3
+
+         daaadt = (&
+            daidt(i) * ai(i) * ai(i) &
+            + ai(i) * daidt(i) * ai(i) &
+            + ai(i) * ai(i) * daidt(i) &
+            ) * third
+
+         dadt(i, i, i) = daidt(i)
+         dadt2(i, i, i) = daidt2(i)
+
+         do j = i,nc
+            do l = i,nc
+               aaa = ai(i) * ai(j) * ai(l)
+               aijk_3 = aaa ** third
+
+               a(i, j, l) =  aijk_3 * (1 - k(i, j, l))
+
+               a(j, i, l) = a(i, j, l)
+               a(j, l, i) = a(i, j, l)
+
+               daaadt = (&
+                  daidt(i) * ai(j) * ai(l) &
+                  + ai(i) * daidt(j) * ai(l) &
+                  + ai(i) * ai(j) * daidt(l) &
+                  ) * third
+
+               dadt(i, j, l) = - dkdt(i, j, l) * aijk_3 + daaadt / (aaa) * a(i, j, l)
+               dadt(j, i, l) = dadt(i, j, l)
+               dadt(j, l, i) = dadt(i, j, l)
+
+               dadt2(i, j, l) = &
+                  - 2 * dkdt(i, j, l) * daaadt * aijk_3 / aaa &
+                  - daidt(i) * daaadt * a(i, j, l) / (aaa * ai(i)) &
+                  - daidt(j) * daaadt * a(i, j, l) / (aaa * ai(j)) &
+                  - daidt(l) * daaadt * a(i, j, l) / (aaa * ai(l)) &
+                  - dkdt2(i, j, l) * aijk_3 &
+                  + ((&
+                  2 * daidt(i) * daidt(j) * ai(l) &
+                  + 2 * daidt(i) * daidt(l) * ai(j) &
+                  + 2 * daidt(j) * daidt(l) * ai(i) &
+                  + daidt2(i) * ai(j) * ai(l) &
+                  + daidt2(j) * ai(i) * ai(l) &
+                  + daidt2(l) * ai(j) * ai(i) &
+                  )/3._pr) * (a(i, j, l) / aaa) &
+                  + (a(i, j, l)*daaadt**2/aaa**2)
+               dadt2(j, i, l) = dadt2(i, j, l)
+               dadt2(j, l, i) = dadt2(i, j, l)
+
             end do
          end do
-      end if
+      end do
+   end subroutine CMR_aijk
 
-      ! =======================================================================
-      ! Temperature derivatives
-      ! -----------------------------------------------------------------------
-      if (present(ArT))  ArT  = -TOTN*g - dDdT*f
-      if (present(ArT2)) ArT2 = -dDdT2*f
+   subroutine CMR_Dmix(n, V, T, &
+      a, dadt, dadt2, &
+      D, &
+      dDdV, dDdT, dDdV2, dDdT2, dDi, dDdTV, dDidV, dDidT, dDij &
+      )
+      !! # CMR_Dmix
+      !! Evaluate the ternary cubic attractive mixture parameter and derivatives.
+      !!
+      !! # Description
+      !! \(D = \sum_{ijk} n_i n_j n_k a_{ijk}/n_T\), with its temperature and
+      !! composition derivatives. Volume derivatives are returned as zero.
+      real(pr), intent(in) :: V !! Volume [L] (unused)
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), intent(in) :: n(:) !! Moles vector [mol]
+      real(pr), intent(in) :: a(:, :, :) !! \(a_{ijk}\) tensor (see `CMR_aijk`)
+      real(pr), intent(in) :: dadt(:, :, :) !! \(da_{ijk}/dT\)
+      real(pr), intent(in) :: dadt2(:, :, :) !! \(d^2a_{ijk}/dT^2\)
 
-      if (present(ArTV)) then
-         ArTV = -TOTN*gv - dDdT*fV
-         ! s-DDLC correction: ArTV += dDdV*f/T + (-f)*dDdTV
-         ArTV = ArTV + dDdV*f/T - f*dDdTV
-      end if
+      real(pr), intent(out) :: D !! Mixture attractive parameter \(n^2a_{mix}\)
+      real(pr), intent(out) :: dDdV !! \(\frac{dD}{dV}\) (zero)
+      real(pr), intent(out) :: dDdT !! \(\frac{dD}{dT}\)
+      real(pr), intent(out) :: dDdT2 !! \(\frac{d^2D}{dT^2}\)
+      real(pr), intent(out) :: dDdV2 !! \(\frac{d^2D}{dV^2}\)
+      real(pr), intent(out) :: dDdTV !! \(\frac{d^2D}{dTV}\)
+      real(pr), intent(out) :: dDi(:) !! \(\frac{dD}{dn_i}\)
+      real(pr), intent(out) :: dDidV(:) !! \(\frac{d^2D}{dVn_i}\)
+      real(pr), intent(out) :: dDidT(:) !! \(\frac{d^2D}{dTn_i}\)
+      real(pr), intent(out) :: dDij(:, :) !! \(\frac{d^2D}{dn_{ij}}\)
 
-      if (present(ArTn)) &
-         ArTn(:) = -g + (TOTN*AUX/T - dDdT*fB)*dBi(:) - f*dDidT(:) - dDdT*fD1*dD1i(:)
-   end subroutine GenericCubic_Ar_dddlc
+      real(pr) :: aux(size(n)) !! Intermediate accumulator.
+      real(pr) :: auxij(size(n),size(n))
+      real(pr) :: auxT(size(n))
+      real(pr) :: auxTij(size(n),size(n))
+      real(pr) :: auxT2(size(n)) !! Second-order intermediate quantity used by this procedure.
+      real(pr) :: auxT2ij(size(n),size(n))
+      real(pr) :: aijk(size(n),size(n),size(n))
+      real(pr) :: daijkdT(size(n),size(n),size(n))
+      real(pr) :: daijkdT2(size(n),size(n),size(n))
 
-end module yaeos__models_ar_genericcubic_base
+      real(pr) :: totn !! Total number of moles.
+      real(pr) :: cum
+
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: k !! Loop index `k`.
+      integer :: nc !! Number of components.
+
+      nc = size(n)
+
+      totn = sum(n)
+
+      ! Initialize derivatives as 0
+      D = 0
+      dDdT = 0
+      dDdT2 = 0
+      dDi = 0
+      dDidT = 0
+      dDij = 0
+
+      ! Not density-dependent
+      dDdV = 0
+      dDdTV = 0
+      dDdV2 = 0
+
+      aux = 0
+      auxij = 0
+      auxT = 0
+      auxT2 = 0
+      auxTij = 0
+
+      aijk = a
+      daijkdT = dadt
+      daijkdT2 = dadt2
+
+      do i=1,nc
+         do j=1,nc
+            auxT2ij(i, j) = 0
+            do k=1,nc
+               auxij(i, j) = auxij(i, j) + n(k) * aijk(i, j, k)
+
+               auxTij(i, j) = auxTij(i, j) + n(k) * daijkdT(i, j, k)
+               auxT2ij(i, j) = auxT2ij(i, j) + n(k) * daijkdT2(i, j, k)
+            end do
+
+            aux(i) = aux(i) + n(j) * auxij(i,j)
+
+            auxT(i) = auxT(i) + n(j)*auxTij(i,j)
+            auxT2(i) = auxT2(i) + n(j)*auxT2ij(i,j)
+         end do
+
+         D = D + n(i)*aux(i)
+
+         dDdT = dDdT + n(i)*auxT(i)
+         dDdT2 = dDdT2 + n(i)*auxT2(i)
+      end do
+
+      D = D / totn
+      dDdT = dDdT / totn
+      dDdT2 = dDdT2 / totn
+
+      do i=1,nc
+         dDi(i) = (3*aux(i) - D) / totn
+         dDidT(i) = (3 * auxT(i) - dDdT) / totn
+
+         do j=1,i
+            dDij(i, j) = (6*auxij(i, j) - dDi(i) - dDi(j)) / totn
+            dDij(j, i) = dDij(i, j)
+         end do
+      end do
+   end subroutine CMR_Dmix
+
+   pure subroutine CMR_Bmix(n, bijk, Bmix, dBi, dBij)
+      !! # CMR_Bmix
+      !! Evaluate the ternary cubic repulsive mixture parameter and derivatives.
+      !!
+      !! # Description
+      !! Contracts the ternary covolume tensor with component mole amounts and
+      !! returns the mixture value, gradient, and Hessian.
+      real(pr), intent(in) :: n(:) !! Component mole amounts [mol]
+      real(pr), intent(in) :: bijk(:, :, :) !! Ternary covolume tensor \(b_{ijk}\) [L/mol]
+      real(pr), intent(out) :: Bmix !! \(B = \sum_{ijk} n_i n_j n_k b_{ijk}/n_T^2\) [L]
+      real(pr), intent(out) :: dBi(:) !! \(\partial B/\partial n_i\)
+      real(pr), intent(out) :: dBij(:,:) !! \(\partial^2 B/\partial n_i \partial n_j\)
+      real(pr) :: aux(size(n)) !! Intermediate accumulator.
+      real(pr) :: auxij(size(n), size(n))
+
+      real(pr) :: totn !! Total number of moles
+      real(pr) :: sqn !! totn^2
+
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: k !! Loop index `k`.
+      integer :: nc !! Number of components.
+
+      nc = size(n)
+      totn = sum(n)
+      sqn = totn*totn
+      Bmix = 0
+      aux = 0
+      auxij = 0
+
+      do i=1,nc
+         do j=1,nc
+            do k=1,nc
+               auxij(i,j) = auxij(i,j) + n(k)*bijk(i,j,k)
+            end do
+            aux(i) = aux(i) + n(j)*auxij(i,j)
+         end do
+         Bmix = Bmix + n(i)*aux(i)
+      end do
+
+      Bmix=Bmix/sqn
+
+      do i=1,nc
+         dBi(i)=(3*aux(i)-2*totn*Bmix)/sqn
+         do j=1,i
+            dBij(i,j)=(6*auxij(i,j)-2*(Bmix+totn*dBi(i)+totn*dBi(j)))/sqn
+            dBij(j,i)=dBij(i,j)
+         end do
+      end do
+   end subroutine CMR_Bmix
+end module yaeos__models_ar_cubic_mixing_base

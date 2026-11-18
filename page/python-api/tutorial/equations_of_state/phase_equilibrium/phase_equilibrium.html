@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Phase Equilibrium Calculations &mdash; yaeos 4.5.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+  <title>Phase Equilibrium Calculations &mdash; yaeos 4.5.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=a284863f"></script>
+      <script src="../../../_static/documentation_options.js?v=06fc0226"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -49,29 +49,21 @@
               <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../../tutorial_tree.html">Tutorial</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../../getting_started.html">Getting Started</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../equations_of_state.html">Equations of State (EoS)</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../bulk_properties.html">Bulk Properties</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../cubic_eos/cubic_eos.html">Cubic Equations of State</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../multifluid_eos/multifluid_eos.html">Multifluid Equations of State</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../saft_eos/saft_eos.html">SAFT Equations of State</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Phase Equilibrium Calculations</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="phase_equilibrium_tutorial.html">Calculating an isotherm</a></li>
-<li class="toctree-l4"><a class="reference internal" href="phase_equilibrium_tutorial.html#Calculate-a-saturation-pressure">Calculate a saturation pressure</a></li>
-<li class="toctree-l4"><a class="reference internal" href="phase_equilibrium_tutorial.html#Pxy-diagram-for-a-mixture">Pxy diagram for a mixture</a></li>
-<li class="toctree-l4"><a class="reference internal" href="phase_equilibrium_tutorial.html#Flash-calculation">Flash calculation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="phase_equilibrium_tutorial.html#Phase-envelopes">Phase envelopes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="phase_equilibrium_tutorial.html#Critical-lines">Critical lines</a></li>
-<li class="toctree-l4"><a class="reference internal" href="phase_equilibrium_tutorial.html#Stability-analysis">Stability analysis</a></li>
-<li class="toctree-l4"><a class="reference internal" href="phase_equilibrium_tutorial.html#Pure-components-saturation-lines">Pure components saturation lines</a></li>
-<li class="toctree-l4"><a class="reference internal" href="phase_equilibrium_tutorial.html#Three-phase-envelopes">Three-phase envelopes</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../tutorial_tree.html#suggested-route">Suggested route</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../equations_of_state.html">Equations of State (EoS)</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../bulk_properties.html">Bulk Properties</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../cubic_eos/cubic_eos.html">Cubic Equations of State</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../multifluid_eos/multifluid_eos.html">Multifluid Equations of State</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../saft_eos/saft_eos.html">SAFT Equations of State</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Phase Equilibrium Calculations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../gpec/gpec.html">GPEC (Global Phase Equilibrium Calculations)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../fitting/fitting.html">Fitting Equations of State</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../gpec/gpec.html">GPEC (Global Phase Equilibrium Calculations)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../fitting/fitting.html">Fitting Equations of State</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../gibbs_excess/gibbs_excess.html">Excess Gibbs models</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../gibbs_excess/gibbs_excess.html">Excess Gibbs models</a></li>
 </ul>
 </li>
 </ul>
@@ -117,6 +109,40 @@
              
   <section id="phase-equilibrium-calculations">
 <h1>Phase Equilibrium Calculations<a class="headerlink" href="#phase-equilibrium-calculations" title="Link to this heading"></a></h1>
+<section id="which-question-are-you-asking">
+<h2>Which question are you asking?<a class="headerlink" href="#which-question-are-you-asking" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>At what pressure does boiling begin?</strong> Use
+<code class="docutils literal notranslate"><span class="pre">saturation_pressure(z,</span> <span class="pre">temperature,</span> <span class="pre">kind=&quot;bubble&quot;)</span></code>. The specified
+composition is the liquid; the returned vapor is just appearing.</p></li>
+<li><p><strong>At what pressure does condensation begin?</strong> Use <code class="docutils literal notranslate"><span class="pre">kind=&quot;dew&quot;</span></code>. The
+specified composition is the vapor; the returned liquid is just appearing.</p></li>
+<li><p><strong>How much of each phase exists at a given pressure and temperature?</strong> Use
+<code class="docutils literal notranslate"><span class="pre">flash_pt(z,</span> <span class="pre">pressure,</span> <span class="pre">temperature)</span></code> with the overall feed composition.</p></li>
+<li><p><strong>Where does a phase boundary go as conditions change?</strong> Trace an envelope
+after understanding and checking a single saturation point.</p></li>
+</ul>
+</section>
+<section id="prerequisites-and-interpretation">
+<h2>Prerequisites and interpretation<a class="headerlink" href="#prerequisites-and-interpretation" title="Link to this heading"></a></h2>
+<p>Construct an <a class="reference internal" href="../../../models/residual_helmholtz/init.html"><span class="doc">EoS model</span></a> first and
+verify a bulk-property calculation. Supply normalized mole fractions in the
+model’s component order, temperature in K, and pressure in bar. Saturation
+pressure guesses <code class="docutils literal notranslate"><span class="pre">p0</span></code> are also in bar; <code class="docutils literal notranslate"><span class="pre">y0</span></code> is an initial composition
+guess for the incipient phase, not an imposed second-phase composition.</p>
+<p>Two-phase results contain <code class="docutils literal notranslate"><span class="pre">x</span></code> (heavy phase), <code class="docutils literal notranslate"><span class="pre">y</span></code> (light phase), and
+<code class="docutils literal notranslate"><span class="pre">beta</span></code> (light-phase mole fraction). A saturation result has the incipient
+phase with zero amount: <code class="docutils literal notranslate"><span class="pre">beta</span></code> is 0 at a bubble point and 1 at a dew point.
+Check phase normalization and
+<code class="docutils literal notranslate"><span class="pre">z</span> <span class="pre">=</span> <span class="pre">(1</span> <span class="pre">-</span> <span class="pre">beta)</span> <span class="pre">*</span> <span class="pre">x</span> <span class="pre">+</span> <span class="pre">beta</span> <span class="pre">*</span> <span class="pre">y</span></code> before using a flash result. The documented
+<code class="docutils literal notranslate"><span class="pre">flash_pt</span></code> failure value is <code class="docutils literal notranslate"><span class="pre">beta</span> <span class="pre">==</span> <span class="pre">-1</span></code>; a failed saturation calculation
+reports a non-finite pressure instead. A single-phase state is not an error
+merely because two distinct phase compositions cannot be found.</p>
+<p>Near critical points the phases become similar, making initialization and
+interpretation harder. Stability analysis helps distinguish physical
+separation from an unhelpful or metastable solution; convergence alone is
+not a stability test. See <a class="reference internal" href="../../../core.html"><span class="doc">Core Module</span></a> for exact arguments and
+<a class="reference internal" href="../../../envelopes.html"><span class="doc">Envelopes Module</span></a> for the arrays returned by envelope calculations.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="phase_equilibrium_tutorial.html">Calculating an isotherm</a></li>
@@ -144,6 +170,7 @@
 <li class="toctree-l1"><a class="reference internal" href="phase_equilibrium_tutorial.html#Three-phase-envelopes">Three-phase envelopes</a></li>
 </ul>
 </div>
+</section>
 </section>
 
 

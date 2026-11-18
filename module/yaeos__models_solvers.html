@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>yaeos__models_solvers &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.5% of total for modules and submodules.">101 statements</a>
+                 title=" 0.5% of total for modules and submodules.">111 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -145,7 +146,7 @@
       </a>
       <div id="subs-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../module/yaeos__models_solvers.html#proc-solve_point~5">solve_point</a>
+            <a class="list-group-item" href="../module/yaeos__models_solvers.html#proc-solve_point~3">solve_point</a>
             <a class="list-group-item" href="../module/yaeos__models_solvers.html#proc-volume_michelsen">volume_michelsen</a>
         </div>
       </div>
@@ -165,22 +166,20 @@
     </div>
 
     <div class="col-md-9" id='text'>
-      <h1 id="models-solvers"><code>models solvers</code></h1>
-<p>Set of different specialized solvers for different models</p>
+      <h1 id="model-specific-numerical-solvers">Model-specific numerical solvers</h1>
+<p>Specialized numerical methods used by EOS implementations.</p>
 <h1 id="description">Description</h1>
-<p>This module holds specialized solvers for different kind of applications
-and models.</p>
-<h2 id="volume-solving">Volume solving</h2>
-<p>This module holds the routine <code>volume_michelsen</code> which is a solver for
-volume that takes advantage over a simple newton on the function of
-pressure by solving the function of pressure over the covolume instead,
-which solution is limited in the range [0, 1]. This solver requires that
-the EoS uses the method <code>get_v0</code> to return the covolume.</p>
+<p>The principal routine is <code>volume_michelsen</code>. It solves in reduced
+covolume <script type="math/tex">\zeta=B/V</script>, bounded between zero and one, rather than
+iterating directly over an unbounded volume. Models must implement
+<code>get_v0</code> to provide the covolume or lower-volume estimate.</p>
 <h1 id="examples">Examples</h1>
-<div class="codehilite"><pre><span></span><code><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="n">basic</span><span class="w"> </span><span class="n">code</span><span class="w"> </span><span class="n">example</span>
+<div class="codehilite"><pre><span></span><code><span class="k">call </span><span class="n">volume_michelsen</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">root_type</span><span class="o">=</span><span class="s2">&quot;stable&quot;</span><span class="p">)</span>
 </code></pre></div>
 
 <h1 id="references">References</h1>
+<p>Michelsen, M. L., and J. M. Mollerup, <em>Thermodynamic Models:
+Fundamentals &amp; Computational Aspects</em>, 2nd ed., Tie-Line Publications, 2007.</p>
 <br>          <div class="card mb-4">
       <h3 class="card-header card-title bg-light">Uses</h3>
       <div class="card-body">
@@ -195,106 +194,106 @@ the EoS uses the method <code>get_v0</code> to return the covolume.</p>
               <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: module~~yaeos__models_solvers~~UsesGraph Pages: 1 -->
 <svg id="moduleyaeos__models_solversUsesGraph" width="641pt" height="46pt"
- viewBox="0.00 0.00 641.00 45.64" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="module~~yaeos__models_solvers~~UsesGraph" class="graph" transform="scale(0.74 0.74) rotate(0) translate(4 57.74)">
+ viewBox="0.00 0.00 641.00 46.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~yaeos__models_solvers~~UsesGraph" class="graph" transform="scale(0.744596 0.744596) rotate(0) translate(4 57.86)">
 <title>module~~yaeos__models_solvers~~UsesGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-57.74 863,-57.74 863,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-57.86 856.87,-57.86 856.87,4 -4,4"/>
 <!-- module~yaeos__models_solvers -->
 <g id="module~~yaeos__models_solvers~~UsesGraph_node1" class="node">
 <title>module~yaeos__models_solvers</title>
-<polygon fill="none" stroke="black" points="859,-44 723,-44 723,-20 859,-20 859,-44"/>
-<text text-anchor="middle" x="791" y="-29.6" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__models_solvers</text>
+<polygon fill="none" stroke="black" points="852.87,-44.27 717.6,-44.27 717.6,-20 852.87,-20 852.87,-44.27"/>
+<text xml:space="preserve" text-anchor="middle" x="785.23" y="-28.53" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__models_solvers</text>
 </g>
 <!-- module~yaeos__constants -->
 <g id="module~~yaeos__models_solvers~~UsesGraph_node2" class="node">
 <title>module~yaeos__constants</title>
 <g id="a_module~~yaeos__models_solvers~~UsesGraph_node2"><a xlink:href="../module/yaeos__constants.html" xlink:title="yaeos__constants">
-<polygon fill="#337ab7" stroke="#337ab7" points="236,-44 130,-44 130,-20 236,-20 236,-44"/>
-<text text-anchor="middle" x="183" y="-29.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__constants</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="233.79,-44.27 129.27,-44.27 129.27,-20 233.79,-20 233.79,-44.27"/>
+<text xml:space="preserve" text-anchor="middle" x="181.53" y="-28.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__constants</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__models_solvers&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__models_solvers~~UsesGraph_edge1" class="edge">
 <title>module~yaeos__models_solvers&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M722.9,-36.82C660.14,-41.21 563.75,-47.65 480,-52"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M717.21,-36.93C654.77,-41.29 559.1,-47.7 475.94,-52.13"/>
 </g>
 <!-- module~yaeos__models_ar -->
 <g id="module~~yaeos__models_solvers~~UsesGraph_node3" class="node">
 <title>module~yaeos__models_ar</title>
 <g id="a_module~~yaeos__models_solvers~~UsesGraph_node3"><a xlink:href="../module/yaeos__models_ar.html" xlink:title="yaeos__models_ar">
-<polygon fill="#337ab7" stroke="#337ab7" points="687,-24 577,-24 577,0 687,0 687,-24"/>
-<text text-anchor="middle" x="632" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="681.6,-24.27 572.58,-24.27 572.58,0 681.6,0 681.6,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="627.09" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_ar</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__models_solvers&#45;&gt;module~yaeos__models_ar -->
 <g id="module~~yaeos__models_solvers~~UsesGraph_edge2" class="edge">
 <title>module~yaeos__models_solvers&#45;&gt;module~yaeos__models_ar</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M722.96,-23.46C714.34,-22.36 705.52,-21.24 696.95,-20.15"/>
-<polygon fill="#000000" stroke="#000000" points="697.38,-16.67 687.02,-18.88 696.49,-23.62 697.38,-16.67"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M717.11,-23.54C709.22,-22.53 701.19,-21.5 693.33,-20.49"/>
+<polygon fill="#000000" stroke="#000000" points="693.84,-17.03 683.48,-19.23 692.95,-23.97 693.84,-17.03"/>
 </g>
 <!-- iso_fortran_env -->
 <g id="module~~yaeos__models_solvers~~UsesGraph_node4" class="node">
 <title>iso_fortran_env</title>
 <g id="a_module~~yaeos__models_solvers~~UsesGraph_node4"><a xlink:href="http://fortranwiki.org/fortran/show/iso_fortran_env" xlink:title="iso_fortran_env">
-<polygon fill="#337ab7" stroke="#337ab7" points="94,-44 0,-44 0,-20 94,-20 94,-44"/>
-<text text-anchor="middle" x="47" y="-29.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="93.27,-44.27 0,-44.27 0,-20 93.27,-20 93.27,-44.27"/>
+<text xml:space="preserve" text-anchor="middle" x="46.63" y="-28.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">iso_fortran_env</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__constants&#45;&gt;iso_fortran_env -->
 <g id="module~~yaeos__models_solvers~~UsesGraph_edge3" class="edge">
 <title>module~yaeos__constants&#45;&gt;iso_fortran_env</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.81,-32C121.45,-32 112.77,-32 104.32,-32"/>
-<polygon fill="#000000" stroke="#000000" points="104.16,-28.5 94.16,-32 104.16,-35.5 104.16,-28.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M129.15,-32.13C121.3,-32.13 113.15,-32.13 105.18,-32.13"/>
+<polygon fill="#000000" stroke="#000000" points="105.19,-28.64 95.19,-32.14 105.19,-35.64 105.19,-28.64"/>
 </g>
 <!-- module~yaeos__models_ar&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__models_solvers~~UsesGraph_edge4" class="edge">
 <title>module~yaeos__models_ar&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M599.78,-24.08C569.65,-34.82 522.49,-49.23 480,-52"/>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M478,-52C397.89,-57.21 305.52,-48.52 246.03,-41.01"/>
-<polygon fill="#000000" stroke="#000000" points="246.41,-37.53 236.04,-39.72 245.51,-44.47 246.41,-37.53"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M593.61,-24.73C563.61,-35.41 517.53,-49.41 475.94,-52.13"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M473.94,-52.13C395.19,-57.29 304.5,-48.79 245.48,-41.32"/>
+<polygon fill="#000000" stroke="#000000" points="245.98,-37.86 235.61,-40.05 245.08,-44.8 245.98,-37.86"/>
 </g>
 <!-- module~yaeos__models_base -->
 <g id="module~~yaeos__models_solvers~~UsesGraph_node5" class="node">
 <title>module~yaeos__models_base</title>
 <g id="a_module~~yaeos__models_solvers~~UsesGraph_node5"><a xlink:href="../module/yaeos__models_base.html" xlink:title="yaeos__models_base">
-<polygon fill="#337ab7" stroke="#337ab7" points="541,-24 417,-24 417,0 541,0 541,-24"/>
-<text text-anchor="middle" x="479" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_base</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="536.58,-24.27 413.31,-24.27 413.31,0 536.58,0 536.58,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="474.94" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models_base</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__models_ar&#45;&gt;module~yaeos__models_base -->
 <g id="module~~yaeos__models_solvers~~UsesGraph_edge5" class="edge">
 <title>module~yaeos__models_ar&#45;&gt;module~yaeos__models_base</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M576.91,-12C568.58,-12 559.87,-12 551.23,-12"/>
-<polygon fill="#000000" stroke="#000000" points="551.15,-8.5 541.15,-12 551.15,-15.5 551.15,-8.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M572.31,-12.13C564.53,-12.13 556.42,-12.13 548.35,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="548.52,-8.64 538.52,-12.14 548.52,-15.64 548.52,-8.64"/>
 </g>
 <!-- module~yaeos__substance -->
 <g id="module~~yaeos__models_solvers~~UsesGraph_node6" class="node">
 <title>module~yaeos__substance</title>
 <g id="a_module~~yaeos__models_solvers~~UsesGraph_node6"><a xlink:href="../module/yaeos__substance.html" xlink:title="yaeos__substance">
-<polygon fill="#337ab7" stroke="#337ab7" points="381,-24 272,-24 272,0 381,0 381,-24"/>
-<text text-anchor="middle" x="326.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__substance</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="377.31,-24.27 269.79,-24.27 269.79,0 377.31,0 377.31,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="323.55" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__substance</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__models_base&#45;&gt;module~yaeos__substance -->
 <g id="module~~yaeos__models_solvers~~UsesGraph_edge6" class="edge">
 <title>module~yaeos__models_base&#45;&gt;module~yaeos__substance</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M416.79,-12C408.45,-12 399.89,-12 391.51,-12"/>
-<polygon fill="#000000" stroke="#000000" points="391.41,-8.5 381.41,-12 391.41,-15.5 391.41,-8.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M413.18,-12.13C405.16,-12.13 396.93,-12.13 388.85,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="389.1,-8.64 379.1,-12.14 389.1,-15.64 389.1,-8.64"/>
 </g>
 <!-- module~yaeos__substance&#45;&gt;module~yaeos__constants -->
 <g id="module~~yaeos__models_solvers~~UsesGraph_edge7" class="edge">
 <title>module~yaeos__substance&#45;&gt;module~yaeos__constants</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M271.6,-19.62C263.38,-20.78 254.84,-21.99 246.46,-23.17"/>
-<polygon fill="#000000" stroke="#000000" points="245.76,-19.74 236.35,-24.6 246.74,-26.67 245.76,-19.74"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M269.61,-19.7C261.72,-20.82 253.51,-22 245.44,-23.15"/>
+<polygon fill="#000000" stroke="#000000" points="245.05,-19.67 235.65,-24.55 246.04,-26.6 245.05,-19.67"/>
 </g>
 </g>
 </svg>
@@ -317,49 +316,49 @@ the EoS uses the method <code>get_v0</code> to return the covolume.</p>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="518pt" height="32pt"
- viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="511pt" height="32pt"
+ viewBox="0.00 0.00 511.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 506.88,-28.27 506.88,4 -4,4"/>
 <!-- Module -->
 <g id="node1" class="node">
 <title>Module</title>
-<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
 </g>
 <!-- Submodule -->
 <g id="node2" class="node">
 <title>Submodule</title>
-<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
-<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="144.13,-24.27 71.87,-24.27 71.87,0 144.13,0 144.13,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="108" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
 </g>
 <!-- Subroutine -->
 <g id="node3" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
-<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="231.63,-24.27 162.37,-24.27 162.37,0 231.63,0 231.63,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="197" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node4" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
-<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="306.26,-24.27 249.74,-24.27 249.74,0 306.26,0 306.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="278" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Program -->
 <g id="node5" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
-<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="381.26,-24.27 324.74,-24.27 324.74,0 381.26,0 381.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="353" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node6" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
-<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="502.88,-24.27 399.12,-24.27 399.12,0 502.88,0 502.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="451" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -385,124 +384,124 @@ modules which it uses.
               <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: module~~yaeos__models_solvers~~UsedByGraph Pages: 1 -->
-<svg id="moduleyaeos__models_solversUsedByGraph" width="641pt" height="153pt"
- viewBox="0.00 0.00 641.00 152.99" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="module~~yaeos__models_solvers~~UsedByGraph" class="graph" transform="scale(0.97 0.97) rotate(0) translate(4 154)">
+<svg id="moduleyaeos__models_solversUsedByGraph" width="641pt" height="154pt"
+ viewBox="0.00 0.00 641.00 154.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="module~~yaeos__models_solvers~~UsedByGraph" class="graph" transform="scale(0.974416 0.974416) rotate(0) translate(4 154.27)">
 <title>module~~yaeos__models_solvers~~UsedByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-154 658,-154 658,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-154.27 653.83,-154.27 653.83,4 -4,4"/>
 <!-- module~yaeos__models_solvers -->
 <g id="module~~yaeos__models_solvers~~UsedByGraph_node1" class="node">
 <title>module~yaeos__models_solvers</title>
-<polygon fill="none" stroke="black" points="136,-66 0,-66 0,-42 136,-42 136,-66"/>
-<text text-anchor="middle" x="68" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__models_solvers</text>
+<polygon fill="none" stroke="black" points="135.27,-66.27 0,-66.27 0,-42 135.27,-42 135.27,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="67.64" y="-50.54" font-family="Helvetica,sans-Serif" font-size="10.50">yaeos__models_solvers</text>
 </g>
 <!-- module~yaeos__models_ar_saft_pcsaft -->
 <g id="module~~yaeos__models_solvers~~UsedByGraph_node2" class="node">
 <title>module~yaeos__models_ar_saft_pcsaft</title>
 <g id="a_module~~yaeos__models_solvers~~UsedByGraph_node2"><a xlink:href="../module/yaeos__models_ar_saft_pcsaft.html" xlink:title="YAEOS__MODELS_AR_SAFT_PCSAFT">
-<polygon fill="#337ab7" stroke="#337ab7" points="373,-108 172,-108 172,-84 373,-84 373,-108"/>
-<text text-anchor="middle" x="272.5" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">YAEOS__MODELS_AR_SAFT_PCSAFT</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="371.04,-108.27 171.27,-108.27 171.27,-84 371.04,-84 371.04,-108.27"/>
+<text xml:space="preserve" text-anchor="middle" x="271.16" y="-92.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">YAEOS__MODELS_AR_SAFT_PCSAFT</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__models_ar_saft_pcsaft&#45;&gt;module~yaeos__models_solvers -->
 <g id="module~~yaeos__models_solvers~~UsedByGraph_edge1" class="edge">
 <title>module~yaeos__models_ar_saft_pcsaft&#45;&gt;module~yaeos__models_solvers</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M213.47,-83.96C189.64,-79.02 161.88,-73.26 137.09,-68.12"/>
-<polygon fill="#000000" stroke="#000000" points="137.54,-64.64 127.04,-66.04 136.12,-71.5 137.54,-64.64"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M209.69,-83.53C187.77,-78.97 162.81,-73.76 140.04,-69.02"/>
+<polygon fill="#000000" stroke="#000000" points="141.04,-65.65 130.54,-67.04 139.61,-72.5 141.04,-65.65"/>
 </g>
-<!-- proc~volume~2 -->
+<!-- proc~volume -->
 <g id="module~~yaeos__models_solvers~~UsedByGraph_node3" class="node">
-<title>proc~volume~2</title>
-<g id="a_module~~yaeos__models_solvers~~UsedByGraph_node3"><a xlink:href="../proc/volume~2.html" xlink:title="PCSAFT%volume">
-<polygon fill="#d9534f" stroke="#d9534f" points="324,-66 221,-66 221,-42 324,-42 324,-66"/>
-<text text-anchor="middle" x="272.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PCSAFT%volume</text>
+<title>proc~volume</title>
+<g id="a_module~~yaeos__models_solvers~~UsedByGraph_node3"><a xlink:href="../proc/volume.html" xlink:title="CubicEoS%volume">
+<polygon fill="#d9534f" stroke="#d9534f" points="326.79,-66.27 215.52,-66.27 215.52,-42 326.79,-42 326.79,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="271.16" y="-50.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CubicEoS%volume</text>
 </a>
 </g>
 </g>
-<!-- proc~volume~2&#45;&gt;module~yaeos__models_solvers -->
+<!-- proc~volume&#45;&gt;module~yaeos__models_solvers -->
 <g id="module~~yaeos__models_solvers~~UsedByGraph_edge2" class="edge">
-<title>proc~volume~2&#45;&gt;module~yaeos__models_solvers</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M220.92,-54C198.37,-54 171.31,-54 146.31,-54"/>
-<polygon fill="#000000" stroke="#000000" points="146.11,-50.5 136.11,-54 146.11,-57.5 146.11,-50.5"/>
+<title>proc~volume&#45;&gt;module~yaeos__models_solvers</title>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M215.09,-54.14C194.05,-54.14 169.65,-54.14 146.86,-54.14"/>
+<polygon fill="#000000" stroke="#000000" points="146.99,-50.64 136.99,-54.14 146.99,-57.64 146.99,-50.64"/>
 </g>
 <!-- proc~volume~4 -->
 <g id="module~~yaeos__models_solvers~~UsedByGraph_node4" class="node">
 <title>proc~volume~4</title>
-<g id="a_module~~yaeos__models_solvers~~UsedByGraph_node4"><a xlink:href="../proc/volume~4.html" xlink:title="CubicEoS%volume">
-<polygon fill="#d9534f" stroke="#d9534f" points="328.5,-24 216.5,-24 216.5,0 328.5,0 328.5,-24"/>
-<text text-anchor="middle" x="272.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">CubicEoS%volume</text>
+<g id="a_module~~yaeos__models_solvers~~UsedByGraph_node4"><a xlink:href="../proc/volume~4.html" xlink:title="PCSAFT%volume">
+<polygon fill="#d9534f" stroke="#d9534f" points="321.92,-24.27 220.4,-24.27 220.4,0 321.92,0 321.92,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="271.16" y="-8.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">PCSAFT%volume</text>
 </a>
 </g>
 </g>
 <!-- proc~volume~4&#45;&gt;module~yaeos__models_solvers -->
 <g id="module~~yaeos__models_solvers~~UsedByGraph_edge3" class="edge">
 <title>proc~volume~4&#45;&gt;module~yaeos__models_solvers</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M216.43,-23.42C191.93,-28.5 162.83,-34.54 136.99,-39.9"/>
-<polygon fill="#000000" stroke="#000000" points="135.97,-36.54 126.89,-41.99 137.39,-43.39 135.97,-36.54"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M220.08,-22.57C196.01,-27.59 166.72,-33.69 140.34,-39.19"/>
+<polygon fill="#000000" stroke="#000000" points="139.79,-35.73 130.71,-41.2 141.22,-42.58 139.79,-35.73"/>
 </g>
 <!-- module~yaeos__models -->
 <g id="module~~yaeos__models_solvers~~UsedByGraph_node5" class="node">
 <title>module~yaeos__models</title>
 <g id="a_module~~yaeos__models_solvers~~UsedByGraph_node5"><a xlink:href="../module/yaeos__models.html" xlink:title="yaeos__models">
-<polygon fill="#337ab7" stroke="#337ab7" points="503,-108 409,-108 409,-84 503,-84 503,-108"/>
-<text text-anchor="middle" x="456" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="499.56,-108.27 407.04,-108.27 407.04,-84 499.56,-84 499.56,-108.27"/>
+<text xml:space="preserve" text-anchor="middle" x="453.3" y="-92.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__models</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__models&#45;&gt;module~yaeos__models_ar_saft_pcsaft -->
 <g id="module~~yaeos__models_solvers~~UsedByGraph_edge4" class="edge">
 <title>module~yaeos__models&#45;&gt;module~yaeos__models_ar_saft_pcsaft</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M408.73,-96C400.72,-96 392.09,-96 383.21,-96"/>
-<polygon fill="#000000" stroke="#000000" points="383.1,-92.5 373.1,-96 383.1,-99.5 383.1,-92.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M406.84,-96.14C399.32,-96.14 391.24,-96.14 382.91,-96.14"/>
+<polygon fill="#000000" stroke="#000000" points="382.94,-92.64 372.94,-96.14 382.94,-99.64 382.94,-92.64"/>
 </g>
 <!-- module~yaeos -->
 <g id="module~~yaeos__models_solvers~~UsedByGraph_node6" class="node">
 <title>module~yaeos</title>
 <g id="a_module~~yaeos__models_solvers~~UsedByGraph_node6"><a xlink:href="../module/yaeos.html" xlink:title="yaeos">
-<polygon fill="#337ab7" stroke="#337ab7" points="623.5,-150 569.5,-150 569.5,-126 623.5,-126 623.5,-150"/>
-<text text-anchor="middle" x="596.5" y="-135.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="619.7,-150.27 565.7,-150.27 565.7,-126 619.7,-126 619.7,-150.27"/>
+<text xml:space="preserve" text-anchor="middle" x="592.7" y="-134.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos&#45;&gt;module~yaeos__models -->
 <g id="module~~yaeos__models_solvers~~UsedByGraph_edge5" class="edge">
 <title>module~yaeos&#45;&gt;module~yaeos__models</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M569.45,-130.1C551.79,-124.75 527.9,-117.5 506.68,-111.06"/>
-<polygon fill="#000000" stroke="#000000" points="507.42,-107.63 496.83,-108.08 505.39,-114.33 507.42,-107.63"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M565.2,-130.04C548.56,-124.95 526.51,-118.21 506.47,-112.08"/>
+<polygon fill="#000000" stroke="#000000" points="507.62,-108.77 497.03,-109.2 505.57,-115.47 507.62,-108.77"/>
 </g>
 <!-- module~yaeos__extra_fluids -->
 <g id="module~~yaeos__models_solvers~~UsedByGraph_node7" class="node">
 <title>module~yaeos__extra_fluids</title>
 <g id="a_module~~yaeos__models_solvers~~UsedByGraph_node7"><a xlink:href="../module/yaeos__extra_fluids.html" xlink:title="yaeos__extra_fluids">
-<polygon fill="#337ab7" stroke="#337ab7" points="654,-108 539,-108 539,-84 654,-84 654,-108"/>
-<text text-anchor="middle" x="596.5" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__extra_fluids</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="649.83,-108.27 535.56,-108.27 535.56,-84 649.83,-84 649.83,-108.27"/>
+<text xml:space="preserve" text-anchor="middle" x="592.7" y="-92.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">yaeos__extra_fluids</text>
 </a>
 </g>
 </g>
 <!-- module~yaeos__extra_fluids&#45;&gt;module~yaeos__models -->
 <g id="module~~yaeos__models_solvers~~UsedByGraph_edge6" class="edge">
 <title>module~yaeos__extra_fluids&#45;&gt;module~yaeos__models</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M538.77,-96C530.38,-96 521.73,-96 513.35,-96"/>
-<polygon fill="#000000" stroke="#000000" points="513.29,-92.5 503.29,-96 513.29,-99.5 513.29,-92.5"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M535.41,-96.14C527.45,-96.14 519.25,-96.14 511.27,-96.14"/>
+<polygon fill="#000000" stroke="#000000" points="511.3,-92.64 501.3,-96.14 511.3,-99.64 511.3,-92.64"/>
 </g>
 <!-- proc~co2_h2o_isop -->
 <g id="module~~yaeos__models_solvers~~UsedByGraph_node8" class="node">
 <title>proc~co2_h2o_isop</title>
 <g id="a_module~~yaeos__models_solvers~~UsedByGraph_node8"><a xlink:href="../proc/co2_h2o_isop.html" xlink:title="co2_h2o_isop">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="639,-66 554,-66 554,-42 639,-42 639,-66"/>
-<text text-anchor="middle" x="596.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">co2_h2o_isop</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="634.46,-66.27 550.94,-66.27 550.94,-42 634.46,-42 634.46,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="592.7" y="-50.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">co2_h2o_isop</text>
 </a>
 </g>
 </g>
 <!-- proc~co2_h2o_isop&#45;&gt;module~yaeos__models -->
 <g id="module~~yaeos__models_solvers~~UsedByGraph_edge7" class="edge">
 <title>proc~co2_h2o_isop&#45;&gt;module~yaeos__models</title>
-<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M555.81,-66.04C540.45,-70.69 522.71,-76.07 506.53,-80.98"/>
-<polygon fill="#000000" stroke="#000000" points="505.25,-77.71 496.69,-83.96 507.28,-84.41 505.25,-77.71"/>
+<path fill="none" stroke="#000000" stroke-dasharray="5,2" d="M550.47,-66.74C536.61,-70.97 520.97,-75.75 506.39,-80.21"/>
+<polygon fill="#000000" stroke="#000000" points="505.48,-76.83 496.94,-83.1 507.53,-83.52 505.48,-76.83"/>
 </g>
 </g>
 </svg>
@@ -525,49 +524,49 @@ modules which it uses.
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
-<svg width="518pt" height="32pt"
- viewBox="0.00 0.00 517.50 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg width="511pt" height="32pt"
+ viewBox="0.00 0.00 511.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 513.5,-28 513.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 506.88,-28.27 506.88,4 -4,4"/>
 <!-- Module -->
 <g id="node1" class="node">
 <title>Module</title>
-<polygon fill="#337ab7" stroke="#337ab7" points="54,-24 0,-24 0,0 54,0 54,-24"/>
-<text text-anchor="middle" x="27" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
+<polygon fill="#337ab7" stroke="#337ab7" points="54,-24.27 0,-24.27 0,0 54,0 54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Module</text>
 </g>
 <!-- Submodule -->
 <g id="node2" class="node">
 <title>Submodule</title>
-<polygon fill="#5bc0de" stroke="#5bc0de" points="145.5,-24 72.5,-24 72.5,0 145.5,0 145.5,-24"/>
-<text text-anchor="middle" x="109" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
+<polygon fill="#5bc0de" stroke="#5bc0de" points="144.13,-24.27 71.87,-24.27 71.87,0 144.13,0 144.13,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="108" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Submodule</text>
 </g>
 <!-- Subroutine -->
 <g id="node3" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="234,-24 164,-24 164,0 234,0 234,-24"/>
-<text text-anchor="middle" x="199" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="231.63,-24.27 162.37,-24.27 162.37,0 231.63,0 231.63,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="197" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node4" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="310,-24 252,-24 252,0 310,0 310,-24"/>
-<text text-anchor="middle" x="281" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="306.26,-24.27 249.74,-24.27 249.74,0 306.26,0 306.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="278" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Program -->
 <g id="node5" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="386,-24 328,-24 328,0 386,0 386,-24"/>
-<text text-anchor="middle" x="357" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="381.26,-24.27 324.74,-24.27 324.74,0 381.26,0 381.26,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="353" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node6" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="509.5,-24 404.5,-24 404.5,0 509.5,0 509.5,-24"/>
-<text text-anchor="middle" x="457" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="502.88,-24.27 399.12,-24.27 399.12,0 502.88,0 502.88,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="451" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -597,11 +596,11 @@ modules which it uses.
         <section>
           <h2>Subroutines</h2>
               <div class="card">
-    <div class="card-header codesum"><span class="anchor" id="proc-solve_point~5"></span> <h3>public  subroutine <a href='../proc/solve_point~5.html'>solve_point</a>(eos, n, P, T, V, Pcalc, ZETA, ZETMIN, ZETMAX, AT, iter)  
+    <div class="card-header codesum"><span class="anchor" id="proc-solve_point~3"></span> <h3>public  subroutine <a href='../proc/solve_point~3.html'>solve_point</a>(eos, n, P, T, V, Pcalc, ZETA, ZETMIN, ZETMAX, AT, iter)  
 </h3></div>
     <div class="card-body">
           
-  
+  <p>Correct one pressure root in reduced-covolume coordinates.</p><a href="../proc/solve_point~3.html" class="pull-right"><emph>Read more&hellip;</emph></a>
 
   <h4>Arguments</h4>
       <table class="table table-striped varlist">
@@ -616,7 +615,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-eos~35"></span>
+              <span class="anchor" id="variable-eos~5"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -626,12 +625,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>eos</strong></td>
             <td>
-
+<p>EOS used for residual pressure evaluation.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~112"></span>
+              <span class="anchor" id="variable-n~25"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -641,12 +640,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>n</strong>(:)</td>
             <td>
-
+<p>Component mole amounts.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~79"></span>
+              <span class="anchor" id="variable-p~20"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -661,7 +660,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~121"></span>
+              <span class="anchor" id="variable-t~28"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -676,7 +675,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~50"></span>
+              <span class="anchor" id="variable-v~10"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -691,7 +690,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-pcalc~3"></span>
+              <span class="anchor" id="variable-pcalc"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -706,7 +705,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-zeta~3"></span>
+              <span class="anchor" id="variable-zeta~2"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -716,12 +715,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>ZETA</strong></td>
             <td>
-
+<p>Current reduced covolume iterate, updated in place.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-zetmin~3"></span>
+              <span class="anchor" id="variable-zetmin~2"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -731,12 +730,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>ZETMIN</strong></td>
             <td>
-
+<p>Lower bound for the reduced covolume root.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-zetmax~3"></span>
+              <span class="anchor" id="variable-zetmax~2"></span>
               real(kind=pr),
             </td>
 <td>intent(inout)</td>
@@ -746,12 +745,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>ZETMAX</strong></td>
             <td>
-
+<p>Upper bound for the reduced covolume root.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-at~3"></span>
+              <span class="anchor" id="variable-at~2"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -761,12 +760,13 @@ modules which it uses.
             <td>::</td>
             <td><strong>AT</strong></td>
             <td>
-
+<p>
+<script type="math/tex">(A^r + PV)/(RT) - n\ln V</script>, a residual-Gibbs-like quantity used to select the stable root.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-iter~6"></span>
+              <span class="anchor" id="variable-iter~2"></span>
               integer,
             </td>
 <td>intent(out)</td>
@@ -776,7 +776,7 @@ modules which it uses.
             <td>::</td>
             <td><strong>iter</strong></td>
             <td>
-
+<p>Iterations used by the corrector.</p>
             </td>
         </tr>
     </tbody>
@@ -806,7 +806,7 @@ modules which it uses.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-eos~34"></span>
+              <span class="anchor" id="variable-eos~4"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -816,12 +816,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>eos</strong></td>
             <td>
-
+<p>EOS providing pressure and residual Helmholtz derivatives.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-n~111"></span>
+              <span class="anchor" id="variable-n~24"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -831,12 +831,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>n</strong>(:)</td>
             <td>
-<p>Mixture moles</p>
+<p>Mixture moles [mol]</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~78"></span>
+              <span class="anchor" id="variable-p~19"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -851,7 +851,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~120"></span>
+              <span class="anchor" id="variable-t~27"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -866,7 +866,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~49"></span>
+              <span class="anchor" id="variable-v~9"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -881,7 +881,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-root_type~20"></span>
+              <span class="anchor" id="variable-root_type"></span>
               character(len=*),
             </td>
 <td>intent(in),</td>
@@ -896,7 +896,7 @@ modules which it uses.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-max_iters~15"></span>
+              <span class="anchor" id="variable-max_iters~6"></span>
               integer,
             </td>
 <td>intent(in),</td>
@@ -906,12 +906,12 @@ modules which it uses.
             <td>::</td>
             <td><strong>max_iters</strong></td>
             <td>
-<p>Maxiumum number of iterations, defaults to 100</p>
+<p>Maximum number of iterations (default 1000; currently unused, <code>solve_point</code> caps at 500)</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v0~2"></span>
+              <span class="anchor" id="variable-v0"></span>
               real(kind=pr),
             </td>
 <td>intent(in),</td>
@@ -921,7 +921,7 @@ modules which it uses.
             <td>::</td>
             <td><strong>V0</strong></td>
             <td>
-<p>Specified initial volume</p>
+<p>Initial volume guess [L]; see Notes</p>
             </td>
         </tr>
     </tbody>
@@ -947,14 +947,14 @@ modules which it uses.
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

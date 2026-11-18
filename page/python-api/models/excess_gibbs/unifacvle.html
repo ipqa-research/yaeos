@@ -6,15 +6,15 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>UNIFACVLE &mdash; yaeos 4.5.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+  <title>UNIFACVLE &mdash; yaeos 4.5.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=a284863f"></script>
+      <script src="../../_static/documentation_options.js?v=06fc0226"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -56,16 +56,19 @@
 </ul>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../init.html">Models</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="../residual_helmholtz/init.html">Residual Helmholtz Models</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="init.html">Excess Gibbs Models</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="nrtl.html">NRTL</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">UNIFACVLE</a></li>
-<li class="toctree-l3"><a class="reference internal" href="unifac_dortmund.html">UNIFAC Dortmund</a></li>
-<li class="toctree-l3"><a class="reference internal" href="psrk_unifac.html">UNIFAC PSRK</a></li>
-<li class="toctree-l3"><a class="reference internal" href="uniquac.html">UNIQUAC</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../init.html#choose-the-model-before-the-solver">Choose the model before the solver</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../residual_helmholtz/init.html">Residual Helmholtz Models</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="init.html">Excess Gibbs Models</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="nrtl.html">NRTL</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">UNIFACVLE</a></li>
+<li class="toctree-l4"><a class="reference internal" href="unifac_dortmund.html">UNIFAC Dortmund</a></li>
+<li class="toctree-l4"><a class="reference internal" href="psrk_unifac.html">UNIFAC PSRK</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uniquac.html">UNIQUAC</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../groups.html">Groups module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../groups.html">Groups module</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -102,9 +105,22 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-yaeos.models.excess_gibbs.unifac">
-<span id="unifacvle"></span><h1>UNIFACVLE<a class="headerlink" href="#module-yaeos.models.excess_gibbs.unifac" title="Link to this heading"></a></h1>
-<p>UNIFAC Module.</p>
+  <section id="unifacvle">
+<h1>UNIFACVLE<a class="headerlink" href="#unifacvle" title="Link to this heading"></a></h1>
+<p>This is the original UNIFAC VLE parameterization for estimating liquid
+activity coefficients from functional groups. Construct <code class="docutils literal notranslate"><span class="pre">UNIFACVLE</span></code> with
+one subgroup-count dictionary per molecule; see <a class="reference internal" href="../groups.html"><span class="doc">Groups module</span></a>.
+Counts describe a molecule’s structure, not the feed composition.</p>
+<p>For example, <code class="docutils literal notranslate"><span class="pre">UNIFACVLE([{16:</span> <span class="pre">1},</span> <span class="pre">{1:</span> <span class="pre">1,</span> <span class="pre">2:</span> <span class="pre">1,</span> <span class="pre">14:</span> <span class="pre">1}])</span></code> describes
+water followed by ethanol. A later call
+<code class="docutils literal notranslate"><span class="pre">model.ln_gamma([0.8,</span> <span class="pre">0.2],</span> <span class="pre">298.15)</span></code> uses that same component order,
+takes mole amounts (here one mole in total) and a temperature in kelvin, and
+returns the natural logarithms of the activity coefficients.</p>
+<p>Check available subgroup interactions and the parameterization’s intended
+use; the name VLE does not mean the object alone calculates vapor pressure.
+Continue with <a class="reference internal" href="../../tutorial/gibbs_excess/models/unifac_models.html"><span class="doc">UNIFAC models</span></a> and
+<a class="reference internal" href="../../core.html"><span class="doc">Core Module</span></a> for the shared liquid-property interface.</p>
+<p id="module-yaeos.models.excess_gibbs.unifac">UNIFAC Module.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="yaeos.models.excess_gibbs.unifac.UNIFACVLE">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">UNIFACVLE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">molecules</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/yaeos/models/excess_gibbs/unifac.html#UNIFACVLE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yaeos.models.excess_gibbs.unifac.UNIFACVLE" title="Link to this definition"></a></dt>
@@ -118,7 +134,7 @@ model’s information: <a class="reference external" href="https://ipqa-research
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">yaeos</span> <span class="kn">import</span> <span class="n">UNIFACVLE</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">UNIFACVLE</span>
 
 <span class="c1"># Groups for water and ethanol</span>
 <span class="n">water</span> <span class="o">=</span> <span class="p">{</span><span class="mi">16</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
@@ -126,7 +142,7 @@ model’s information: <a class="reference external" href="https://ipqa-research
 
 <span class="n">groups</span> <span class="o">=</span> <span class="p">[</span><span class="n">water</span><span class="p">,</span> <span class="n">ethanol</span><span class="p">]</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">UNIFAVLE</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">UNIFACVLE</span><span class="p">(</span><span class="n">groups</span><span class="p">)</span>
 
 <span class="n">model</span><span class="o">.</span><span class="n">ln_gamma</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="mf">298.15</span><span class="p">)</span>
 </pre></div>

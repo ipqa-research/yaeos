@@ -1,0 +1,521 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
+    <link rel="icon" href="../../favicon.png">
+
+    <title>Thermodynamics essentials &ndash; yaeos</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../../css/brands.min.css" rel="stylesheet">
+    <link href="../../css/regular.min.css" rel="stylesheet">
+    <link href="../../css/solid.min.css" rel="stylesheet">
+    <link href="../../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../../css/local.css" rel="stylesheet">
+    <link href="../../css/pygments.css" rel="stylesheet">
+      <link href="../../css/user.css" rel="stylesheet">
+    <script src="../../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../../index.html">yaeos </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="../index.html">User documentation</a></li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>Thermodynamics essentials</h1>
+    <div class="container p-2 mb-4 bg-light border rounded-3">
+      <div class="row align-items-center justify-content-between">
+        <div class="col">
+          <ul class="list-inline" style="margin-bottom:0px; display:inline">
+          </ul>
+        </div>
+        <div class="col">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../index.html'>User documentation</a></li>
+                <li class="breadcrumb-item"><a href='index.html'>Getting started</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Thermodynamics essentials</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+      <div class="col-3">
+        <div class="card card-body bg-light" id="sidebar-toc">
+          <ul class="nav flex-column align-items">
+            <li class="nav-item">
+              <a class="nav-link" href="../index.html">User documentation</a>
+            </li>
+          </ul>
+          <hr>
+          <nav class="nav nav-pills flex-column">
+              <a class="nav-link" href="index.html">Getting started</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link active disabled" href="fundamentals.html">Thermodynamics essentials</a>
+              <a class="nav-link" href="eos/index.html">Equations of State</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="eos/cubics/index.html">Cubics</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="eos/cubics/alpha.html">Alpha functions</a>
+              <a class="nav-link" href="eos/cubics/mixing.html">Mixing Rules</a>
+
+                </nav>
+              <a class="nav-link" href="eos/gerg2008.html">GERG2008</a>
+              <a class="nav-link" href="eos/gerg2008_parameters.html">GERG2008 parameters</a>
+              <a class="nav-link" href="eos/pc_saft.html">PC-SAFT</a>
+
+                </nav>
+              <a class="nav-link" href="excessmodels/index.html">Gibbs Excess Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="excessmodels/nrtl.html">NRTL</a>
+              <a class="nav-link" href="excessmodels/nrtl-hv.html">NRTL-HV</a>
+              <a class="nav-link" href="excessmodels/uniquac.html">UNIQUAC</a>
+              <a class="nav-link" href="excessmodels/unifac_models/index.html">UNIFAC Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
+              <a class="nav-link" href="excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
+              <a class="nav-link" href="excessmodels/unifac_models/psrk.html">UNIFAC-PSRK</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="phase_equilibrium/index.html">Phase Equilibrium</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="phase_equilibrium/flash.html">Flash calculations</a>
+              <a class="nav-link" href="phase_equilibrium/saturation_points.html">Saturation Points</a>
+              <a class="nav-link" href="phase_equilibrium/envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="phase_equilibrium/stability.html">Stability analysis</a>
+              <a class="nav-link" href="phase_equilibrium/critical.html">Critical points</a>
+              <a class="nav-link" href="phase_equilibrium/multiphase.html">Multiphase flash</a>
+
+                </nav>
+              <a class="nav-link" href="newmodels/index.html">Adding your own models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="newmodels/analtical.html">Analytical derivatives</a>
+              <a class="nav-link" href="newmodels/autodiff.html">Automatic differentiation</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../python-api/index.html">Python-API</a>
+              <a class="nav-link" href="../developer/index.html">Becoming a yaeos developer</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../developer/architecture.html">Architecture and repository map</a>
+              <a class="nav-link" href="../developer/workflow.html">Developer workflow</a>
+              <a class="nav-link" href="../developer/fortran.html">Working in the Fortran core</a>
+              <a class="nav-link" href="../developer/numerics.html">Working on numerical algorithms</a>
+              <a class="nav-link" href="../developer/c_interface.html">C interface layer</a>
+              <a class="nav-link" href="../developer/python_interface.html">Python interface layer</a>
+              <a class="nav-link" href="../developer/testing.html">Tests and numerical validation</a>
+              <a class="nav-link" href="../developer/walkthrough.html">An end-to-end change</a>
+
+                </nav>
+              <a class="nav-link" href="../contributing/index.html">Contributing</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../contributing/styleguide.html">Style guide</a>
+
+                </nav>
+          </nav>
+        </div>
+      </div>
+
+    <div class="col-9" id='text'>
+      <div class="toc">
+<ul>
+<li><a href="#thermodynamics-essentials-for-using-yaeos">Thermodynamics essentials for using yaeos</a><ul>
+<li><a href="#a-component-is-not-a-phase">A component is not a phase</a></li>
+<li><a href="#amount-composition-and-volume-three-common-sources-of-mistakes">Amount, composition, and volume: three common sources of mistakes</a><ul>
+<li><a href="#mole-amounts-versus-mole-fractions">Mole amounts versus mole fractions</a></li>
+<li><a href="#total-volume-versus-molar-volume">Total volume versus molar volume</a></li>
+<li><a href="#component-order-must-never-change-silently">Component order must never change silently</a></li>
+</ul>
+</li>
+<li><a href="#units-are-part-of-the-input">Units are part of the input</a></li>
+<li><a href="#what-an-equation-of-state-doesand-does-not-do">What an equation of state does—and does not do</a><ul>
+<li><a href="#which-model-family-should-i-read-about-first">Which model family should I read about first?</a></li>
+</ul>
+</li>
+<li><a href="#why-the-library-talks-about-energy">Why the library talks about energy</a></li>
+<li><a href="#fugacity-and-activity-how-models-compare-phases">Fugacity and activity: how models compare phases</a></li>
+<li><a href="#a-volume-root-is-not-a-phase-split">A volume root is not a phase split</a></li>
+<li><a href="#match-the-calculation-to-the-question">Match the calculation to the question</a></li>
+<li><a href="#a-checklist-before-using-a-prediction">A checklist before using a prediction</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h1 id="thermodynamics-essentials-for-using-yaeos">Thermodynamics essentials for using yaeos</h1>
+<p>You do not need to derive an equation of state to use <code>yaeos</code>. You do need to
+know what you are specifying, what the model returns, and what checks make a
+result believable. This page introduces those ideas before the more detailed
+model and calculation guides.</p>
+<p>If you have not run a calculation yet, start with the
+<a href="index.html">getting-started example</a>. You can return here whenever a guide
+uses an unfamiliar term.</p>
+<h2 id="a-component-is-not-a-phase">A component is not a phase</h2>
+<p>A <strong>component</strong> is one chemical species in the model, such as methane or
+ethane. A <strong>phase</strong> is a physically distinct region, such as a liquid or a
+vapor. A liquid mixture can contain several components, and a pure component
+can coexist as both liquid and vapor. Two different liquids can also coexist.</p>
+<p>For example, a methane–ethane feed has two components whether it is entirely
+vapor or has separated into a liquid and a vapor. In the separated state, both
+phases generally contain both components, but in different proportions.</p>
+<p>This distinction matters when sizing arrays: a two-component composition has
+two entries, not one entry per phase.</p>
+<h2 id="amount-composition-and-volume-three-common-sources-of-mistakes">Amount, composition, and volume: three common sources of mistakes</h2>
+<h3 id="mole-amounts-versus-mole-fractions">Mole amounts versus mole fractions</h3>
+<p>Let <script type="math/tex">n_i</script> be the amount of component <script type="math/tex">i</script>, in moles. The vector of amounts
+is <script type="math/tex">\mathbf n</script>, and the total amount is a scalar:</p>
+<p>
+<script type="math/tex; mode=display">
+n_{\mathrm{tot}}=\sum_i n_i.
+</script>
+</p>
+<p>The <strong>mole fraction</strong> is the fraction of that total contributed by a component:</p>
+<p>
+<script type="math/tex; mode=display">
+z_i=\frac{n_i}{n_{\mathrm{tot}}},\qquad \sum_i z_i=1.
+</script>
+</p>
+<p>For <code>n = [3.0_pr, 7.0_pr]</code>, the total is 10 mol and the composition is
+<code>z = [0.3_pr, 0.7_pr]</code>. This is the same composition as
+<code>n = [0.3_pr, 0.7_pr]</code>, but not the same amount of material.</p>
+<p>Property routines such as <code>pressure(n, V, T, ...)</code> use amounts. Many equilibrium
+entry points instead request a normalized feed composition <code>z</code>. Follow the
+individual routine&rsquo;s convention rather than assuming all arrays are normalized
+automatically. A feed must have a positive total amount and nonnegative entries;
+logarithmic formulations may additionally require strictly positive entries.</p>
+<h3 id="total-volume-versus-molar-volume">Total volume versus molar volume</h3>
+<p>The symbol <script type="math/tex">V</script> denotes total volume, in litres. The <strong>molar volume</strong> is
+<script type="math/tex">v=V/n_{\mathrm{tot}}</script>, in litres per mole. A property call with 10 mol and
+1 L describes a much denser state than a call with 1 mol and 1 L.</p>
+<p>To keep the same temperature, pressure, and composition when scaling a system,
+multiply every mole amount and the total volume by the same factor:</p>
+<p>
+<script type="math/tex; mode=display">
+P(\lambda\mathbf n,\lambda V,T)=P(\mathbf n,V,T).
+</script>
+</p>
+<p>That is a useful consistency check. When you pass a normalized composition as
+the amount vector, its total is 1 mol, so the numerical total volume is also
+the numerical molar volume. This convenient one-mole basis does not mean the
+two quantities are interchangeable for other amounts.</p>
+<h3 id="component-order-must-never-change-silently">Component order must never change silently</h3>
+<p>If the first constructor entry describes methane and the second ethane, every
+composition, parameter vector, and row/column of an interaction matrix must
+use that same order. Array sizes alone cannot catch a reversed composition or
+an incorrectly transposed interaction matrix.</p>
+<h2 id="units-are-part-of-the-input">Units are part of the input</h2>
+<p>The default gas constant is
+<script type="math/tex">R=0.08314462618\;\mathrm{bar\,L\,mol^{-1}\,K^{-1}}</script>. Consequently:</p>
+<table>
+<thead>
+<tr>
+<th>Quantity</th>
+<th>Default unit</th>
+<th>Frequent mistake</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Temperature</td>
+<td>K</td>
+<td>Passing a Celsius value without adding 273.15</td>
+</tr>
+<tr>
+<td>Pressure</td>
+<td>bar</td>
+<td>Passing pascals, MPa, or atmospheres as if they were bar</td>
+</tr>
+<tr>
+<td>Total volume</td>
+<td>L</td>
+<td>Passing cubic metres or a molar volume for a multi-mole input</td>
+</tr>
+<tr>
+<td>Amount</td>
+<td>mol</td>
+<td>Treating mass fractions as mole fractions</td>
+</tr>
+<tr>
+<td>Extensive energy</td>
+<td>bar·L</td>
+<td>Reading the numerical value directly as joules</td>
+</tr>
+<tr>
+<td>Extensive entropy or heat capacity</td>
+<td>bar·L/K</td>
+<td>Reading the result directly as J/(mol·K)</td>
+</tr>
+</tbody>
+</table>
+<p>One bar·litre is 100 J. For an extensive energy <code>energy</code> and an amount vector
+<code>n</code>, the molar energy in J/mol is <code>100.0_pr * energy / sum(n)</code>. Some equilibrium
+result fields are already molar quantities; check their documentation before
+dividing again. SAFT segment diameters and model-specific interaction parameters
+have their own units, described on their respective model pages.</p>
+<h2 id="what-an-equation-of-state-doesand-does-not-do">What an equation of state does—and does not do</h2>
+<p>An <strong>equation of state</strong> (EOS) models how a fluid&rsquo;s pressure, temperature,
+volume, and composition are related. The ideal-gas equation is the simplest:</p>
+<p>
+<script type="math/tex; mode=display">
+P=\frac{n_{\mathrm{tot}}RT}{V}.
+</script>
+</p>
+<p>Real molecules occupy space and interact. An EOS adds a description of those
+effects, making it possible to estimate liquid densities and non-ideal gas
+behavior. Different model families make different approximations; adding more
+parameters does not automatically make a model better for your mixture.</p>
+<p><code>yaeos</code> separates two jobs. A <strong>model</strong> evaluates properties for a proposed
+state. An <strong>equilibrium solver</strong> searches for the phases and compositions that
+can coexist. Calling <code>pressure</code> at an arbitrary volume evaluates the EOS; it
+does not ask whether the material would actually stay in a single phase.</p>
+<h3 id="which-model-family-should-i-read-about-first">Which model family should I read about first?</h3>
+<table>
+<thead>
+<tr>
+<th>Your starting problem</th>
+<th>Starting point</th>
+<th>What to check before trusting it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gas/hydrocarbon properties and vapor–liquid calculations with critical-property data</td>
+<td><a href="eos/cubics/index.html">Cubic EOS</a></td>
+<td>Suitable component data and binary interactions</td>
+</tr>
+<tr>
+<td>Natural-gas mixtures using components in the supported set</td>
+<td><a href="eos/gerg2008.html">GERG2008</a></td>
+<td>Supported species and the model&rsquo;s validated state range</td>
+</tr>
+<tr>
+<td>Fluids with available segment parameters</td>
+<td><a href="eos/pc_saft.html">PC-SAFT</a></td>
+<td>Parameter units and which physical contributions are implemented</td>
+</tr>
+<tr>
+<td>Non-ideal liquid mixtures with fitted pair parameters</td>
+<td><a href="excessmodels/index.html">NRTL or UNIQUAC</a></td>
+<td>Parameter convention, temperature range, and reference state</td>
+</tr>
+<tr>
+<td>Liquid-mixture estimates from molecular functional groups</td>
+<td><a href="excessmodels/unifac_models/index.html">UNIFAC-like models</a></td>
+<td>Group decomposition and available interaction pairs</td>
+</tr>
+</tbody>
+</table>
+<p>These are starting points, not guarantees of suitability. A liquid activity
+model by itself does not supply gas pressure or density. For a particular
+mixture, compare predictions with reliable measurements whenever possible.</p>
+<h2 id="why-the-library-talks-about-energy">Why the library talks about energy</h2>
+<p>The <strong>Helmholtz energy</strong>, <script type="math/tex">A</script>, is a thermodynamic potential with natural
+variables amount, volume, and temperature. Its derivatives connect several
+properties consistently. <code>yaeos</code> EOS models use the <strong>residual Helmholtz
+energy</strong> <script type="math/tex">A^r</script>: the difference from an ideal gas at the same
+<script type="math/tex">(\mathbf n,V,T)</script>. For example,</p>
+<p>
+<script type="math/tex; mode=display">
+P=\frac{n_{\mathrm{tot}}RT}{V}
+  -\left(\frac{\partial A^r}{\partial V}\right)_{T,\mathbf n}.
+</script>
+</p>
+<p>You can use <code>model%pressure</code> without calculating that derivative yourself.
+The energy formulation is why different EOS types can share the same property
+and equilibrium interfaces.</p>
+<p><strong>Residual</strong> does not mean an error in a numerical calculation. It means a
+departure from an ideal-gas reference. A residual enthalpy is not the total
+enthalpy: the matching ideal-gas contribution is needed too. The reference held
+fixed—volume or pressure—also matters for some departure properties. The
+<a href="eos/index.html">property reference</a> explains those distinctions in detail.</p>
+<p>An <strong>excess Gibbs energy</strong>, <script type="math/tex">G^E</script>, uses a different reference: ideal mixing
+of components in specified pure-component reference states. It measures
+non-ideal mixing rather than departure from an ideal gas. Do not substitute an
+excess quantity for a residual one merely because both describe non-ideality.</p>
+<h2 id="fugacity-and-activity-how-models-compare-phases">Fugacity and activity: how models compare phases</h2>
+<p>Think of <strong>fugacity</strong> as a pressure-like measure of a component&rsquo;s tendency to
+leave a phase. More precisely, it expresses chemical potential on a chosen
+reference scale. At equilibrium a component has the same chemical potential,
+and therefore the same fugacity, in all phases in which it is present.</p>
+<p>For an EOS phase with composition <script type="math/tex">x_i</script>, pressure <script type="math/tex">P</script>, and fugacity
+coefficient <script type="math/tex">\phi_i</script>,</p>
+<p>
+<script type="math/tex; mode=display">
+f_i=x_i\phi_i P.
+</script>
+</p>
+<p>The coefficient is dimensionless and approaches one in the ideal-gas limit.
+<code>lnPhi</code> contains <script type="math/tex">\ln\phi_i</script>, <strong>not</strong> <script type="math/tex">\phi_i</script>; use <code>exp(lnPhi)</code> when
+you want the coefficient itself. Logarithms are convenient for comparing
+fugacities that can span many orders of magnitude.</p>
+<p>For liquid activity models, the analogous correction is the <strong>activity
+coefficient</strong> <script type="math/tex">\gamma_i</script>. Under a chosen liquid reference convention,
+<script type="math/tex">a_i=x_i\gamma_i</script> is the component&rsquo;s activity. A value of one means ideal
+mixing relative to that reference, not necessarily ideal-gas behavior.</p>
+<h2 id="a-volume-root-is-not-a-phase-split">A volume root is not a phase split</h2>
+<p>At a specified pressure and temperature, an EOS can have several mathematical
+volume solutions. A small-volume root is liquid-like; a large-volume root is
+vapor-like. Depending on the state there may be only one physically admissible
+root. The requested names <code>"liquid"</code> and <code>"vapor"</code> select root branches; they
+do not guarantee that two different phases exist.</p>
+<p>The <code>"stable"</code> root requests the model&rsquo;s preferred homogeneous root. A mixture
+at that composition may still lower its Gibbs energy by separating into phases
+with different compositions. That is the question answered by
+<a href="phase_equilibrium/stability.html">stability analysis</a> and
+<a href="phase_equilibrium/flash.html">flash calculations</a>, not by a volume call alone.</p>
+<h2 id="match-the-calculation-to-the-question">Match the calculation to the question</h2>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Calculation</th>
+<th>Main result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>What is the pressure of this proposed homogeneous state?</td>
+<td>Property evaluation</td>
+<td>Pressure at the supplied amount, volume, and temperature</td>
+</tr>
+<tr>
+<td>At what pressure does the first bubble or drop appear?</td>
+<td>Saturation point</td>
+<td>A phase boundary and an incipient phase composition</td>
+</tr>
+<tr>
+<td>How much liquid and vapor form at this pressure and temperature?</td>
+<td>Flash</td>
+<td>Phase compositions and fractions</td>
+</tr>
+<tr>
+<td>How does that boundary change as conditions change?</td>
+<td>Phase envelope</td>
+<td>A sequence of boundary points</td>
+</tr>
+<tr>
+<td>Could this homogeneous mixture lower its energy by separating?</td>
+<td>Stability analysis</td>
+<td>Candidate phases and a stability criterion</td>
+</tr>
+<tr>
+<td>Where do two phases become indistinguishable?</td>
+<td>Critical calculation</td>
+<td>A critical state or line</td>
+</tr>
+</tbody>
+</table>
+<p>The <a href="phase_equilibrium/index.html">phase-equilibrium overview</a> connects these
+calculations into a workflow. In a two-phase split the feed composition
+<script type="math/tex">z_i</script>, liquid composition <script type="math/tex">x_i</script>, vapor composition <script type="math/tex">y_i</script>, and vapor
+mole fraction <script type="math/tex">\beta</script> satisfy</p>
+<p>
+<script type="math/tex; mode=display">
+z_i=(1-\beta)x_i+\beta y_i.
+</script>
+</p>
+<p>This is a material balance, not a thermodynamic model, and it is one of the
+most useful checks on a calculated split. The <strong>K-factor</strong> convention in the
+user-facing explanations is <script type="math/tex">K_i=y_i/x_i</script>.</p>
+<h2 id="a-checklist-before-using-a-prediction">A checklist before using a prediction</h2>
+<ol>
+<li>Check units, component ordering, and parameter provenance.</li>
+<li>Check whether the routine expects amounts or normalized compositions.</li>
+<li>Check its termination/status information before reading result arrays.</li>
+<li>Check compositions, phase fractions, and material balances.</li>
+<li>Check that a root or branch corresponds to the problem you intended to solve.</li>
+<li>Compare with limiting behavior or independent experimental data.</li>
+</ol>
+<p>A converged solver has solved its equations to a numerical tolerance. It has
+not established that the parameters are appropriate, that a global search found
+every possible phase, or that the model is accurate outside its fitted range.</p>
+    </div>
+  </div>
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              yaeos
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2026-11-18 15:31 +0000             </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

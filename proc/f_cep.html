@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>F_cep &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.2% of total for procedures.">37 statements</a>
+                 title=" 0.2% of total for procedures.">43 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -135,21 +136,21 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/f_cep.html#variable-p~31">P</a>
-            <a class="list-group-item" href="../proc/f_cep.html#variable-pc~8">Pc</a>
-            <a class="list-group-item" href="../proc/f_cep.html#variable-py~3">Py</a>
-            <a class="list-group-item" href="../proc/f_cep.html#variable-t~50">T</a>
-            <a class="list-group-item" href="../proc/f_cep.html#variable-v~14">V</a>
-            <a class="list-group-item" href="../proc/f_cep.html#variable-vc~6">Vc</a>
-            <a class="list-group-item" href="../proc/f_cep.html#variable-vy~8">Vy</a>
+            <a class="list-group-item" href="../proc/f_cep.html#variable-p~40">P</a>
+            <a class="list-group-item" href="../proc/f_cep.html#variable-pc~7">Pc</a>
+            <a class="list-group-item" href="../proc/f_cep.html#variable-py~2">Py</a>
+            <a class="list-group-item" href="../proc/f_cep.html#variable-t~51">T</a>
+            <a class="list-group-item" href="../proc/f_cep.html#variable-v~19">V</a>
+            <a class="list-group-item" href="../proc/f_cep.html#variable-vc~3">Vc</a>
+            <a class="list-group-item" href="../proc/f_cep.html#variable-vy~7">Vy</a>
             <a class="list-group-item" href="../proc/f_cep.html#variable-xcp">Xcp</a>
-            <a class="list-group-item" href="../proc/f_cep.html#variable-a~22">a</a>
-            <a class="list-group-item" href="../proc/f_cep.html#variable-eps~5">eps</a>
+            <a class="list-group-item" href="../proc/f_cep.html#variable-a~20">a</a>
+            <a class="list-group-item" href="../proc/f_cep.html#variable-eps~4">eps</a>
             <a class="list-group-item" href="../proc/f_cep.html#variable-lnf_y">lnf_y</a>
             <a class="list-group-item" href="../proc/f_cep.html#variable-lnf_z">lnf_z</a>
             <a class="list-group-item" href="../proc/f_cep.html#variable-u_new~4">u_new</a>
-            <a class="list-group-item" href="../proc/f_cep.html#variable-y~12">y</a>
-            <a class="list-group-item" href="../proc/f_cep.html#variable-z~25">z</a>
+            <a class="list-group-item" href="../proc/f_cep.html#variable-y~15">y</a>
+            <a class="list-group-item" href="../proc/f_cep.html#variable-z~35">z</a>
         </div>
       </div>
     </div>
@@ -198,7 +199,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-model~36"></span>
+              <span class="anchor" id="variable-model~31"></span>
               class(<a href='../type/armodel.html'>ArModel</a>),
             </td>
 <td>intent(in)</td>
@@ -213,7 +214,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~54"></span>
+              <span class="anchor" id="variable-nc~51"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -223,12 +224,12 @@
             <td>::</td>
             <td><strong>nc</strong></td>
             <td>
-                
+                <p>Number of components.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~37"></span>
+              <span class="anchor" id="variable-x~45"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -243,7 +244,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z0~11"></span>
+              <span class="anchor" id="variable-z0~20"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -258,7 +259,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-zi~9"></span>
+              <span class="anchor" id="variable-zi~18"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -305,115 +306,115 @@
   <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: proc~~f_cep~~CallsGraph Pages: 1 -->
-<svg id="procf_cepCallsGraph" width="451pt" height="116pt"
- viewBox="0.00 0.00 451.00 116.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~f_cep~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 112)">
+<svg id="procf_cepCallsGraph" width="448pt" height="116pt"
+ viewBox="0.00 0.00 448.00 116.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~f_cep~~CallsGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 112.27)">
 <title>proc~~f_cep~~CallsGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-112 447,-112 447,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-112.27 443.56,-112.27 443.56,4 -4,4"/>
 <!-- proc~f_cep -->
 <g id="proc~~f_cep~~CallsGraph_node1" class="node">
 <title>proc~f_cep</title>
-<polygon fill="none" stroke="black" points="54,-66 0,-66 0,-42 54,-42 54,-66"/>
-<text text-anchor="middle" x="27" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50">F_cep</text>
+<polygon fill="none" stroke="black" points="54,-66.27 0,-66.27 0,-42 54,-42 54,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="27" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50">F_cep</text>
 </g>
 <!-- proc~get_a -->
 <g id="proc~~f_cep~~CallsGraph_node2" class="node">
 <title>proc~get_a</title>
 <g id="a_proc~~f_cep~~CallsGraph_node2"><a xlink:href="../proc/get_a.html" xlink:title="get_a">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="267.5,-108 213.5,-108 213.5,-84 267.5,-84 267.5,-108"/>
-<text text-anchor="middle" x="240.5" y="-93.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_a</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="265.53,-108.27 211.53,-108.27 211.53,-84 265.53,-84 265.53,-108.27"/>
+<text xml:space="preserve" text-anchor="middle" x="238.53" y="-92.54" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">get_a</text>
 </a>
 </g>
 </g>
 <!-- proc~f_cep&#45;&gt;proc~get_a -->
 <g id="proc~~f_cep~~CallsGraph_edge1" class="edge">
 <title>proc~f_cep&#45;&gt;proc~get_a</title>
-<path fill="none" stroke="#000000" d="M54.23,-64.1C65.16,-67.98 78.06,-72.17 90,-75 128.1,-84.04 172.64,-89.68 203.13,-92.81"/>
-<polygon fill="#000000" stroke="#000000" points="203,-96.32 213.3,-93.82 203.69,-89.35 203,-96.32"/>
+<path fill="none" stroke="#000000" d="M54.24,-64.22C65.16,-68.11 78.06,-72.29 90,-75.14 126.88,-83.93 169.88,-89.53 199.91,-92.72"/>
+<polygon fill="#000000" stroke="#000000" points="199.33,-96.18 209.63,-93.71 200.04,-89.22 199.33,-96.18"/>
 </g>
 <!-- proc~lambda1 -->
 <g id="proc~~f_cep~~CallsGraph_node3" class="node">
 <title>proc~lambda1</title>
 <g id="a_proc~~f_cep~~CallsGraph_node3"><a xlink:href="../proc/lambda1.html" xlink:title="lambda1">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="150,-66 90,-66 90,-42 150,-42 150,-66"/>
-<text text-anchor="middle" x="120" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">lambda1</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="148.77,-66.27 90,-66.27 90,-42 148.77,-42 148.77,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="119.38" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">lambda1</text>
 </a>
 </g>
 </g>
 <!-- proc~f_cep&#45;&gt;proc~lambda1 -->
 <g id="proc~~f_cep~~CallsGraph_edge2" class="edge">
 <title>proc~f_cep&#45;&gt;proc~lambda1</title>
-<path fill="none" stroke="#000000" d="M54.32,-54C62.23,-54 71.09,-54 79.65,-54"/>
-<polygon fill="#000000" stroke="#000000" points="79.87,-57.5 89.87,-54 79.87,-50.5 79.87,-57.5"/>
+<path fill="none" stroke="#000000" d="M54.14,-54.13C61.73,-54.13 70.19,-54.13 78.41,-54.13"/>
+<polygon fill="#000000" stroke="#000000" points="78.26,-57.64 88.26,-54.14 78.26,-50.64 78.26,-57.64"/>
 </g>
 <!-- proc~lnfug_vt -->
 <g id="proc~~f_cep~~CallsGraph_node4" class="node">
 <title>proc~lnfug_vt</title>
 <g id="a_proc~~f_cep~~CallsGraph_node4"><a xlink:href="../proc/lnfug_vt.html" xlink:title="ArModel%lnfug_vt">
-<polygon fill="#d9534f" stroke="#d9534f" points="295,-24 186,-24 186,0 295,0 295,-24"/>
-<text text-anchor="middle" x="240.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%lnfug_vt</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="292.29,-24.27 184.77,-24.27 184.77,0 292.29,0 292.29,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="238.53" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">ArModel%lnfug_vt</text>
 </a>
 </g>
 </g>
 <!-- proc~f_cep&#45;&gt;proc~lnfug_vt -->
 <g id="proc~~f_cep~~CallsGraph_edge3" class="edge">
 <title>proc~f_cep&#45;&gt;proc~lnfug_vt</title>
-<path fill="none" stroke="#000000" d="M54.23,-43.9C65.16,-40.02 78.06,-35.83 90,-33 117.81,-26.4 149.06,-21.61 175.77,-18.29"/>
-<polygon fill="#000000" stroke="#000000" points="176.26,-21.75 185.77,-17.09 175.42,-14.8 176.26,-21.75"/>
+<path fill="none" stroke="#000000" d="M54.24,-44.05C65.16,-40.16 78.06,-35.98 90,-33.13 116.96,-26.71 147.2,-21.98 173.25,-18.66"/>
+<polygon fill="#000000" stroke="#000000" points="173.51,-22.15 183.01,-17.46 172.66,-15.21 173.51,-22.15"/>
 </g>
 <!-- proc~lambda1&#45;&gt;proc~get_a -->
 <g id="proc~~f_cep~~CallsGraph_edge5" class="edge">
 <title>proc~lambda1&#45;&gt;proc~get_a</title>
-<path fill="none" stroke="#000000" d="M150.29,-64.38C166.45,-70.11 186.64,-77.26 203.72,-83.32"/>
-<polygon fill="#000000" stroke="#000000" points="202.77,-86.7 213.37,-86.74 205.11,-80.1 202.77,-86.7"/>
+<path fill="none" stroke="#000000" d="M149.04,-64.41C164.6,-69.99 184.01,-76.95 200.68,-82.92"/>
+<polygon fill="#000000" stroke="#000000" points="199.15,-86.09 209.75,-86.17 201.52,-79.5 199.15,-86.09"/>
 </g>
 <!-- proc~lambda1&#45;&gt;proc~lnfug_vt -->
 <g id="proc~~f_cep~~CallsGraph_edge6" class="edge">
 <title>proc~lambda1&#45;&gt;proc~lnfug_vt</title>
-<path fill="none" stroke="#000000" d="M150.29,-43.62C164.01,-38.76 180.64,-32.86 195.8,-27.49"/>
-<polygon fill="#000000" stroke="#000000" points="197.25,-30.69 205.51,-24.05 194.91,-24.09 197.25,-30.69"/>
+<path fill="none" stroke="#000000" d="M149.04,-43.86C161.89,-39.25 177.36,-33.71 191.75,-28.55"/>
+<polygon fill="#000000" stroke="#000000" points="192.82,-31.88 201.05,-25.21 190.46,-25.29 192.82,-31.88"/>
 </g>
 <!-- proc~eigen -->
 <g id="proc~~f_cep~~CallsGraph_node5" class="node">
 <title>proc~eigen</title>
 <g id="a_proc~~f_cep~~CallsGraph_node5"><a xlink:href="../proc/eigen.html" xlink:title="eigen">
-<polygon fill="#d9534f" stroke="#d9534f" points="267.5,-66 213.5,-66 213.5,-42 267.5,-42 267.5,-66"/>
-<text text-anchor="middle" x="240.5" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eigen</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="265.53,-66.27 211.53,-66.27 211.53,-42 265.53,-42 265.53,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="238.53" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">eigen</text>
 </a>
 </g>
 </g>
 <!-- proc~lambda1&#45;&gt;proc~eigen -->
 <g id="proc~~f_cep~~CallsGraph_edge4" class="edge">
 <title>proc~lambda1&#45;&gt;proc~eigen</title>
-<path fill="none" stroke="#000000" d="M150.29,-54C166.3,-54 186.26,-54 203.24,-54"/>
-<polygon fill="#000000" stroke="#000000" points="203.37,-57.5 213.37,-54 203.37,-50.5 203.37,-57.5"/>
+<path fill="none" stroke="#000000" d="M149.04,-54.13C164.3,-54.13 183.27,-54.13 199.72,-54.13"/>
+<polygon fill="#000000" stroke="#000000" points="199.66,-57.64 209.66,-54.14 199.66,-50.64 199.66,-57.64"/>
 </g>
 <!-- residual_helmholtz -->
 <g id="proc~~f_cep~~CallsGraph_node6" class="node">
 <title>residual_helmholtz</title>
-<polygon fill="#777777" stroke="#777777" points="443,-24 331,-24 331,0 443,0 443,-24"/>
-<text text-anchor="middle" x="387" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">residual_helmholtz</text>
+<polygon fill="#777777" stroke="#777777" points="439.56,-24.27 328.29,-24.27 328.29,0 439.56,0 439.56,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="383.92" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">residual_helmholtz</text>
 </g>
 <!-- proc~lnfug_vt&#45;&gt;residual_helmholtz -->
 <g id="proc~~f_cep~~CallsGraph_edge7" class="edge">
 <title>proc~lnfug_vt&#45;&gt;residual_helmholtz</title>
-<path fill="none" stroke="#000000" d="M295.31,-12C303.52,-12 312.08,-12 320.51,-12"/>
-<polygon fill="#000000" stroke="#000000" points="320.7,-15.5 330.7,-12 320.7,-8.5 320.7,-15.5"/>
+<path fill="none" stroke="#000000" d="M292.52,-12.13C300.43,-12.13 308.68,-12.13 316.83,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="316.72,-15.64 326.72,-12.14 316.72,-8.64 316.72,-15.64"/>
 </g>
 <!-- none~dsyev -->
 <g id="proc~~f_cep~~CallsGraph_node7" class="node">
 <title>none~dsyev</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="414,-66 360,-66 360,-42 414,-42 414,-66"/>
-<text text-anchor="middle" x="387" y="-51.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dsyev</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="410.92,-66.27 356.92,-66.27 356.92,-42 410.92,-42 410.92,-66.27"/>
+<text xml:space="preserve" text-anchor="middle" x="383.92" y="-50.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">dsyev</text>
 </g>
 <!-- proc~eigen&#45;&gt;none~dsyev -->
 <g id="proc~~f_cep~~CallsGraph_edge8" class="edge">
 <title>proc~eigen&#45;&gt;none~dsyev</title>
-<path fill="none" stroke="#000000" d="M267.67,-54C290.54,-54 323.99,-54 349.5,-54"/>
-<polygon fill="#000000" stroke="#000000" points="349.54,-57.5 359.54,-54 349.54,-50.5 349.54,-57.5"/>
+<path fill="none" stroke="#000000" d="M265.83,-54.13C288.17,-54.13 320.49,-54.13 345.52,-54.13"/>
+<polygon fill="#000000" stroke="#000000" points="345.28,-57.64 355.28,-54.14 345.28,-50.64 345.28,-57.64"/>
 </g>
 </g>
 </svg>
@@ -432,55 +433,55 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
 <svg width="641pt" height="28pt"
- viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
 <!-- Subroutine -->
 <g id="node1" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node2" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Interface -->
 <g id="node3" class="node">
 <title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
 </g>
 <!-- Type Bound Procedure -->
 <g id="node4" class="node">
 <title>Type Bound Procedure</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
-<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
 </g>
 <!-- Unknown Procedure Type -->
 <g id="node5" class="node">
 <title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
-<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
 </g>
 <!-- Program -->
 <g id="node6" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node7" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
-<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -504,70 +505,70 @@ implementation in a submodule of an interface in a parent module.
   <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: proc~~f_cep~~CalledByGraph Pages: 1 -->
-<svg id="procf_cepCalledByGraph" width="377pt" height="52pt"
- viewBox="0.00 0.00 377.00 52.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~f_cep~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 48)">
+<svg id="procf_cepCalledByGraph" width="375pt" height="52pt"
+ viewBox="0.00 0.00 375.00 52.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~f_cep~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 48.27)">
 <title>proc~~f_cep~~CalledByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-48 373,-48 373,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-48.27 371.29,-48.27 371.29,4 -4,4"/>
 <!-- proc~f_cep -->
 <g id="proc~~f_cep~~CalledByGraph_node1" class="node">
 <title>proc~f_cep</title>
-<polygon fill="none" stroke="black" points="369,-44 315,-44 315,-20 369,-20 369,-44"/>
-<text text-anchor="middle" x="342" y="-29.6" font-family="Helvetica,sans-Serif" font-size="10.50">F_cep</text>
+<polygon fill="none" stroke="black" points="367.29,-44.27 313.29,-44.27 313.29,-20 367.29,-20 367.29,-44.27"/>
+<text xml:space="preserve" text-anchor="middle" x="340.29" y="-28.53" font-family="Helvetica,sans-Serif" font-size="10.50">F_cep</text>
 </g>
 <!-- proc~df_cep -->
 <g id="proc~~f_cep~~CalledByGraph_node2" class="node">
 <title>proc~df_cep</title>
 <g id="a_proc~~f_cep~~CalledByGraph_node2"><a xlink:href="../proc/df_cep.html" xlink:title="df_cep">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="279,-24 225,-24 225,0 279,0 279,-24"/>
-<text text-anchor="middle" x="252" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">df_cep</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="277.29,-24.27 223.29,-24.27 223.29,0 277.29,0 277.29,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="250.29" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">df_cep</text>
 </a>
 </g>
 </g>
 <!-- proc~df_cep&#45;&gt;proc~f_cep -->
 <g id="proc~~f_cep~~CalledByGraph_edge1" class="edge">
 <title>proc~df_cep&#45;&gt;proc~f_cep</title>
-<path fill="none" stroke="#000000" d="M279.4,-18C287.48,-19.84 296.51,-21.89 305.1,-23.84"/>
-<polygon fill="#000000" stroke="#000000" points="304.39,-27.27 314.92,-26.07 305.94,-20.44 304.39,-27.27"/>
+<path fill="none" stroke="#000000" d="M277.69,-18.14C285.26,-19.86 293.67,-21.77 301.77,-23.61"/>
+<polygon fill="#000000" stroke="#000000" points="300.9,-27 311.43,-25.8 302.45,-20.17 300.9,-27"/>
 </g>
 <!-- proc~look_for_cep -->
 <g id="proc~~f_cep~~CalledByGraph_node3" class="node">
 <title>proc~look_for_cep</title>
 <g id="a_proc~~f_cep~~CalledByGraph_node3"><a xlink:href="../proc/look_for_cep.html" xlink:title="look_for_cep">
-<polygon fill="#d9534f" stroke="#d9534f" points="189,-44 109,-44 109,-20 189,-20 189,-44"/>
-<text text-anchor="middle" x="149" y="-29.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">look_for_cep</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="187.29,-44.27 108.27,-44.27 108.27,-20 187.29,-20 187.29,-44.27"/>
+<text xml:space="preserve" text-anchor="middle" x="147.78" y="-28.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">look_for_cep</text>
 </a>
 </g>
 </g>
 <!-- proc~look_for_cep&#45;&gt;proc~f_cep -->
 <g id="proc~~f_cep~~CalledByGraph_edge2" class="edge">
 <title>proc~look_for_cep&#45;&gt;proc~f_cep</title>
-<path fill="none" stroke="#000000" d="M189.31,-32.62C200.81,-32.78 213.41,-32.92 225,-33 249,-33.16 255,-33.19 279,-33 287.25,-32.93 296.12,-32.82 304.49,-32.69"/>
-<polygon fill="#000000" stroke="#000000" points="304.81,-36.18 314.76,-32.52 304.7,-29.18 304.81,-36.18"/>
+<path fill="none" stroke="#000000" d="M187.45,-32.75C198.98,-32.91 211.65,-33.06 223.29,-33.13 247.29,-33.3 253.29,-33.33 277.29,-33.13 285.17,-33.07 293.62,-32.96 301.66,-32.84"/>
+<polygon fill="#000000" stroke="#000000" points="301.59,-36.34 311.53,-32.68 301.48,-29.34 301.59,-36.34"/>
 </g>
 <!-- proc~look_for_cep&#45;&gt;proc~df_cep -->
 <g id="proc~~f_cep~~CalledByGraph_edge3" class="edge">
 <title>proc~look_for_cep&#45;&gt;proc~df_cep</title>
-<path fill="none" stroke="#000000" d="M189.05,-24.27C197.57,-22.58 206.56,-20.8 214.96,-19.14"/>
-<polygon fill="#000000" stroke="#000000" points="215.72,-22.55 224.85,-17.18 214.36,-15.69 215.72,-22.55"/>
+<path fill="none" stroke="#000000" d="M187.64,-24.4C195.58,-22.82 203.93,-21.16 211.82,-19.59"/>
+<polygon fill="#000000" stroke="#000000" points="212.35,-23.05 221.48,-17.67 210.99,-16.19 212.35,-23.05"/>
 </g>
 <!-- proc~critical_line -->
 <g id="proc~~f_cep~~CalledByGraph_node4" class="node">
 <title>proc~critical_line</title>
 <g id="a_proc~~f_cep~~CalledByGraph_node4"><a xlink:href="../proc/critical_line.html" xlink:title="critical_line">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="73,-44 0,-44 0,-20 73,-20 73,-44"/>
-<text text-anchor="middle" x="36.5" y="-29.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">critical_line</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="72.27,-44.27 0,-44.27 0,-20 72.27,-20 72.27,-44.27"/>
+<text xml:space="preserve" text-anchor="middle" x="36.13" y="-28.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">critical_line</text>
 </a>
 </g>
 </g>
 <!-- proc~critical_line&#45;&gt;proc~look_for_cep -->
 <g id="proc~~f_cep~~CalledByGraph_edge4" class="edge">
 <title>proc~critical_line&#45;&gt;proc~look_for_cep</title>
-<path fill="none" stroke="#000000" d="M73.07,-32C81.14,-32 89.86,-32 98.4,-32"/>
-<polygon fill="#000000" stroke="#000000" points="98.67,-35.5 108.67,-32 98.67,-28.5 98.67,-35.5"/>
+<path fill="none" stroke="#000000" d="M72.73,-32.13C80.38,-32.13 88.61,-32.13 96.69,-32.13"/>
+<polygon fill="#000000" stroke="#000000" points="96.44,-35.64 106.44,-32.14 96.44,-28.64 96.44,-35.64"/>
 </g>
 </g>
 </svg>
@@ -586,55 +587,55 @@ implementation in a submodule of an interface in a parent module.
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
 <svg width="641pt" height="28pt"
- viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
 <!-- Subroutine -->
 <g id="node1" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node2" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Interface -->
 <g id="node3" class="node">
 <title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
 </g>
 <!-- Type Bound Procedure -->
 <g id="node4" class="node">
 <title>Type Bound Procedure</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
-<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
 </g>
 <!-- Unknown Procedure Type -->
 <g id="node5" class="node">
 <title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
-<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
 </g>
 <!-- Program -->
 <g id="node6" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node7" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
-<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -667,7 +668,7 @@ implementation in a submodule of an interface in a parent module.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~31"></span>
+              <span class="anchor" id="variable-p~40"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -684,7 +685,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-pc~8"></span>
+              <span class="anchor" id="variable-pc~7"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -701,7 +702,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-py~3"></span>
+              <span class="anchor" id="variable-py~2"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -718,7 +719,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~50"></span>
+              <span class="anchor" id="variable-t~51"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -735,7 +736,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-v~14"></span>
+              <span class="anchor" id="variable-v~19"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -752,7 +753,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vc~6"></span>
+              <span class="anchor" id="variable-vc~3"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -769,7 +770,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-vy~8"></span>
+              <span class="anchor" id="variable-vy~7"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -803,7 +804,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~22"></span>
+              <span class="anchor" id="variable-a~20"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -820,7 +821,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-eps~5"></span>
+              <span class="anchor" id="variable-eps~4"></span>
               real(kind=pr),
             </td>
               <td>private,</td>
@@ -832,7 +833,7 @@ parameter
 <td> =</td>
                 <td>1e-5_pr</td>
             <td>
-                
+                <p>Small numerical tolerance or perturbation.</p>
             </td>
         </tr>
         <tr>
@@ -888,7 +889,7 @@ parameter
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-y~12"></span>
+              <span class="anchor" id="variable-y~15"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -900,12 +901,12 @@ parameter
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Incipient/second phase composition.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z~25"></span>
+              <span class="anchor" id="variable-z~35"></span>
               real(kind=pr),
             </td>
               <td>private</td>
@@ -917,7 +918,7 @@ parameter
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Feed or overall composition.</p>
             </td>
         </tr>
     </tbody>
@@ -946,14 +947,14 @@ parameter
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

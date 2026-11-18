@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>get_aijk &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.1% of total for procedures.">9 statements</a>
+                 title=" 0.1% of total for procedures.">13 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -174,7 +175,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-self~8"></span>
+              <span class="anchor" id="variable-self~43"></span>
               class(<a href='../type/cmr.html'>CMR</a>),
             </td>
 <td>intent(in)</td>
@@ -184,12 +185,12 @@
             <td>::</td>
             <td><strong>self</strong></td>
             <td>
-                
+                <p>Mixing rule object.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~27"></span>
+              <span class="anchor" id="variable-t~56"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -199,12 +200,12 @@
             <td>::</td>
             <td><strong>T</strong></td>
             <td>
-                
+                <p>Temperature [K]</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ai"></span>
+              <span class="anchor" id="variable-ai~6"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -214,12 +215,13 @@
             <td>::</td>
             <td><strong>ai</strong>(:)</td>
             <td>
-                
+                <p>Pure-component attractive parameters <script type="math/tex">a_i</script>
+</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-daidt"></span>
+              <span class="anchor" id="variable-daidt~6"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -229,12 +231,14 @@
             <td>::</td>
             <td><strong>daidt</strong>(:)</td>
             <td>
-                
+                <p>
+<script type="math/tex">da_i/dT</script>
+</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-daidt2"></span>
+              <span class="anchor" id="variable-daidt2~6"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -244,12 +248,14 @@
             <td>::</td>
             <td><strong>daidt2</strong>(:)</td>
             <td>
-                
+                <p>
+<script type="math/tex">d^2a_i/dT^2</script>
+</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-a~4"></span>
+              <span class="anchor" id="variable-a~26"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -259,12 +265,13 @@
             <td>::</td>
             <td><strong>a</strong>(:,:)</td>
             <td>
-                
+                <p>
+<script type="math/tex">a_{ijk}</script> values</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dadt"></span>
+              <span class="anchor" id="variable-dadt~8"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -274,12 +281,14 @@
             <td>::</td>
             <td><strong>dadt</strong>(:,:)</td>
             <td>
-                
+                <p>
+<script type="math/tex">da_{ijk}/dT</script>
+</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-dadt2"></span>
+              <span class="anchor" id="variable-dadt2~8"></span>
               real(kind=pr),
             </td>
 <td>intent(out)</td>
@@ -289,7 +298,9 @@
             <td>::</td>
             <td><strong>dadt2</strong>(:,:)</td>
             <td>
-                
+                <p>
+<script type="math/tex">d^2a_{ijk}/dT^2</script>
+</p>
             </td>
         </tr>
     </tbody>
@@ -298,7 +309,7 @@
     <h3>Description</h3>
     <p>Combining rule for the attractive parameter.</p>
 <p>From previously calculated attractive parameters calculate the
-<script type="math/tex">a_{ijk}</script> matrix and it&rsquo;s corresponding derivatives.</p>
+<script type="math/tex">a_{ijk}</script> tensor and its corresponding derivatives.</p>
     <br>
 
  </div>
@@ -312,14 +323,14 @@
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

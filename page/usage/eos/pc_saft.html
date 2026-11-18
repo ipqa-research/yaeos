@@ -1,0 +1,578 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
+    <link rel="icon" href="../../../favicon.png">
+
+    <title>PC-SAFT &ndash; yaeos</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../../../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../../../css/brands.min.css" rel="stylesheet">
+    <link href="../../../css/regular.min.css" rel="stylesheet">
+    <link href="../../../css/solid.min.css" rel="stylesheet">
+    <link href="../../../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../../../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../../../css/local.css" rel="stylesheet">
+    <link href="../../../css/pygments.css" rel="stylesheet">
+      <link href="../../../css/user.css" rel="stylesheet">
+    <script src="../../../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../../../index.html">yaeos </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="../../index.html">User documentation</a></li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../../../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>PC-SAFT</h1>
+    <div class="container p-2 mb-4 bg-light border rounded-3">
+      <div class="row align-items-center justify-content-between">
+        <div class="col">
+          <ul class="list-inline" style="margin-bottom:0px; display:inline">
+          </ul>
+        </div>
+        <div class="col">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../../index.html'>User documentation</a></li>
+                <li class="breadcrumb-item"><a href='../index.html'>Getting started</a></li>
+                <li class="breadcrumb-item"><a href='index.html'>Equations of State</a></li>
+              <li class="breadcrumb-item active" aria-current="page">PC-SAFT</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+      <div class="col-3">
+        <div class="card card-body bg-light" id="sidebar-toc">
+          <ul class="nav flex-column align-items">
+            <li class="nav-item">
+              <a class="nav-link" href="../../index.html">User documentation</a>
+            </li>
+          </ul>
+          <hr>
+          <nav class="nav nav-pills flex-column">
+              <a class="nav-link" href="../index.html">Getting started</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../fundamentals.html">Thermodynamics essentials</a>
+              <a class="nav-link" href="index.html">Equations of State</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="cubics/index.html">Cubics</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="cubics/alpha.html">Alpha functions</a>
+              <a class="nav-link" href="cubics/mixing.html">Mixing Rules</a>
+
+                </nav>
+              <a class="nav-link" href="gerg2008.html">GERG2008</a>
+              <a class="nav-link" href="gerg2008_parameters.html">GERG2008 parameters</a>
+              <a class="nav-link active disabled" href="pc_saft.html">PC-SAFT</a>
+
+                </nav>
+              <a class="nav-link" href="../excessmodels/index.html">Gibbs Excess Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../excessmodels/nrtl.html">NRTL</a>
+              <a class="nav-link" href="../excessmodels/nrtl-hv.html">NRTL-HV</a>
+              <a class="nav-link" href="../excessmodels/uniquac.html">UNIQUAC</a>
+              <a class="nav-link" href="../excessmodels/unifac_models/index.html">UNIFAC Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
+              <a class="nav-link" href="../excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
+              <a class="nav-link" href="../excessmodels/unifac_models/psrk.html">UNIFAC-PSRK</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../phase_equilibrium/index.html">Phase Equilibrium</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../phase_equilibrium/flash.html">Flash calculations</a>
+              <a class="nav-link" href="../phase_equilibrium/saturation_points.html">Saturation Points</a>
+              <a class="nav-link" href="../phase_equilibrium/envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="../phase_equilibrium/stability.html">Stability analysis</a>
+              <a class="nav-link" href="../phase_equilibrium/critical.html">Critical points</a>
+              <a class="nav-link" href="../phase_equilibrium/multiphase.html">Multiphase flash</a>
+
+                </nav>
+              <a class="nav-link" href="../newmodels/index.html">Adding your own models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../newmodels/analtical.html">Analytical derivatives</a>
+              <a class="nav-link" href="../newmodels/autodiff.html">Automatic differentiation</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../../python-api/index.html">Python-API</a>
+              <a class="nav-link" href="../../developer/index.html">Becoming a yaeos developer</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../developer/architecture.html">Architecture and repository map</a>
+              <a class="nav-link" href="../../developer/workflow.html">Developer workflow</a>
+              <a class="nav-link" href="../../developer/fortran.html">Working in the Fortran core</a>
+              <a class="nav-link" href="../../developer/numerics.html">Working on numerical algorithms</a>
+              <a class="nav-link" href="../../developer/c_interface.html">C interface layer</a>
+              <a class="nav-link" href="../../developer/python_interface.html">Python interface layer</a>
+              <a class="nav-link" href="../../developer/testing.html">Tests and numerical validation</a>
+              <a class="nav-link" href="../../developer/walkthrough.html">An end-to-end change</a>
+
+                </nav>
+              <a class="nav-link" href="../../contributing/index.html">Contributing</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../../contributing/styleguide.html">Style guide</a>
+
+                </nav>
+          </nav>
+        </div>
+      </div>
+
+    <div class="col-9" id='text'>
+      <div class="toc">
+<ul>
+<li><a href="#pc-saft">PC-SAFT</a></li>
+<li><a href="#theory">Theory</a><ul>
+<li><a href="#hard-chain-contribution">Hard-chain contribution</a></li>
+<li><a href="#chain-contribution">Chain contribution</a></li>
+<li><a href="#dispersion-contribution">Dispersion contribution</a></li>
+<li><a href="#units">Units</a></li>
+</ul>
+</li>
+<li><a href="#example">Example</a></li>
+<li><a href="#how-init_pcsaft-works">How init_pcsaft works</a></li>
+<li><a href="#a-second-example-saturation-temperature-scan">A second example: saturation-temperature scan</a></li>
+<li><a href="#implementation-details">Implementation details</a></li>
+<li><a href="#notes-and-recommendations">Notes and recommendations</a></li>
+<li><a href="#next-reading">Next reading</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+</div>
+<h1 id="pc-saft">PC-SAFT</h1>
+<p>The Perturbed-Chain Statistical Associating Fluid Theory (PC-SAFT) equation of
+state is available as <a href="../../../type/pcsaft.html">PCSAFT</a>. It is constructed with <a href="../../../proc/init_pcsaft.html">init_pcsaft</a>.</p>
+<p>Use it when a molecular-size/chain description and suitable PC-SAFT parameter
+sets are available, for example for non-associating chain molecules. Rather
+than treating a molecule as one object with a single covolume, PC-SAFT represents
+it as connected segments. Crowding resists compression, connectivity changes
+the reference fluid, and dispersion attractions lower the free energy.</p>
+<p>The name includes “associating”, but <strong>this implementation has no association
+term</strong>. It is not a general-purpose water/alcohol model, nor does it add a
+separate polar contribution. A parameter set fitted for another PC-SAFT variant
+may rely on terms absent here.</p>
+<p>The following is a constructor <strong>snippet</strong>, with parameter arrays defined below:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">PcSaft</span><span class="p">,</span><span class="w"> </span><span class="n">init_pcsaft</span>
+
+<span class="k">type</span><span class="p">(</span><span class="n">PcSaft</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+
+<span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">init_pcsaft</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">sigma</span><span class="p">,</span><span class="w"> </span><span class="n">epsilon_k</span><span class="p">,</span><span class="w"> </span><span class="n">kij</span><span class="p">)</span>
+</code></pre></div>
+
+<h1 id="theory">Theory</h1>
+<p>PC-SAFT is a residual Helmholtz model based on a perturbation expansion around a
+hard-chain reference fluid. Let <script type="math/tex">A^{res}</script> be total residual Helmholtz energy,
+<script type="math/tex">N</script> the number of molecules, <script type="math/tex">k_B</script> Boltzmann&rsquo;s constant, and <script type="math/tex">T</script> absolute
+temperature. Write <script type="math/tex">a^r=A^{res}/(Nk_BT)=A^{res}/(nRT)</script>, with <script type="math/tex">n</script> the total
+mole amount and <script type="math/tex">R</script> the gas constant. Superscripts <code>hc</code>, <code>hs</code>, and <code>disp</code>
+mean hard chain, hard sphere, and dispersion, respectively. Then</p>
+<p>
+<script type="math/tex; mode=display">
+   a^r = a^{\mathrm{hc}} + a^{\mathrm{disp}}
+</script>
+</p>
+<h2 id="hard-chain-contribution">Hard-chain contribution</h2>
+<p>Let <script type="math/tex">x_i=n_i/n</script> be molecular mole fraction, <script type="math/tex">m_i</script> the dimensionless
+segment count, and <script type="math/tex">\bar m=\sum_i x_i m_i</script> its mixture average. Let
+<script type="math/tex">g_{ii}^{hs}</script> be the dimensionless same-component hard-sphere contact value.
+The hard-chain term already combines the hard-sphere reference and connectivity:</p>
+<p>
+<script type="math/tex; mode=display">
+   a^{\mathrm{hc}} = \bar m a^{\mathrm{hs}}
+   - \sum_i x_i (m_i - 1) \ln g_{ii}^{\mathrm{hs}}
+</script>
+</p>
+<p>Do <strong>not</strong> add a separate chain term again. Here <script type="math/tex">a^{hs}</script> is the
+dimensionless hard-sphere reference <strong>per segment</strong>, not a second whole-molecule
+Helmholtz contribution. For the size mixture it uses the following mixture
+hard-sphere expression (reducing to Carnahan-Starling for equal diameters).
+The moments <script type="math/tex">\zeta_0,\ldots,\zeta_3</script> are defined immediately below:</p>
+<p>
+<script type="math/tex; mode=display">
+   a^{\mathrm{hs}} =
+   \frac{1}{\zeta_0}
+   \left(
+      \frac{3 \zeta_1 \zeta_2}{1-\zeta_3}
+      + \frac{\zeta_2^3}{\zeta_3(1-\zeta_3)^2}
+      + \left(\frac{\zeta_2^3}{\zeta_3^2} - \zeta_0\right)
+        \ln(1-\zeta_3)
+   \right)
+</script>
+</p>
+<p>Let <script type="math/tex">\rho_N=N/V</script> be molecular number density in Å⁻³, <script type="math/tex">\sigma_i</script> the segment
+diameter in Å, and <script type="math/tex">E_i=\epsilon_i/k_B</script> the segment energy parameter in K
+(the input <code>epsilon_k</code>). Define the temperature-dependent effective diameter
+<script type="math/tex">d_i=\sigma_i[1-0.12\exp(-3E_i/T)]</script>. The moments are</p>
+<p>
+<script type="math/tex; mode=display">
+   \zeta_q = \frac{\pi}{6}\rho_N \sum_i x_i m_i d_i^q
+   \qquad (q = 0,\dots,3).
+</script>
+</p>
+<p>In particular, <script type="math/tex">\zeta_0=(\pi/6)\rho_N\bar m</script>, <strong>not</strong> <script type="math/tex">\bar m</script>.
+The packing fraction <script type="math/tex">\eta=\zeta_3</script> is dimensionless; the other moments
+have units Å to the power <script type="math/tex">q-3</script>. The contact function uses effective
+diameter <script type="math/tex">d_i</script>, not the uncorrected <script type="math/tex">\sigma_i</script>:</p>
+<p>
+<script type="math/tex; mode=display">
+   g_{ii}^{\mathrm{hs}} =
+   \frac{1}{1-\zeta_3}
+   + \frac{3\,\zeta_2\,d_i}{2(1-\zeta_3)^2}
+   + \frac{\zeta_2^2\,d_i^2}{2(1-\zeta_3)^3}.
+</script>
+</p>
+<h2 id="chain-contribution">Chain contribution</h2>
+<p>The chain contribution is included in the hard-chain term through the
+<script type="math/tex">(m_i-1)</script> factors. It accounts for the connectivity of the segments that
+form each molecule.</p>
+<h2 id="dispersion-contribution">Dispersion contribution</h2>
+<p>The unlike diameter <script type="math/tex">\sigma_{ij}</script> is in Å, the unlike energy parameter
+<script type="math/tex">E_{ij}</script> is in K, and <script type="math/tex">k_{ij}</script> is a dimensionless binary correction.
+The combining rules are</p>
+<p>
+<script type="math/tex; mode=display">
+   \sigma_{ij}=\frac{\sigma_i+\sigma_j}{2},\qquad
+   E_{ij}=\sqrt{E_iE_j}(1-k_{ij}).
+</script>
+</p>
+<p>The dimensionless integrals <script type="math/tex">I_1</script> and <script type="math/tex">I_2</script> and reference compressibility
+correction <script type="math/tex">C_1</script> depend on packing fraction and mean chain length. The
+implemented second-order dispersion expression is</p>
+<p>
+<script type="math/tex; mode=display">
+   a^{\mathrm{disp}}=-2\pi\rho_N I_1
+   \sum_{i,j}x_ix_jm_im_j\frac{E_{ij}}{T}\sigma_{ij}^3
+   -\pi\rho_N\bar m C_1 I_2
+   \sum_{i,j}x_ix_jm_im_j\left(\frac{E_{ij}}{T}\right)^2\sigma_{ij}^3.
+</script>
+</p>
+<p>The temperature factors and <script type="math/tex">C_1</script> must not be omitted. Define the
+dimensionless polynomial coefficients <script type="math/tex">a_q(\bar m)</script>, <script type="math/tex">b_q(\bar m)</script> from
+the Gross-Sadowski tables (stored in the source as <code>a_coeffs</code> and <code>b_coeffs</code>,
+each with three rows). Then</p>
+<p>
+<script type="math/tex; mode=display">
+   I_1=\sum_{q=0}^{6}a_q(\bar m)\eta^q,\qquad
+   I_2=\sum_{q=0}^{6}b_q(\bar m)\eta^q,
+</script>
+</p>
+<p>with the mean-segment dependence</p>
+<p>
+<script type="math/tex; mode=display">
+a_q=a_q^{(0)}+\left(1-\frac{1}{\bar m}\right)a_q^{(1)}
++\left(1-\frac{1}{\bar m}\right)\left(1-\frac{2}{\bar m}\right)a_q^{(2)},
+</script>
+</p>
+<p>and the same form for <script type="math/tex">b_q</script>. The packing fraction <script type="math/tex">\eta</script> is the third
+moment <script type="math/tex">\zeta_3</script>, and</p>
+<p>
+<script type="math/tex; mode=display">
+C_1=\left[1+\bar m\frac{8\eta-2\eta^2}{(1-\eta)^4}
++(1-\bar m)\frac{20\eta-27\eta^2+12\eta^3-2\eta^4}
+{[(1-\eta)(2-\eta)]^2}\right]^{-1}.
+</script>
+</p>
+<p>Although the polynomial coefficients have no explicit temperature argument, the
+integrals are not temperature-independent at fixed density: <script type="math/tex">\eta</script> uses
+the temperature-dependent <script type="math/tex">d_i</script>. Dispersion uses <script type="math/tex">\sigma_{ij}</script>, while
+the packing and contact terms use <script type="math/tex">d_i</script>; these are different quantities in
+this implementation.</p>
+<h2 id="units">Units</h2>
+<p>The internal number density <script type="math/tex">\rho_N</script> is in molecules per Å³, and the parameters are
+<script type="math/tex">m</script> (segments per molecule), <script type="math/tex">\sigma</script> (segment diameter in Angstrom),
+and <script type="math/tex">\epsilon/k</script> (segment energy in K). The binary interaction matrix
+<script type="math/tex">k_{ij}</script> is dimensionless.</p>
+<p>The model parameters are:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Argument</th>
+<th style="text-align: left;">Meaning</th>
+<th style="text-align: left;">Units</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>m</code></td>
+<td style="text-align: left;">Number of segments per molecule</td>
+<td style="text-align: left;">-</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>sigma</code></td>
+<td style="text-align: left;">Segment diameter</td>
+<td style="text-align: left;">Angstrom</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>epsilon_k</code></td>
+<td style="text-align: left;">Segment energy divided by Boltzmann&rsquo;s constant</td>
+<td style="text-align: left;">K</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>kij</code></td>
+<td style="text-align: left;">Optional binary interaction matrix</td>
+<td style="text-align: left;">-</td>
+</tr>
+</tbody>
+</table>
+<p><code>m</code>, <code>sigma</code>, and <code>epsilon_k</code> are arrays with one entry per component. <code>kij</code>
+is an optional <code>nc x nc</code> matrix; when it is omitted, all binary interaction
+parameters are set to zero.</p>
+<p>Use positive <code>m</code>, <code>sigma</code>, and <code>epsilon_k</code>, with consistent parameter provenance.
+<code>m</code> is an effective segment count and may be noninteger. All arrays and both
+axes of <code>kij</code> must use the same component order. Supply symmetric binary
+corrections with zero diagonals; do not transfer cubic-EOS <code>kij</code> values to
+PC-SAFT without validation.</p>
+<p>The public property API still uses <strong>mol, total L, K, and bar</strong>, not Å³:
+the code converts number density using Avogadro&rsquo;s constant and
+<code>1 L = 10^27 Å^3</code>. <code>sigma</code> is the exception to the usual macroscopic unit set;
+it is not in metres or litres.</p>
+<h1 id="example">Example</h1>
+<p>The following complete program uses the methane/n-butane parameter set shown
+in Gross and Sadowski (2001). The zero-binary-correction mixture is a starting
+point, not a fitted prediction for this mixture. It first evaluates pressure
+at a prescribed homogeneous state and then asks a separate solver for a bubble
+point at the same temperature. At a bubble point <code>n/sum(n)</code> is the liquid
+composition and <code>sat%y</code> is the incipient vapor composition.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">program </span><span class="n">pcsaft_example</span>
+<span class="w">   </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">PcSaft</span><span class="p">,</span><span class="w"> </span><span class="n">init_pcsaft</span>
+<span class="w">   </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">EquilibriumState</span><span class="p">,</span><span class="w"> </span><span class="n">saturation_pressure</span>
+<span class="w">   </span><span class="k">use</span><span class="p">,</span><span class="w"> </span><span class="k">intrinsic</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ieee_arithmetic</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">ieee_is_finite</span>
+<span class="w">   </span><span class="k">implicit none</span>
+
+<span class="k">   type</span><span class="p">(</span><span class="n">PcSaft</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">EquilibriumState</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">sat</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">m</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">sigma</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">epsilon_k</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">V</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">P</span>
+
+<span class="w">   </span><span class="c">! Methane and n-butane</span>
+<span class="w">   </span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">1.0000_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">2.3316_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">sigma</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">3.7039_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">3.7086_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">epsilon_k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">15</span><span class="mf">0.03_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">22</span><span class="mf">2.88_pr</span><span class="p">]</span>
+
+<span class="w">   </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">init_pcsaft</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">sigma</span><span class="p">,</span><span class="w"> </span><span class="n">epsilon_k</span><span class="p">)</span>
+
+<span class="w">   </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.4_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.6_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="mf">0.0_pr</span>
+<span class="w">   </span><span class="n">V</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="mf">0.0_pr</span><span class="w"> </span><span class="c">! total L for one mole</span>
+
+<span class="w">   </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">)</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Pressure: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot; bar&quot;</span>
+
+<span class="w">   </span><span class="n">sat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">saturation_pressure</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="nb">kind</span><span class="o">=</span><span class="s2">&quot;bubble&quot;</span><span class="p">)</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(.</span><span class="nb">not</span><span class="p">.</span><span class="w"> </span><span class="n">ieee_is_finite</span><span class="p">(</span><span class="n">sat</span><span class="p">%</span><span class="n">P</span><span class="p">))</span><span class="w"> </span><span class="k">error stop</span><span class="w"> </span><span class="s2">&quot;Nonfinite bubble pressure&quot;</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">sat</span><span class="p">%</span><span class="n">P</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mf">0.0_pr</span><span class="p">)</span><span class="w"> </span><span class="k">error stop</span><span class="w"> </span><span class="s2">&quot;Invalid bubble pressure&quot;</span>
+<span class="w">   </span><span class="k">if</span><span class="w"> </span><span class="p">(.</span><span class="nb">not</span><span class="p">.</span><span class="w"> </span><span class="k">all</span><span class="p">(</span><span class="n">ieee_is_finite</span><span class="p">(</span><span class="n">sat</span><span class="p">%</span><span class="n">y</span><span class="p">)))</span><span class="w"> </span><span class="k">error stop</span><span class="w"> </span><span class="s2">&quot;Nonfinite vapor composition&quot;</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Saturation pressure: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">sat</span><span class="p">%</span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot; bar&quot;</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Vapor composition: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">sat</span><span class="p">%</span><span class="n">y</span>
+<span class="k">end program </span><span class="n">pcsaft_example</span>
+</code></pre></div>
+
+<p>At this low-density pressure-evaluation state, compare pressure with the
+ideal-gas value <code>sum(n)*R*T/V</code> (<code>R</code> is exported by <code>yaeos</code>). Increase volume
+to check approach to the ideal-gas limit. Pressure evaluated at a chosen volume
+is <strong>not</strong> the saturation pressure, and need not equal <code>sat%P</code>.
+The finite/positive checks are necessary but insufficient: also check
+normalization, nonnegative phase compositions, distinct liquid/vapor roots
+away from criticality, and equality of component fugacities. See the
+<a href="../phase_equilibrium/saturation_points.html">saturation guide</a>.</p>
+<h1 id="how-init_pcsaft-works">How <code>init_pcsaft</code> works</h1>
+<p>PC-SAFT is a residual Helmholtz model, but many <code>yaeos</code> routines also need
+critical constants and acentric factors. <code>init_pcsaft</code> computes them from the
+PC-SAFT parameters:</p>
+<ol>
+<li><code>find_critical_points_all_components</code> calculates the pure-component critical
+   temperature, pressure, and volume from the PC-SAFT equation.</li>
+<li><code>Psat_pure</code> evaluates the saturation pressure at <script type="math/tex">T_r = 0.7</script>.</li>
+<li>The acentric factor is obtained from the definition
+   <script type="math/tex">\omega = -1 - \log_{10}(P^{sat}/P_c)</script>.</li>
+</ol>
+<p>This initialization is more expensive than constructing a cubic model, because
+it requires solving the critical point and a saturation point for each
+component. It is done once per model.</p>
+<p>These are model-predicted critical constants, not additional experimental
+inputs. The initializer obtains a <code>converged</code> array internally but does not
+return it to callers. Check that <code>model%components%Tc</code>, <code>%Pc</code>, and <code>%w</code> are
+finite and physically plausible before trusting downstream initial guesses.
+Unusual parameter sets may fail during this initialization, before any mixture
+property call is made.</p>
+<h1 id="a-second-example-saturation-temperature-scan">A second example: saturation-temperature scan</h1>
+<div class="codehilite"><pre><span></span><code><span class="k">program </span><span class="n">pcsaft_saturation_scan</span>
+<span class="w">   </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">PcSaft</span><span class="p">,</span><span class="w"> </span><span class="n">init_pcsaft</span>
+<span class="w">   </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">EquilibriumState</span><span class="p">,</span><span class="w"> </span><span class="n">saturation_temperature</span>
+<span class="w">   </span><span class="k">use</span><span class="p">,</span><span class="w"> </span><span class="k">intrinsic</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ieee_arithmetic</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">ieee_is_finite</span>
+<span class="w">   </span><span class="k">implicit none</span>
+
+<span class="k">   type</span><span class="p">(</span><span class="n">PcSaft</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">EquilibriumState</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">sat</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">m</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">sigma</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">epsilon_k</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">Pvals</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">integer</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">i</span>
+
+<span class="w">   </span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">1.0000_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">2.3316_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">sigma</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">3.7039_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">3.7086_pr</span><span class="p">]</span>
+<span class="w">   </span><span class="n">epsilon_k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">15</span><span class="mf">0.03_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">22</span><span class="mf">2.88_pr</span><span class="p">]</span>
+
+<span class="w">   </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">init_pcsaft</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">sigma</span><span class="p">,</span><span class="w"> </span><span class="n">epsilon_k</span><span class="p">)</span>
+
+<span class="w">   </span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.4_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.6_pr</span><span class="p">]</span>
+
+<span class="w">   </span><span class="n">Pvals</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">1.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">5.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="mf">0.0_pr</span><span class="p">]</span>
+
+<span class="w">   </span><span class="k">do </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="n">Pvals</span><span class="p">)</span>
+<span class="w">      </span><span class="n">sat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">saturation_temperature</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="o">=</span><span class="n">Pvals</span><span class="p">(</span><span class="n">i</span><span class="p">),</span><span class="w"> </span><span class="nb">kind</span><span class="o">=</span><span class="s2">&quot;bubble&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">t0</span><span class="o">=</span><span class="mi">25</span><span class="mf">0.0_pr</span><span class="p">)</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(.</span><span class="nb">not</span><span class="p">.</span><span class="w"> </span><span class="n">ieee_is_finite</span><span class="p">(</span><span class="n">sat</span><span class="p">%</span><span class="n">T</span><span class="p">))</span><span class="w"> </span><span class="k">error stop</span><span class="w"> </span><span class="s2">&quot;Nonfinite saturation temperature&quot;</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">sat</span><span class="p">%</span><span class="n">T</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mf">0.0_pr</span><span class="p">)</span><span class="w"> </span><span class="k">error stop</span><span class="w"> </span><span class="s2">&quot;Invalid saturation temperature&quot;</span>
+<span class="w">      </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;P =&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Pvals</span><span class="p">(</span><span class="n">i</span><span class="p">),</span><span class="w"> </span><span class="s2">&quot;bar, Tsat =&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">sat</span><span class="p">%</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;K&quot;</span>
+<span class="w">   </span><span class="k">end do</span>
+<span class="k">end program </span><span class="n">pcsaft_saturation_scan</span>
+</code></pre></div>
+
+<p><img alt="PC-SAFT saturation scan" src="../../../media/pcsaft_saturation_scan.png"></p>
+<p>This retained illustration is a scan of bubble temperature, not a phase
+envelope or a validation dataset. The program is complete and each point is a
+separate nonlinear solve. A fixed <code>t0</code> may fail in another pressure range;
+continuing from the previous converged point can be more reliable.</p>
+<h1 id="implementation-details">Implementation details</h1>
+<p><code>PcSaft</code> extends <code>ArModelTapenade</code>. The residual Helmholtz energy and its
+derivatives are generated with Tapenade, so the model provides the full set of
+first and second derivatives required by the phase-equilibrium routines.</p>
+<p>The model implements:</p>
+<ul>
+<li><code>ar</code>, <code>ar_d</code>, <code>ar_b</code>, <code>ar_d_b</code>, and <code>ar_d_d</code> for the Tapenade interface.</li>
+<li>A specialized <code>volume</code> solver based on Michelsen&rsquo;s method.</li>
+<li><code>get_v0</code>, which returns the total segment volume. This is the physical lower
+   scale used to initialize the liquid root, not a universal stable-liquid bound.</li>
+</ul>
+<p>The PC-SAFT contribution contains the hard-sphere, chain, and dispersion terms
+of the Gross-Sadowski formulation. The current implementation does not include
+the association term, so it should not be used for associating fluids such as
+water or alcohols without an additional model.</p>
+<h1 id="notes-and-recommendations">Notes and recommendations</h1>
+<ul>
+<li>Use the model-specific units: <code>sigma</code> in Angstrom and <code>epsilon_k</code> in kelvin.</li>
+<li>Provide <code>kij</code> for mixtures when binary interaction parameters are available.
+   Use the usual symmetric convention with zero diagonals.</li>
+<li>The segment number <code>m</code> can be a real number; it is not restricted to integers.</li>
+<li>The initialization calculates critical constants numerically. If a component
+  does not have a stable critical point under PC-SAFT, <code>init_pcsaft</code> will not
+  produce reliable acentric factors.</li>
+<li>For associating fluids, the association contribution is not implemented in
+  this version.</li>
+<li>The model is significantly more expensive than a cubic equation of state.
+  For phase-envelope calculations, provide good initial guesses to the
+   saturation and flash routines.</li>
+</ul>
+<p>Finite positive pressure does not establish phase stability. The packing
+fraction must stay below the hard-sphere singularity at one, and approaching
+that singularity is not a route to a trustworthy compressed-liquid prediction.
+Distinguish missing physical contributions or unsuitable parameters from
+volume-root and phase-equilibrium convergence failures.</p>
+<h1 id="next-reading">Next reading</h1>
+<p>See the <a href="index.html">EOS property guide</a>,
+<a href="../fundamentals.html">thermodynamic fundamentals</a>,
+<a href="../phase_equilibrium/saturation_points.html">saturation points</a>, and
+<a href="../phase_equilibrium/flash.html">flash calculations</a>. For a lower-input baseline,
+compare the <a href="cubics/index.html">cubic models</a> using the same state and composition.</p>
+<h1 id="references">References</h1>
+<ul>
+<li>Gross, J., &amp; Sadowski, G. (2001). Perturbed-Chain SAFT: An Equation of State
+  Based on a Perturbation Theory for Chain Molecules. <em>Industrial &amp; Engineering
+  Chemistry Research</em>, 40(4), 1244-1260.</li>
+</ul>
+    </div>
+  </div>
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              yaeos
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2026-11-18 15:31 +0000             </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

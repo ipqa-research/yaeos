@@ -1,0 +1,597 @@
+<!-- -*- mode: jinja2 -*- -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
+    <link rel="icon" href="../../favicon.png">
+
+    <title>C interface layer &ndash; yaeos</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Font Awesome -->
+    <link href="../../css/fontawesome.min.css" rel="stylesheet">
+    <link href="../../css/brands.min.css" rel="stylesheet">
+    <link href="../../css/regular.min.css" rel="stylesheet">
+    <link href="../../css/solid.min.css" rel="stylesheet">
+    <link href="../../css/v4-font-face.min.css" rel="stylesheet">
+    <link href="../../css/v4-shims.min.css" rel="stylesheet">
+    <!-- MathJax -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { equationNumbers: { autoNumber: "AMS" } }
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js?config=TeX-AMS-MML_HTMLorMML" async
+            integrity="sha256-DViIOMYdwlM/axqoGDPeUyf0urLoHMN4QACBKyB58Uw=" crossorigin="anonymous"></script>
+    <!-- Other scripts and stylesheets -->
+    <link href="../../css/local.css" rel="stylesheet">
+    <link href="../../css/pygments.css" rel="stylesheet">
+      <link href="../../css/user.css" rel="stylesheet">
+    <script src="../../js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <div class="container-fluid mb-sm-4 mb-xl-2">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+          <a class="navbar-brand" href="../../index.html">yaeos </a>
+          <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbar"
+                  aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon">
+          </button>
+
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="../index.html">User documentation</a></li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="../../lists/files.html">Source Files</a>
+                  </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/modules.html">Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/procedures.html">Procedures</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/absint.html">Abstract Interfaces</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="../../lists/types.html">Derived Types</a>
+                </li>
+            </ul>
+              <div class="d-flex align-items-end flex-grow-1">
+                <form action="../../search.html" role="search" class="ms-auto">
+                  <input type="text" class="form-control" aria-label="Search" placeholder="Search" name="q" id="tipue_search_input" autocomplete="off" required>
+                </form>
+              </div>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+  <div class="row">
+    <h1>C interface layer</h1>
+    <div class="container p-2 mb-4 bg-light border rounded-3">
+      <div class="row align-items-center justify-content-between">
+        <div class="col">
+          <ul class="list-inline" style="margin-bottom:0px; display:inline">
+          </ul>
+        </div>
+        <div class="col">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb justify-content-end mb-0">
+                <li class="breadcrumb-item"><a href='../index.html'>User documentation</a></li>
+                <li class="breadcrumb-item"><a href='index.html'>Becoming a yaeos developer</a></li>
+              <li class="breadcrumb-item active" aria-current="page">C interface layer</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+      <div class="col-3">
+        <div class="card card-body bg-light" id="sidebar-toc">
+          <ul class="nav flex-column align-items">
+            <li class="nav-item">
+              <a class="nav-link" href="../index.html">User documentation</a>
+            </li>
+          </ul>
+          <hr>
+          <nav class="nav nav-pills flex-column">
+              <a class="nav-link" href="../usage/index.html">Getting started</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/fundamentals.html">Thermodynamics essentials</a>
+              <a class="nav-link" href="../usage/eos/index.html">Equations of State</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/eos/cubics/index.html">Cubics</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/eos/cubics/alpha.html">Alpha functions</a>
+              <a class="nav-link" href="../usage/eos/cubics/mixing.html">Mixing Rules</a>
+
+                </nav>
+              <a class="nav-link" href="../usage/eos/gerg2008.html">GERG2008</a>
+              <a class="nav-link" href="../usage/eos/gerg2008_parameters.html">GERG2008 parameters</a>
+              <a class="nav-link" href="../usage/eos/pc_saft.html">PC-SAFT</a>
+
+                </nav>
+              <a class="nav-link" href="../usage/excessmodels/index.html">Gibbs Excess Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/excessmodels/nrtl.html">NRTL</a>
+              <a class="nav-link" href="../usage/excessmodels/nrtl-hv.html">NRTL-HV</a>
+              <a class="nav-link" href="../usage/excessmodels/uniquac.html">UNIQUAC</a>
+              <a class="nav-link" href="../usage/excessmodels/unifac_models/index.html">UNIFAC Models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/excessmodels/unifac_models/unifaclv.html">UNIFAC-LV</a>
+              <a class="nav-link" href="../usage/excessmodels/unifac_models/dortmund.html">UNIFAC-Dortmund</a>
+              <a class="nav-link" href="../usage/excessmodels/unifac_models/psrk.html">UNIFAC-PSRK</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../usage/phase_equilibrium/index.html">Phase Equilibrium</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/phase_equilibrium/flash.html">Flash calculations</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/saturation_points.html">Saturation Points</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/envelopes.html">Phase envelopes</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/stability.html">Stability analysis</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/critical.html">Critical points</a>
+              <a class="nav-link" href="../usage/phase_equilibrium/multiphase.html">Multiphase flash</a>
+
+                </nav>
+              <a class="nav-link" href="../usage/newmodels/index.html">Adding your own models</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../usage/newmodels/analtical.html">Analytical derivatives</a>
+              <a class="nav-link" href="../usage/newmodels/autodiff.html">Automatic differentiation</a>
+
+                </nav>
+
+                </nav>
+              <a class="nav-link" href="../python-api/index.html">Python-API</a>
+              <a class="nav-link" href="index.html">Becoming a yaeos developer</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="architecture.html">Architecture and repository map</a>
+              <a class="nav-link" href="workflow.html">Developer workflow</a>
+              <a class="nav-link" href="fortran.html">Working in the Fortran core</a>
+              <a class="nav-link" href="numerics.html">Working on numerical algorithms</a>
+              <a class="nav-link active disabled" href="c_interface.html">C interface layer</a>
+              <a class="nav-link" href="python_interface.html">Python interface layer</a>
+              <a class="nav-link" href="testing.html">Tests and numerical validation</a>
+              <a class="nav-link" href="walkthrough.html">An end-to-end change</a>
+
+                </nav>
+              <a class="nav-link" href="../contributing/index.html">Contributing</a>
+                <nav class="nav nav-pills flex-column">
+                                <a class="nav-link" href="../contributing/styleguide.html">Style guide</a>
+
+                </nav>
+          </nav>
+        </div>
+      </div>
+
+    <div class="col-9" id='text'>
+      <div class="toc">
+<ul>
+<li><a href="#the-yaeos_c-interface-module">The yaeos_c interface module</a><ul>
+<li><a href="#what-the-layer-contains">What the layer contains</a></li>
+<li><a href="#iso_c_binding-kinds-are-not-a-c-abi">ISO_C_BINDING kinds are not a C ABI</a></li>
+<li><a href="#handles-the-model-registry">Handles: the model registry</a><ul>
+<li><a href="#lifetime-and-release">Lifetime and release</a></li>
+</ul>
+</li>
+<li><a href="#argument-conventions-a-caller-must-respect">Argument conventions a caller must respect</a></li>
+<li><a href="#column-major-layout">Column-major layout</a></li>
+<li><a href="#optional-outputs-and-nan-sentinels">Optional outputs and NaN sentinels</a></li>
+<li><a href="#trace-of-one-call-pressure">Trace of one call: pressure</a></li>
+<li><a href="#adding-a-routine-to-this-layer">Adding a routine to this layer</a></li>
+<li><a href="#debugging-boundaries">Debugging boundaries</a></li>
+<li><a href="#known-sharp-edges">Known sharp edges</a></li>
+<li><a href="#related-pages">Related pages</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h1 id="the-yaeos_c-interface-module">The <code>yaeos_c</code> interface module</h1>
+<p><code>c_interface/yaeos_c.f90</code> is the flat, array-based façade over the
+polymorphic Fortran core. It exists so that a caller which cannot speak
+Fortran — today that is <code>f2py</code>, used by the Python package — can build a
+thermodynamic model and evaluate properties by passing plain numbers and
+flat arrays.</p>
+<p>This page is for developers changing that layer. If you are <em>calling</em>
+<code>yaeos</code> from Python, read <a href="python_interface.html">the Python interface page</a>.
+If you are adding a model, read
+<a href="../usage/newmodels/index.html">adding your own models</a> first. A model used only
+by native Fortran callers need not change this layer, but exposing a new model
+to Python normally requires constructor/registration support here. Read the file itself before editing
+it — the file is the contract, this page only describes it.</p>
+<h2 id="what-the-layer-contains">What the layer contains</h2>
+<p>One module, <code>yaeos_c</code>, with three groups of routines:</p>
+<ul>
+<li><strong>Instantiation</strong> — <code>pr76</code>, <code>pr78</code>, <code>srk</code>, <code>rkpr</code>, <code>psrk</code>, <code>pcsaft</code>,
+  <code>multifluid_gerg2008</code>, <code>nrtl</code>, <code>uniquac</code>, <code>unifac_vle</code>, <code>unifac_psrk</code>,
+  <code>unifac_dortmund</code>. Builds the model, stores it in the registry, returns an
+  integer handle.</li>
+<li><strong>Configuration</strong> — <code>set_qmr</code>, <code>set_qmrtd</code>, <code>set_mhv</code>, <code>set_hv</code>,
+  <code>set_hvnrtl</code>, <code>set_sddlc</code>, <code>set_cmr</code>, <code>set_cmrtd</code>, <code>set_alpha_*</code>,
+  <code>pcsaft_set_kij</code>. Attaches a mixing rule, an alpha function, or interaction
+  parameters to an existing handle.</li>
+<li><strong>Evaluation</strong> — <code>pressure</code>, <code>volume</code>, <code>lnphi_vt</code>,
+  <code>helmholtz_residual_pt</code>, <code>flash</code>, <code>saturation_pressure</code>,
+  <code>pt_mp_phase_envelope</code>. Computes one property or one equilibrium for a
+  given handle.</li>
+</ul>
+<p>The module is <code>private</code> by default and re-exports its surface through an
+explicit <code>public ::</code> list near the top of the file. That list is not
+decoration: <code>f2py</code> only generates wrappers for names that are public, so a
+new routine that is not listed is unreachable from Python. Units are the
+library defaults, stated in the module header: pressure in bar, volume in
+litre, temperature in kelvin, amount in mole.</p>
+<h2 id="iso_c_binding-kinds-are-not-a-c-abi"><code>ISO_C_BINDING</code> kinds are not a C ABI</h2>
+<p>This is the most important thing to understand before editing this file.</p>
+<p>The module header contains one import:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="nb">iso_c_binding</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="kt">c_double</span><span class="p">,</span><span class="w"> </span><span class="kt">c_int</span><span class="p">,</span><span class="w"> </span><span class="kt">c_int64_t</span>
+</code></pre></div>
+
+<p>These kinds correspond to the associated C types: <code>real(c_double)</code> for
+double-precision reals, <code>integer(c_int)</code> for handles and
+counts. It does <strong>not</strong> export a symbol name, does <strong>not</strong> define a C
+calling convention, and does <strong>not</strong> make scalar arguments pass by value.</p>
+<p><code>bind(c)</code> is <strong>absent</strong> from this interface module. The hyperdual type in
+<code>src/adiff/hyperdual.f90</code> does use <code>bind(c)</code>, but a type declaration does not
+create C-callable wrapper procedures. No procedure in <code>yaeos_c</code> carries
+<code>bind(c)</code>. The
+consequences are concrete: compilers mangle Fortran names, so
+the module procedure <code>pr76</code> is not thereby a C symbol named <code>pr76</code>. Ordinary
+Fortran assumed-shape arrays can require compiler-specific descriptors, and
+character arguments can involve hidden length arguments. C-compatible kinds
+do not specify these calling conventions. The current repository does not
+provide a portable public C header for these procedures. Do not assume that
+declaring matching-looking C prototypes makes direct calls portable.</p>
+<p>Some background material about this project describes the layer as a
+<code>BIND(C)</code> interface. Treat that text as design intent; the shipped file is
+the contract, and it is an <code>f2py</code>-oriented façade with C-compatible <em>kinds</em>,
+not a stable C ABI. If you genuinely need a C entry point, do not retrofit
+<code>bind(c)</code> onto <code>yaeos_c.f90</code> without designing and testing the ABI. Decide how
+arrays, strings, optional values, handles, and errors cross the boundary.
+For a simple explicit-shape ABI, pass extents explicitly and use interoperable
+character buffers or lengths. Scalars may be passed by reference, or use
+<code>value</code> to match a by-value C prototype. Modern Fortran also supports additional
+interoperability mechanisms, including C descriptors and some optional
+arguments; these require matching headers and compiler support, not guesses.
+A small separate adapter with documented prototypes and C-side tests can
+preserve the existing f2py layer while establishing a deliberate C API.</p>
+<h2 id="handles-the-model-registry">Handles: the model registry</h2>
+<p>The core models are polymorphic objects (<code>class(ArModel)</code>,
+<code>class(GeModel)</code>), and Fortran cannot expose polymorphic objects through a
+flat interface. The layer therefore keeps a registry and hands out integer
+handles.</p>
+<div class="codehilite"><pre><span></span><code><span class="k">type</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ArModelContainer</span>
+<span class="w">   </span><span class="k">class</span><span class="p">(</span><span class="n">ArModel</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="k">end type </span><span class="n">ArModelContainer</span>
+
+<span class="k">type</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">GeModelContainer</span>
+<span class="w">   </span><span class="k">class</span><span class="p">(</span><span class="n">GeModel</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="k">end type </span><span class="n">GeModelContainer</span>
+
+<span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">max_models</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">1000000</span><span class="w"> </span><span class="c">!! Maximum number of models</span>
+<span class="kt">logical</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">free_ar_model</span><span class="p">(</span><span class="n">max_models</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">.</span><span class="n">true</span><span class="p">.</span>
+<span class="kt">logical</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">free_ge_model</span><span class="p">(</span><span class="n">max_models</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">.</span><span class="n">true</span><span class="p">.</span>
+<span class="k">class</span><span class="p">(</span><span class="n">ArModelContainer</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ar_models</span><span class="p">(:)</span>
+<span class="k">class</span><span class="p">(</span><span class="n">GeModelContainer</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">ge_models</span><span class="p">(:)</span>
+</code></pre></div>
+
+<p><code>ar_models</code> and <code>ge_models</code> are allocated lazily, on the first model
+creation, with <code>max_models</code> entries each. The handle is a one-based index
+into that table: <code>id = 1</code> is the first slot.</p>
+<p>Instantiation follows a fixed recipe — build into a module-level singleton,
+then move the singleton into the first free slot:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">subroutine </span><span class="n">pr76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span><span class="w"> </span><span class="n">pc</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="n">id</span><span class="p">)</span>
+<span class="w">   </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">PengRobinson76</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="kt">c_double</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">tc</span><span class="p">(:)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="kt">c_double</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">pc</span><span class="p">(:)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="kt">c_double</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">w</span><span class="p">(:)</span>
+<span class="w">   </span><span class="kt">integer</span><span class="p">(</span><span class="kt">c_int</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">id</span>
+
+<span class="w">   </span><span class="n">ar_model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span><span class="w"> </span><span class="n">pc</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">)</span>
+<span class="w">   </span><span class="k">call </span><span class="n">extend_ar_models_list</span><span class="p">(</span><span class="n">id</span><span class="p">)</span>
+<span class="k">end subroutine </span><span class="n">pr76</span>
+</code></pre></div>
+
+<p><code>extend_ar_models_list</code> scans <code>free_ar_model</code> from index 1, marks the first
+free slot as taken, and <code>move_alloc</code>s the singleton into it. The <code>GeModel</code>
+path is identical through <code>extend_ge_models_list</code>.</p>
+<h3 id="lifetime-and-release">Lifetime and release</h3>
+<p><code>make_available_ar_models_list(id)</code> sets <code>free_ar_model(id) = .true.</code> and
+nothing else. It does <strong>not</strong> deallocate the model; the object stays in the
+container until the slot is reused by a later <code>move_alloc</code>. Consequently,
+releasing a handle returns the <em>slot</em>, not the memory, and a released
+handle is not invalidated — using it afterwards is undefined behaviour,
+because the slot may already hold a different model. Treat handles as
+opaque and never cache them beyond the object that owns them.</p>
+<p>Because the registry and the singleton buffers are module state, the module
+is not re-entrant. Do not create models concurrently from several threads.
+Do not infer that evaluation is thread-safe either: inspect the called model,
+solver, AD runtime, and any shared flags or caches. Read-only handle lookup
+alone is insufficient to establish reentrancy of the entire calculation.</p>
+<p>The exhaustion guard deserves a note:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">max_models</span><span class="p">)</span><span class="w"> </span><span class="k">error stop </span><span class="mi">1</span>
+</code></pre></div>
+
+<p><code>id</code> is <code>intent(out)</code> and is only assigned inside the scan loop, so when
+the table is full this comparison inspects a value the procedure never set.
+Do not rely on this branch to produce a clean error. The check also rejects
+the final slot after allocation. Avoid registry exhaustion and test any future
+capacity/error-handling change explicitly.</p>
+<h2 id="argument-conventions-a-caller-must-respect">Argument conventions a caller must respect</h2>
+<p><strong>Order, names and returns.</strong> Dummy arguments are positional. <code>f2py</code> also
+exposes them as keyword arguments, lowercased (<code>--lower</code> is passed to
+<code>f2py</code> in the Meson build), so the Fortran name <code>dPdn</code> becomes the Python
+keyword <code>dpdn</code>. An <code>intent(out)</code> scalar becomes the value of the call: in
+<code>pressure</code> the pressure <code>P</code> is <code>intent(out)</code>, so <code>f2py</code> returns it and the
+remaining optional outputs become keyword arguments.</p>
+<p><strong><code>optional, intent(inout)</code> arguments are optional keywords.</strong> Omit the
+keyword and the generated binding can represent its absence; wrapper code
+uses presence checks to decide which optional outputs to pass onward. Verify
+this behavior in the generated binding when changing an argument. Shared
+property kernels may still compute derivative intermediates even when no
+derivative is returned to the user.</p>
+<p><strong>Shapes.</strong> Several dummy arguments take their extent from another
+argument:</p>
+<div class="codehilite"><pre><span></span><code><span class="kt">real</span><span class="p">(</span><span class="kt">c_double</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="w"> </span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">dPdV</span>
+<span class="kt">real</span><span class="p">(</span><span class="kt">c_double</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="w"> </span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">dPdT</span>
+<span class="kt">real</span><span class="p">(</span><span class="kt">c_double</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="w"> </span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">dPdn</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+<span class="kt">real</span><span class="p">(</span><span class="kt">c_double</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">x</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">z0</span><span class="p">))</span>
+<span class="kt">real</span><span class="p">(</span><span class="kt">c_double</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">x_ls</span><span class="p">(</span><span class="n">max_points</span><span class="p">,</span><span class="w"> </span><span class="n">np</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">(</span><span class="n">z</span><span class="p">))</span>
+</code></pre></div>
+
+<p>A direct caller must supply matching extents. <code>f2py</code> emits parser
+diagnostics for some dependent dimensions; those diagnostics alone do not
+establish what shape a generated wrapper accepts or returns. Check the
+generated signature and exercise the relevant call when changing a shape.</p>
+<p>Some outputs have a fixed size chosen by this file rather than by the
+caller: <code>pure_saturation_line</code> fills arrays of 10000 elements, and
+<code>find_self_intersections</code> fills arrays of 10.</p>
+<p><strong>Character arguments are fixed-width and padded.</strong> Several <code>root_type</code> and
+<code>kind</code> arguments use <code>character(len=15)</code>. Root selectors use <code>"stable"</code>,
+<code>"liquid"</code>, and <code>"vapor"</code>; saturation-point kinds instead use values such as
+<code>"bubble"</code>, <code>"dew"</code>, and <code>"liquid-liquid"</code>. Follow the specific procedure&rsquo;s
+contract. <code>convert_kind</code> maps the numeric root selectors used by multiphase
+envelopes back to root strings.</p>
+<p><strong>Integer kinds are mixed.</strong> Most arguments use <code>integer(c_int)</code>, but
+several use the plain default <code>integer</code>: <code>nc</code>, <code>ngs</code>, <code>g_ids</code> and <code>g_v</code> in
+<code>psrk</code>, <code>ids</code> in <code>multifluid_gerg2008</code>, and <code>spec</code>, <code>max_iters</code> and
+<code>max_points</code> in the critical-point routines. <code>f2py</code> maps both to a C <code>int</code>
+in the generated configurations used by common builds, but do not assume
+default integer always matches <code>c_int</code>. Check the generated type mapping when
+changing compiler kinds or portability settings; normalizing kinds is a
+separate compatibility change that needs tests.</p>
+<h2 id="column-major-layout">Column-major layout</h2>
+<p>Fortran arrays are column-major. For a two-dimensional array the element
+at Fortran position <code>(i, j)</code> sits at zero-based C offset
+<code>(i - 1) + (j - 1) * nrows</code>.</p>
+<p>This matters whenever a matrix crosses the boundary — the NRTL <code>aij</code>,
+<code>bij</code>, <code>cij</code> matrices, the mixing-rule <code>kij</code>/<code>lij</code> matrices, the group
+matrices of the UNIFAC constructors, or a Hessian of mole derivatives. A
+future explicit-buffer C adapter would need to document this layout. <code>f2py</code> is more
+forgiving, but only partly, and the difference decides whether a wrong
+answer is loud or silent:</p>
+<ul>
+<li>An <code>intent(in)</code> two-dimensional argument is converted to Fortran order
+  by <code>f2py</code> when the caller&rsquo;s array is not already Fortran-contiguous.
+  The logical values are preserved; only a copy is added.</li>
+<li>An <code>intent(inout)</code> two-dimensional argument is <strong>not</strong> converted. The
+  caller must supply a Fortran-contiguous array, and <code>f2py</code> raises
+  <code>ValueError: failed to initialize intent(inout) array -- input not
+  fortran contiguous</code> otherwise. This is why every Hessian and
+  derivative matrix in <code>python/yaeos/core.py</code> is allocated with
+  <code>order="F"</code>.</li>
+<li>A dummy argument <strong>without</strong> an <code>intent</code> attribute is not equivalent to
+  explicitly declaring <code>intent(inout)</code>. Fortran imposes no intent restriction,
+  and f2py may infer or default to its own treatment. <code>set_qmr</code> (<code>kij</code>, <code>lij</code>)
+  and <code>set_cmr</code> (<code>kijk</code>, <code>lijk</code>) include such arguments. Check the generated
+  binding rather than assuming that writes propagate back to the caller;
+  a temporary input copy need not provide write-back behavior.</li>
+</ul>
+<p>The Python layer avoids the last case by always passing an
+<code>np.array(matrix, order="F")</code> copy, as in
+<code>python/yaeos/models/excess_gibbs/nrtl.py</code> and in
+<code>python/yaeos/models/residual_helmholtz/cubic_eos/mixing_rules.py</code>.</p>
+<h2 id="optional-outputs-and-nan-sentinels">Optional outputs and NaN sentinels</h2>
+<p>Two different conventions express &ldquo;no value&rdquo;, and they are not
+interchangeable.</p>
+<p><strong>NaN marks missing, invalid, or unfilled output, depending on the routine.</strong> A helper function computes
+<code>0.0 / 0.0</code> and is used to pre-fill output arrays before the points that
+were actually computed are written in. A reader must therefore filter on
+NaN rather than assume that a returned array is dense. <code>critical_line</code>
+fills <code>as</code>, <code>Ts</code>, <code>Ps</code> and <code>Vs</code> with NaN and sets every CEP output to NaN
+when the critical line has no critical end point; <code>binary_llv_from_cep</code>
+fills its eight output arrays with NaN; the three multi-phase envelope
+routines pre-fill <code>x_ls</code>, <code>ws</code>, <code>betas</code>, <code>Ps</code>, <code>Ts</code>, <code>alphas</code>, <code>Pcs</code> and
+<code>Tcs</code>, so trailing points of a short envelope read as NaN rather than as
+zeros; <code>pure_saturation_line</code> pre-fills its four 10000-element arrays and
+writes only the computed prefix; <code>find_self_intersections</code> pre-fills its
+outputs.</p>
+<p><strong>Failure sentinels are routine-specific.</strong> When a saturation
+calculation returns a state whose <code>kind</code> is <code>"failed"</code>, the wrapper sets
+the pressure or the temperature to NaN instead of returning a number. The
+flash wrappers use a different signal: <code>beta = -1</code>, with <code>x</code> and <code>y</code> set
+to the feed composition and <code>Vx</code> and <code>Vy</code> set to <code>1</code>. <code>flash_second_order</code>
+additionally checks <code>trim(result%kind) == "failed"</code>, which plain <code>flash</code>
+does not. Check for failure before using a result: a NaN propagates
+through NumPy arithmetic without raising, and <code>beta == -1</code> is easy to miss
+in a dictionary.</p>
+<h2 id="trace-of-one-call-pressure">Trace of one call: pressure</h2>
+<p><strong>Step 1 — the flat wrapper</strong> in <code>c_interface/yaeos_c.f90</code> takes the
+handle, the amounts, the volume and the temperature, returns the pressure
+through an <code>intent(out)</code> argument, and offers the three derivatives as
+<code>optional, intent(inout)</code> arguments:</p>
+<div class="codehilite"><pre><span></span><code><span class="k">subroutine </span><span class="n">pressure</span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">dPdV</span><span class="p">,</span><span class="w"> </span><span class="n">dPdT</span><span class="p">,</span><span class="w"> </span><span class="n">dPdn</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">integer</span><span class="p">(</span><span class="kt">c_int</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">id</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="kt">c_double</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="p">(:)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="kt">c_double</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">V</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="kt">c_double</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">T</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="kt">c_double</span><span class="p">),</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">P</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="kt">c_double</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="w"> </span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">dPdV</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="kt">c_double</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="w"> </span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">dPdT</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="kt">c_double</span><span class="p">),</span><span class="w"> </span><span class="k">optional</span><span class="p">,</span><span class="w"> </span><span class="k">intent</span><span class="p">(</span><span class="n">in</span><span class="w"> </span><span class="n">out</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">dPdn</span><span class="p">(</span><span class="n">size</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+
+<span class="w">   </span><span class="k">call </span><span class="n">ar_models</span><span class="p">(</span><span class="n">id</span><span class="p">)%</span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">dPdV</span><span class="p">,</span><span class="w"> </span><span class="n">dPdT</span><span class="p">,</span><span class="w"> </span><span class="n">dPdn</span><span class="p">)</span>
+<span class="k">end subroutine </span><span class="n">pressure</span>
+</code></pre></div>
+
+<p><strong>Step 2 — dynamic dispatch.</strong> <code>ar_models(id)%model</code> is the polymorphic
+object stored in the registry slot. The <code>select type</code> blocks elsewhere in
+the file, for instance in the mixing-rule setters, show the same pattern:
+the concrete type is resolved at run time.</p>
+<p><strong>Step 3 — the model method</strong> in
+<code>src/models/residual_helmholtz/ar_models.f90</code> calls <code>residual_helmholtz</code>
+for the energy and its derivatives and then adds the ideal-gas term
+itself: <code>P = totn * R * T/V - ArV</code>, with <code>dPdV = -ArV2 - R*T*totn/V**2</code>,
+<code>dPdT = -ArTV + totn*R/V</code> and <code>dPdn(:) = R*T/V - ArVn(:)</code>. The ideal-gas
+term is added by the inherited <code>pressure</code> method, not by the residual
+Helmholtz energy; do not add it again in a wrapper. Note also the kind
+change: the model works in <code>real(pr)</code>, and <code>pr</code> is <code>real64</code>
+(<code>src/constants.f90</code>). Verify that the chosen compiler&rsquo;s <code>pr</code> and <code>c_double</code>
+are compatible when porting the build; do not rely only on similar kind names.</p>
+<h2 id="adding-a-routine-to-this-layer">Adding a routine to this layer</h2>
+<ol>
+<li>Write the subroutine in <code>c_interface/yaeos_c.f90</code>, inside the module,
+   with <code>iso_c_binding</code> kinds on every dummy argument.</li>
+<li>Add its name to the <code>public ::</code> list. Without this, <code>f2py</code> will not
+   generate a wrapper and Python will not see it.</li>
+<li>Use <code>intent(in)</code> for inputs and <code>intent(out)</code> for results. Mark
+   derivative outputs <code>optional, intent(inout)</code> so callers can request
+   only what they need.</li>
+<li>Take the model from the registry: <code>ar_models(id)%model</code> or
+   <code>ge_models(id)%model</code>. Never cache a model in a local variable across
+   calls.</li>
+<li>Decide the failure convention explicitly: return NaN for the property
+   or the documented sentinel, and pre-fill array outputs with NaN when
+   the number of meaningful entries can be smaller than the array extent.
+   Say both in a comment.</li>
+<li>Add the Python wrapper that allocates the derivative buffers and shapes
+   the result. See <a href="python_interface.html">the Python interface page</a>.</li>
+<li>Add a test. The Python-side test suite lives in <code>python/tests/</code>, and
+   <code>python/tests/models/residual_helmholtz/test_ar_same_as_fortran.py</code>
+   compares the Python result against a Fortran program it generates and
+   runs. This checks the interface against the native implementation; add
+   independent reference or mathematical checks for the property itself.</li>
+<li>Keep the doc comment style of the file. The <code>!!</code> comments follow the
+   FORD convention, but <code>ford.md</code> sets <code>src_dir: src</code>, so this directory is
+   <strong>not</strong> part of the generated API documentation. The comments are still
+   worth writing for IDE users and maintainers of these routines.</li>
+</ol>
+<h2 id="debugging-boundaries">Debugging boundaries</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Symptom</th>
+<th style="text-align: left;">Look first at</th>
+<th style="text-align: left;">Then at</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>AttributeError</code> on <code>yaeos_c</code></td>
+<td style="text-align: left;">The <code>public ::</code> list in <code>yaeos_c.f90</code></td>
+<td style="text-align: left;">Whether the extension was rebuilt</td>
+</tr>
+<tr>
+<td style="text-align: left;">Wrong numbers for a matrix argument</td>
+<td style="text-align: left;">The <code>intent</code> of the dummy argument</td>
+<td style="text-align: left;">Whether the routine writes into the matrix</td>
+</tr>
+<tr>
+<td style="text-align: left;">Wrong numbers for a vector argument</td>
+<td style="text-align: left;">Component ordering against the model parameters</td>
+<td style="text-align: left;">Units: bar, litre, kelvin, mole</td>
+</tr>
+<tr>
+<td style="text-align: left;">A derivative is garbage but the value is fine</td>
+<td style="text-align: left;">The optional buffer was not allocated F-ordered</td>
+<td style="text-align: left;">Whether the model supports that derivative</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>NaN</code> where a number was expected</td>
+<td style="text-align: left;">The failure convention of that routine</td>
+<td style="text-align: left;">The underlying equilibrium solver</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>beta == -1</code> from a flash</td>
+<td style="text-align: left;">The feed composition and the specification</td>
+<td style="text-align: left;">Whether an initial guess was supplied</td>
+</tr>
+<tr>
+<td style="text-align: left;">A handle refers to another model</td>
+<td style="text-align: left;">A handle was released and reused</td>
+<td style="text-align: left;">The lifetime rules above</td>
+</tr>
+<tr>
+<td style="text-align: left;">The process aborts during model creation</td>
+<td style="text-align: left;">The registry exhaustion guard</td>
+<td style="text-align: left;">The number of live models</td>
+</tr>
+</tbody>
+</table>
+<h2 id="known-sharp-edges">Known sharp edges</h2>
+<ul>
+<li>No <code>bind(c)</code>, so this is not a C ABI and there is no header.</li>
+<li><code>make_available_*_models_list</code> releases the slot, not the memory.</li>
+<li>The registry exhaustion guard reads an unassigned <code>intent(out)</code> argument.</li>
+<li><code>c_int64_t</code> is imported and never used, and integer kinds are mixed
+  between <code>integer(c_int)</code> and the default <code>integer</code>.</li>
+<li><code>character(len=15)</code> is padded and must be trimmed by the caller.</li>
+<li><code>flash_grid</code> prints progress to standard output when its <code>parallel</code>
+  argument is false.</li>
+<li>The registry tables hold a million entries and are allocated on first use.</li>
+<li>The <code>!!</code> doc comments here are not rendered by FORD.</li>
+</ul>
+<h2 id="related-pages">Related pages</h2>
+<ul>
+<li><a href="index.html">Developer handbook</a> — the rest of the developer guide.</li>
+<li><a href="architecture.html">Architecture</a> — how the Fortran layers fit together.</li>
+<li><a href="fortran.html">Fortran internals</a> — the core library this layer wraps.</li>
+<li><a href="numerics.html">Numerics</a> — the solvers behind the equilibrium routines.</li>
+<li><a href="workflow.html">Development workflow</a> — how to build and test a change.</li>
+<li><a href="testing.html">Testing</a> — the test suites and how to extend them.</li>
+<li><a href="python_interface.html">Python interface layer</a> — the wrapper above this file.</li>
+<li><a href="../usage/newmodels/index.html">Adding your own models</a> — the user-facing guide for extending the library.</li>
+</ul>
+    </div>
+  </div>
+      <hr>
+    </div> <!-- /container -->
+    <footer>
+      <div class="container">
+        <div class="row justify-content-between">
+          <div class="col">
+            <p>
+              yaeos
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
+</p>
+          </div>
+          <div class="col">
+            <p class="text-end">
+              Documentation generated by
+              <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
+ on 2026-11-18 15:31 +0000             </p>
+          </div>
+        </div>
+        <br>
+      </div> <!-- /container -->
+    </footer>
+  </body>
+</html>

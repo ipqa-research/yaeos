@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="./favicon.png">
 
     <title> yaeos </title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="./css/local.css" rel="stylesheet">
     <link href="./css/pygments.css" rel="stylesheet">
+      <link href="./css/user.css" rel="stylesheet">
     <script src="./js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -82,13 +83,26 @@
     <div class="container">
   <!-- Main component for a primary marketing message or call to action -->
     <div class="p-5 mb-4 bg-light border rounded-3" id="jumbotron">
-      <p>Calculation of thermodynamic properties and phase-equilibria with
-Equation of State. Keeping high performance with the power of Fortran
-and the possiblity of using either automatic differentiation and
-anallytical derivatives.</p>
+      <div class="yaeos-hero">
+<img class="yaeos-hero-logo" src="media/logo.png" alt="yaeos logo">
+<div>
+<p class="yaeos-hero-tagline">Thermodynamic properties and phase
+equilibria with equations of state, in modern Fortran and Python.</p>
+<p class="yaeos-hero-sub">Robust algorithms for phase diagrams and
+an easy framework for adding new models, with analytical derivatives
+or automatic differentiation.</p>
+<div class="yaeos-hero-actions">
+<a class="btn btn-primary" href="page/usage/index.html">Get started</a>
+<a class="btn btn-outline-primary" href="module/yaeos.html">Fortran API</a>
+<a class="btn btn-outline-primary" href="page/python-api/index.html">Python API</a>
+<a class="btn btn-outline-secondary" href="https://github.com/ipqa-research/yaeos">GitHub</a>
+<a class="btn btn-outline-secondary" href="https://colab.research.google.com/github/ipqa-research/yaeos/blob/main/notebooks/run_online.ipynb">Try it in Colab</a>
+</div>
+</div>
+</div>
         <p> Find us on&hellip;</p>
       <p>
-        <a class="btn btn-lg btn-primary" href="https://github.com/fedebenelli/yaeos" role="button">GitHub</a>
+        <a class="btn btn-lg btn-primary" href="https://github.com/ipqa-research/yaeos" role="button">GitHub</a>
         
         
         
@@ -99,239 +113,172 @@ anallytical derivatives.</p>
       <div class="row" id='text'>
         <div class=col-md-8>
           <h1>yaeos</h1>
-          <div class="toc">
-<ul>
-<li><a href="#documentation">Documentation</a></li>
-<li><a href="#available-models">Available models</a><ul>
-<li><a href="#residual-helmholtz-models">Residual Helmholtz models</a></li>
-<li><a href="#excessgibbs-models">ExcessGibbs models</a></li>
-</ul>
-</li>
-<li><a href="#available-properties">Available properties</a></li>
-<li><a href="#developers">Developers</a></li>
-<li><a href="#versioning">Versioning</a></li>
-<li><a href="#a-little-taste-of-yaeos">A little taste of yaeos</a></li>
-<li><a href="#how-to-installrun-it">How to install/run it</a><ul>
-<li><a href="#dependencies">Dependencies</a><ul>
-<li><a href="#debianubuntu-like">Debian/Ubuntu-like</a></li>
-</ul>
-</li>
-<li><a href="#installing-yaeos">Installing yaeos</a></li>
-<li><a href="#developing-with-vscode">Developing with vscode</a></li>
-<li><a href="#available-examples">Available examples</a></li>
-</ul>
-</li>
-<li><a href="#including-new-models-with-automatic-differentiation">Including new models with Automatic Differentiation.</a><ul>
-<li><a href="#hyperdual-numbers-autodiff">Hyperdual Numbers autodiff</a></li>
-<li><a href="#tapenade-based-autodiff">Tapenade-based autodiff</a></li>
-</ul>
-</li>
-</ul>
+          <div class="yaeos-features">
+<div class="yaeos-feature">
+<h3>Phase diagrams that close</h3>
+<p>Continuation methods trace PT, Px and Tx envelopes through critical points,
+including three-phase and multiphase boundaries, critical lines and binary
+global phase diagrams.</p>
 </div>
-<div align="center">
+<div class="yaeos-feature">
+<h3>Models you can extend</h3>
+<p>Write the residual Helmholtz or excess Gibbs energy and get fugacities,
+residual properties and every equilibrium routine for free. Derivatives can
+be analytical, hyperdual or generated with Tapenade.</p>
+</div>
+<div class="yaeos-feature">
+<h3>Fortran speed, Python reach</h3>
+<p>A readable modern Fortran core built with <code>fpm</code>, wrapped as a
+<code>pip install yaeos</code> package for notebooks, fitting and plotting.</p>
+</div>
+</div>
 
-[![Fortran](https://img.shields.io/badge/Fortran-734f96?logo=fortran&style=flat)](https://fortran-lang.org)
-[![fpm](https://img.shields.io/badge/fpm-Fortran_package_manager-734f96)](https://fpm.fortran-lang.org)
-[![FORD Documentation](https://img.shields.io/badge/ford-Documentation%20-blueviolet.svg)](https://ipqa-research.github.io/yaeos/)
-[![Python Docs](https://img.shields.io/badge/Python-Docs-3776AB?logo=python&logoColor=white)](https://ipqa-research.github.io/yaeos/page/python-api/index.html)
-[![License: MPL 2.0](https://img.shields.io/badge/License-MPL_2.0-brightgreen.svg)](https://github.com/ipqa-research/yaeos/blob/main/LICENSE)
-[![CI](https://github.com/fedebenelli/yaeos/actions/workflows/CI.yml/badge.svg)](https://github.com/ipqa-research/yaeos/actions/workflows/CI.yml)
-[![codecov](https://codecov.io/gh/ipqa-research/yaeos/graph/badge.svg?token=IDJYKV8XK6)](https://codecov.io/gh/ipqa-research/yaeos)
+<h2 id="quick-start">Quick start</h2>
+<p>The same calculation in both languages: build a Peng-Robinson model for
+methane + n-butane, evaluate a pressure, a bubble point and the full PT phase
+envelope. Units are K, bar, L and mol throughout.</p>
+<ul class="nav nav-tabs yaeos-tabs" role="tablist">
+<li class="nav-item" role="presentation"><button class="nav-link active" id="tab-fortran" data-bs-toggle="tab" data-bs-target="#pane-fortran" type="button" role="tab" aria-controls="pane-fortran" aria-selected="true">Fortran</button></li>
+<li class="nav-item" role="presentation"><button class="nav-link" id="tab-python" data-bs-toggle="tab" data-bs-target="#pane-python" type="button" role="tab" aria-controls="pane-python" aria-selected="false">Python</button></li>
+</ul>
+<div class="tab-content yaeos-tab-content">
+<div aria-labelledby="tab-fortran" class="tab-pane fade show active" id="pane-fortran" role="tabpanel">
+<div class="codehilite"><pre><span></span><code><span class="k">program </span><span class="n">quickstart</span>
+<span class="w">   </span><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">pr</span><span class="p">,</span><span class="w"> </span><span class="n">ArModel</span><span class="p">,</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">,</span><span class="w"> </span><span class="n">EquilibriumState</span><span class="p">,</span><span class="w"> </span><span class="n">PTEnvel2</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="n">saturation_pressure</span><span class="p">,</span><span class="w"> </span><span class="n">pt_envelope_2ph</span>
+<span class="w">   </span><span class="k">implicit none</span>
+<span class="k">   class</span><span class="p">(</span><span class="n">ArModel</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">EquilibriumState</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">bubble</span>
+<span class="w">   </span><span class="k">type</span><span class="p">(</span><span class="n">PTEnvel2</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">envelope</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">z</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">   </span><span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">P</span>
 
-<br>
+<span class="w">   </span><span class="c">! Methane + n-butane with Peng-Robinson (1976): Tc [K], Pc [bar], omega</span>
+<span class="w">   </span><span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="o">=</span><span class="p">[</span><span class="mi">19</span><span class="mf">0.564_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="mf">5.12_pr</span><span class="p">],</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="n">pc</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="mf">5.99_pr</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="mf">7.96_pr</span><span class="p">],</span><span class="w"> </span><span class="n">w</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0115478_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.200164_pr</span><span class="p">])</span>
+<span class="w">   </span><span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.3_pr</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7_pr</span><span class="p">]</span><span class="w">  </span><span class="c">! mol</span>
 
-<a target="_blank" href="https://colab.research.google.com/github/ipqa-research/yaeos/blob/main/notebooks/run_online.ipynb">
-  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
-</a> 
+<span class="w">   </span><span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="o">=</span><span class="mf">1.0_pr</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="o">=</span><span class="mi">30</span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="o">=</span><span class="n">P</span><span class="p">)</span>
+<span class="w">   </span><span class="n">bubble</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">saturation_pressure</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="o">=</span><span class="mi">30</span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="nb">kind</span><span class="o">=</span><span class="s2">&quot;bubble&quot;</span><span class="p">)</span>
+<span class="w">   </span><span class="n">envelope</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pt_envelope_2ph</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="w">      </span><span class="n">saturation_pressure</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="o">=</span><span class="mi">20</span><span class="mf">0.0_pr</span><span class="p">,</span><span class="w"> </span><span class="nb">kind</span><span class="o">=</span><span class="s2">&quot;dew&quot;</span><span class="p">))</span>
 
-<br><br>
-
-<img src="media/logo.png" width="33%"/>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;P(1 L, 300 K) =&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;bar&quot;</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Bubble P(300 K) =&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">bubble</span><span class="p">%</span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;bar&quot;</span>
+<span class="w">   </span><span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;Critical point:&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">envelope</span><span class="p">%</span><span class="n">cps</span><span class="p">(</span><span class="mi">1</span><span class="p">)%</span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;K&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">envelope</span><span class="p">%</span><span class="n">cps</span><span class="p">(</span><span class="mi">1</span><span class="p">)%</span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;bar&quot;</span>
+<span class="k">end program </span><span class="n">quickstart</span>
+</code></pre></div>
 
 </div>
-<p>There are multiple open source equations of state libraries, like:</p>
-<ul>
-<li><a href="https://github.com/ClapeyronThermo/Clapeyron.jl">Clapeyron</a> <code>julia</code></li>
-<li><a href="https://github.com/feos-org/feos">FeOs</a> <code>rust</code> with <code>Python</code> bindings</li>
-<li><a href="https://github.com/usnistgov/teqp">teqp</a> <code>C++</code> with <code>Python</code> bindings</li>
-<li><a href="https://github.com/CalebBell/thermo">thermo</a> <code>python</code></li>
-<li><a href="https://github.com/thermotools/thermopack">thermopack</a> <code>Fortran</code> with <code>Python</code> bindings</li>
-<li><a href="https://github.com/CoolProp/CoolProp">CoolProp</a> <code>C++</code> with <code>Python</code> bindings</li>
-</ul>
-<p>Here we are presenting yet another one, that tackles the same problem just, in
-another way. Mostly exploiting the readability and extensibility of Modern
-Fortran for scientists to have an easy way to implement new thermodynamic models
-without dealing with lower-level languages but still getting decent performance.
-And also this framework provides the possibility of using analytically obtained
-derivatives and derivatives obtained with automatic differentiation.</p>
-<p>The main focus of <code>yaeos</code> is giving robusts algorithms for calculations of
-diagrams and phase-equilibria properties, with a good framework for the user 
-to add new models.</p>
-<h2 id="documentation">Documentation</h2>
-<p>The latest API documentation for the <code>main</code> branch can be found:
-   - <a href="https://ipqa-research.github.io/yaeos/">Fortran API documentation</a>
-   - <a href="https://ipqa-research.github.io/yaeos/page/python-api/index.html">Python API documentation</a></p>
-<p>The Fortran API documentation can also be generated by processing the source
-files with <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>. On the
-other hand, the Python API documentation can be generated by processing the
-source files with <a href="https://github.com/sphinx-doc/sphinx">Sphinx</a>.</p>
-<h2 id="available-models">Available models</h2>
-<h3 id="residual-helmholtz-models">Residual Helmholtz models</h3>
-<ul>
-<li>Multiparametric Family</li>
-<li>GERG2008</li>
-<li>CubicEoS Family</li>
-<li>SoaveRedlichKwong</li>
-<li>PengRobinson76</li>
-<li>PengRobinson78</li>
-<li>RKPR</li>
-<li>PSRK</li>
-<li>MixingRules:<ul>
-<li>QMR</li>
-<li>QMRTD</li>
-<li>MHV1</li>
-<li>HV</li>
-</ul>
-</li>
-<li>SAFT Family</li>
-<li>PC-SAFT</li>
-</ul>
-<h3 id="excessgibbs-models">ExcessGibbs models</h3>
-<ul>
-<li>NRTL</li>
-<li>NRTL-HV</li>
-<li>UNIQUAC</li>
-<li>UNIFAC VLE</li>
-<li>UNIFAC Dortmund</li>
-</ul>
-<h2 id="available-properties">Available properties</h2>
-<ul>
-<li>Bulk Properties</li>
-<li>Volume(n, P, T)</li>
-<li>Pressure(n, V, T)</li>
-<li>Residual Properties</li>
-<li>H^R(n, V, T)</li>
-<li>S^R(n, V, T)</li>
-<li>G^R(n, V, T)</li>
-<li>Cv^R(n, V, T)</li>
-<li>Cp^R(n, V, T)</li>
-<li>Phase-Equilibria</li>
-<li>FlashPT, FlashVT</li>
-<li>Saturation points (bubble, dew and liquid-liquid)</li>
-<li>PT Phase Envelope (isopleths)</li>
-<li>Px Phase Envelope (isotherms)</li>
-<li>Tx Phase Envelope (isobars)</li>
-</ul>
-<h2 id="developers">Developers</h2>
-<p>This library is currently maintained by the research group of Prof. Martín
-Cismondi-Duarte at <a href="https://ipqa.unc.edu.ar/en/">IPQA (UNC-CONICET)</a></p>
-<h2 id="versioning">Versioning</h2>
-<p>We use <a href="https://semver.org/">Semantic Versioning</a> to define our version numbers.</p>
-<h1 id="a-little-taste-of-yaeos">A little taste of <code>yaeos</code></h1>
-<p>A lot of users get the bad picture of Fortran being old and archaic since most
-of the codes they&rsquo;ve seen are written in ancient <code>F77</code>.</p>
-<div class="codehilite"><pre><span></span><code><span class="k">use </span><span class="n">yaeos</span><span class="p">,</span><span class="w"> </span><span class="k">only</span><span class="p">:</span><span class="w"> </span><span class="n">PengRobinson76</span><span class="p">,</span><span class="w"> </span><span class="n">ArModel</span>
+<div aria-labelledby="tab-python" class="tab-pane fade" id="pane-python" role="tabpanel">
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">yaeos</span><span class="w"> </span><span class="kn">import</span> <span class="n">PengRobinson76</span>
 
-<span class="kt">integer</span><span class="p">,</span><span class="w"> </span><span class="k">parameter</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="w">   </span><span class="c">! Number of components</span>
-<span class="kt">real</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">dPdN</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="c">! variables to calculate</span>
-<span class="k">class</span><span class="p">(</span><span class="n">ArModel</span><span class="p">),</span><span class="w"> </span><span class="k">allocatable</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">model</span><span class="w"> </span><span class="c">! Model</span>
+<span class="c1"># Methane + n-butane with Peng-Robinson (1976)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">PengRobinson76</span><span class="p">(</span>
+    <span class="n">critical_temperatures</span><span class="o">=</span><span class="p">[</span><span class="mf">190.564</span><span class="p">,</span> <span class="mf">425.12</span><span class="p">],</span>  <span class="c1"># K</span>
+    <span class="n">critical_pressures</span><span class="o">=</span><span class="p">[</span><span class="mf">45.99</span><span class="p">,</span> <span class="mf">37.96</span><span class="p">],</span>  <span class="c1"># bar</span>
+    <span class="n">acentric_factors</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0115478</span><span class="p">,</span> <span class="mf">0.200164</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">])</span>  <span class="c1"># mol</span>
 
-<span class="kt">real</span><span class="p">(</span><span class="n">pr</span><span class="p">)</span><span class="w"> </span><span class="kd">::</span><span class="w"> </span><span class="n">z</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="w"> </span><span class="n">tc</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="w"> </span><span class="n">pc</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="w"> </span><span class="n">w</span><span class="p">(</span><span class="n">n</span><span class="p">),</span><span class="w"> </span><span class="n">kij</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">),</span><span class="w"> </span><span class="n">lij</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+<span class="n">P</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">pressure</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">volume</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mf">300.0</span><span class="p">)</span>
+<span class="n">bubble</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">saturation_pressure</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">temperature</span><span class="o">=</span><span class="mf">300.0</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;bubble&quot;</span><span class="p">)</span>
+<span class="n">envelope</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">phase_envelope_pt</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;dew&quot;</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="mf">200.0</span><span class="p">,</span> <span class="n">p0</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
 
-<span class="n">z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.3</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7</span><span class="p">]</span>
-<span class="n">tc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">19</span><span class="mf">0.</span><span class="p">,</span><span class="w"> </span><span class="mi">31</span><span class="mf">0.</span><span class="p">]</span>
-<span class="n">pc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mi">1</span><span class="mf">4.</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="mf">0.</span><span class="p">]</span>
-<span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="mf">0.001</span><span class="p">,</span><span class="w"> </span><span class="mf">0.03</span><span class="p">]</span>
-<span class="n">kij</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">reshape</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span><span class="w"> </span><span class="mf">0.</span><span class="p">],</span><span class="w"> </span><span class="p">[</span><span class="n">n</span><span class="p">,</span><span class="n">n</span><span class="p">])</span>
-<span class="n">lij</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kij</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span>
-
-<span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w">  </span><span class="n">PengRobinson76</span><span class="p">(</span><span class="n">tc</span><span class="p">,</span><span class="w"> </span><span class="n">pc</span><span class="p">,</span><span class="w"> </span><span class="n">w</span><span class="p">,</span><span class="w"> </span><span class="n">kij</span><span class="p">,</span><span class="w"> </span><span class="n">lij</span><span class="p">)</span>
-
-<span class="n">V</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span>
-<span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">150</span>
-
-<span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">)</span>
-<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">P</span>
-
-<span class="c">! Obtain derivatives adding them as optional arguments! </span>
-<span class="k">call </span><span class="n">model</span><span class="p">%</span><span class="n">pressure</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">,</span><span class="w"> </span><span class="n">V</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="p">,</span><span class="w"> </span><span class="n">P</span><span class="p">,</span><span class="w"> </span><span class="n">dPdN</span><span class="o">=</span><span class="n">dPdN</span><span class="p">)</span>
-<span class="k">print</span><span class="w"> </span><span class="o">*</span><span class="p">,</span><span class="w"> </span><span class="n">dPdN</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;P(1 L, 300 K) = </span><span class="si">{</span><span class="n">P</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> bar&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bubble P(300 K) = </span><span class="si">{</span><span class="n">bubble</span><span class="p">[</span><span class="s1">&#39;P&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> bar&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Critical point:&quot;</span><span class="p">,</span> <span class="n">envelope</span><span class="o">.</span><span class="n">critical_temperatures</span><span class="p">,</span> <span class="n">envelope</span><span class="o">.</span><span class="n">critical_pressures</span><span class="p">)</span>
+<span class="n">envelope</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>  <span class="c1"># requires matplotlib</span>
 </code></pre></div>
 
-<p>Examples of code with simple applications showing the capabilities of <code>yaeos</code>
-can be found at <a href="example/tutorials">example/tutorials</a>. Each example can be run
-with:</p>
-<div class="codehilite"><pre><span></span><code><span class="w"> </span>fpm<span class="w"> </span>run<span class="w"> </span>--example<span class="w"> </span>&lt;example<span class="w"> </span>name<span class="w"> </span>here&gt;
+</div>
+</div>
+<p>Both print a pressure of 15.91 bar, a bubble pressure of 57.37 bar and a
+critical point near 401.5 K and 68.1 bar. The
+<a href="page/usage/index.html">guide</a> walks through each step and explains how to
+read the results.</p>
+<h2 id="install">Install</h2>
+<div class="yaeos-install">
+<div>
+<p><strong>Fortran</strong> — add yaeos as an <a href="https://fpm.fortran-lang.org">fpm</a>
+dependency (BLAS and LAPACK are required, e.g.
+<code>sudo apt install libblas-dev liblapack-dev</code>):</p>
+<div class="codehilite"><pre><span></span><code><span class="k">[dependencies]</span>
+<span class="n">yaeos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">git</span><span class="p">=</span><span class="s2">&quot;https://github.com/ipqa-research/yaeos&quot;</span><span class="p">}</span>
 </code></pre></div>
 
-<p>Not providing any examples will show all the possible examples that can be run.</p>
-<h1 id="how-to-installrun-it">How to install/run it</h1>
-<h2 id="dependencies">Dependencies</h2>
-<p><code>yaeos</code> needs to have <code>lapack</code> in your system.</p>
-<h3 id="debianubuntu-like">Debian/Ubuntu-like</h3>
-<div class="codehilite"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>libblas-dev<span class="w"> </span>liblapack-dev
+</div>
+<div>
+<p><strong>Python</strong> — binary wheels are published on PyPI:</p>
+<div class="codehilite"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>yaeos
 </code></pre></div>
 
-<h2 id="installing-yaeos">Installing <code>yaeos</code></h2>
-<p><code>yaeos</code> is intended to use as a <a href="fpm.fortran-lang.org"><code>fpm</code></a> package. <code>fpm</code>
-is the Fortran Package Manager, which automates the compilation and running
-process of Fortran libraries/programs.</p>
-<p>You can either:</p>
-<ul>
-<li>Generate a new project that uses <code>yaeos</code> as a dependency with:</li>
-</ul>
-<blockquote>
-<p><code>bash
-fpm new my_project</code></p>
-<p>In the <code>fpm.toml</code> file add:</p>
-<p><code>toml
-[dependencies]
-yaeos = {git="https://github.com/ipqa-research/yaeos"}</code></p>
-</blockquote>
-<ul>
-<li>Clone this repository and just modify the executables in the <code>app</code> directory</li>
-</ul>
-<blockquote>
-<p><code>bash
-git clone https://github.com/ipqa-research/yaeos
-cd yaeos
-fpm run</code></p>
-</blockquote>
-<h2 id="developing-with-vscode">Developing with vscode</h2>
-<p>If your intention is either to develop for <code>yaeos</code> or to explore in more detail
-the library with debugging. We provide some predefined defuaults to work with
-<code>vscode</code>. You can add them to the cloned repository by running:</p>
-<div class="codehilite"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/ipqa-research/vscode-fortran<span class="w"> </span>.vscode
-</code></pre></div>
+</div>
+</div>
+<h2 id="models">Models</h2>
+<table>
+<thead>
+<tr>
+<th>Residual Helmholtz (<script type="math/tex">A^r</script>)</th>
+<th>Excess Gibbs (<script type="math/tex">G^E</script>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="page/usage/eos/cubics/index.html">Cubic EoS</a>: SRK, PR76, PR78, RKPR, PSRK</td>
+<td><a href="page/usage/excessmodels/nrtl.html">NRTL</a> and <a href="page/usage/excessmodels/nrtl-hv.html">NRTL-HV</a></td>
+</tr>
+<tr>
+<td><a href="page/usage/eos/cubics/alpha.html">Alpha functions</a>: Soave, RKPR, Mathias-Copeman</td>
+<td><a href="page/usage/excessmodels/uniquac.html">UNIQUAC</a></td>
+</tr>
+<tr>
+<td><a href="page/usage/eos/cubics/mixing.html">Mixing rules</a>: QMR, QMRTD, CMR, CMRTD, MHV, HV, HV-NRTL, sDDLC</td>
+<td><a href="page/usage/excessmodels/unifac_models/unifaclv.html">UNIFAC VLE</a>, <a href="page/usage/excessmodels/unifac_models/dortmund.html">Dortmund</a> and <a href="page/usage/excessmodels/unifac_models/psrk.html">PSRK</a></td>
+</tr>
+<tr>
+<td><a href="page/usage/eos/gerg2008.html">GERG-2008</a> multifluid</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="page/usage/eos/pc_saft.html">PC-SAFT</a></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Missing one? <a href="page/usage/newmodels/index.html">Add your own model</a> by
+writing its energy function.</p>
+<h2 id="explore-the-documentation">Explore the documentation</h2>
+<div class="yaeos-cards">
+<a class="yaeos-card" href="page/usage/fundamentals.html"><h3>Fundamentals</h3><p>Equations of state, fugacity and phase equilibrium for programmers who are new to thermodynamics.</p></a>
+<a class="yaeos-card" href="page/usage/eos/index.html"><h3>Equations of state</h3><p>Volumes, pressures, fugacities and residual properties from \(A^r\) models.</p></a>
+<a class="yaeos-card" href="page/usage/excessmodels/index.html"><h3>Excess Gibbs models</h3><p>Activity coefficients and excess properties from \(G^E\) models.</p></a>
+<a class="yaeos-card" href="page/usage/phase_equilibrium/index.html"><h3>Phase equilibrium</h3><p>Flashes, saturation points, stability, envelopes and critical points.</p></a>
+<a class="yaeos-card" href="page/usage/newmodels/index.html"><h3>New models</h3><p>Implement a model with analytical derivatives or automatic differentiation.</p></a>
+<a class="yaeos-card" href="page/developer/index.html"><h3>Developer handbook</h3><p>Architecture, numerics, the Python bridge, testing and workflow.</p></a>
+<a class="yaeos-card" href="page/python-api/index.html"><h3>Python API</h3><p>Reference for the <code>yaeos</code> Python package, with tutorials.</p></a>
+<a class="yaeos-card" href="lists/procedures.html"><h3>Fortran API</h3><p>Every module, type and procedure, generated from the source.</p></a>
+<a class="yaeos-card" href="page/contributing/index.html"><h3>Contributing</h3><p>How to report issues, propose changes and follow the style guide.</p></a>
+</div>
 
-<p>From the project main directory </p>
-<h2 id="available-examples">Available examples</h2>
-<p>In this repository we provide a series of examples of the different things that
-can be calculated with <code>yaeos</code>. The source codes for the examples can be seen
-at the <a href="example/tutorials">example/tutorials</a> directory.</p>
-<p>All the examples can be run with</p>
-<div class="codehilite"><pre><span></span><code>fpm<span class="w"> </span>run<span class="w"> </span>--example<span class="w"> </span>&lt;example_name_here&gt;
-</code></pre></div>
-
-<h1 id="including-new-models-with-automatic-differentiation">Including new models with Automatic Differentiation.</h1>
-<h2 id="hyperdual-numbers-autodiff">Hyperdual Numbers autodiff</h2>
-<p>We are using the <code>hyperdual</code> module developed by 
-<a href="https://github.com/prehner">Philipp Rehner</a> 
-and <a href="https://github.com/g-bauer">Gernot Bauer</a></p>
-<p>A complete implementation of the PR76 Equation of State can me found in
-<code>example/adiff/adiff_pr76.f90</code>. Or in the documentation pages. Which can
-serve as an example of how to implement models.</p>
-<h2 id="tapenade-based-autodiff">Tapenade-based autodiff</h2>
-<p>It is also possible to differentiate with <code>tapenade</code>. Examples can be seen
-in the documentation pages or in <a href="tools/tapenade_diff/">The tools directory</a></p>
+<h2 id="citing-and-community">Citing and community</h2>
+<p>yaeos is developed by the research group of Prof. Martín Cismondi-Duarte at
+<a href="https://ipqa.unc.edu.ar/en/">IPQA (UNC-CONICET)</a> and released under the
+<a href="https://github.com/ipqa-research/yaeos/blob/main/LICENSE">Mozilla Public License 2.0</a>.
+If yaeos is useful in your work, please cite it using the repository&rsquo;s
+<a href="https://github.com/ipqa-research/yaeos/blob/main/CITATION.cff"><code>CITATION.cff</code></a>
+(GitHub&rsquo;s &ldquo;Cite this repository&rdquo; button exports BibTeX and APA). Questions,
+bug reports and ideas are welcome on the
+<a href="https://github.com/ipqa-research/yaeos/issues">issue tracker</a>.</p>
         </div>
           <div class="col-md-4">
             <div class="card card-body bg-light">
               <h2 class="card-title">Developer Info</h2>
-              <h4 class="card-text">Federico Benelli</h4>
+              <h4 class="card-text">Federico E. Benelli</h4>
               <p class="card-text"><p>PhD student with focus on reservoir PVT simulation.</p></p>
                 <div class="text-center"><div class="btn-group" role="group">
-                      <a class="btn btn-lg btn-primary" href="mailto:federico.benelli@mi.unc.edu.ar"><i class="fa fa-envelope fa-lg"></i></a>
+                      <a class="btn btn-lg btn-primary" href="mailto:federico.benelli@unc.edu.ar"><i class="fa fa-envelope fa-lg"></i></a>
                     
                     <a class="btn btn-lg btn-primary" href="https://github.com/fedebenelli"><i class="fa fa-github fa-lg"></i></a>
                     
@@ -399,14 +346,14 @@ in the documentation pages or in <a href="tools/tapenade_diff/">The tools direct
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>

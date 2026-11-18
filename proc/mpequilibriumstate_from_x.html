@@ -6,8 +6,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-      <meta name="description" content="Calculation of thermodynamic properties and phase-equilibria with Equation of State. Keeping high performance with the power of Fortran and the possiblity of using either automatic differentiation and anallytical derivatives.">
-    <meta name="author" content="Federico Benelli" >
+      <meta name="description" content="Thermodynamic properties and phase equilibria with equations of state, in modern Fortran and Python. Robust algorithms for phase diagrams and an easy framework for adding new models, with analytical derivatives or automatic differentiation. Get started Fortran API Python API GitHub Try it in Colab">
+    <meta name="author" content="Federico E. Benelli" >
     <link rel="icon" href="../favicon.png">
 
     <title>MPEquilibriumState_from_X &ndash; yaeos</title>
@@ -35,6 +35,7 @@
     <!-- Other scripts and stylesheets -->
     <link href="../css/local.css" rel="stylesheet">
     <link href="../css/pygments.css" rel="stylesheet">
+      <link href="../css/user.css" rel="stylesheet">
     <script src="../js/svg-pan-zoom.min.js"></script>
   </head>
 
@@ -93,7 +94,7 @@
 
             <li class="list-inline-item" id="statements"><i class="fa fa-list-ol"></i>
               <a data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-html="true"
-                 title=" 0.1% of total for procedures.">24 statements</a>
+                 title=" 0.2% of total for procedures.">30 statements</a>
             </li>
 
             <li class="list-inline-item" id="source-file">
@@ -135,15 +136,15 @@
       </a>
       <div id="vars-0" class="collapse">
         <div class="list-group list-group-flush">
-            <a class="list-group-item" href="../proc/mpequilibriumstate_from_x.html#variable-k~20">K</a>
-            <a class="list-group-item" href="../proc/mpequilibriumstate_from_x.html#variable-p~93">P</a>
-            <a class="list-group-item" href="../proc/mpequilibriumstate_from_x.html#variable-t~143">T</a>
-            <a class="list-group-item" href="../proc/mpequilibriumstate_from_x.html#variable-betas~21">betas</a>
-            <a class="list-group-item" href="../proc/mpequilibriumstate_from_x.html#variable-l~27">l</a>
-            <a class="list-group-item" href="../proc/mpequilibriumstate_from_x.html#variable-lb~19">lb</a>
-            <a class="list-group-item" href="../proc/mpequilibriumstate_from_x.html#variable-ub~19">ub</a>
-            <a class="list-group-item" href="../proc/mpequilibriumstate_from_x.html#variable-w~46">w</a>
-            <a class="list-group-item" href="../proc/mpequilibriumstate_from_x.html#variable-x_l~21">x_l</a>
+            <a class="list-group-item" href="../proc/mpequilibriumstate_from_x.html#variable-k~9">K</a>
+            <a class="list-group-item" href="../proc/mpequilibriumstate_from_x.html#variable-p~23">P</a>
+            <a class="list-group-item" href="../proc/mpequilibriumstate_from_x.html#variable-t~31">T</a>
+            <a class="list-group-item" href="../proc/mpequilibriumstate_from_x.html#variable-betas~12">betas</a>
+            <a class="list-group-item" href="../proc/mpequilibriumstate_from_x.html#variable-l~12">l</a>
+            <a class="list-group-item" href="../proc/mpequilibriumstate_from_x.html#variable-lb~12">lb</a>
+            <a class="list-group-item" href="../proc/mpequilibriumstate_from_x.html#variable-ub~12">ub</a>
+            <a class="list-group-item" href="../proc/mpequilibriumstate_from_x.html#variable-w~13">w</a>
+            <a class="list-group-item" href="../proc/mpequilibriumstate_from_x.html#variable-x_l~12">x_l</a>
         </div>
       </div>
     </div>
@@ -195,7 +196,7 @@
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-nc~134"></span>
+              <span class="anchor" id="variable-nc~28"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -210,7 +211,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-np~32"></span>
+              <span class="anchor" id="variable-np~19"></span>
               integer,
             </td>
 <td>intent(in)</td>
@@ -220,12 +221,12 @@
             <td>::</td>
             <td><strong>np</strong></td>
             <td>
-                <p>Number of phases - 1</p>
+                <p>Number of main phases (total phases - 1)</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-z~67"></span>
+              <span class="anchor" id="variable-z~16"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -240,7 +241,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kinds_x~21"></span>
+              <span class="anchor" id="variable-kinds_x~11"></span>
               character(len=14),
             </td>
 <td>intent(in)</td>
@@ -255,7 +256,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-kind_w~22"></span>
+              <span class="anchor" id="variable-kind_w~11"></span>
               character(len=14),
             </td>
 <td>intent(in)</td>
@@ -270,7 +271,7 @@
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x~82"></span>
+              <span class="anchor" id="variable-x~28"></span>
               real(kind=pr),
             </td>
 <td>intent(in)</td>
@@ -306,34 +307,34 @@ of the main phases (<script type="math/tex">\beta^l</script>), and the last two 
   <div class="depgraph"><?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: proc~~mpequilibriumstate_from_x~~CalledByGraph Pages: 1 -->
-<svg id="procmpequilibriumstate_from_xCalledByGraph" width="368pt" height="32pt"
- viewBox="0.00 0.00 368.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="proc~~mpequilibriumstate_from_x~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28)">
+<svg id="procmpequilibriumstate_from_xCalledByGraph" width="366pt" height="32pt"
+ viewBox="0.00 0.00 366.00 32.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="proc~~mpequilibriumstate_from_x~~CalledByGraph" class="graph" transform="scale(1 1) rotate(0) translate(4 28.27)">
 <title>proc~~mpequilibriumstate_from_x~~CalledByGraph</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 364,-28 364,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 361.54,-28.27 361.54,4 -4,4"/>
 <!-- proc~mpequilibriumstate_from_x -->
 <g id="proc~~mpequilibriumstate_from_x~~CalledByGraph_node1" class="node">
 <title>proc~mpequilibriumstate_from_x</title>
-<polygon fill="none" stroke="black" points="360,-24 201,-24 201,0 360,0 360,-24"/>
-<text text-anchor="middle" x="280.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">MPEquilibriumState_from_X</text>
+<polygon fill="none" stroke="black" points="357.54,-24.27 199.77,-24.27 199.77,0 357.54,0 357.54,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="278.66" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">MPEquilibriumState_from_X</text>
 </g>
 <!-- proc~create_generalized_isoz_line -->
 <g id="proc~~mpequilibriumstate_from_x~~CalledByGraph_node2" class="node">
 <title>proc~create_generalized_isoz_line</title>
 <g id="a_proc~~mpequilibriumstate_from_x~~CalledByGraph_node2"><a xlink:href="../proc/create_generalized_isoz_line.html" xlink:title="create_generalized_isoz_line">
-<polygon fill="#d94e8f" stroke="#d94e8f" points="165,-24 0,-24 0,0 165,0 165,-24"/>
-<text text-anchor="middle" x="82.5" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">create_generalized_isoz_line</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="163.77,-24.27 0,-24.27 0,0 163.77,0 163.77,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="81.88" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">create_generalized_isoz_line</text>
 </a>
 </g>
 </g>
 <!-- proc~create_generalized_isoz_line&#45;&gt;proc~mpequilibriumstate_from_x -->
 <g id="proc~~mpequilibriumstate_from_x~~CalledByGraph_edge1" class="edge">
 <title>proc~create_generalized_isoz_line&#45;&gt;proc~mpequilibriumstate_from_x</title>
-<path fill="none" stroke="#000000" d="M165.2,-12C173.57,-12 182.09,-12 190.53,-12"/>
-<polygon fill="#000000" stroke="#000000" points="190.76,-15.5 200.76,-12 190.76,-8.5 190.76,-15.5"/>
+<path fill="none" stroke="#000000" d="M164.07,-12.13C172.02,-12.13 180.11,-12.13 188.14,-12.13"/>
+<polygon fill="#000000" stroke="#000000" points="187.89,-15.64 197.89,-12.14 187.89,-8.64 187.89,-15.64"/>
 </g>
 </g>
 </svg>
@@ -352,55 +353,55 @@ of the main phases (<script type="math/tex">\beta^l</script>), and the last two 
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<!-- Generated by graphviz version 2.43.0 (0)
+<!-- Generated by graphviz version 14.1.2 (0)
  -->
 <!-- Title: Graph Key Pages: 1 -->
 <svg width="641pt" height="28pt"
- viewBox="0.00 0.00 641.00 27.51" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-<g id="graph0" class="graph" transform="scale(0.86 0.86) rotate(0) translate(4 28)">
+ viewBox="0.00 0.00 641.00 28.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(0.873868 0.873868) rotate(0) translate(4 28.27)">
 <title>Graph Key</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-28 741.5,-28 741.5,4 -4,4"/>
+<polygon fill="white" stroke="none" points="-4,4 -4,-28.27 729.52,-28.27 729.52,4 -4,4"/>
 <!-- Subroutine -->
 <g id="node1" class="node">
 <title>Subroutine</title>
-<polygon fill="#d9534f" stroke="#d9534f" points="70,-24 0,-24 0,0 70,0 70,-24"/>
-<text text-anchor="middle" x="35" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
+<polygon fill="#d9534f" stroke="#d9534f" points="69.27,-24.27 0,-24.27 0,0 69.27,0 69.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="34.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Subroutine</text>
 </g>
 <!-- Function -->
 <g id="node2" class="node">
 <title>Function</title>
-<polygon fill="#d94e8f" stroke="#d94e8f" points="146,-24 88,-24 88,0 146,0 146,-24"/>
-<text text-anchor="middle" x="117" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
+<polygon fill="#d94e8f" stroke="#d94e8f" points="143.89,-24.27 87.38,-24.27 87.38,0 143.89,0 143.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="115.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Function</text>
 </g>
 <!-- Interface -->
 <g id="node3" class="node">
 <title>Interface</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="225.5,-24 164.5,-24 164.5,0 225.5,0 225.5,-24"/>
-<text text-anchor="middle" x="195" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="221.39,-24.27 161.88,-24.27 161.88,0 221.39,0 221.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="191.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Interface</text>
 </g>
 <!-- Type Bound Procedure -->
 <g id="node4" class="node">
 <title>Type Bound Procedure</title>
-<polygon fill="#a7506f" stroke="#a7506f" points="374,-24 244,-24 244,0 374,0 374,-24"/>
-<text text-anchor="middle" x="309" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
+<polygon fill="#a7506f" stroke="#a7506f" points="368.27,-24.27 239,-24.27 239,0 368.27,0 368.27,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="303.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Type Bound Procedure</text>
 </g>
 <!-- Unknown Procedure Type -->
 <g id="node5" class="node">
 <title>Unknown Procedure Type</title>
-<polygon fill="#777777" stroke="#777777" points="537.5,-24 392.5,-24 392.5,0 537.5,0 537.5,-24"/>
-<text text-anchor="middle" x="465" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
+<polygon fill="#777777" stroke="#777777" points="529.39,-24.27 385.88,-24.27 385.88,0 529.39,0 529.39,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="457.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Unknown Procedure Type</text>
 </g>
 <!-- Program -->
 <g id="node6" class="node">
 <title>Program</title>
-<polygon fill="#f0ad4e" stroke="#f0ad4e" points="614,-24 556,-24 556,0 614,0 614,-24"/>
-<text text-anchor="middle" x="585" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
+<polygon fill="#f0ad4e" stroke="#f0ad4e" points="603.89,-24.27 547.38,-24.27 547.38,0 603.89,0 603.89,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="575.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50" fill="white">Program</text>
 </g>
 <!-- This Page&#39;s Entity -->
 <g id="node7" class="node">
 <title>This Page&#39;s Entity</title>
-<polygon fill="none" stroke="black" points="737.5,-24 632.5,-24 632.5,0 737.5,0 737.5,-24"/>
-<text text-anchor="middle" x="685" y="-9.6" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
+<polygon fill="none" stroke="black" points="725.52,-24.27 621.75,-24.27 621.75,0 725.52,0 725.52,-24.27"/>
+<text xml:space="preserve" text-anchor="middle" x="673.63" y="-8.53" font-family="Helvetica,sans-Serif" font-size="10.50">This Page&#39;s Entity</text>
 </g>
 </g>
 </svg>
@@ -433,7 +434,7 @@ implementation in a submodule of an interface in a parent module.
     <tbody>
         <tr>
             <td>
-              <span class="anchor" id="variable-k~20"></span>
+              <span class="anchor" id="variable-k~9"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -450,7 +451,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-p~93"></span>
+              <span class="anchor" id="variable-p~23"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -467,7 +468,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-t~143"></span>
+              <span class="anchor" id="variable-t~31"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -484,7 +485,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-betas~21"></span>
+              <span class="anchor" id="variable-betas~12"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -496,12 +497,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Phase fractions of the main phases followed by the reference phase.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-l~27"></span>
+              <span class="anchor" id="variable-l~12"></span>
               integer,
             </td>
               <td>public</td>
@@ -513,12 +514,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Loop/phase index.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-lb~19"></span>
+              <span class="anchor" id="variable-lb~12"></span>
               integer,
             </td>
               <td>public</td>
@@ -535,7 +536,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-ub~19"></span>
+              <span class="anchor" id="variable-ub~12"></span>
               integer,
             </td>
               <td>public</td>
@@ -552,7 +553,7 @@ implementation in a submodule of an interface in a parent module.
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-w~46"></span>
+              <span class="anchor" id="variable-w~13"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -564,12 +565,12 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Reference/trial phase composition.</p>
             </td>
         </tr>
         <tr>
             <td>
-              <span class="anchor" id="variable-x_l~21"></span>
+              <span class="anchor" id="variable-x_l~12"></span>
               real(kind=pr),
             </td>
               <td>public</td>
@@ -581,7 +582,7 @@ implementation in a submodule of an interface in a parent module.
                 <td></td>
                 <td></td>
             <td>
-                
+                <p>Main-phase compositions.</p>
             </td>
         </tr>
     </tbody>
@@ -610,14 +611,14 @@ implementation in a submodule of an interface in a parent module.
           <div class="col">
             <p>
               yaeos
- was developed by Federico Benelli<br>              &copy; 2026 MPL
+ was developed by Federico E. Benelli<br>              &copy; 2026 MPL
 </p>
           </div>
           <div class="col">
             <p class="text-end">
               Documentation generated by
               <a href="https://github.com/Fortran-FOSS-Programmers/ford">FORD</a>
- on 2026-10-07 16:05 +0000             </p>
+ on 2026-11-18 15:31 +0000             </p>
           </div>
         </div>
         <br>
