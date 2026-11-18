@@ -223,6 +223,11 @@ jobs:
 
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
+    needs:
+      - tests_and_coverage
+      - tests_windows
+      - tests_macos
+      - Python-API
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
