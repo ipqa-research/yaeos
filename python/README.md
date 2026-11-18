@@ -4,8 +4,8 @@
   <img src="https://github.com/ipqa-research/yaeos/blob/main/media/logo.png?raw=true" alt="logo" width="500"/>
 </p>
 
-The `yaeos` Python API is on and early stage of development. So the API will 
-change with time. The supported operative system is Linux, and the supported 
+The `yaeos` Python API is in an early stage of development, so the API will
+change with time. The supported operating system is Linux, and the supported
 Python versions are 3.10, 3.11, 3.12 and 3.13.
 
 ## Important advice

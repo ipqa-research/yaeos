@@ -1,4 +1,18 @@
 module yaeos__models_ge_gc_td
+   !! # Temperature dependence for group-contribution models
+   !!
+   !! # Description
+   !! Abstract [[PsiFunction]] type and the concrete temperature-dependent
+   !! \(\psi(T)\) functions used by UNIFAC-like models.
+   !! `UNIFACPsi` implements \(\psi_{ij} = \exp(-A_{ij}/T)\), while
+   !! `QuadraticPsi` implements
+   !! \(\psi_{ij} = \exp(-(A_{ij} + B_{ij}T + C_{ij}T^2)/T)\) (Dortmund and
+   !! PSRK). Both also return the first two temperature derivatives.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! call psi_model%psi(systems_groups, T, psi, dpsi_dT, d2psi_dT2)
+   !! ```
    use yaeos__constants, only: pr
    use yaeos__models_ge_group_contribution_groups, only: Groups
    implicit none
@@ -12,6 +26,10 @@ module yaeos__models_ge_gc_td
       !!
       !! # Description
       !! Abstract derived type for UNIFAC models temperature dependent functions
+      !!
+      !! # Examples
+      !! Extend this type and implement its deferred `psi` binding to supply
+      !! a new group-interaction temperature law.
       !!
    contains
       procedure(temperature_dependence), deferred :: psi
@@ -47,6 +65,11 @@ module yaeos__models_ge_gc_td
    ! ---------------------------------------------------------------------------
    type, extends(PsiFunction) :: UNIFACPsi
       !! # Original UNIFAC \(\psi\) function
+      !!
+      !! # Description
+      !! Implements the original UNIFAC pair factor \(\psi_{ij}(T)\) and its
+      !! first and second temperature derivatives from the `Aij` matrix.
+      !!
       !! \[
       !!    \psi_{ij}(T) = \exp(-\frac{A_{ij}}{T})
       !! \]
@@ -58,12 +81,17 @@ module yaeos__models_ge_gc_td
       !!
       !! \[
       !!    \frac{d^2 \psi_{ij}(T)}{dT^2} =
-      !!    \frac{Aij (Aij - 2T)}{T^4} \exp(-\frac{A_{ij}}{T})
+      !!    \frac{A_{ij} (A_{ij} - 2T)}{T^4} \exp(-\frac{A_{ij}}{T})
       !! \]
       !!
+      !! # Examples
+      !! ```fortran
+      !! psi_model%Aij = Aij ! [K]
+      !! call psi_model%psi(systems_groups, T, psi, dpsi_dT, d2psi_dT2)
+      !! ```
+      !!
       !! # References
-      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst
-      !! .com/published-parameters-unifac.html)
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst.com/published-parameters-unifac.html)
       !! 2. Fredenslund, A., Jones, R. L., & Prausnitz, J. M. (1975).
       !! Group‐contribution estimation of activity coefficients in nonideal liquid
       !! mixtures. AIChE Journal, 21(6), 1086–1099.
@@ -98,15 +126,33 @@ module yaeos__models_ge_gc_td
       !! [https://doi.org/10.1021/ie020506l](https://doi.org/10.1021/ie020506l)
       !! 9. [SINTEF - Thermopack](https://github.com/thermotools/thermopack)
       !!
-      real(pr), allocatable :: Aij(:, :)
+      real(pr), allocatable :: Aij(:, :) !! Subgroup interaction parameters \(A_{ij}\) [K].
    contains
       procedure :: psi => UNIFAC_temperature_dependence
    end type UNIFACPsi
 
    type, extends(PsiFunction) :: QuadraticPsi
-      real(pr), allocatable :: Aij(:, :)
-      real(pr), allocatable :: Bij(:, :)
-      real(pr), allocatable :: Cij(:, :)
+      !! # QuadraticPsi
+      !! Quadratic-in-temperature interaction function used by group models.
+      !!
+      !! # Description
+      !! Evaluates, for each pair of subgroups,
+      !!
+      !! \[
+      !!    \psi_{ij}(T) = \exp\left(-\frac{A_{ij} + B_{ij} T + C_{ij} T^2}{T}\right)
+      !! \]
+      !!
+      !! and its first and second temperature derivatives. Used by the
+      !! Dortmund and PSRK UNIFAC variants.
+      !!
+      !! # Examples
+      !! ```fortran
+      !! psi_model = QuadraticPsi(Aij=A, Bij=B, Cij=C)
+      !! call psi_model%psi(systems_groups, T, psi, dpsi_dT, d2psi_dT2)
+      !! ```
+      real(pr), allocatable :: Aij(:, :) !! \(A_{ij}\) subgroup interaction coefficients [K].
+      real(pr), allocatable :: Bij(:, :) !! \(B_{ij}\) coefficients (dimensionless).
+      real(pr), allocatable :: Cij(:, :) !! \(C_{ij}\) coefficients [1/K].
    contains
       procedure :: psi => Quadratic_temperature_dependence
    end type QuadraticPsi
@@ -130,12 +176,11 @@ contains
       !!
       !! \[
       !!    \frac{d^2 \psi_{ij}(T)}{dT^2} =
-      !!    \frac{Aij (Aij - 2T)}{T^4} \exp(-\frac{A_{ij}}{T})
+      !!    \frac{A_{ij} (A_{ij} - 2T)}{T^4} \exp(-\frac{A_{ij}}{T})
       !! \]
       !!
       !! # References
-      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst
-      !! .com/published-parameters-unifac.html)
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst.com/published-parameters-unifac.html)
       !! 2. Fredenslund, A., Jones, R. L., & Prausnitz, J. M. (1975).
       !! Group‐contribution estimation of activity coefficients in nonideal liquid
       !! mixtures. AIChE Journal, 21(6), 1086–1099.
@@ -205,6 +250,11 @@ contains
       self, systems_groups, T, psi, dpsi_dt, dpsi_dt2 &
       )
       !! # Quadratic temperature dependence
+      !! Implementation of the [[QuadraticPsi]] \(\psi(T)\) function:
+      !!
+      !! \[
+      !!    \psi_{ij}(T) = \exp\left(-\frac{A_{ij} + B_{ij} T + C_{ij} T^2}{T}\right)
+      !! \]
       class(QuadraticPsi) :: self
       !! \(\psi\) function
       class(Groups) :: systems_groups
@@ -218,11 +268,16 @@ contains
       real(pr), optional, intent(out) :: dpsi_dt2(:, :)
       !! \(\frac{d^2 \psi}{dT^2}\)
 
-      integer :: i, j
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
       integer :: ngroups
 
-      real(pr) :: u, dudt, dudt2
-      real(pr) :: a, b, c
+      real(pr) :: u
+      real(pr) :: dudt
+      real(pr) :: dudt2
+      real(pr) :: a
+      real(pr) :: b
+      real(pr) :: c
 
       ngroups = size(systems_groups%groups_ids)
       

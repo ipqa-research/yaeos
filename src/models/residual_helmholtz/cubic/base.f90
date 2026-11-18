@@ -1,4 +1,15 @@
 module yaeos__models_ar_genericcubic_base
+   !! # Generic cubic residual Helmholtz energy
+   !!
+   !! # Description
+   !! Calculation of the residual Helmholtz energy and its derivatives for a
+   !! generic cubic equation of state with composition-dependent \(\delta_1\)
+   !! and \(\delta_2\) parameters.
+   !! Provides the algebraic residual Helmholtz expression and derivatives
+   !! used by concrete cubic EOS implementations.
+   !!
+   !! # Examples
+   !! Called by `CubicEoS` implementations through their mixing-rule bindings.
    use yaeos__constants, only: pr, R
    implicit none
 
@@ -30,11 +41,11 @@ contains
       real(pr), intent(in) :: v !! Volume [L]
       real(pr), intent(in) :: t !! Temperature [K]
 
-      real(pr), intent(in) :: B !! Repulsive parameter [L]
+      real(pr), intent(in) :: B !! Mixture covolume \(B = n_T b_{mix}\) [L]
       real(pr), intent(in) :: dBi(size(n)) !! \(dB/dn_i\)
       real(pr), intent(in) :: dBij(size(n), size(n)) !! \(d^2B/dn_{ij}\)
 
-      real(pr), intent(in) :: D !! Attractive parameter
+      real(pr), intent(in) :: D !! Mixture attractive parameter \(D = n^2 a_{mix}\) [bar L^2]
       real(pr), intent(in) :: dDi(size(n)) !! \(dD/dn_i\)
       real(pr), intent(in) :: dDij(size(n), size(n)) !! \(d^2D/dn_{ij}\)
       real(pr), intent(in) :: dDidT(size(n)) !! \(d^2D/dTdn_i\)
@@ -45,7 +56,7 @@ contains
       real(pr), intent(in) :: dD1i(size(n)) !! \(d\delta_1/dn_i\)
       real(pr), intent(in) :: dD1ij(size(n), size(n)) !! \(d^2\delta_1/dn_{ij}\)
 
-      real(pr), optional, intent(out) :: ar !! Residual Helmholtz
+      real(pr), optional, intent(out) :: ar !! Residual Helmholtz energy [bar L]
       real(pr), optional, intent(out) :: arv !! \(\frac{dAr}{dV}\)
       real(pr), optional, intent(out) :: ArT !! \(\frac{dAr}{dT}\)
       real(pr), optional, intent(out) :: artv !! \(\frac{d^2Ar}{dTdV}\)
@@ -57,13 +68,29 @@ contains
       real(pr), optional, intent(out) :: Arn2(size(n), size(n)) !! \(\frac{d^2Ar}{dn_{ij}}\)
 
 
-      real(pr) :: totn
-      real(pr) :: auxD2, fD1, fBD1, fVD1, fD1D1
+      real(pr) :: totn !! Total number of moles.
+      real(pr) :: auxD2 !! Second-order intermediate quantity used by this procedure.
+      real(pr) :: fD1
+      real(pr) :: fBD1
+      real(pr) :: fVD1
+      real(pr) :: fD1D1
       real(pr) d2
 
-      real(pr) :: f, g, fv, fB, gv, fv2, gv2, AUX, FFB, FFBV, FFBB
+      real(pr) :: f
+      real(pr) :: g
+      real(pr) :: fv
+      real(pr) :: fB
+      real(pr) :: gv
+      real(pr) :: fv2
+      real(pr) :: gv2
+      real(pr) :: AUX
+      real(pr) :: FFB
+      real(pr) :: FFBV
+      real(pr) :: FFBB
 
-      integer :: i, j, nc
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: nc !! Number of components.
 
       nc = size(n)
       TOTN = sum(n)
@@ -139,6 +166,9 @@ contains
       D1, dD1i, dD1ij, &
       Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2 &
       )
+      !! # GenericCubic_Ar_dddlc
+      !!
+      !! # Description
       !! Residual Helmholtz Energy for a generic Cubic Equation of State.
       !!
       !! Calculates the residual Helmholtz Energy for a generic Cubic EoS as
@@ -153,49 +183,65 @@ contains
       !! s-DDLC local composition rule), the non-zero volume derivatives
       !! `dDdV`, `dDdV2`, `dDdTV`, and `dDidV` drive additional correction
       !! terms that are added to `ArV`, `ArV2`, `ArTV`, and `ArVn`.
-      !! For standard mixing rules all four inputs should be passed as zero,
-      !! and the correction block is skipped entirely at run time.
+      !! For standard mixing rules all four inputs should be passed as zero;
+      !! the correction terms are always evaluated, so they then vanish.
       use yaeos__constants, only: R
-      real(pr), intent(in) :: n(:)  !! Mole numbers
-      real(pr), intent(in) :: V     !! Volume [L]
-      real(pr), intent(in) :: T     !! Temperature [K]
+      real(pr), intent(in) :: n(:) !! Mole numbers
+      real(pr), intent(in) :: V !! Volume [L]
+      real(pr), intent(in) :: T !! Temperature [K]
 
-      real(pr), intent(in) :: B             !! Repulsive parameter [L]
+      real(pr), intent(in) :: B !! Mixture covolume \(B = n_T b_{mix}\) [L]
       real(pr), intent(in) :: dBi(size(n)) !! \(dB/dn_i\)
       real(pr), intent(in) :: dBij(size(n), size(n)) !! \(d^2B/dn_{ij}\)
 
-      real(pr), intent(in) :: D                       !! Attractive parameter
-      real(pr), intent(in) :: dDi(size(n))            !! \(dD/dn_i\)
-      real(pr), intent(in) :: dDij(size(n), size(n))  !! \(d^2D/dn_{ij}\)
-      real(pr), intent(in) :: dDidT(size(n))          !! \(d^2D/dT\,dn_i\)
-      real(pr), intent(in) :: dDidV(size(n))          !! \(d^2D/dV\,dn_i\)
-      real(pr), intent(in) :: dDdT  !! \(dD/dT\)
+      real(pr), intent(in) :: D !! Mixture attractive parameter \(D = n^2 a_{mix}\) [bar L^2]
+      real(pr), intent(in) :: dDi(size(n)) !! \(dD/dn_i\)
+      real(pr), intent(in) :: dDij(size(n), size(n)) !! \(d^2D/dn_{ij}\)
+      real(pr), intent(in) :: dDidT(size(n)) !! \(d^2D/dT\,dn_i\)
+      real(pr), intent(in) :: dDidV(size(n)) !! \(d^2D/dV\,dn_i\)
+      real(pr), intent(in) :: dDdT !! \(dD/dT\)
       real(pr), intent(in) :: dDdT2 !! \(d^2D/dT^2\)
-      real(pr), intent(in) :: dDdV  !! \(dD/dV\) — zero for V-independent mixing rules
+      real(pr), intent(in) :: dDdV !! \(dD/dV\) — zero for V-independent mixing rules
       real(pr), intent(in) :: dDdV2 !! \(d^2D/dV^2\) — zero for V-independent mixing rules
       real(pr), intent(in) :: dDdTV !! \(d^2D/dT\,dV\) — zero for V-independent mixing rules
 
-      real(pr), intent(in) :: D1              !! \(\delta_1\) parameter
-      real(pr), intent(in) :: dD1i(size(n))   !! \(d\delta_1/dn_i\)
+      real(pr), intent(in) :: D1 !! \(\delta_1\) parameter
+      real(pr), intent(in) :: dD1i(size(n)) !! \(d\delta_1/dn_i\)
       real(pr), intent(in) :: dD1ij(size(n), size(n)) !! \(d^2\delta_1/dn_{ij}\)
 
-      real(pr), optional, intent(out) :: Ar              !! Residual Helmholtz
-      real(pr), optional, intent(out) :: ArV             !! \(dAr/dV\)
-      real(pr), optional, intent(out) :: ArT             !! \(dAr/dT\)
-      real(pr), optional, intent(out) :: ArTV            !! \(d^2Ar/dT\,dV\)
-      real(pr), optional, intent(out) :: ArV2            !! \(d^2Ar/dV^2\)
-      real(pr), optional, intent(out) :: ArT2            !! \(d^2Ar/dT^2\)
-      real(pr), optional, intent(out) :: Arn(size(n))    !! \(dAr/dn_i\)
-      real(pr), optional, intent(out) :: ArVn(size(n))   !! \(d^2Ar/dV\,dn_i\)
-      real(pr), optional, intent(out) :: ArTn(size(n))   !! \(d^2Ar/dT\,dn_i\)
+      real(pr), optional, intent(out) :: Ar !! Residual Helmholtz energy [bar L]
+      real(pr), optional, intent(out) :: ArV !! \(dAr/dV\)
+      real(pr), optional, intent(out) :: ArT !! \(dAr/dT\)
+      real(pr), optional, intent(out) :: ArTV !! \(d^2Ar/dT\,dV\)
+      real(pr), optional, intent(out) :: ArV2 !! \(d^2Ar/dV^2\)
+      real(pr), optional, intent(out) :: ArT2 !! \(d^2Ar/dT^2\)
+      real(pr), optional, intent(out) :: Arn(size(n)) !! \(dAr/dn_i\)
+      real(pr), optional, intent(out) :: ArVn(size(n)) !! \(d^2Ar/dV\,dn_i\)
+      real(pr), optional, intent(out) :: ArTn(size(n)) !! \(d^2Ar/dT\,dn_i\)
       real(pr), optional, intent(out) :: Arn2(size(n), size(n)) !! \(d^2Ar/dn_{ij}\)
 
-      real(pr) :: totn
-      real(pr) :: auxD2, fD1, fBD1, fVD1, fD1D1
+      real(pr) :: totn !! Total number of moles.
+      real(pr) :: auxD2 !! Second-order intermediate quantity used by this procedure.
+      real(pr) :: fD1
+      real(pr) :: fBD1
+      real(pr) :: fVD1
+      real(pr) :: fD1D1
       real(pr) :: D2
-      real(pr) :: f, g, fv, fB, gv, fv2, gv2, AUX, FFB, FFBV, FFBB
+      real(pr) :: f
+      real(pr) :: g
+      real(pr) :: fv
+      real(pr) :: fB
+      real(pr) :: gv
+      real(pr) :: fv2
+      real(pr) :: gv2
+      real(pr) :: AUX
+      real(pr) :: FFB
+      real(pr) :: FFBV
+      real(pr) :: FFBB
 
-      integer :: i, j, nc
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: nc !! Number of components.
 
       nc   = size(n)
       TOTN = sum(n)

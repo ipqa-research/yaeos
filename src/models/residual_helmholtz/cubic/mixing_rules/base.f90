@@ -4,15 +4,15 @@ module yaeos__models_ar_cubic_mixing_base
    !!
    !! # Description
    !! This module holds all the basic math to use mixing rules in other codes.
-   !! Keeping it simple and accesible.
+   !! Keeping it simple and accessible.
    !!
    !! # Examples
    !!
    !! ```fortran
-   !! bi = [0.2, 0.3]
-   !! lij = reshape([0.0, 0.2, 0.2, 0], [2,2])
+   !! bi = [0.2_pr, 0.3_pr]
+   !! lij = reshape([0.0_pr, 0.2_pr, 0.2_pr, 0.0_pr], [2,2])
    !!
-   !! ! Calculate B parameter with Quadratric Mixing Rules.
+   !! ! Calculate B parameter with Quadratic Mixing Rules.
    !! call bmix_qmr(n, bi, lij, b, dbi, dbij)
    !!
    !! ```
@@ -23,9 +23,22 @@ module yaeos__models_ar_cubic_mixing_base
 contains
 
    pure subroutine bmix_linear(n, bi, b, dbi, dbij)
-      real(pr), intent(in) :: n(:)
-      real(pr), intent(in) :: bi(:)
-      real(pr), intent(out) :: b, dbi(:), dbij(:, :)
+      !! # bmix_linear
+      !! Calculate the linear mixture covolume and composition derivatives.
+      !!
+      !! # Description
+      !! Uses \(B=\sum_i n_i b_i\), so its mole-number gradient is `bi` and
+      !! its Hessian is zero.
+      !!
+      !! # Examples
+      !! ```fortran
+      !! call bmix_linear(n, bi, B, dBdn, d2Bdn2)
+      !! ```
+      real(pr), intent(in) :: n(:) !! Component mole amounts.
+      real(pr), intent(in) :: bi(:) !! Pure-component covolumes.
+      real(pr), intent(out) :: b !! Mixture covolume.
+      real(pr), intent(out) :: dbi(:) !! Mole-number gradient of the mixture covolume.
+      real(pr), intent(out) :: dbij(:, :) !! Mole-number Hessian of the mixture covolume.
 
       b = sum(n*bi)
       dbi = bi
@@ -33,16 +46,33 @@ contains
    end subroutine bmix_linear
 
    pure subroutine bmix_qmr(n, bi, lij, b, dbi, dbij)
-      real(pr), intent(in) :: n(:)
-      real(pr), intent(in) :: bi(:)
-      real(pr), intent(in) :: lij(:, :)
-      real(pr), intent(out) :: b, dbi(:), dbij(:, :)
+      !! # bmix_qmr
+      !! Calculate the QMR covolume and its first and second mole derivatives.
+      !!
+      !! # Description
+      !! Forms pair covolumes \(b_{ij}=\frac{b_i+b_j}{2}(1-l_{ij})\) and
+      !! evaluates \(B=\sum_{ij}n_i n_j b_{ij}/\sum_i n_i\). The derivatives
+      !! are returned with respect to the component mole amounts.
+      !!
+      !! # Examples
+      !! ```fortran
+      !! call bmix_qmr(n, bi, lij, B, dBdn, d2Bdn2)
+      !! ```
+      real(pr), intent(in) :: n(:) !! Component mole amounts.
+      real(pr), intent(in) :: bi(:) !! Pure-component covolumes.
+      real(pr), intent(in) :: lij(:, :) !! Repulsive binary interaction matrix.
+      real(pr), intent(out) :: b !! Mixture covolume.
+      real(pr), intent(out) :: dbi(:) !! Mole-number gradient of the mixture covolume.
+      real(pr), intent(out) :: dbij(:, :) !! Mole-number Hessian of the mixture covolume.
 
       real(pr) :: bij(size(n), size(n))
 
-      real(pr) :: totn, aux(size(n))
+      real(pr) :: totn !! Total number of moles.
+      real(pr) :: aux(size(n)) !! Intermediate accumulator.
 
-      integer :: i, j, nc
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: nc !! Number of components.
 
       nc = size(n)
       totn = sum(n)
@@ -73,6 +103,9 @@ contains
    end subroutine bmix_qmr
 
    pure subroutine d1mix_rkpr(n, d1i, d1, dd1i, dd1ij)
+      !! # d1mix_rkpr
+      !!
+      !! # Description
       !! RKPR \(\delta_1\) parameter mixing rule.
       !!
       !! The RKPR EoS doesn't have a constant \(\delta_1\) value for each
@@ -80,17 +113,19 @@ contains
       !! combination is used.
       !!
       !! \[
-      !!     \Delta_1 = \sum_i^N n_i \delta_{1i}
+      !!     \Delta_1 = \frac{\sum_i^N n_i \delta_{1i}}{\sum_i^N n_i}
       !! \]
       !!
-      real(pr), intent(in) :: n(:)
-      real(pr), intent(in) :: d1i(:)
-      real(pr), intent(out) :: D1
-      real(pr), intent(out) :: dD1i(:)
-      real(pr), intent(out) :: dD1ij(:, :)
+      real(pr), intent(in) :: n(:) !! Component mole amounts [mol]
+      real(pr), intent(in) :: d1i(:) !! Pure-component \(\delta_{1i}\) values
+      real(pr), intent(out) :: D1 !! Mixture \(\Delta_1\)
+      real(pr), intent(out) :: dD1i(:) !! \(\partial \Delta_1/\partial n_i\)
+      real(pr), intent(out) :: dD1ij(:, :) !! \(\partial^2 \Delta_1/\partial n_i \partial n_j\)
 
-      integer :: i, j, nc
-      real(pr) :: totn
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: nc !! Number of components.
+      real(pr) :: totn !! Total number of moles.
 
       nc = size(n)
       totn = sum(n)
@@ -108,24 +143,37 @@ contains
    end subroutine d1mix_rkpr
 
    subroutine lamdba_hv(nc, d1, dd1i, dd1ij, L, dLi, dLij)
+      !! # lamdba_hv
+      !!
+      !! # Description
       !! Infinite pressure limit parameter \(\Lambda\)
       !!
       !! \[
       !! \Lambda = \frac{1}{\delta_1 - \delta_2} \ln \frac{1 + \delta_1}{1 + \delta_2}
       !! \]
-      integer, intent(in) :: nc
-      real(pr), intent(in) :: d1
-      real(pr), optional, intent(in) :: dd1i(nc)
-      real(pr), optional, intent(in) :: dd1ij(nc, nc)
-      real(pr), intent(out) :: L
-      real(pr), optional, intent(out) :: dLi(nc)
-      real(pr), optional, intent(out) :: dLij(nc, nc)
+      !!
+      !! with \(\delta_2 = (1-\delta_1)/(1+\delta_1)\). The mole derivatives
+      !! are only computed when `dLij` is present and no volume solve is active.
+      integer, intent(in) :: nc !! Number of components
+      real(pr), intent(in) :: d1 !! Mixture \(\delta_1\)
+      real(pr), optional, intent(in) :: dd1i(nc) !! \(\partial \delta_1/\partial n_i\)
+      real(pr), optional, intent(in) :: dd1ij(nc, nc) !! \(\partial^2 \delta_1/\partial n_i \partial n_j\)
+      real(pr), intent(out) :: L !! \(\Lambda\)
+      real(pr), optional, intent(out) :: dLi(nc) !! \(\partial \Lambda/\partial n_i\)
+      real(pr), optional, intent(out) :: dLij(nc, nc) !! \(\partial^2 \Lambda/\partial n_i \partial n_j\)
 
-      real(pr) :: f, g, h
-      real(pr), dimension(nc) :: df, dg, dh
-      real(pr), dimension(nc, nc) :: d2f, d2g, d2h
+      real(pr) :: f !! Residual or scalar equation value.
+      real(pr) :: g
+      real(pr) :: h
+      real(pr), dimension(nc) :: df
+      real(pr), dimension(nc) :: dg
+      real(pr), dimension(nc) :: dh
+      real(pr), dimension(nc, nc) :: d2f
+      real(pr), dimension(nc, nc) :: d2g
+      real(pr), dimension(nc, nc) :: d2h
 
-      integer :: i, j
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
 
       f = d1 + 1
       g = (d1 + 1)*d1 + d1 - 1
@@ -186,25 +234,51 @@ contains
       !!     - \frac{G^E}{\Lambda}\right)
       !! \]
       !!
-      !! # Examples
+      !! where \(\Lambda\) is evaluated by `lamdba_hv` from the mixture
+      !! \(\delta_1\). The excess Gibbs energy and its derivatives are supplied
+      !! by the caller, normally from a `GeModel` evaluated at \(T\).
       !!
       !! # References
-      !!
-      real(pr), intent(in) :: T, n(:)
-      real(pr), intent(in) :: bi(:) !! Covolume parameter
-      real(pr), intent(in) :: B !! mixture covolume parameter
-      real(pr), intent(in) :: dBi(:), dBij(:, :)
-      real(pr), intent(in) :: D1, dD1i(:), dD1ij(:, :)
-      real(pr), intent(in) :: ai(:), daidt(:), daidt2(:)
-      real(pr), intent(in) :: Ge, GeT, GeT2
-      real(pr), intent(in) :: Gen(:), GeTn(:), Gen2(:, :)
-      real(pr), intent(out) :: D, dDdT, dDdT2, dDi(:), dDidT(:), dDij(:, :)
+      !! Huron, M.-J., and J. Vidal, *Fluid Phase Equilibria* 3 (1979) 255-271.
+      real(pr), intent(in) :: T !! Temperature [K]
+      real(pr), intent(in) :: n(:) !! Component mole amounts [mol]
+      real(pr), intent(in) :: bi(:) !! Pure-component covolumes [L/mol]
+      real(pr), intent(in) :: B !! Mixture covolume \(B\) [L]
+      real(pr), intent(in) :: dBi(:) !! \(\partial B/\partial n_i\)
+      real(pr), intent(in) :: dBij(:, :) !! \(\partial^2 B/\partial n_i \partial n_j\)
+      real(pr), intent(in) :: D1 !! Mixture \(\delta_1\)
+      real(pr), intent(in) :: dD1i(:) !! \(\partial \delta_1/\partial n_i\)
+      real(pr), intent(in) :: dD1ij(:, :) !! \(\partial^2 \delta_1/\partial n_i \partial n_j\)
+      real(pr), intent(in) :: ai(:) !! Pure-component attractive parameters \(a_i(T)\)
+      real(pr), intent(in) :: daidt(:) !! \(da_i/dT\)
+      real(pr), intent(in) :: daidt2(:) !! \(d^2a_i/dT^2\)
+      real(pr), intent(in) :: Ge !! Excess Gibbs energy \(G^E\) [bar L]
+      real(pr), intent(in) :: GeT !! \(\partial G^E/\partial T\)
+      real(pr), intent(in) :: GeT2 !! \(\partial^2 G^E/\partial T^2\)
+      real(pr), intent(in) :: Gen(:) !! \(\partial G^E/\partial n_i\)
+      real(pr), intent(in) :: GeTn(:) !! \(\partial^2 G^E/\partial T \partial n_i\)
+      real(pr), intent(in) :: Gen2(:, :) !! \(\partial^2 G^E/\partial n_i \partial n_j\)
+      real(pr), intent(out) :: D !! Mixture attractive parameter \(D\) [bar L^2]
+      real(pr), intent(out) :: dDdT !! \(\partial D/\partial T\)
+      real(pr), intent(out) :: dDdT2 !! \(\partial^2 D/\partial T^2\)
+      real(pr), intent(out) :: dDi(:) !! \(\partial D/\partial n_i\)
+      real(pr), intent(out) :: dDidT(:) !! \(\partial^2 D/\partial T \partial n_i\)
+      real(pr), intent(out) :: dDij(:, :) !! \(\partial^2 D/\partial n_i \partial n_j\)
 
-      real(pr) :: f, fdt, fdt2, fdi(size(n)), fdit(size(n)), fdij(size(n), size(n))
+      real(pr) :: f !! Residual or scalar equation value.
+      real(pr) :: fdt
+      real(pr) :: fdt2 !! Second-order intermediate quantity used by this procedure.
+      real(pr) :: fdi(size(n))
+      real(pr) :: fdit(size(n))
+      real(pr) :: fdij(size(n), size(n))
       real(pr) :: totn !! Total number of moles
 
-      integer :: i, j, nc
-      real(pr) :: L, dL(size(n)), dL2(size(n), size(n))
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: nc !! Number of components.
+      real(pr) :: L !! Infinite-pressure parameter \(\Lambda\)
+      real(pr) :: dL(size(n))
+      real(pr) :: dL2(size(n), size(n))
 
       nc = size(n)
       totn = sum(n)
@@ -253,20 +327,28 @@ contains
       )
       !! # `CMR_aijk`
       !! Calculate the \(a_{ijk}\) tensor of the CMR.
-      real(pr), intent(in) :: ai(:) !! \(\a_i\)
-      real(pr), intent(in) :: daidt(:) !! \( \frac{d\a_i}{dT} \)
-      real(pr), intent(in) :: daidt2(:)!! \( \frac{d^2\a_i}{dT^2} \)
-      real(pr), intent(in) :: k(:, :, :) !! k_{ijk} matrix
+      !!
+      !! # Description
+      !! \(a_{ijk} = (a_i a_j a_k)^{1/3}(1 - k_{ijk})\), symmetric in its
+      !! three indices, together with its first two temperature derivatives.
+      real(pr), intent(in) :: ai(:) !! \(a_i\)
+      real(pr), intent(in) :: daidt(:) !! \( \frac{da_i}{dT} \)
+      real(pr), intent(in) :: daidt2(:) !! \( \frac{d^2a_i}{dT^2} \)
+      real(pr), intent(in) :: k(:, :, :) !! \(k_{ijk}\) tensor
       real(pr), intent(in) :: dkdt(:, :, :) !! \(  \frac{d k_{ijk}}{dT} \)
       real(pr), intent(in) :: dkdt2(:, :, :) !! \(  \frac{d^2k_{ijk}}{dT^2} \)
       real(pr), intent(out) :: a(:, :, :) !! \(a_{ijk}\) matrix
       real(pr), intent(out) :: dadt(:, :, :) !! \(\frac{da_{ijk}}{dT}\) matrix
-      real(pr), intent(out) :: dadt2(:, :, :) !! \(\frac{d^2a_{ijk}{dT^2}\) matrix
+      real(pr), intent(out) :: dadt2(:, :, :) !! \(\frac{d^2a_{ijk}}{dT^2}\) matrix
 
-      integer :: i, j, l, nc
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: l !! Loop index `l`.
+      integer :: nc !! Number of components.
 
       real(pr) :: aijk_3
-      real(pr) :: aaa, daaadt
+      real(pr) :: aaa
+      real(pr) :: daaadt
 
       real(pr), parameter :: third = 1._pr/3._pr
 
@@ -339,32 +421,47 @@ contains
       D, &
       dDdV, dDdT, dDdV2, dDdT2, dDi, dDdTV, dDidV, dDidT, dDij &
       )
+      !! # CMR_Dmix
+      !! Evaluate the ternary cubic attractive mixture parameter and derivatives.
+      !!
+      !! # Description
+      !! \(D = \sum_{ijk} n_i n_j n_k a_{ijk}/n_T\), with its temperature and
+      !! composition derivatives. Volume derivatives are returned as zero.
       real(pr), intent(in) :: V !! Volume [L] (unused)
       real(pr), intent(in) :: T !! Temperature [K]
       real(pr), intent(in) :: n(:) !! Moles vector [mol]
-      real(pr), intent(in) :: a(:, :, :) !!
-      real(pr), intent(in) :: dadt(:, :, :) !!
-      real(pr), intent(in) :: dadt2(:, :, :) !!
+      real(pr), intent(in) :: a(:, :, :) !! \(a_{ijk}\) tensor (see `CMR_aijk`)
+      real(pr), intent(in) :: dadt(:, :, :) !! \(da_{ijk}/dT\)
+      real(pr), intent(in) :: dadt2(:, :, :) !! \(d^2a_{ijk}/dT^2\)
 
       real(pr), intent(out) :: D !! Mixture attractive parameter \(n^2a_{mix}\)
-      real(pr), intent(out) :: dDdV !! \(\frac{dD}{dT}\)
-      real(pr), intent(out) :: dDdT !! \(\frac{dD}{dV}\)
+      real(pr), intent(out) :: dDdV !! \(\frac{dD}{dV}\) (zero)
+      real(pr), intent(out) :: dDdT !! \(\frac{dD}{dT}\)
       real(pr), intent(out) :: dDdT2 !! \(\frac{d^2D}{dT^2}\)
       real(pr), intent(out) :: dDdV2 !! \(\frac{d^2D}{dV^2}\)
-      real(pr), intent(out) :: dDdTV !! \(\frac{d^2D}{dTV\)
+      real(pr), intent(out) :: dDdTV !! \(\frac{d^2D}{dTV}\)
       real(pr), intent(out) :: dDi(:) !! \(\frac{dD}{dn_i}\)
       real(pr), intent(out) :: dDidV(:) !! \(\frac{d^2D}{dVn_i}\)
       real(pr), intent(out) :: dDidT(:) !! \(\frac{d^2D}{dTn_i}\)
-      real(pr), intent(out) :: dDij(:, :)!! \(\frac{d^2D}{dn_{ij}}\)
+      real(pr), intent(out) :: dDij(:, :) !! \(\frac{d^2D}{dn_{ij}}\)
 
-      real(pr) :: aux(size(n)),auxij(size(n),size(n))
-      real(pr) :: auxT(size(n)),auxTij(size(n),size(n)),auxT2(size(n)),auxT2ij(size(n),size(n))
-      real(pr) :: aijk(size(n),size(n),size(n)),daijkdT(size(n),size(n),size(n)),daijkdT2(size(n),size(n),size(n))
+      real(pr) :: aux(size(n)) !! Intermediate accumulator.
+      real(pr) :: auxij(size(n),size(n))
+      real(pr) :: auxT(size(n))
+      real(pr) :: auxTij(size(n),size(n))
+      real(pr) :: auxT2(size(n)) !! Second-order intermediate quantity used by this procedure.
+      real(pr) :: auxT2ij(size(n),size(n))
+      real(pr) :: aijk(size(n),size(n),size(n))
+      real(pr) :: daijkdT(size(n),size(n),size(n))
+      real(pr) :: daijkdT2(size(n),size(n),size(n))
 
-      real(pr) :: totn
+      real(pr) :: totn !! Total number of moles.
       real(pr) :: cum
 
-      integer :: i, j, k, nc
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: k !! Loop index `k`.
+      integer :: nc !! Number of components.
 
       nc = size(n)
 
@@ -431,16 +528,27 @@ contains
    end subroutine CMR_Dmix
 
    pure subroutine CMR_Bmix(n, bijk, Bmix, dBi, dBij)
-      real(pr), intent(in) :: n(:)
-      real(pr), intent(in) :: bijk(:, :, :)
-      real(pr), intent(out) :: Bmix
-      real(pr), intent(out) :: dBi(:), dBij(:,:)
-      real(pr) :: aux(size(n)), auxij(size(n), size(n))
+      !! # CMR_Bmix
+      !! Evaluate the ternary cubic repulsive mixture parameter and derivatives.
+      !!
+      !! # Description
+      !! Contracts the ternary covolume tensor with component mole amounts and
+      !! returns the mixture value, gradient, and Hessian.
+      real(pr), intent(in) :: n(:) !! Component mole amounts [mol]
+      real(pr), intent(in) :: bijk(:, :, :) !! Ternary covolume tensor \(b_{ijk}\) [L/mol]
+      real(pr), intent(out) :: Bmix !! \(B = \sum_{ijk} n_i n_j n_k b_{ijk}/n_T^2\) [L]
+      real(pr), intent(out) :: dBi(:) !! \(\partial B/\partial n_i\)
+      real(pr), intent(out) :: dBij(:,:) !! \(\partial^2 B/\partial n_i \partial n_j\)
+      real(pr) :: aux(size(n)) !! Intermediate accumulator.
+      real(pr) :: auxij(size(n), size(n))
 
       real(pr) :: totn !! Total number of moles
       real(pr) :: sqn !! totn^2
 
-      integer :: i, j, k, nc
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: k !! Loop index `k`.
+      integer :: nc !! Number of components.
 
       nc = size(n)
       totn = sum(n)

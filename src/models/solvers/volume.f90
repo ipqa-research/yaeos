@@ -1,26 +1,21 @@
 module yaeos__models_solvers
-   !! # `models solvers`
-   !! Set of different specialized solvers for different models
+   !! # Model-specific numerical solvers
+   !! Specialized numerical methods used by EOS implementations.
    !!
    !! # Description
-   !! This module holds specialized solvers for different kind of applications
-   !! and models.
-   !!
-   !! ## Volume solving
-   !! This module holds the routine `volume_michelsen` which is a solver for
-   !! volume that takes advantage over a simple newton on the function of
-   !! pressure by solving the function of pressure over the covolume instead,
-   !! which solution is limited in the range [0, 1]. This solver requires that
-   !! the EoS uses the method `get_v0` to return the covolume.
+   !! The principal routine is `volume_michelsen`. It solves in reduced
+   !! covolume \(\zeta=B/V\), bounded between zero and one, rather than
+   !! iterating directly over an unbounded volume. Models must implement
+   !! `get_v0` to provide the covolume or lower-volume estimate.
    !!
    !! # Examples
-   !!
    !! ```fortran
-   !!  A basic code example
+   !! call volume_michelsen(model, n, P, T, V, root_type="stable")
    !! ```
    !!
    !! # References
-   !!
+   !! Michelsen, M. L., and J. M. Mollerup, *Thermodynamic Models:
+   !! Fundamentals & Computational Aspects*, 2nd ed., Tie-Line Publications, 2007.
    use yaeos__constants, only: pr, R, solving_volume
    use yaeos__models_ar, only: ArModel
    implicit none
@@ -44,27 +39,40 @@ contains
       !!
       !! At chapter 3 page 94 of Michelsen and Møllerup's book a more complete
       !! explanation can be seen
+      !!
+      !! # Notes
+      !! Pass `root_type` explicitly (`"liquid"`, `"vapor"`, or `"stable"`).
+      !! Although optional in the interface, the current implementation uses
+      !! the argument directly in root selection. When `V0` is present only the
+      !! initial \(\zeta = B/V_0\) is set and no root search is performed, so
+      !! `V` is not assigned.
       use iso_fortran_env, only: error_unit
       use yaeos__auxiliar, only: optval
-      class(ArModel), intent(in) :: eos
-      real(pr), intent(in) ::  n(:) !! Mixture moles
+      class(ArModel), intent(in) :: eos !! EOS providing pressure and residual Helmholtz derivatives.
+      real(pr), intent(in) ::  n(:) !! Mixture moles [mol]
       real(pr), intent(in) :: T !! Temperature [K]
       real(pr), intent(in) :: P !! Pressure [bar]
       real(pr), intent(out) :: V !! Volume [L]
       character(len=*), optional, intent(in) :: root_type !! Type of root ["vapor" | "liquid" | "stable"]
-      integer, optional, intent(in) :: max_iters !! Maxiumum number of iterations, defaults to 100
+      integer, optional, intent(in) :: max_iters !! Maximum number of iterations (default 1000; currently unused, `solve_point` caps at 500)
 
-      real(pr), optional, intent(in) :: V0 !! Specified initial volume
+      real(pr), optional, intent(in) :: V0 !! Initial volume guess [L]; see Notes
 
       character(len=10) :: root
 
 
-      real(pr) :: totn
-      real(pr) :: B !! Covolume
-      real(pr) :: ZETMIN, ZETA, ZETMAX
-      real(pr) :: pcalc, AT, AVAP, VVAP
+      real(pr) :: totn !! Total number of moles.
+      real(pr) :: B !! Covolume from `get_v0` [L]
+      real(pr) :: ZETMIN
+      real(pr) :: ZETA !! Reduced covolume \(\zeta = B/V\)
+      real(pr) :: ZETMAX
+      real(pr) :: pcalc
+      real(pr) :: AT
+      real(pr) :: AVAP
+      real(pr) :: VVAP
 
-      integer :: iter, maximum_iterations
+      integer :: iter !! Iteration count.
+      integer :: maximum_iterations
 
       maximum_iterations = optval(max_iters, 1000)
       root = optval(root_type, "stable")
@@ -76,7 +84,7 @@ contains
       ! Limits
       ZETMIN = 0._pr
       ZETMAX = 1._pr
-      ZETMAX = 1._pr - 0.01*T/(10000*B)  ! improvement for cases with heavy components
+      ZETMAX = 1._pr - 0.01*T/(10000*B) ! improvement for cases with heavy components
 
       if (present(V0)) then
          zeta = B/V0
@@ -95,7 +103,7 @@ contains
                AVAP = AT
                ZETA = 0.5_pr
                ZETMAX = 1._pr
-               ZETMAX = 1.D0 - 0.01*T/(10000*B)  ! improvement for cases with heavy components
+               ZETMAX = 1.D0 - 0.01*T/(10000*B) ! improvement for cases with heavy components
                call solve_point(eos, n, P, T, V, Pcalc, ZETA, ZETMIN, ZETMAX, AT, iter)
                if (AT .gt. AVAP) V = VVAP
             end if
@@ -107,21 +115,31 @@ contains
    end subroutine volume_michelsen
 
    subroutine solve_point(eos, n, P, T, V, Pcalc, ZETA, ZETMIN, ZETMAX, AT, iter)
-      class(ArModel), intent(in) :: eos
-      real(pr), intent(in) :: n(:)
+      !! # solve_point
+      !! Correct one pressure root in reduced-covolume coordinates.
+      !!
+      !! # Description
+      !! Updates \(\zeta=B/V\) with a bracketed Newton step, maintaining
+      !! `ZETMIN` and `ZETMAX` as the current root bounds.
+      class(ArModel), intent(in) :: eos !! EOS used for residual pressure evaluation.
+      real(pr), intent(in) :: n(:) !! Component mole amounts.
       real(pr), intent(in) :: P !! Objective pressure [bar]
       real(pr), intent(in) :: T !! Temperature [K]
       real(pr), intent(out) :: V !! Obtained volume [L]
       real(pr), intent(out) :: Pcalc !! Calculated pressure at V [bar]
-      real(pr), intent(in out) :: ZETA !!
-      real(pr), intent(inout) :: ZETMIN
-      real(pr), intent(inout) :: ZETMAX
-      real(pr), intent(out) :: AT !!
-      integer, intent(out) :: iter
+      real(pr), intent(in out) :: ZETA !! Current reduced covolume iterate, updated in place.
+      real(pr), intent(inout) :: ZETMIN !! Lower bound for the reduced covolume root.
+      real(pr), intent(inout) :: ZETMAX !! Upper bound for the reduced covolume root.
+      real(pr), intent(out) :: AT !! \((A^r + PV)/(RT) - n\ln V\), a residual-Gibbs-like quantity used to select the stable root.
+      integer, intent(out) :: iter !! Iterations used by the corrector.
 
-      real(pr) :: del, der, B
-      real(pr) :: totn
-      real(pr) ::  Ar, ArV, ArV2
+      real(pr) :: del
+      real(pr) :: der
+      real(pr) :: B
+      real(pr) :: totn !! Total number of moles.
+      real(pr) :: Ar
+      real(pr) :: ArV
+      real(pr) :: ArV2 !! Second-order intermediate quantity used by this procedure.
 
       iter = 0
       DEL = 1

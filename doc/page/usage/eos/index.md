@@ -1,11 +1,62 @@
 ---
 title: Equations of State
 ordered_subpage: cubics
+                 gerg2008.md
+                 gerg2008_parameters.md
+                 pc_saft.md
 ---
 
 [TOC]
 
 # Equations of State
+
+## Start here
+
+An EOS answers questions such as “what pressure does this amount of fluid exert
+in this volume?” and “how far is this fluid from ideal-gas behavior?”. These
+are **single homogeneous-phase** calculations; evaluating an EOS at an overall
+mixture composition does not automatically split it into equilibrium phases.
+See [thermodynamic fundamentals](../fundamentals.html) for the broader workflow.
+
+**For practical use:** read the units below, run the complete example, then
+look up the property you need in the table of contents. The detailed equations
+are an optional reference, not a prerequisite for calling the routines.
+
+| What you know / need | Routine or section |
+| --- | --- |
+| Amounts, total volume, temperature → pressure | `pressure` |
+| Amounts, pressure, temperature → volume of a chosen root | `volume` |
+| Nonideality for phase-equilibrium calculations | `lnphi_pt` or `lnphi_vt` |
+| Energy or heat-capacity correction to an ideal gas | `*_residual_pt` or `*_residual_vt` |
+| Deviation from ideal-solution mixing | Excess properties |
+
+### Units and amount basis
+
+The default unit system uses mol, L, K, and bar, with
+\(R = 0.08314462618\ \mathrm{bar\,L\,mol^{-1}\,K^{-1}}\).
+Do not pass Pa or m³ without converting them.
+
+- The Fortran array `n(:)` contains component **amounts**, \(\mathbf{n}=(n_1,\ldots,n_c)\),
+  in mol; the scalar total is \(n=\sum_i n_i\).
+- Mole fractions are \(z_i=n_i/n\). They sum to one and specify composition,
+  not the amount of material. Passing `n=z` selects a one-mole basis.
+- `V` is **total** volume in L; molar volume is \(v=V/n\) in L/mol.
+  If you multiply every amount by ten, also multiply `V` by ten to keep
+  the same density and pressure.
+- `Ar`, `Hr`, `Gr`, and `Ur` are total energies in bar L, not molar energies;
+  divide by `sum(n)` for bar L/mol. One bar L is 100 J.
+  Entropy and heat capacities are in bar L/K. Derivative units follow from
+  division by the differentiated variable, e.g. `dPdV` in bar/L.
+- `lnPhi` and `lngamma` are dimensionless vectors, one entry per component.
+  Composition-derivative matrices have entry `(i,j)` equal to the derivative
+  of output `i` with respect to amount `n(j)`, not mole fraction `z(j)`.
+
+Choose a model and parameters appropriate to your fluid and range; a successful
+calculation is not evidence that the model is accurate there. See
+[cubic models](cubics/index.html), [GERG-2008](gerg2008.html), and
+[PC-SAFT](pc_saft.html) for model-specific inputs and limitations.
+
+## Why Helmholtz energy?
 
 `yaeos` is a library based on Equation-of-State calculations. An Equation of
 State (EOS) is a mathematical model that describes the relationship between
@@ -37,8 +88,10 @@ The modern way of defining an EOS is through a mathematical model that express
 the residual Helmholtz free energy as a function of the mole number, volume and
 temperature. This approach is more general and allows for a more flexible
 definition of the EOS in the context of implementing it in code. All
-thermodynamic properties can be calculated from the residual Helmholtz free
-energy and its derivatives. `yaeos` is based on this approach.
+residual thermodynamic properties can be calculated from the residual Helmholtz
+free energy and its derivatives. Total caloric properties also require an
+ideal-gas contribution and a consistent reference state. `yaeos` is based on
+this approach.
 
 This section of the documentation will guide you through the thermodynamic
 properties that can be calculated with yaeos using Helmholtz free energy
@@ -53,44 +106,85 @@ can I obtain the expression for the residual Helmholtz free energy
 is the following:
 
 $$
-A^r(\mathbf{n}, V, T) = -\int_{\infty}^{V} \left(P(\mathbf{n},V,T) -
-\frac{nRT}{V} \right) dV
+ A^r(\mathbf{n}, V, T) = -\int_{\infty}^{V} \left(P(\mathbf{n},V',T) -
+\frac{nRT}{V'} \right) dV'
 $$
 
-We are ready to go now. We leave an example of how to instantiate a
-Peng-Robinson EOS model in the next code block if you want to start evaluating
-properties right away.
+The integral holds at fixed amounts and temperature, with the residual tending
+to zero in the dilute ideal-gas limit.
+
+### A complete first calculation
+
+This standalone program constructs a Peng–Robinson model and evaluates a vapor
+root. The critical constants below are illustrative inputs, not a validated
+parameter set for named substances.
 
 ```fortran
 program main
-   use yaeos
+   use yaeos, only: pr, R, ArModel, PengRobinson76
+   use, intrinsic :: ieee_arithmetic, only: ieee_is_finite
+   implicit none
 
    ! We will instantiate a Peng-Robinson EOS model with two components
 
    ! Set the variable `model` as a generic `ArModel`
    class(ArModel), allocatable :: model
 
-   ! Set the variables that we're going to use as variable length arrays
-   real(pr) :: tc(2), pc(2), w(2)
+   real(pr) :: tc(2)
+   real(pr) :: pc(2)
+   real(pr) :: w(2)
+   real(pr) :: n(2)
+   real(pr) :: T
+   real(pr) :: P
+   real(pr) :: V
+   real(pr) :: Pcheck
+   real(pr) :: Z
+   real(pr) :: lnPhi(2)
+   real(pr) :: Hr
 
-   tc = [190, 310]   ! Critical temperatures [K]
-   pc = [14, 30]     ! Critical pressures [bar]
-   w = [0.001, 0.03] ! Acentric factors [-]
+   tc = [190.0_pr, 310.0_pr] ! Critical temperatures [K]
+   pc = [14.0_pr, 30.0_pr]   ! Critical pressures [bar]
+   w = [0.001_pr, 0.03_pr]   ! Acentric factors [-]
 
    ! Now we set our model as the PengRobinson76 equation of state.
    model = PengRobinson76(tc, pc, w)
 
+   n = [0.3_pr, 0.7_pr] ! One mole, composition z = [0.3, 0.7]
+   T = 300.0_pr
+   P = 1.0_pr
+   call model%volume(n, P, T, V=V, root_type="vapor")
+   if (.not. ieee_is_finite(V)) error stop "Nonfinite volume"
+   if (V <= 0.0_pr) error stop "Volume solve failed"
+   call model%pressure(n, V, T, P=Pcheck)
+   if (.not. ieee_is_finite(Pcheck)) error stop "Nonfinite pressure"
+   if (abs(Pcheck - P) > 1.0e-6_pr) error stop "Pressure mismatch"
+   call model%lnphi_vt(n, V, T, lnPhi=lnPhi)
+   call model%enthalpy_residual_vt(n, V, T, Hr=Hr)
+   Z = Pcheck*V/(sum(n)*R*T)
+   print *, "Total volume [L]: ", V
+   print *, "Molar volume [L/mol]: ", V/sum(n)
+   print *, "Compressibility factor [-]: ", Z
+   print *, "ln(phi_i) [-]: ", lnPhi
+   print *, "Residual molar enthalpy [J/mol]: ", 100.0_pr*Hr/sum(n)
+
 end program main
 ```
 
-The examples provided for each property must be treated as a continuation of
-the previous code block (before the end program statement).
+Here `Z=1` is ideal-gas behavior; deviations show how the pressure–volume
+relation differs from an ideal gas. `lnPhi=0` means a unit fugacity coefficient,
+not zero fugacity. A negative `Hr` means an enthalpy below the ideal-gas value
+at the same temperature and composition; it is not an absolute enthalpy.
+
+All subsequent code blocks are **snippets**: insert them after model
+construction and before `end program main`, not as separate programs. Their
+`block` constructs give local variables their own scope. Optional derivative
+outputs may be omitted when only the property itself is needed.
 
 # Thermodynamic properties
 
 The reference used for the equations of each property is "Thermodynamic Models:
 Fundamentals and Computational Aspects" by Michael L. Michelsen and Jørgen M.
-Mollerup - 2th edition (abbreviated as: MM). For each property, we are going to
+Mollerup - 2nd edition (abbreviated as: MM). For each property, we are going to
 refer to the chapter and equation for a rapid search.
 
 The MM book sometimes express the equations in terms of \(F\) (reduced
@@ -105,11 +199,11 @@ terms of \(A^r(\mathbf{n}, V, T)\) so a little algebraic work is required.
 
 Finally, we are going to use the MM notation, for that:
 
-\(\mathbf{n}\) is the total number of moles, and \(n_i\) is the number of moles of
+\(n\) is the total number of moles, and \(n_i\) is the number of moles of
 component \(i\). Therefore:
 
 $$
-\mathbf{n} = \sum_i n_i
+n = \sum_i n_i
 $$
 
 The moles number vector is denoted as \(\mathbf{n}\).
@@ -117,7 +211,7 @@ The moles number vector is denoted as \(\mathbf{n}\).
 On partial derivatives, the subscript indicates the variables that are kept constant. For example:
 
 $$
-    \left(\frac{\partial P}{\partial V} \right)_{V,\mathbf{n}}
+    \left(\frac{\partial P}{\partial V} \right)_{T,\mathbf{n}}
 $$
 
 means the partial derivative of pressure with respect to volume keeping
@@ -150,19 +244,19 @@ Pressure can be calculated from the residual Helmholtz free energy as follows:
 
 $$
 P = - \left(\frac{\partial A^r}{\partial V} \right)_{T,\mathbf{n}} 
-+ \frac{\mathbf{n}RT}{V}
++ \frac{nRT}{V}
 $$
 
 $$
 \left(\frac{\partial P}{\partial V} \right)_{T,\mathbf{n}} =
 -\left(\frac{\partial^2 A^r}{\partial V^2} \right)_{T,\mathbf{n}} -
-\frac{\mathbf{n}RT}{V^2}
+\frac{nRT}{V^2}
 $$
 
 $$
 \left(\frac{\partial P}{\partial T} \right)_{V,\mathbf{n}} =
 - \left(\frac{\partial^2 A^r}{\partial V \partial T} \right)_{\mathbf{n}} +
-- \frac{\mathbf{n}R}{V}
+\frac{nR}{V}
 $$
 
 $$
@@ -172,11 +266,17 @@ $$
 
 ```fortran
 pressure: block
-    real(pr) :: n(2), T, V, P, dPdV, dPdT, dPdn(2)
+    real(pr) :: n(2)
+    real(pr) :: T
+    real(pr) :: V
+    real(pr) :: P
+    real(pr) :: dPdV
+    real(pr) :: dPdT
+    real(pr) :: dPdn(2)
 
-    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    n = [0.3_pr, 0.7_pr] ! Component amounts [mol]; total 1 mol, z = [0.3, 0.7]
     T = 300.0_pr         ! Set temperature to 300 K
-    V = 0.1_pr           ! Set volume to 0.1 L
+    V = 25.0_pr          ! Set total volume to 25 L (molar volume 25 L/mol)
 
     ! Calculate pressure and its derivatives
     call model%pressure(n, V, T, P=P, dPdV=dPdV, dPdT=dPdT, dPdn=dPdn)
@@ -190,34 +290,50 @@ end block pressure
 ```
 
 ### Volume: \(V(\mathbf{n}, P, T)\)
-As you must know, given a temperature and pressure, the volume has not a unique
-solution. In the case of a cubic EOS, there are three possible solutions for
-the volume at a given temperature, pressure and composition. For this reason,
-the volume is calculated iteratively. Provided \(\mathbf{n}\), \(P\), and \(T\)
-we fix \(\mathbf{n}\) and \(T\) and iterate over the volume until the pressure
-is the same as the input pressure.
+At fixed amounts, pressure, and temperature, an EOS may have more than one
+volume root. A conventional cubic EOS has one or three real algebraic roots
+(counting multiplicity); not every root is physically admissible. Three
+distinct physical phases are not implied by three roots. Other model families
+need not follow this root count. `yaeos` uses numerical volume solvers; this is
+an implementation choice, not a consequence of nonuniqueness alone.
 
-To learm how the initial guess for \(V\) is obtained, please refer to the book
+`root_type="liquid"` seeks the dense root and `"vapor"` the dilute root.
+They may return the same volume when only one root exists. `"stable"` selects
+the lower-Gibbs-energy candidate at the **specified composition**; it does not
+test stability against separation into phases of different compositions.
+For equilibrium phase amounts and compositions, use the
+[phase-equilibrium routines](../phase_equilibrium/index.html).
+
+Check that a returned volume is finite and positive, and re-evaluate pressure
+to check the solve, as in the first example. Root solvers can fail, especially
+near limiting states. A mechanically stable homogeneous branch normally has
+\((\partial P/\partial V)_{T,\mathbf{n}}<0\); this is necessary, not sufficient,
+for full mixture stability.
+
+To learn more about volume initialization, please refer to the book
 "Thermodynamic Models: Fundamentals and Computational Aspects" by Michael L.
 Michelsen and Jørgen M. Mollerup. Volume derivatives can be calculated in terms
 of pressure derivatives, this will appear later on this documentation.
 
 ```fortran
 volume: block
-    real(pr) :: n(2), T, P, V
+    real(pr) :: n(2)
+    real(pr) :: T
+    real(pr) :: P
+    real(pr) :: V
 
-    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    n = [0.3_pr, 0.7_pr] ! Component amounts [mol]; total 1 mol, z = [0.3, 0.7]
     T = 300.0_pr         ! Set temperature to 300 K
     P = 1.0_pr           ! Set pressure to 1 bar
 
     ! Calculate different volume roots
-    call model%volume(n, P, T, V=V, root="liquid")
+    call model%volume(n, P, T, V=V, root_type="liquid")
     print *, "Liquid volume: ", V
 
-    call model%volume(n, P, T, V=V, root="vapor")
+    call model%volume(n, P, T, V=V, root_type="vapor")
     print *, "Vapor volume: ", V
 
-    call model%volume(n, P, T, V=V, root="stable")
+    call model%volume(n, P, T, V=V, root_type="stable")
     print *, "Stable volume root: ", V
 
 end block volume
@@ -242,14 +358,31 @@ calculated:
 - \((\mathbf{n},V,T)\)
 - \((\mathbf{n},P,T)\)
 
-There is a relation between both residual properties. In this section we are
-going to calculate all the \((\mathbf{n},V,T)\) residual properties.
+Here we call the same-\(V,T\) difference a **residual** and the same-\(P,T\)
+difference a **departure**; the API uses `residual` in both routine names.
+The sections below retain that API terminology. The difference is the ideal-gas
+reference, not a different real-fluid state: when comparing the two, \(P\) is
+the EOS pressure at \((\mathbf{n},V,T)\).
+
+These energy, entropy, and heat-capacity corrections are extensive: scaling
+\(\mathbf{n}\) and \(V\) together by a factor scales them by that factor.
+Fugacity coefficients are intensive and are **not** differences between total
+properties. Their conventional ideal-gas reference is at the same \(P,T\),
+even when the routine takes \(V,T\) as inputs.
 
 ### Fugacity coefficients (V,T): \(\ln \phi_i (V,T)\)
 
 **MM - Chapter 2 - Equations 13, 14, 15, and 16**
 
-Natural logarithm of fugacity coefficients specifing \(V\) and \(T\) are
+Fugacity is an effective pressure for chemical equilibrium. For a phase of
+composition \(z_i=n_i/n\), \(f_i=z_i\hat\phi_i P\); \(\hat\phi_i\) corrects
+the ideal-gas partial pressure. Equilibrium requires equal component fugacities
+between phases, not equal fugacity coefficients. Logarithms make products
+additive and help numerical solvers handle large fugacity ratios. For an ideal
+gas, \(\ln\hat\phi_i=0\); positive and negative values mean coefficients
+above and below one, respectively.
+
+Natural logarithms of fugacity coefficients specifying \(V\) and \(T\) are
 calculated as follows:
 
 $$
@@ -260,10 +393,15 @@ $$
 Remember that the compressibility factor \(Z\) is calculated as:
 
 $$
-Z = \frac{PV}{\mathbf{n}RT}
+Z = \frac{PV}{nRT}
 $$
 
-Next, the derivatives:
+The derivative outputs are useful for Newton solvers, stability calculations,
+and property sensitivities. **Despite the `vt` input specification**,
+`dlnPhidT`, `dlnPhidP`, and `dlnPhidn` are derivatives at the constraints shown
+below: temperature at fixed \(P,\mathbf{n}\), pressure at fixed
+\(T,\mathbf{n}\), and amounts at fixed \(P,T\). Pressure derivatives returned
+by the same routine retain the constraints in the pressure section.
 
 $$
 \left(\frac{\partial \ln \hat{\phi_i}}{\partial T} \right)_{P,\mathbf{n}} = 
@@ -276,14 +414,14 @@ $$
 
 $$
 \left(\frac{\partial \ln \hat{\phi_i}}{\partial P} \right)_{T,\mathbf{n}} = 
- \frac{1}{RT} \frac{\left(\frac{\partial P}{\partial n_i} 
+ -\frac{1}{RT} \frac{\left(\frac{\partial P}{\partial n_i}
 \right)_{V,T}}{\left(\frac{\partial P}{\partial V}\right)_{T,\mathbf{n}}} 
 - \frac{1}{P}
 $$
 
 $$
 \left(\frac{\partial \ln \hat{\phi_i}}{\partial n_j} \right)_{P,T} =
-\frac{1}{\mathbf{n}} + \frac{1}{RT} 
+\frac{1}{n} + \frac{1}{RT}
 \left(\frac{\partial^2 A^r}{\partial n_i \partial n_j}
 + \frac{\left(\frac{\partial P}{\partial n_i} \right)_{V,T}
 \left(\frac{\partial P}{\partial n_j} \right)_{V,T}}
@@ -292,13 +430,19 @@ $$
 
 ```fortran
 lnphi_vt: block
-    real(pr) :: n(2), T, V, lnPhi(2), dlnPhidP(2), dlnPhidT(2), dlnPhidn(2,2)
+    real(pr) :: n(2)
+    real(pr) :: T
+    real(pr) :: V
+    real(pr) :: lnPhi(2)
+    real(pr) :: dlnPhidP(2)
+    real(pr) :: dlnPhidT(2)
+    real(pr) :: dlnPhidn(2,2)
 
-    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    n = [0.3_pr, 0.7_pr] ! Component amounts [mol]; total 1 mol, z = [0.3, 0.7]
     T = 300.0_pr         ! Set temperature to 300 K
-    V = 1.0_pr           ! Set volume to 1 liter
+    V = 25.0_pr          ! Set total volume to 25 L (molar volume 25 L/mol)
 
-    call eos%lnphi_vt(&
+    call model%lnphi_vt(&
       n, V, T, lnPhi=lnPhi, &
       dlnPhidP=dlnPhidP, dlnPhidT=dlnPhidT, dlnPhidn=dlnPhidn &
       )
@@ -316,13 +460,20 @@ feature to avoid calculating them twice.
 ```fortran
 
 lnphi_vt_p: block
-    real(pr) :: n(2), T, V, lnPhi(2), P, dPdV, dPdT, dPdn(2)
+    real(pr) :: n(2)
+    real(pr) :: T
+    real(pr) :: V
+    real(pr) :: lnPhi(2)
+    real(pr) :: P
+    real(pr) :: dPdV
+    real(pr) :: dPdT
+    real(pr) :: dPdn(2)
 
-    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    n = [0.3_pr, 0.7_pr] ! Component amounts [mol]; total 1 mol, z = [0.3, 0.7]
     T = 300.0_pr         ! Set temperature to 300 K
-    V = 1.0_pr           ! Set volume to 1 liter
+    V = 25.0_pr          ! Set total volume to 25 L (molar volume 25 L/mol)
 
-    call eos%lnphi_vt(&
+    call model%lnphi_vt(&
       n, V, T, lnPhi=lnPhi, P=P, dPdV=dPdV, dPdT=dPdT, dPdn=dPdn &
       )
 
@@ -333,20 +484,48 @@ end block lnphi_vt_p
 
 ### Fugacity (V,T): \(\ln f_i (V,T)\)
 
-Alternative way of calculating fugacity directly from the residual Helmholtz
-free energy:
+`lnfug_vt` returns \(\ln(f_i/1\,\mathrm{bar})\), using fugacity numerically
+in bar, rather than its coefficient. For positive component amounts,
+
+$$
+\ln(f_i/1\,\mathrm{bar}) = \ln(z_i) + \ln\hat\phi_i + \ln(P/1\,\mathrm{bar}).
+$$
+
+Unlike `lnphi_vt`, its derivatives are at fixed \(V\) or \(T\): `dlnfdT`
+holds \(V,\mathbf{n}\) fixed, `dlnfdV` holds \(T,\mathbf{n}\) fixed, and
+`dlnfdn` holds \(V,T\) and the other component amounts fixed. In particular,
+
+$$
+\left(\frac{\partial\ln f_i}{\partial V}\right)_{T,\mathbf{n}}
+=-\frac{1}{RT}\left(\frac{\partial P}{\partial n_i}\right)_{V,T},
+\qquad
+\left(\frac{\partial\ln f_i}{\partial n_j}\right)_{V,T}
+=\frac{1}{RT}\frac{\partial^2 A^r}{\partial n_i\partial n_j}
++\frac{\delta_{ij}}{n_i}.
+$$
+
+Use positive amounts in this example. At zero amount, \(\ln f_i\) has a
+singular limit: the current routine sets the corresponding `lnf` entry to
+zero as an implementation convention, **not** the physical log fugacity,
+and composition derivatives can divide by zero.
 
 ```fortran
 fugacity_vt: block
-    real(pr) :: n(2), T, V, lnf(2), dlnfdV(2), dlnfdT(2), dlnfdn(2,2)
+    real(pr) :: n(2)
+    real(pr) :: T
+    real(pr) :: V
+    real(pr) :: lnf(2)
+    real(pr) :: dlnfdV(2)
+    real(pr) :: dlnfdT(2)
+    real(pr) :: dlnfdn(2,2)
 
-    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    n = [0.3_pr, 0.7_pr] ! Component amounts [mol]; total 1 mol, z = [0.3, 0.7]
     T = 300.0_pr         ! Set temperature to 300 K
-    V = 1.0_pr           ! Set volume to 1 liter
+    V = 25.0_pr          ! Set total volume to 25 L (molar volume 25 L/mol)
 
-    call eos%lnfug_vt(&
-      n, V, T, lnf, &
-      dlnfdV, dlnfdT, dlnfdn, &
+    call model%lnfug_vt(&
+      n, V, T, lnf=lnf, &
+      dlnfdV=dlnfdV, dlnfdT=dlnfdT, dlnfdn=dlnfdn &
       )
 
 end block fugacity_vt
@@ -359,7 +538,10 @@ end block fugacity_vt
 We start explaining the residual entropy because it is the easiest property to
 calculate. Also, helps us to understand how to calculate the next properties.
 
-The residual entropy is calculated as follows:
+Entropy describes the thermal and mixing contribution to the free energy.
+`Sr` is the total entropy correction relative to an ideal gas at the same
+amounts, volume, and temperature (bar L/K). It is not total entropy, and its
+sign is not a stability test. The residual entropy is calculated as follows:
 
 $$
 S^r = - \left(\frac{\partial A^r}{\partial T} \right)_{V,\mathbf{n}}
@@ -385,14 +567,20 @@ $$
 
 ```fortran
 residual_entropy: block
-    real(pr) :: n(2), T, V, S, dSdV, dSdT, dSdn(2)
+    real(pr) :: n(2)
+    real(pr) :: T
+    real(pr) :: V
+    real(pr) :: Sr
+    real(pr) :: SrV
+    real(pr) :: SrT
+    real(pr) :: Srn(2)
 
-    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    n = [0.3_pr, 0.7_pr] ! Component amounts [mol]; total 1 mol, z = [0.3, 0.7]
     T = 300.0_pr         ! Set temperature to 300 K
-    V = 1.0_pr           ! Set volume to 1 liter
+    V = 25.0_pr          ! Set total volume to 25 L (molar volume 25 L/mol)
 
     ! Calculate residual entropy and its derivatives
-    call eos%residual_entropy(n, V, T, Sr=Sr, SrT=SrT, SrV=SrV, Srn=Srn)
+    call model%entropy_residual_vt(n, V, T, Sr=Sr, SrT=SrT, SrV=SrV, Srn=Srn)
 
     print *, "Residual entropy: ", Sr
     print *, "SrV: ", SrV
@@ -408,29 +596,38 @@ end block residual_entropy
 
 **MM - Chapter 2 - Equation 20**
 
+Enthalpy \(H=U+PV\) combines internal energy and the pressure–volume term,
+making it useful in constant-pressure energy balances. `Hr` is only its
+nonideal correction, in bar L. To obtain total enthalpy, add a compatible
+ideal-gas value, \(H=H^{ig}+H^r\); for a mixture,
+\(H^{ig}=\sum_i n_i h_i^{ig}(T)\), with a specified reference for each species.
+Because ideal-gas enthalpy depends only on temperature and amounts, the
+same-\(V,T\) residual and same-\(P,T\) departure enthalpies coincide at the
+same real-fluid state. Their derivatives have different constraints.
+
 The residual enthalpy is calculated as follows:
 
 $$
 H^r(\mathbf{n},V,T) = H^r(\mathbf{n},P,T) = A^r(\mathbf{n},V,T) + T
-S^r(\mathbf{n},V,T) + PV - \mathbf{n}RT
+S^r(\mathbf{n},V,T) + PV - nRT
 $$
 
 We know that pressure can be calculated as:
 
 $$
 P = - \left(\frac{\partial A^r}{\partial V} \right)_{T,\mathbf{n}} +
-\frac{\mathbf{n}RT}{V}
+\frac{nRT}{V}
 $$
 
 Then, we can obtain:
 
 $$
-P - \frac{\mathbf{n}RT}{V} = - \left(\frac{\partial A^r}{\partial V}
+P - \frac{nRT}{V} = - \left(\frac{\partial A^r}{\partial V}
 \right)_{T,\mathbf{n}}
 $$
 
 $$
-PV - \mathbf{n}RT = - V \left(\frac{\partial A^r}{\partial V} \right)_{T,\mathbf{n}}
+PV - nRT = - V \left(\frac{\partial A^r}{\partial V} \right)_{T,\mathbf{n}}
 $$
 
 And we also know how to calculate residual entropy as:
@@ -470,14 +667,20 @@ $$
 
 ```fortran
 residual_enthalpy: block
-    real(pr) :: n(2), T, V, Hr, HrV, HrT, Hrn(2)
+    real(pr) :: n(2)
+    real(pr) :: T
+    real(pr) :: V
+    real(pr) :: Hr
+    real(pr) :: HrV
+    real(pr) :: HrT
+    real(pr) :: Hrn(2)
 
-    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    n = [0.3_pr, 0.7_pr] ! Component amounts [mol]; total 1 mol, z = [0.3, 0.7]
     T = 300.0_pr         ! Set temperature to 300 K
-    V = 1.0_pr           ! Set volume to 1 liter
+    V = 25.0_pr          ! Set total volume to 25 L (molar volume 25 L/mol)
 
     ! Calculate residual enthalpy and its derivatives
-    call eos%residual_enthalpy(n, V, T, Hr=Hr, HrV=HrV, HrT=HrT, Hrn=Hrn)
+    call model%enthalpy_residual_vt(n, V, T, Hr=Hr, HrV=HrV, HrT=HrT, Hrn=Hrn)
 
     print *, "Residual enthalpy: ", Hr
     print *, "HrV: ", HrV
@@ -491,16 +694,22 @@ end block residual_enthalpy
 
 **MM - Chapter 1 - Table 6 (Equation VI)**
 
+Gibbs energy \(G=H-TS\) is the potential used for equilibrium at fixed
+pressure and temperature. The routine here returns a **same-volume** residual,
+not the same-pressure departure used in root comparisons. In particular,
+\(RT\sum_i n_i\ln\hat\phi_i\) is the same-pressure departure Gibbs energy;
+subtract \(nRT\ln Z\) from the result below to obtain it.
+
 The residual Gibbs free energy is calculated as follows:
 
 $$
-G^r(\mathbf{n},V,T) = A^r(\mathbf{n},V,T) + PV - \mathbf{n}RT
+G^r(\mathbf{n},V,T) = A^r(\mathbf{n},V,T) + PV - nRT
 $$
 
 As with residual enthalpy we can easily deduce:
 
 $$
-PV - \mathbf{n}RT = - V \left(\frac{\partial A^r}{\partial V} \right)_{T,\mathbf{n}}
+PV - nRT = - V \left(\frac{\partial A^r}{\partial V} \right)_{T,\mathbf{n}}
 $$
 
 For that:
@@ -531,14 +740,20 @@ $$
 
 ```fortran
 residual_gibbs: block
-    real(pr) :: n(2), T, V, Gr, GrV, GrT, Grn(2)
+    real(pr) :: n(2)
+    real(pr) :: T
+    real(pr) :: V
+    real(pr) :: Gr
+    real(pr) :: GrV
+    real(pr) :: GrT
+    real(pr) :: Grn(2)
 
-    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    n = [0.3_pr, 0.7_pr] ! Component amounts [mol]; total 1 mol, z = [0.3, 0.7]
     T = 300.0_pr         ! Set temperature to 300 K
-    V = 1.0_pr           ! Set volume to 1 liter
+    V = 25.0_pr          ! Set total volume to 25 L (molar volume 25 L/mol)
 
     ! Calculate residual Gibbs free energy and its derivatives
-    call eos%residual_gibbs(n, V, T, Gr=Gr, GrV=GrV, GrT=GrT, Grn=Grn)
+    call model%gibbs_residual_vt(n, V, T, Gr=Gr, GrV=GrV, GrT=GrT, Grn=Grn)
 
     print *, "Residual Gibbs free energy: ", Gr
     print *, "GrV: ", GrV
@@ -559,7 +774,7 @@ $$
 From **MM - Chapter 1 - Table 6 (Equations IX, XII, and XIII)** we know that:
 
 $$
-    S^r(\mathbf{n},P,T) = S^r(\mathbf{n},V,T) + \mathbf{n}R \; ln Z
+    S^r(\mathbf{n},P,T) = S^r(\mathbf{n},V,T) + nR \; ln Z
 $$
 
 $$
@@ -567,14 +782,14 @@ $$
 $$
 
 $$
-    G^r(\mathbf{n},P,T) = G^r(\mathbf{n},V,T) - \mathbf{n}RT \; ln Z
+    G^r(\mathbf{n},P,T) = G^r(\mathbf{n},V,T) - nRT \; ln Z
 $$
 
 Replacing on the first equation we have:
 
 $$
-G^r(\mathbf{n},V,T) - \mathbf{n}RT \; ln Z = H^r(\mathbf{n},V,T) - T
-\left(S^r(\mathbf{n},V,T) + \mathbf{n}R \; ln Z \right)
+G^r(\mathbf{n},V,T) - nRT \; ln Z = H^r(\mathbf{n},V,T) - T
+\left(S^r(\mathbf{n},V,T) + nR \; ln Z \right)
 $$
 
 Which of course lead us to:
@@ -622,6 +837,8 @@ $$
 
 **MM - Chapter 1 - Table 6 (Equation IV)**
 
+Internal energy \(U\) excludes the \(PV\) term in enthalpy. `Ur` is its
+total nonideal correction (bar L), to be added to ideal-gas internal energy.
 The residual internal energy is calculated as follows:
 
 $$
@@ -655,14 +872,20 @@ $$
 
 ```fortran
 residual_internal_energy: block
-    real(pr) :: n(2), T, V, Ur, UrV, UrT, Urn(2)
+    real(pr) :: n(2)
+    real(pr) :: T
+    real(pr) :: V
+    real(pr) :: Ur
+    real(pr) :: UrV
+    real(pr) :: UrT
+    real(pr) :: Urn(2)
 
-    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    n = [0.3_pr, 0.7_pr] ! Component amounts [mol]; total 1 mol, z = [0.3, 0.7]
     T = 300.0_pr         ! Set temperature to 300 K
-    V = 1.0_pr           ! Set volume to 1 liter
+    V = 25.0_pr          ! Set total volume to 25 L (molar volume 25 L/mol)
 
     ! Calculate residual internal energy and its derivatives
-    call eos%internal_energyresidual(n, V, T, Ur=Ur, UrV=UrV, UrT=UrT, Urn=Urn)
+    call model%internal_energy_residual_vt(n, V, T, Ur=Ur, UrV=UrV, UrT=UrT, Urn=Urn)
 
     print *, "Residual internal energy: ", Ur
     print *, "UrV: ", UrV
@@ -676,6 +899,9 @@ end block residual_internal_energy
 
 **MM - Chapter 1 - Table 6 (Equation III)**
 
+Heat capacity measures the energy change per kelvin on a specified path.
+\(C_V=(\partial U/\partial T)_{V,\mathbf{n}}\); the `Cv` output here is
+\(C_V^r=C_V-C_V^{ig}\), not total \(C_V\), in bar L/K.
 The residual constant volume heat capacity is calculated as follows:
 
 $$
@@ -685,14 +911,17 @@ $$
 
 ```fortran
 residual_cv: block
-    real(pr) :: n(2),T, V, Cv
+    real(pr) :: n(2)
+    real(pr) :: T
+    real(pr) :: V
+    real(pr) :: Cv
 
-    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    n = [0.3_pr, 0.7_pr] ! Component amounts [mol]; total 1 mol, z = [0.3, 0.7]
     T = 300.0_pr         ! Set temperature to 300 K
-    V = 1.0_pr           ! Set volume to 1 liter
+    V = 25.0_pr          ! Set total volume to 25 L (molar volume 25 L/mol)
 
     ! Calculate residual constant volume heat capacity
-    call eos%residual_cv(n, V, T, Cv=Cv)
+    call model%Cv_residual_vt(n, V, T, Cv=Cv)
 
     print *, "Residual constant volume heat capacity: ", Cv
 
@@ -703,12 +932,19 @@ end block residual_cv
 
 **MM - Chapter 1 - Table 6 (Equation VII)**
 
+\(C_P=(\partial H/\partial T)_{P,\mathbf{n}}\), even when its state is
+specified by \(V,T\). The `Cp` output is \(C_P^r=C_P-C_P^{ig}\), not total
+\(C_P\). Add \(\sum_i n_i c_{P,i}^{ig}(T)\) in the same units for the total;
+a negative residual heat capacity alone does not mean a negative total heat
+capacity. In particular, `HrT` from `enthalpy_residual_vt` is **not**
+\(C_P^r\), since it holds volume rather than pressure fixed.
+
 The residual constant pressure heat capacity is calculated as follows:
 
 $$
 C_P^r(\mathbf{n},V,T) = C_V^r(\mathbf{n},V,T) + T \left(\frac{\partial
 P}{\partial T}\right)_{V,\mathbf{n}} \left(\frac{\partial V}{\partial
-T}\right)_{P,\mathbf{n}} - \mathbf{n}R
+T}\right)_{P,\mathbf{n}} - nR
 $$
 
 From **MM - Chapter 1 - Equation A37** we know that:
@@ -725,36 +961,45 @@ With a direct replacement:
 $$
 C_P^r(\mathbf{n},V,T) = C_V^r(\mathbf{n},V,T) - T \frac{\left(\frac{\partial P}
 {\partial T} \right)^2_{V,\mathbf{n}}}{\left(\frac{\partial P}
-{\partial V} \right)_{T,\mathbf{n}}} - \mathbf{n}R
+{\partial V} \right)_{T,\mathbf{n}}} - nR
 $$
 
 We can replace all the terms to obtain an expression completely expressed in
-terms of residual Helmholtz (\mathbf{n},V,T).
+terms of residual Helmholtz \(A^r(\mathbf{n},V,T)\).
 
 $$
 C_P^r(\mathbf{n},V,T) = - T \left(\frac{\partial^2 A^r}{\partial T^2}
 \right)_{V,\mathbf{n}} - T \; \frac{\left(- \left(\frac{\partial^2
-A^r}{\partial V \partial T} \right)_{V,\mathbf{n}} +
-\frac{\mathbf{n}R}{V}\right)^2}{\left(-\left(\frac{\partial^2 A^r}{\partial
-V^2} \right)_{T,\mathbf{n}} - \frac{\mathbf{n}RT}{V^2}\right)} - \mathbf{n}R
+A^r}{\partial V \partial T} \right)_{\mathbf{n}} +
+\frac{nR}{V}\right)^2}{\left(-\left(\frac{\partial^2 A^r}{\partial
+V^2} \right)_{T,\mathbf{n}} - \frac{nRT}{V^2}\right)} - nR
 $$
 
 
 ```fortran
 residual_cp: block
-    real(pr) :: n(2), T, V, Cp
+    real(pr) :: n(2)
+    real(pr) :: T
+    real(pr) :: V
+    real(pr) :: Cp
 
-    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    n = [0.3_pr, 0.7_pr] ! Component amounts [mol]; total 1 mol, z = [0.3, 0.7]
     T = 300.0_pr         ! Set temperature to 300 K
-    V = 1.0_pr           ! Set volume to 1 liter
+    V = 25.0_pr          ! Set total volume to 25 L (molar volume 25 L/mol)
 
     ! Calculate residual constant pressure heat capacity
-    call eos%residual_cp(n, V, T, Cp=Cp)
+    call model%Cp_residual_vt(n, V, T, Cp=Cp)
 
     print *, "Residual constant pressure heat capacity: ", Cp
 
 end block residual_cp
 ```
+
+The constant-pressure formulas divide by \((\partial P/\partial V)_{T,\mathbf{n}}\).
+Near a spinodal or critical point this derivative approaches zero, so heat
+capacities and transformed derivatives may become very large or numerically
+ill-conditioned. They describe a homogeneous branch, not the heat capacity of
+a two-phase sample whose phase amounts change with temperature.
 
 ## Residual properties at (n, P, T)
 
@@ -768,7 +1013,13 @@ $$
     M^r(\mathbf{n},P,T) = M(\mathbf{n},P,T) - M^{ig}(\mathbf{n},P,T)
 $$
 
-Some properties change because of that, other stays the same. To obtain the
+For the same real-fluid state, \(H^r\), \(U^r\), \(C_V^r\), and \(C_P^r\)
+are unchanged because their ideal-gas counterparts depend only on temperature
+and amounts. \(A^r\), \(G^r\), and \(S^r\) require the \(\ln Z\) corrections
+given below. For these three, a `_pt` routine is therefore not simply the
+`_vt` residual evaluated at the solved volume.
+
+To obtain the
 expression of these properties in term of the \(\mathbf{n},V,T\) properties we will need
 the derivatives of \(ln \; Z\):
 
@@ -791,7 +1042,7 @@ $$
 $$
     \left(\frac{\partial \, ln \; Z}{\partial n_i}\right)_{P,T} =
     \frac{1}{V} \left(\frac{\partial V}{\partial n_i}\right)_{P,T} 
-    - \frac{1}{\mathbf{n}}
+    - \frac{1}{n}
 $$
 
 If desired, all the volume derivatives can be expressed in terms of
@@ -801,7 +1052,7 @@ $$
     \left(\frac{\partial V}{\partial P}\right)_{T,\mathbf{n}} =
     \frac{1}{\left(\frac{\partial P}{\partial V}\right)_{T,\mathbf{n}}} =
     \frac{1}{-\left(\frac{\partial^2 A^r}{\partial V^2} \right)_{T,\mathbf{n}}
-    - \frac{\mathbf{n}RT}{V^2}}
+    - \frac{nRT}{V^2}}
 $$
 
 From **MM - Chapter 1 - Equation A39**
@@ -810,7 +1061,7 @@ $$
     \left(\frac{\partial V}{\partial n_i}\right)_{P,T} =
     -\frac{\left(\frac{\partial P}{\partial
     n_i}\right)_{V,T}}{\left(\frac{\partial P}{\partial
-    V}\right)_{T,\mathbf{n}}} = \frac{-\left(\frac{\partial^2 A^r}{\partial V
+    V}\right)_{T,\mathbf{n}}} = -\frac{-\left(\frac{\partial^2 A^r}{\partial V
     \partial n_i} \right)_T + \frac{RT}{V}}{-\left(\frac{\partial^2
     A^r}{\partial V^2} \right)_{T,\mathbf{n}} - \frac{nRT}{V^2}}
 $$
@@ -823,8 +1074,8 @@ $$
     \right)_{V,\mathbf{n}}}{\left(\frac{\partial P}{\partial V}
     \right)_{T,\mathbf{n}}} = - \frac{- \left(\frac{\partial^2 A^r}{\partial V
     \partial T} \right)_{\mathbf{n}} +
-    \frac{\mathbf{n}R}{V}}{-\left(\frac{\partial^2 A^r}{\partial V^2}
-    \right)_{T,\mathbf{n}} - \frac{\mathbf{n}RT}{V^2}}
+    \frac{nR}{V}}{-\left(\frac{\partial^2 A^r}{\partial V^2}
+    \right)_{T,\mathbf{n}} - \frac{nRT}{V^2}}
 $$
 
 Finally, we have to understand the chain rule...
@@ -850,23 +1101,29 @@ the volume method.
 ```fortran
 
 lnphi_pt: block
-    real(pr) :: n(2), T, P, lnPhi(2), dlnPhidP(2), dlnPhidT(2), dlnPhidn(2,2)
+    real(pr) :: n(2)
+    real(pr) :: T
+    real(pr) :: P
+    real(pr) :: lnPhi(2)
+    real(pr) :: dlnPhidP(2)
+    real(pr) :: dlnPhidT(2)
+    real(pr) :: dlnPhidn(2,2)
 
-    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    n = [0.3_pr, 0.7_pr] ! Component amounts [mol]; total 1 mol, z = [0.3, 0.7]
     T = 300.0_pr         ! Set temperature to 300 K
-    P = 1.0_pr           ! Set volume to 1 bar
+    P = 1.0_pr           ! Set pressure to 1 bar
 
-    call eos%lnphi_pt(&
+    call model%lnphi_pt(&
       n, P, T, root_type="liquid", lnPhi=lnPhi, &
       dlnPhidP=dlnPhidP, dlnPhidT=dlnPhidT, dlnPhidn=dlnPhidn &
       )
 
-    call eos%lnphi_pt(&
+    call model%lnphi_pt(&
       n, P, T, root_type="vapor", lnPhi=lnPhi, &
       dlnPhidP=dlnPhidP, dlnPhidT=dlnPhidT, dlnPhidn=dlnPhidn &
       )
     
-    call eos%lnphi_pt(&
+    call model%lnphi_pt(&
       n, P, T, root_type="stable", lnPhi=lnPhi, &
       dlnPhidP=dlnPhidP, dlnPhidT=dlnPhidT, dlnPhidn=dlnPhidn &
       )
@@ -879,13 +1136,20 @@ the value of the calculated volume and the pressure derivatives.
 
 ```fortran
 lnphi_pt_v: block
-    real(pr) :: n(2), T, P, V, lnPhi(2), dPdV, dPdT, dPdn(2)
+    real(pr) :: n(2)
+    real(pr) :: T
+    real(pr) :: P
+    real(pr) :: V
+    real(pr) :: lnPhi(2)
+    real(pr) :: dPdV
+    real(pr) :: dPdT
+    real(pr) :: dPdn(2)
 
-    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    n = [0.3_pr, 0.7_pr] ! Component amounts [mol]; total 1 mol, z = [0.3, 0.7]
     T = 300.0_pr         ! Set temperature to 300 K
-    P = 1.0_pr           ! Set volume to 1 bar
+    P = 1.0_pr           ! Set pressure to 1 bar
 
-    call eos%lnphi_pt(&
+    call model%lnphi_pt(&
       n, P, T, V=V, root_type="stable", lnPhi=lnPhi, &
       dPdV=dPdV, dPdT=dPdT, dPdn=dPdn &
       )
@@ -901,7 +1165,7 @@ end block lnphi_pt_v
 The \(A^r(\mathbf{n}, P, T)\) can be calculated as follows:
 
 $$
-    A^r(\mathbf{n}, P, T) = A^r(\mathbf{n}, V, T) - \mathbf{n}RT \; ln \; Z
+    A^r(\mathbf{n}, P, T) = A^r(\mathbf{n}, V, T) - nRT \; ln \; Z
 $$
 
 And its derivatives:
@@ -910,7 +1174,7 @@ $$
     \left(\frac{\partial \, A^r(\mathbf{n},P,T)}{\partial
     P}\right)_{T,\mathbf{n}} = \left(\frac{\partial \,
     A^r(\mathbf{n},V,T)}{\partial V}\right)_{T,\mathbf{n}} \left(\frac{\partial
-    V}{\partial P}\right)_{T,\mathbf{n}} - \mathbf{n} R T \left(\frac{1}{P} +
+    V}{\partial P}\right)_{T,\mathbf{n}} - n R T \left(\frac{1}{P} +
     \frac{1}{V} \left(\frac{\partial V}{\partial P}\right)_{T,\mathbf{n}}
     \right)
 $$
@@ -920,8 +1184,8 @@ $$
     T}\right)_{P,\mathbf{n}} = \left(\frac{\partial A^r(\mathbf{n}, V,
     T)}{\partial T}\right)_{V,\mathbf{n}} + \left(\frac{\partial
     A^r(\mathbf{n}, V, T)}{\partial V}\right)_{T,\mathbf{n}}
-    \left(\frac{\partial V}{\partial T}\right)_{P,\mathbf{n}} - \mathbf{n}R \;
-    ln \; Z - \mathbf{n} R T \left(\frac{1}{V} \left(\frac{\partial V}{\partial
+    \left(\frac{\partial V}{\partial T}\right)_{P,\mathbf{n}} - nR \;
+    ln \; Z - n R T \left(\frac{1}{V} \left(\frac{\partial V}{\partial
     T}\right)_{P,\mathbf{n}} - \frac{1}{T}\right)
 $$
 
@@ -930,19 +1194,25 @@ $$
     \left(\frac{\partial A^r(\mathbf{n},V,T)}{\partial n_i}\right)_{V,T} +
     \left(\frac{\partial A^r(\mathbf{n},V,T)}{\partial V}\right)_{T,\mathbf{n}}
     \left(\frac{\partial V}{\partial n_i}\right)_{P,T} - RT \; ln \; Z -
-    \mathbf{n}RT \left(\frac{1}{V} \left(\frac{\partial V}{\partial
-    n_i}\right)_{P,T} - \frac{1}{\mathbf{n}}\right)
+    nRT \left(\frac{1}{V} \left(\frac{\partial V}{\partial
+    n_i}\right)_{P,T} - \frac{1}{n}\right)
 $$
 
 ```fortran
 ar_pt: block
-    real(pr) :: n(2), T, P, Ar, ArP, ArT, Arn(2)
+    real(pr) :: n(2)
+    real(pr) :: T
+    real(pr) :: P
+    real(pr) :: Ar
+    real(pr) :: ArP
+    real(pr) :: ArT
+    real(pr) :: Arn(2)
 
-    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    n = [0.3_pr, 0.7_pr] ! Component amounts [mol]; total 1 mol, z = [0.3, 0.7]
     T = 300.0_pr         ! Set temperature to 300 K
-    P = 1.0_pr           ! Set volume to 1 bar
+    P = 1.0_pr           ! Set pressure to 1 bar
 
-    call eos%helmholtz_residual_pt(&
+    call model%helmholtz_residual_pt(&
        n, P, T, root_type="stable", Ar=Ar, ArP=ArP, ArT=ArT, Arn=Arn &
        )
 end block ar_pt
@@ -956,7 +1226,7 @@ end block ar_pt
 The residual entropy at \(\mathbf{n}, P, T\) can be calculated as follows:
 
 $$
-    S^r(\mathbf{n}, P, T) = S^r(\mathbf{n}, V, T) + \mathbf{n}R \; \ln \; Z
+    S^r(\mathbf{n}, P, T) = S^r(\mathbf{n}, V, T) + nR \; \ln \; Z
 $$
 
 And its derivatives:
@@ -965,7 +1235,7 @@ $$
     \left(\frac{\partial S^r(\mathbf{n},P,T)}{\partial P}\right)_{T,\mathbf{n}}
     = \left(\frac{\partial S^r(\mathbf{n},V,T)}{\partial
     V}\right)_{T,\mathbf{n}} \left(\frac{\partial V}{\partial
-    P}\right)_{T,\mathbf{n}} + \mathbf{n}R \left(\frac{1}{P} + \frac{1}{V}
+    P}\right)_{T,\mathbf{n}} + nR \left(\frac{1}{P} + \frac{1}{V}
     \left(\frac{\partial V}{\partial P}\right)_{T,\mathbf{n}} \right)
 $$
 
@@ -974,7 +1244,7 @@ $$
     = \left(\frac{\partial S^r(\mathbf{n},V,T)}{\partial
     T}\right)_{V,\mathbf{n}} + \left(\frac{\partial
     S^r(\mathbf{n},V,T)}{\partial V}\right)_{T,\mathbf{n}} \left(\frac{\partial
-    V}{\partial T}\right)_{P,\mathbf{n}} + \mathbf{n}R \left(\frac{1}{V}
+    V}{\partial T}\right)_{P,\mathbf{n}} + nR \left(\frac{1}{V}
     \left(\frac{\partial V}{\partial T}\right)_{P,\mathbf{n}} -
     \frac{1}{T}\right)
 $$
@@ -984,8 +1254,8 @@ $$
     \left(\frac{\partial S^r(\mathbf{n},V,T)}{\partial n_i}\right)_{V,T} +
     \left(\frac{\partial S^r(\mathbf{n},V,T)}{\partial V}\right)_{T,\mathbf{n}}
     \left(\frac{\partial V}{\partial n_i}\right)_{P,T} + R \; ln \; Z +
-    \mathbf{n}R \left(\frac{1}{V} \left(\frac{\partial V}{\partial
-    n_i}\right)_{P,T} - \frac{1}{\mathbf{n}}\right)
+    nR \left(\frac{1}{V} \left(\frac{\partial V}{\partial
+    n_i}\right)_{P,T} - \frac{1}{n}\right)
 $$
 
 
@@ -1026,13 +1296,19 @@ $$
 
 ```fortran
 hr_pt: block
-    real(pr) :: n(2), T, P, Hr, HrP, HrT, Hrn(2)
+    real(pr) :: n(2)
+    real(pr) :: T
+    real(pr) :: P
+    real(pr) :: Hr
+    real(pr) :: HrP
+    real(pr) :: HrT
+    real(pr) :: Hrn(2)
 
-    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    n = [0.3_pr, 0.7_pr] ! Component amounts [mol]; total 1 mol, z = [0.3, 0.7]
     T = 300.0_pr         ! Set temperature to 300 K
-    P = 1.0_pr           ! Set volume to 1 bar
+    P = 1.0_pr           ! Set pressure to 1 bar
 
-    call eos%enthalpy_residual_pt(&
+    call model%enthalpy_residual_pt(&
        n, P, T, root_type="stable", Hr=Hr, HrP=HrP, HrT=HrT, Hrn=Hrn &
        )
 end block hr_pt
@@ -1048,14 +1324,14 @@ $$
     G^r(\mathbf{n}, P, T) = G^r(\mathbf{n}, V, T) - n R T \; \ln \; Z
 $$
 
-Therefore, the derivatives are the same as the residual Helholtz free energy
-\((\mathbf{n}, P, T)\):
+Therefore, the derivatives follow the same chain-rule pattern as residual
+Helmholtz free energy \((\mathbf{n}, P, T)\), with \(G^r\) replacing \(A^r\):
 
 $$
     \left(\frac{\partial \, G^r(\mathbf{n},P,T)}{\partial
     P}\right)_{T,\mathbf{n}} = \left(\frac{\partial \,
     G^r(\mathbf{n},V,T)}{\partial V}\right)_{T,\mathbf{n}} \left(\frac{\partial
-    V}{\partial P}\right)_{T,\mathbf{n}} - \mathbf{n} R T \left(\frac{1}{P} +
+    V}{\partial P}\right)_{T,\mathbf{n}} - n R T \left(\frac{1}{P} +
     \frac{1}{V} \left(\frac{\partial V}{\partial P}\right)_{T,\mathbf{n}}
     \right)
 $$
@@ -1065,8 +1341,8 @@ $$
     T}\right)_{P,\mathbf{n}} = \left(\frac{\partial G^r(\mathbf{n}, V,
     T)}{\partial T}\right)_{V,\mathbf{n}} + \left(\frac{\partial
     G^r(\mathbf{n}, V, T)}{\partial V}\right)_{T,\mathbf{n}}
-    \left(\frac{\partial V}{\partial T}\right)_{P,\mathbf{n}} - \mathbf{n}R \;
-    ln \; Z - \mathbf{n} R T \left(\frac{1}{V} \left(\frac{\partial V}{\partial
+    \left(\frac{\partial V}{\partial T}\right)_{P,\mathbf{n}} - nR \;
+    ln \; Z - n R T \left(\frac{1}{V} \left(\frac{\partial V}{\partial
     T}\right)_{P,\mathbf{n}} - \frac{1}{T}\right)
 $$
 
@@ -1075,19 +1351,25 @@ $$
     \left(\frac{\partial G^r(\mathbf{n},V,T)}{\partial n_i}\right)_{V,T} +
     \left(\frac{\partial G^r(\mathbf{n},V,T)}{\partial V}\right)_{T,\mathbf{n}}
     \left(\frac{\partial V}{\partial n_i}\right)_{P,T} - RT \; ln \; Z -
-    \mathbf{n}RT \left(\frac{1}{V} \left(\frac{\partial V}{\partial
-    n_i}\right)_{P,T} - \frac{1}{\mathbf{n}}\right)
+    nRT \left(\frac{1}{V} \left(\frac{\partial V}{\partial
+    n_i}\right)_{P,T} - \frac{1}{n}\right)
 $$
 
 ```fortran
 gr_pt: block
-    real(pr) :: n(2), T, P, Gr, GrP, GrT, Grn(2)
+    real(pr) :: n(2)
+    real(pr) :: T
+    real(pr) :: P
+    real(pr) :: Gr
+    real(pr) :: GrP
+    real(pr) :: GrT
+    real(pr) :: Grn(2)
 
-    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    n = [0.3_pr, 0.7_pr] ! Component amounts [mol]; total 1 mol, z = [0.3, 0.7]
     T = 300.0_pr         ! Set temperature to 300 K
-    P = 1.0_pr           ! Set volume to 1 bar
+    P = 1.0_pr           ! Set pressure to 1 bar
 
-    call eos%gibbs_residual_pt(&
+    call model%gibbs_residual_pt(&
        n, P, T, root_type="stable", Gr=Gr, GrP=GrP, GrT=GrT, Grn=Grn &
        )
 end block gr_pt
@@ -1103,7 +1385,8 @@ $$
     U^r(\mathbf{n}, P, T) = U^r(\mathbf{n}, V, T)
 $$
 
-Therefore, its derivatives are the same as enthalpy \((\mathbf{n}, P, T)\):
+Therefore, its derivatives follow the same chain-rule pattern as enthalpy
+\((\mathbf{n}, P, T)\), with \(U^r\) replacing \(H^r\):
 
 $$
     \left(\frac{\partial U^r(\mathbf{n},P,T)}{\partial P}\right)_{T,\mathbf{n}}
@@ -1129,13 +1412,19 @@ $$
 
 ```fortran
 ur_pt: block
-    real(pr) :: n(2), T, P, Ur, UrP, UrT, Urn(2)
+    real(pr) :: n(2)
+    real(pr) :: T
+    real(pr) :: P
+    real(pr) :: Ur
+    real(pr) :: UrP
+    real(pr) :: UrT
+    real(pr) :: Urn(2)
 
-    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    n = [0.3_pr, 0.7_pr] ! Component amounts [mol]; total 1 mol, z = [0.3, 0.7]
     T = 300.0_pr         ! Set temperature to 300 K
-    P = 1.0_pr           ! Set volume to 1 bar
+    P = 1.0_pr           ! Set pressure to 1 bar
 
-    call eos%gibbs_residual_pt(&
+    call model%internal_energy_residual_pt(&
        n, P, T, root_type="stable", Ur=Ur, UrP=UrP, UrT=UrT, Urn=Urn &
        )
 end block ur_pt
@@ -1149,18 +1438,21 @@ Residual constant volume heat capacity \((\mathbf{n}, P, T)\) can be obtained
 as follows:
 
 $$
-    C_v(\mathbf{n}, P, T) = C_v(\mathbf{n}, V, T)
+    C_V^r(\mathbf{n}, P, T) = C_V^r(\mathbf{n}, V, T)
 $$
 
 ```fortran
 cv_pt: block
-    real(pr) :: n(2), T, P, Cv
+    real(pr) :: n(2)
+    real(pr) :: T
+    real(pr) :: P
+    real(pr) :: Cv
 
-    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    n = [0.3_pr, 0.7_pr] ! Component amounts [mol]; total 1 mol, z = [0.3, 0.7]
     T = 300.0_pr         ! Set temperature to 300 K
-    P = 1.0_pr           ! Set volume to 1 bar
+    P = 1.0_pr           ! Set pressure to 1 bar
 
-    call eos%Cv_residual_pt(n, P, T, root_type="stable", Cv=Cv)
+    call model%Cv_residual_pt(n, P, T, root_type="stable", Cv=Cv)
 end block cv_pt
 ```
 
@@ -1172,32 +1464,37 @@ Residual constant pressure heat capacity \((\mathbf{n}, P, T)\) can be obtained
 as follows:
 
 $$
-    C_p(\mathbf{n}, P, T) = C_p(\mathbf{n}, V, T)
+    C_P^r(\mathbf{n}, P, T) = C_P^r(\mathbf{n}, V, T)
 $$
 
 ```fortran
 cp_pt: block
-    real(pr) :: n(2), T, P, Cp
+    real(pr) :: n(2)
+    real(pr) :: T
+    real(pr) :: P
+    real(pr) :: Cp
 
-    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    n = [0.3_pr, 0.7_pr] ! Component amounts [mol]; total 1 mol, z = [0.3, 0.7]
     T = 300.0_pr         ! Set temperature to 300 K
-    P = 1.0_pr           ! Set volume to 1 bar
+    P = 1.0_pr           ! Set pressure to 1 bar
 
-    call eos%Cp_residual_pt(n, P, T, root_type="stable", Cp=Cp)
+    call model%Cp_residual_pt(n, P, T, root_type="stable", Cp=Cp)
 end block cp_pt
 ```
 
 ## Excess properties (n, P, T)
 
-Excess properties (or mixing properties) are the difference between the real
-property and the property of the ideal mixture:
+Excess properties measure departure from an **ideal solution**, not from an
+ideal gas. They are not generally equal to the full change on mixing: an ideal
+solution already has entropy and Gibbs energy of mixing. At the same \(P,T\)
+and composition,
 
 $$
     M^E(\mathbf{n}, P, T) = M(\mathbf{n}, P, T) - M^{ideal}(\mathbf{n}, P, T)
 $$
 
-The ideal mixture property is equal to the linear combination of the pure
-components properties:
+For \(M=H,U,V\), the ideal-solution property is the sum of pure-component
+properties:
 
 $$
     M^{ideal}(\mathbf{n}, P, T) = \sum_i n_i \; m_i(P, T)
@@ -1205,6 +1502,19 @@ $$
 
 Where \(m_i(P, T)\) is the molar property of the pure component \(i\) at the
 same pressure and temperature as the mixture.
+
+For Gibbs and Helmholtz energies, add \(RT\sum_i n_i\ln z_i\) to this pure
+sum; for entropy, add \(-R\sum_i n_i\ln z_i\). Those ideal-mixing terms
+must be included before interpreting \(G^E\), \(A^E\), or \(S^E\).
+For example, positive \(V^E\) means expansion relative to the pure-volume sum,
+and negative \(H^E\) means an enthalpy below the pure-enthalpy sum.
+
+The current routines use `root_type` for the **mixture** but always use
+`"stable"` roots for the pure-component references. This matters if you want
+a liquid-standard-state activity coefficient while a pure component's stable
+state at the specified \(P,T\) is vapor. These routines do not automatically
+construct hypothetical pure-liquid reference states. Derivatives assume a
+smooth branch and are not derivatives across a reference-root switch.
 
 ### Activity coefficients (P, T): \(ln \gamma_i(\mathbf{n}, P, T)\)
 
@@ -1254,19 +1564,24 @@ $$
     V}\right)_{T,\mathbf{n}}}
 $$
 
-and \(v_i(P, T)\) is the partial molar volume of component \(i\) in the pure
-state at the same pressure and temperature of the mixture.
+and \(v_i(P, T)\) is the molar volume of pure component \(i\) at the same
+pressure and temperature as the mixture.
 
 ```fortran
 ln_gamma: block
-    real(pr) :: n(2), T, P, lngamma(2)
-    real(pr) :: dlngammadT(2), dlngammadP(2), dlngammadn(2,2)
+    real(pr) :: n(2)
+    real(pr) :: T
+    real(pr) :: P
+    real(pr) :: lngamma(2)
+    real(pr) :: dlngammadT(2)
+    real(pr) :: dlngammadP(2)
+    real(pr) :: dlngammadn(2,2)
 
-    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    n = [0.3_pr, 0.7_pr] ! Component amounts [mol]; total 1 mol, z = [0.3, 0.7]
     T = 300.0_pr         ! Set temperature to 300 K
-    P = 1.0_pr           ! Set volume to 1 bar
+    P = 1.0_pr           ! Set pressure to 1 bar
 
-    call eos%ln_activity_coefficient(&
+    call model%ln_activity_coefficient(&
        n, P, T, root_type="stable", &
        lngamma=lngamma, dlngammadT=dlngammadT, dlngammadP=dlngammadP, &
        dlngammadn=dlngammadn &
@@ -1302,17 +1617,26 @@ $$
     \left(\frac{\partial G^E}{\partial n_i}\right)_{P,T} = R T \; ln \; \gamma_i
 $$
 
+`Ge`, `GeP`, and `GeT` are scalars; `Gen` has one entry per component.
+In particular, `Gen(i)` is a first amount derivative (bar L/mol), not a
+matrix of second derivatives. `GeP` has units L and `GeT` bar L/K.
+
 ```fortran
 gibbs_excess: block
-    real(pr) :: n(2), T, P, GE, dGEdT(2), dGEdP(2), dGE_dn(2,2)
+    real(pr) :: n(2)
+    real(pr) :: T
+    real(pr) :: P
+    real(pr) :: Ge
+    real(pr) :: GeP
+    real(pr) :: GeT
+    real(pr) :: Gen(2)
     
-    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    n = [0.3_pr, 0.7_pr] ! Component amounts [mol]; total 1 mol, z = [0.3, 0.7]
     T = 300.0_pr         ! Set temperature to 300 K
-    P = 1.0_pr           ! Set volume to 1 bar
+    P = 1.0_pr           ! Set pressure to 1 bar
 
-    call eos%gibbs_excess(&
-       n, P, T, root_type="stable", GE=GE, dGEdT=dGEdT, dGEdP=dGEdP, &
-       dGE_dn=dGE_dn &
+    call model%gibbs_excess(&
+       n, P, T, root_type="stable", Ge=Ge, GeP=GeP, GeT=GeT, Gen=Gen &
        )
 end block gibbs_excess
 ```
@@ -1331,13 +1655,16 @@ $$
 
 ```fortran
 enthalpy_excess: block
-    real(pr) :: n(2), T, P, HE
+    real(pr) :: n(2)
+    real(pr) :: T
+    real(pr) :: P
+    real(pr) :: He
 
-    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    n = [0.3_pr, 0.7_pr] ! Component amounts [mol]; total 1 mol, z = [0.3, 0.7]
     T = 300.0_pr         ! Set temperature to 300 K
-    P = 1.0_pr           ! Set volume to 1 bar
+    P = 1.0_pr           ! Set pressure to 1 bar
 
-    call eos%enthalpy_excess(n, P, T, root_type="stable", HE=HE)
+    call model%enthalpy_excess(n, P, T, root_type="stable", He=He)
 end block enthalpy_excess
 ```
 
@@ -1355,14 +1682,17 @@ $$
 
 ```fortran
 volume_excess: block
-    real(pr) :: n(2), T, P, VE
+    real(pr) :: n(2)
+    real(pr) :: T
+    real(pr) :: P
+    real(pr) :: Ve
     
-    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    n = [0.3_pr, 0.7_pr] ! Component amounts [mol]; total 1 mol, z = [0.3, 0.7]
     T = 300.0_pr         ! Set temperature to 300 K
-    P = 1.0_pr           ! Set volume to 1 bar
+    P = 1.0_pr           ! Set pressure to 1 bar
 
-    call eos%volume_excess(&
-       n, P, T, root_type="stable", VE=VE &
+    call model%volume_excess(&
+       n, P, T, root_type="stable", Ve=Ve &
        )
 end block volume_excess
 ```
@@ -1392,13 +1722,16 @@ $$
 
 ```fortran
 entropy_excess: block
-    real(pr) :: n(2), T, P, SE
+    real(pr) :: n(2)
+    real(pr) :: T
+    real(pr) :: P
+    real(pr) :: Se
 
-    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    n = [0.3_pr, 0.7_pr] ! Component amounts [mol]; total 1 mol, z = [0.3, 0.7]
     T = 300.0_pr         ! Set temperature to 300 K
-    P = 1.0_pr           ! Set volume to 1 bar
+    P = 1.0_pr           ! Set pressure to 1 bar
 
-    call eos%entropy_excess(n, P, T, root_type="stable", SE=SE)
+    call model%entropy_excess(n, P, T, root_type="stable", Se=Se)
 end block entropy_excess
 ```
 
@@ -1420,13 +1753,16 @@ $$
 
 ```fortran
 helmholtz_excess: block
-    real(pr) :: n(2), T, P, AE
+    real(pr) :: n(2)
+    real(pr) :: T
+    real(pr) :: P
+    real(pr) :: Ae
 
-    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    n = [0.3_pr, 0.7_pr] ! Component amounts [mol]; total 1 mol, z = [0.3, 0.7]
     T = 300.0_pr         ! Set temperature to 300 K
-    P = 1.0_pr           ! Set volume to 1 bar
+    P = 1.0_pr           ! Set pressure to 1 bar
 
-    call eos%helmholtz_excess(n, P, T, root_type="stable", AE=AE)
+    call model%helmholtz_excess(n, P, T, root_type="stable", Ae=Ae)
 end block helmholtz_excess
 ```
 
@@ -1461,16 +1797,19 @@ $$
 
 ```fortran
 internal_energy_excess: block
-    real(pr) :: n(2), T, P, UE
+    real(pr) :: n(2)
+    real(pr) :: T
+    real(pr) :: P
+    real(pr) :: Ue
 
-    n = [3.0_pr, 7.0_pr] ! Number of moles of each component [mol]
+    n = [0.3_pr, 0.7_pr] ! Component amounts [mol]; total 1 mol, z = [0.3, 0.7]
     T = 300.0_pr         ! Set temperature to 300 K
-    P = 1.0_pr           ! Set volume to 1 bar
+    P = 1.0_pr           ! Set pressure to 1 bar
 
-    call eos%internal_energy_excess(n, P, T, root_type="stable", UE=UE)
+    call model%internal_energy_excess(n, P, T, root_type="stable", Ue=Ue)
 end block internal_energy_excess
 ```
 
 # References
-[1] 1. Michelsen, M. L., & Mollerup, J. M. (2007). Thermodynamic models:
+[1] Michelsen, M. L., & Mollerup, J. M. (2007). Thermodynamic models:
 Fundamentals & computational aspects (2. ed). Tie-Line Publications.

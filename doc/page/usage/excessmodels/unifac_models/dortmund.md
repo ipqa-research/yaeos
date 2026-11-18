@@ -8,6 +8,21 @@ title: UNIFAC-Dortmund
 
 ## Model description
 
+Modified UNIFAC (Dortmund) is a structure-based liquid activity model intended
+to improve the representation of mixtures across properties such as phase
+equilibria and excess enthalpies. It changes both the geometric mixing term and
+the group interaction temperature law, with its **own fitted parameter set**.
+It is a useful candidate when fitted molecular binary parameters are unavailable
+and the Dortmund group/interaction coverage is suitable, not an automatic
+upgrade for every mixture.
+
+The geometric term describes size/shape mismatch; the energetic ("residual")
+term describes unlike group contacts relative to their pure-molecule references.
+Both contribute to *excess* Gibbs energy relative to an ideal liquid. This is
+not the residual ideal-gas departure of an EOS. The resulting activity coefficient
+enters \(a_i=x_i\gamma_i\), not a vapor fugacity expression by itself. Read the
+[family overview](index.html) for model selection and reference-state details.
+
 This is the Dortmund modified UNIFAC model. In this model, the parameters are
 defined as:
 
@@ -27,6 +42,17 @@ $$
     \text{exp} \left(- \frac{a_{jk} + b_{jk} T + c_{jk} T^2}{T} \right)
 $$
 
+Here `T` is in K; \(a_{jk}\) has units K, \(b_{jk}\) is dimensionless, and
+\(c_{jk}\) has units 1/K. It is \(U_{jk}/R\), **not the exponent itself**, that
+is quadratic in temperature. The full exponent is
+\(-a_{jk}/T-b_{jk}-c_{jk}T\). The two directions `(j,k)` and `(k,j)` generally
+differ. The constructor supplies these coefficients; do not import classic
+UNIFAC or molecular NRTL coefficients into this equation.
+
+`setup_dortmund(molecules)` returns the shared `type(UNIFAC)`, already configured
+with the Dortmund geometry and interaction law. Merely changing `model%d` on
+an original UNIFAC model does not create a Dortmund model.
+
 ## Subgroups list
 
 The list of the functional groups and its interaction parameters could be 
@@ -36,6 +62,18 @@ accessed on the DDBST web page:
 We reproduce here the list of functional groups. To instantiate a
 UNIFAC-Dortmund model you must define which functional groups are used in a
 molecule by the Subgroup Number column.
+
+Enter **subgroup** numbers, not main-group numbers. `R` and `Q` are dimensionless
+relative volumes and areas, not SI properties. Notice the separate primary,
+secondary, and tertiary alcohol groups: identifying an OH bond alone is not
+enough. The table is a published reference, while actual availability is governed
+by the parameter data bundled with your installed version. Check all required
+directional interactions as well as the subgroup list.
+
+These numbers belong to the **Dortmund** variant only. The same integer can
+mean a different fragment in the [original UNIFAC](unifaclv.html) or
+[PSRK](psrk.html) tables, so take subgroup numbers from the table of the
+variant you are actually constructing.
 
 
 |   Subgroup number | Subgroup Name   |   Main Group No. | Main Group Name   |      R |      Q |
@@ -187,10 +225,11 @@ fortran_code = writers.to_yaeos(groups, dortmund)
 print(fortran_code)
 ```
 
-And you will obtain:
+Typical output is a **setup snippet**, not a complete program. Review the
+decomposition and confirm that the generated IDs are Dortmund IDs:
 
 ```fortran
-use yaeos__models_ge_group_contribution_unifac, only: Groups
+use yaeos, only: Groups
 
 type(Groups) :: molecules(3)
 
@@ -219,16 +258,20 @@ the logarithm of activity coefficients of the model for a 0.5 mole fraction of
 each, and a temperature of 298.0 K.
 
 ```fortran
-use yaeos__constants, only: pr
-use yaeos__models_ge_group_contribution_unifac, only: Groups, UNIFAC, setup_dortmund
+program dortmund_activity
+use yaeos, only: pr, Groups, UNIFAC, setup_dortmund
+implicit none
 
 ! Variables declarations
 type(UNIFAC) :: model
 type(Groups) :: molecules(2)
 real(pr) :: ln_gammas(2)
+real(pr) :: n(2)
+real(pr) :: T
+real(pr) :: He
 
 ! Variables instances
-! Ethanol definition [CH3, CH2, OH]
+! Ethanol definition [CH3, CH2, primary OH]
 molecules(1)%groups_ids = [1, 2, 14] ! Subgroups ids
 molecules(1)%number_of_groups = [1, 1, 1] ! Subgroups occurrences
 
@@ -240,10 +283,52 @@ molecules(2)%number_of_groups = [1]
 model = setup_dortmund(molecules)
 
 ! Calculate ln_gammas
-call model%ln_activity_coefficient([0.5_pr, 0.5_pr], 298.0_pr, ln_gammas)
+n = [0.5_pr, 0.5_pr]
+T = 298.0_pr
+call model%ln_activity_coefficient(n, T, ln_gammas)
+call model%excess_enthalpy(n, T, He=He)
 
-print *, ln_gammas
+print *, "ln(gamma): ethanol, water = ", ln_gammas
+print *, "gamma = ", exp(ln_gammas)
+print *, "Molar HE [bar L/mol] = ", He/sum(n)
+end program dortmund_activity
 ```
+
+This complete program uses ethanol first and water second; all output arrays
+follow that order. The subgroup counts are integers per molecule, while `n`
+contains mixture amounts in mol. Natural-log coefficients must be exponentiated
+to obtain `gamma`; values need not be less than 1. The excess enthalpy is the
+enthalpy change on mixing relative to ideal-solution enthalpy at this temperature,
+not the total liquid enthalpy. Multiply bar L/mol by 100 for J/mol.
+
+The sign of excess enthalpy is a model prediction, not a general test of whether
+hydrogen bonding occurs. Compare it with data for the same composition and
+temperature; a surprising sign should prompt checks of group assignment,
+parameter coverage, and variant before interpretation.
+
+## Checks, common errors, and next steps
+
+Keep the Dortmund subgroup geometry and interaction matrices together. Even
+where IDs coincide with classic UNIFAC, parameter values and some group
+meanings differ, and the modified size exponent \(d=3/4\) changes the
+combinatorial contribution as well.
+
+The input errors that matter most here are group-assignment errors. Do not use
+the secondary or tertiary OH groups for ethanol: the primary, secondary, and
+tertiary alcohol groups have different sizes and different interactions, so the
+choice changes both contributions. Do not double-count atoms in compound
+fragments, and do not assume that an available subgroup guarantees that every
+interaction your mixture needs is also available. `groups_ids` and counts must
+be equally sized, counts positive, and each subgroup listed once. Use kelvin
+and mole amounts, not Celsius and mass fractions.
+
+Check amount-scaling invariance of `gamma` and the pure-component limit, then
+compare with measured data near your intended range. The richer temperature law
+is fitted over a specific interval and can extrapolate poorly; it is also not a
+near-critical, density, or general electrolyte treatment. See
+[shared property methods](../index.html) for derivatives and
+[phase-equilibrium methods](../../phase_equilibrium/index.html) for stability
+and phase splits. Coefficients at one trial composition are not a phase diagram.
 
 ## References
 

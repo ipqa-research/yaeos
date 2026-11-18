@@ -72,8 +72,8 @@ module yaeos_c
 
    ! Phase equilibria
    public :: pure_psat
-   public :: flash, flash_vt, flash_grid, solve_mp_flash
-   public :: flash_ge
+   public :: flash, flash_vt, flash_second_order, flash_grid, solve_mp_flash
+   public :: flash_ge, flash_second_order_ge
    public :: saturation_pressure, saturation_temperature
    public :: pure_saturation_line
    public :: pt_mp_phase_envelope, px_mp_phase_envelope, tx_mp_phase_envelope
@@ -835,7 +835,7 @@ contains
             ar_model%kij(j, i) = kij
          end select
       end associate
-   end subroutine
+   end subroutine pcsaft_set_kij
 
    ! ==========================================================================
    !  Thermodynamic properties
@@ -1160,7 +1160,7 @@ contains
       real(c_double), intent(out) :: Vv
       ar_model = ar_models(id)%model
       Psat = ar_model%Psat_pure(ncomp, T, Vl, Vv)
-   end subroutine
+   end subroutine pure_psat
 
 
    subroutine critical_point(id, z0, zi, spec, S, max_iters, x, T, P, V)
@@ -1460,6 +1460,108 @@ contains
 
       call equilibria_state_to_arrays(result, x, y, Pout, Tout, Vx, Vy, beta)
    end subroutine flash
+
+   subroutine flash_second_order(&
+      id, z, T, P, light_root, miters, tol, x, y, k0, &
+      Pout, Tout, Vx, Vy, beta &
+      )
+      use yaeos, only: EquilibriumState, fflash => flash_second_order
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z(:)
+      real(c_double), intent(in) :: T
+      real(c_double), intent(in) :: P
+      character(len=15), intent(in) :: light_root
+      integer(c_int), intent(in) :: miters
+      real(c_double), intent(in) :: tol
+      real(c_double), intent(in) :: k0(size(z))
+      real(c_double), intent(out) :: x(size(z))
+      real(c_double), intent(out) :: y(size(z))
+      real(c_double), intent(out) :: Pout
+      real(c_double), intent(out) :: Tout
+      real(c_double), intent(out) :: Vx
+      real(c_double), intent(out) :: Vy
+      real(c_double), intent(out) :: beta
+
+      type(EquilibriumState) :: result
+
+      if (all(k0 == 0)) then
+         result = fflash(&
+            ar_models(id)%model, z, t, p_spec=p, &
+            light_root=light_root, tol=tol, max_iters=miters &
+            )
+      else
+         result = fflash(&
+            ar_models(id)%model, z, t, p_spec=p, k0=k0, &
+            light_root=light_root, tol=tol, max_iters=miters &
+            )
+      end if
+
+      ! Unlike the `flash` wrappers, also detect a non-converged flash.
+      if (.not. allocated(result%x) .or. .not. allocated(result%y) &
+         .or. trim(result%kind) == "failed") then
+         Pout = P
+         Tout = T
+         x = z
+         y = z
+         beta = -1.0
+         Vx = 1.0
+         Vy = 1.0
+         return
+      end if
+
+      call equilibria_state_to_arrays(result, x, y, Pout, Tout, Vx, Vy, beta)
+
+   end subroutine flash_second_order
+
+   subroutine flash_second_order_ge(&
+      id, z, T, miters, tol, x, y, k0, &
+      Pout, Tout, Vx, Vy, beta &
+      )
+      use yaeos, only: EquilibriumState, fflash => flash_second_order, pr
+      integer(c_int), intent(in) :: id
+      real(c_double), intent(in) :: z(:)
+      real(c_double), intent(in) :: T
+      integer(c_int), intent(in) :: miters
+      real(c_double), intent(in) :: tol
+      real(c_double), intent(in) :: k0(size(z))
+      real(c_double), intent(out) :: x(size(z))
+      real(c_double), intent(out) :: y(size(z))
+      real(c_double), intent(out) :: Pout
+      real(c_double), intent(out) :: Tout
+      real(c_double), intent(out) :: Vx
+      real(c_double), intent(out) :: Vy
+      real(c_double), intent(out) :: beta
+
+      type(EquilibriumState) :: result
+
+      if (all(k0 == 0)) then
+         result = fflash(&
+            ge_models(id)%model, z, t, p_spec=1.01325_pr, &
+            tol=tol, max_iters=miters &
+            )
+      else
+         result = fflash(&
+            ge_models(id)%model, z, t, p_spec=1.01325_pr, k0=k0, &
+            tol=tol, max_iters=miters &
+            )
+      end if
+
+      ! Unlike the `flash` wrappers, also detect a non-converged flash.
+      if (.not. allocated(result%x) .or. .not. allocated(result%y) &
+         .or. trim(result%kind) == "failed") then
+         Pout = 1.01325_pr
+         Tout = T
+         x = z
+         y = z
+         beta = -1.0
+         Vx = 0.0
+         Vy = 0.0
+         return
+      end if
+
+      call equilibria_state_to_arrays(result, x, y, Pout, Tout, Vx, Vy, beta)
+
+   end subroutine flash_second_order_ge
 
    subroutine solve_mp_flash(np, id, z, P, T, kinds_x, kind_w, max_iters, x_l0, w0, betas0, x_l, w, betas, iters, F)
       use yaeos, only: solve_mp_flash_point

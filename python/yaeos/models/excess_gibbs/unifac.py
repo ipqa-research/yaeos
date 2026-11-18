@@ -30,7 +30,7 @@ class UNIFACVLE(GeModel):
 
         groups = [water, ethanol]
 
-        model = UNIFAVLE(groups)
+        model = UNIFACVLE(groups)
 
         model.ln_gamma([0.5, 0.5], 298.15)
     """

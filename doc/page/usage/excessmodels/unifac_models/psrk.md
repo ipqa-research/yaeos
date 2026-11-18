@@ -8,6 +8,26 @@ title: UNIFAC-PSRK
 
 ## Model description
 
+This page describes the **UNIFAC contribution used for PSRK**, not a complete
+Predictive Soave–Redlich–Kwong equation of state. `setup_psrk(molecules)` returns
+`type(UNIFAC)`, an excess-Gibbs liquid activity model. It does not construct an
+SRK cubic, select its alpha function, attach a mixing rule, or calculate vapor
+properties. Those choices must match the full PSRK formulation if that is your
+goal; an arbitrary SRK/UNIFAC combination is not automatically PSRK.
+
+This group set is relevant to predictive EOS work involving gases and solvents;
+it includes dedicated light-gas groups absent from many original-UNIFAC examples.
+For standalone liquid screening, compare the parameter coverage and validation
+of [original UNIFAC](unifaclv.html) and [Dortmund](dortmund.html) rather than
+selecting PSRK only because a subgroup appears in its table.
+
+The model still combines geometric size/shape and energetic group-contact
+contributions to *excess* Gibbs energy relative to an ideal liquid. Its internal
+"residual" contribution is not an EOS ideal-gas departure. The returned
+\(\gamma_i\) corrects liquid activity \(x_i\gamma_i\), not vapor pressure
+directly and not the vapor fugacity coefficient. See the
+[family overview](index.html) and [shared introduction](../index.html).
+
 This is the Predictive Soave-Redlich-Kwong (PSRK) UNIFAC model. In this model,
 the parameters are defined as:
 
@@ -27,6 +47,14 @@ $$
     \text{exp} \left(- \frac{a_{jk} + b_{jk} T + c_{jk} T^2}{T} \right)
 $$
 
+`T` is in K, \(a_{jk}\) is in K, \(b_{jk}\) is dimensionless, and \(c_{jk}\)
+is in 1/K. The quadratic refers to \(U_{jk}/R\); the exponent is
+\(-a_{jk}/T-b_{jk}-c_{jk}T\). Interaction coefficients are directional, so
+reversing the indices can change the prediction. PSRK and Dortmund share this
+functional form but **not** the same parameter set or combinatorial exponent.
+The constructor loads the PSRK data; normally your inputs are just fragments
+and their counts.
+
 ## Subgroups list
 
 The list of the functional groups and its interaction parameters could be 
@@ -36,6 +64,17 @@ accessed on the DDBST web page:
 We reproduce here the list of functional groups. To instantiate a UNIFAC-PSRK
 model you must define which functional groups are used in a molecule by the
 Subgroup Number column.
+
+Pass subgroup IDs, not main-group IDs. `R` and `Q` are dimensionless relative
+size and area. Dedicated whole-molecule groups such as CH4 and CO2 must not be
+replaced by guessed atom-by-atom decompositions. The table is a published
+reference; the installed library's bundled data determine actual availability.
+Verify directional interaction coverage as well as subgroup existence.
+
+These numbers belong to the **PSRK** variant only. For example, subgroup 118
+is methane `CH4` here, while the same integer is the sulfone fragment
+`(CH2)2SU` in the [original UNIFAC](unifaclv.html) table. Take subgroup
+numbers from the table of the variant you are actually constructing.
 
 
 |   Subgroup number | Subgroup name   | Main group    |      R |      Q |
@@ -211,10 +250,11 @@ fortran_code = writers.to_yaeos(groups, psrk)
 print(fortran_code)
 ```
 
-And you will obtain:
+Typical output is a **setup snippet**, not a complete program. Confirm that
+the assignments use PSRK subgroup definitions before copying them:
 
 ```fortran
-use yaeos__models_ge_group_contribution_unifac, only: Groups
+use yaeos, only: Groups
 
 type(Groups) :: molecules(3)
 
@@ -244,13 +284,17 @@ the logarithm of activity coefficients of the model for a 0.5 mole fraction of
 each, and a temperature of 298.0 K.
 
 ```fortran
-use yaeos__constants, only: pr
-use yaeos__models_ge_group_contribution_unifac, only: Groups, UNIFAC, setup_psrk
+program psrk_unifac_activity
+use yaeos, only: pr, Groups, UNIFAC, setup_psrk
+implicit none
 
 ! Variables declarations
 type(UNIFAC) :: model
 type(Groups) :: molecules(2)
 real(pr) :: ln_gammas(2)
+real(pr) :: n(2)
+real(pr) :: T
+real(pr) :: Ge
 
 ! Variables instances
 ! Ethanol definition [CH3, CH2, OH]
@@ -265,10 +309,56 @@ molecules(2)%number_of_groups = [1]
 model = setup_psrk(molecules)
 
 ! Calculate ln_gammas
-call model%ln_activity_coefficient([0.5_pr, 0.5_pr], 298.0_pr, ln_gammas)
+n = [0.5_pr, 0.5_pr]
+T = 298.0_pr
+call model%ln_activity_coefficient(n, T, ln_gammas)
+call model%excess_gibbs(n, T, Ge=Ge)
 
-print *, ln_gammas
+print *, "ln(gamma): ethanol, water = ", ln_gammas
+print *, "gamma = ", exp(ln_gammas)
+print *, "Molar GE [bar L/mol] = ", Ge/sum(n)
+end program psrk_unifac_activity
 ```
+
+This complete program deliberately evaluates only the group model. Output order
+is ethanol then water, matching `molecules` and `n`. Counts describe fragments
+per molecule, not mixture composition. `ln_gammas` are natural logarithms; their
+exponentials are dimensionless activity coefficients. The molar excess energy
+is in bar L/mol (multiply by 100 for J/mol), not the full mixing Gibbs energy.
+No vapor phase or gas solubility is solved here.
+
+Do not assume this program prints the same activity coefficients as original
+UNIFAC. Even if some parameter entries coincide, geometry, group definitions,
+interaction tables, and temperature handling are variant-specific. Compare
+numerical results only after checking the installed parameter tables and the
+exact groups and conventions used by both constructors.
+
+## Checks, common errors, and next steps
+
+Use equally sized subgroup-ID/count arrays, list each subgroup once with a
+positive total count, and check that all required directed interactions are
+available. Do not use an apparent zero or missing table entry as proof of ideal
+behavior. Keep the PSRK data, temperature law, and geometry together; borrowed
+coefficients from other variants invalidate the model definition. In
+particular, subgroup numbers must come from the PSRK table on this page, since
+the same integers mean different fragments in the other variants.
+
+Use kelvin and nonnegative mole amounts with positive total. Scaling all amounts
+should not change `gamma`; the present pure component should have a coefficient
+approaching 1. These checks test implementation and input consistency, not
+accuracy.
+
+Be clear about what the PSRK name implies and what it does not. High-pressure
+reliability of a full PSRK equation of state does not follow from evaluating
+this pressure-independent group model, especially for supercritical light gases
+where an ordinary pure-liquid standard state needs careful treatment. If your
+goal is a high-pressure vapor-liquid calculation, you need the equation of
+state itself.
+
+For thermal properties see the [shared GeModel methods](../index.html). For EOS
+coupling, continue to the [cubic mixing rules](../../eos/cubics/mixing.html) and
+use a consistent full formulation. Always validate phase-equilibrium predictions
+against data in the intended range.
 
 ## References
 

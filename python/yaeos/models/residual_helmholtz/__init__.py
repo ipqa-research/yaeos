@@ -11,7 +11,7 @@ Yaeos Residual Helmholtz module. This module provides the following submodules:
             - RKPR: RKPR model
             - PSRK: Predictive-Soave-Redlich-Kwong model
         - Mixing rules: mixing rules for cubic EoS
-            - QMR: cuadratic mixing rule
+            - QMR: quadratic mixing rule
             - HV: Huron-Vidal mixing rule
             - MHV: Michelsen's modified Huron-Vidal mixing rule
             - HVNRTL: Huron-Vidal NRTL mixing rule

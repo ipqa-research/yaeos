@@ -131,12 +131,15 @@ class CubicEoS(ArModel):
         Parameters
         ----------
         temperatures : array_like
-            Range of temperatuers for which calculate the attractive parameter.
+            Range of temperatures for which calculate the attractive parameter.
 
         Returns
         -------
-        dict : Dictionary with the values of a for each component and its
-               derivatives with temperature.
+        dict
+            Dictionary with keys ``"a"``, ``"dt"`` and ``"dt2"``: the
+            attractive parameter of each component and its first and second
+            temperature derivatives. Each value has shape
+            ``(len(temperatures), nc)``.
         """
         a, dadt, dadt2 = yaeos_c.get_cubiceos_attractive_parameters(
             id=self.id, nc=self.size(), t=temperatures
@@ -149,7 +152,8 @@ class CubicEoS(ArModel):
 
         Returns
         -------
-            array : Repulsive parameter value for each component.
+        np.ndarray
+            Repulsive parameter value for each component.
         """
         b = yaeos_c.get_cubiceos_repulsive_parameters(
             id=self.id, nc=self.size()
@@ -170,18 +174,18 @@ class PengRobinson76(CubicEoS):
     acentric_factors : array_like
         Acentric factors vector
     mixrule : CubicMixRule, optional
-        Mixing rule object. If no provided the quadratric mixing rule (QMR)
+        Mixing rule object. If not provided the quadratic mixing rule (QMR)
         with zero for kij and lij parameters is set, by default None
 
     Attributes
     ----------
     nc : int
         Number of components
-    critical_temperatures : array_like
+    tc : array_like
         Critical temperatures vector [K]
-    critical_pressures : array_like
+    pc : array_like
         Critical pressures vector [bar]
-    acentric_factors : array_like
+    w : array_like
         Acentric factors vector
     id : int
         EoS identifier
@@ -234,18 +238,18 @@ class PengRobinson78(CubicEoS):
     acentric_factors : array_like
         Acentric factors vector
     mixrule : CubicMixRule, optional
-        Mixing rule object. If no provided the quadratric mixing rule (QMR)
+        Mixing rule object. If not provided the quadratic mixing rule (QMR)
         with zero for kij and lij parameters is set, by default None
 
     Attributes
     ----------
     nc : int
         Number of components
-    critical_temperatures : array_like
+    tc : array_like
         Critical temperatures vector [K]
-    critical_pressures : array_like
+    pc : array_like
         Critical pressures vector [bar]
-    acentric_factors : array_like
+    w : array_like
         Acentric factors vector
     id : int
         EoS identifier
@@ -298,18 +302,18 @@ class SoaveRedlichKwong(CubicEoS):
     acentric_factors : array_like
         Acentric factors vector
     mixrule : CubicMixRule, optional
-        Mixing rule object. If no provided the quadratric mixing rule (QMR)
+        Mixing rule object. If not provided the quadratic mixing rule (QMR)
         with zero for kij and lij parameters is set, by default None
 
     Attributes
     ----------
     nc : int
         Number of components
-    critical_temperatures : array_like
+    tc : array_like
         Critical temperatures vector [K]
-    critical_pressures : array_like
+    pc : array_like
         Critical pressures vector [bar]
-    acentric_factors : array_like
+    w : array_like
         Acentric factors vector
     id : int
         EoS identifier
@@ -368,18 +372,18 @@ class RKPR(CubicEoS):
     delta_1 : array_like, optional
         delta_1 parameter, by default None
     mixrule : CubicMixRule, optional
-        Mixing rule object. If no provided the quadratric mixing rule (QMR)
+        Mixing rule object. If not provided the quadratic mixing rule (QMR)
         with zero for kij and lij parameters is set, by default None
 
     Attributes
     ----------
     nc : int
         Number of components
-    critical_temperatures : array_like
+    tc : array_like
         Critical temperatures vector [K]
-    critical_pressures : array_like
+    pc : array_like
         Critical pressures vector [bar]
-    acentric_factors : array_like
+    w : array_like
         Acentric factors vector
     zc : array_like
         Critical compressibility factor vector
@@ -536,23 +540,25 @@ class PSRK(CubicEoS):
     acentric_factors : array_like
         Acentric factors vector
     molecules: list of dict
-        List of dicts with the groups and their amounts for each molecule
-    c1: array_like
-        Mathias-Copeman parameters c1
-    c2: array_like
-        Mathias-Copeman parameters c3
-    c3: array_like
-        Mathias-Copeman parameters c3
+        List of dicts with the PSRK-UNIFAC groups and their amounts for each
+        molecule
+    c1: array_like, optional
+        Mathias-Copeman parameters c1, by default None (uses the Soave
+        expression ``0.48 + 1.574*w - 0.175*w**2``)
+    c2: array_like, optional
+        Mathias-Copeman parameters c2, by default None (zeros)
+    c3: array_like, optional
+        Mathias-Copeman parameters c3, by default None (zeros)
 
     Attributes
     ----------
     nc : int
         Number of components
-    critical_temperatures : array_like
+    tc : array_like
         Critical temperatures vector [K]
-    critical_pressures : array_like
+    pc : array_like
         Critical pressures vector [bar]
-    acentric_factors : array_like
+    w : array_like
         Acentric factors vector
     id : int
         EoS identifier
@@ -593,8 +599,7 @@ class PSRK(CubicEoS):
         ]
 
         print(molecules)
-
-        >>> [{15: 1}, {1: 1, 2: 1, 14: 1}]
+        # [{15: 1}, {1: 1, 2: 1, 14: 1}]
     """
 
     name = "PSRK"

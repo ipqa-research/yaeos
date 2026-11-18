@@ -1,13 +1,27 @@
 module yaeos__models_ge_group_contribution_psrk_parameters
-
+   !! # PSRK UNIFAC parameters
+   !!
+   !! # Description
+   !! Parameter set for the PSRK UNIFAC model, returned by
+   !! [[PSRKParameters]].
+   !! The returned parameter type contains the PSRK subgroup definitions and
+   !! main-group interaction matrices.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! parameters = PSRKParameters()
+   !! call parameters%check_consistency()
+   !! ```
    use yaeos__constants, only: pr
    use yaeos__models_ge_group_contribution_model_parameters, only: GeGCModelParameters
    implicit none
 
 contains
    type(GeGCModelParameters) function PSRKParameters()
+      !! Return the PSRK UNIFAC parameter set.
 
-      integer :: nmg, nsg
+      integer :: nmg
+      integer :: nsg
       ! ========================================================================
       ! PSRK subgroups ids definition
       ! ------------------------------------------------------------------------

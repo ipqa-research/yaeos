@@ -19,19 +19,19 @@ class UNIQUAC(GeModel):
     rs : array_like
         Molecule's relative volumes :math:`R_i`
     aij : array_like
-        Interaction parameters matrix :math:`a_{ij}` zero matrix if no
+        Interaction parameters matrix :math:`a_{ij}` zero matrix if not
         provided, by default None
     bij : array_like
-        Interaction parameters matrix :math:`b_{ij}` zero matrix if no
+        Interaction parameters matrix :math:`b_{ij}` zero matrix if not
         provided, by default None
     cij : array_like
-        Interaction parameters matrix :math:`c_{ij}` zero matrix if no
+        Interaction parameters matrix :math:`c_{ij}` zero matrix if not
         provided, by default None
     dij : array_like
-        Interaction parameters matrix :math:`d_{ij}` zero matrix if no
+        Interaction parameters matrix :math:`d_{ij}` zero matrix if not
         provided, by default None
     eij : array_like
-        Interaction parameters matrix :math:`e_{ij}` zero matrix if no
+        Interaction parameters matrix :math:`e_{ij}` zero matrix if not
         provided, by default None
 
     Attributes

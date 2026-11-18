@@ -140,7 +140,8 @@ class QMR(CubicMixRule):
 class QMRTD(CubicMixRule):
     r"""Quadratic mixing rule, with temperature dependence.
 
-    ..math::
+    .. math::
+
         k_{ij}(T) = k_{ij}^{\infty} + k_{ij}^0 \exp{\left(-T/T^{ref}\right)}
 
     Parameters
@@ -195,7 +196,13 @@ class QMRTD(CubicMixRule):
         self.lij = np.array(lij, order="F")
 
     def set_mixrule(self, ar_model_id: int) -> None:
-        """Set mix rule method."""
+        """Set mix rule method.
+
+        Parameters
+        ----------
+        ar_model_id : int
+            ID of the cubic EoS model
+        """
         yaeos_c.set_qmrtd(
             ar_model_id,
             kij_0=self.kij_0,
@@ -271,9 +278,10 @@ class MHV(CubicMixRule):
         Excess Gibbs energy model
     q : float
         q parameter. Use:
-            q = -0.594 for Soave-Redlich-Kwong
-            q = -0.53 for Peng-Robinson
-            q = -0.85 for Van der Waals
+
+        - q = -0.594 for Soave-Redlich-Kwong
+        - q = -0.53 for Peng-Robinson
+        - q = -0.85 for Van der Waals
     lij : array_like, optional
         lij binary interaction parameters matrix, by default None
 
@@ -290,7 +298,7 @@ class MHV(CubicMixRule):
     -------
     .. code-block:: python
 
-        from yaeos import MHV, SoaveRedlichKwong, NRTL
+        from yaeos import MHV, PengRobinson76, NRTL
 
         tc = [647.14, 513.92]               # critical temperature [K]
         pc = [220.64, 61.48]                # critical pressure [bar]
@@ -402,7 +410,7 @@ class HV(CubicMixRule):
     -------
     .. code-block:: python
 
-        from yaeos import HV, SoaveRedlichKwong, NRTL
+        from yaeos import HV, PengRobinson76, NRTL
 
         tc = [647.14, 513.92]               # critical temperature [K]
         pc = [220.64, 61.48]                # critical pressure [bar]
@@ -424,7 +432,7 @@ class HV(CubicMixRule):
         self.ge = ge
 
     def set_mixrule(self, ar_model_id: int) -> None:
-        """Set modified Huron-Vidal mix rule method.
+        """Set Huron-Vidal mix rule method.
 
         Parameters
         ----------
@@ -488,12 +496,15 @@ class HVNRTL(CubicMixRule):
         NRTL alpha parameters matrix
     gji : matrix_like
         NRTL gij parameters matrix
-    gjiT: matrix_like
-        NRTL gij temperature coefficient parameters matrix
-    use_kij : matrix_like
-        Boolean matrix indicating whether to use kij parameters
-    kij : matrix_like
-        kij binary interaction parameters matrix
+    gjiT: matrix_like, optional
+        NRTL gij temperature coefficient parameters matrix, by default None
+        (zeros)
+    use_kij : matrix_like, optional
+        Boolean matrix indicating whether to use kij parameters, by default
+        None (all False). Must be given together with `kij`.
+    kij : matrix_like, optional
+        kij binary interaction parameters matrix, by default None (zeros).
+        Must be given together with `use_kij`.
 
     Attributes
     ----------
@@ -529,7 +540,7 @@ class HVNRTL(CubicMixRule):
             self.kij = np.array(kij, order="F")
 
     def set_mixrule(self, ar_model_id: int) -> None:
-        """Set modified Huron-Vidal mix rule method.
+        """Set Huron-Vidal NRTL mix rule method.
 
         Parameters
         ----------
@@ -633,9 +644,10 @@ class HVNRTL(CubicMixRule):
 
         Returns
         -------
-            yaeos.HVNRTL: Instance of a HVNRTL mixing rule with parameters
-            set to be close the parameters that would replicate the classic
-            QMR mixing rule.
+        HVNRTL
+            Instance of a HVNRTL mixing rule with parameters set to be close
+            to the parameters that would replicate the classic QMR mixing
+            rule.
         """
         from yaeos.lib import yaeos_c
 
@@ -700,36 +712,39 @@ class HVNRTL(CubicMixRule):
 
 
 class sDDLC(CubicMixRule):
-    r"""segmented Density Dependent Local Composition mixing rule.
+    r"""Segmented Density Dependent Local Composition mixing rule.
 
-    ..math::
+    .. math::
+
         k_{ij}(T) = k_{ij}^{\infty} + k_{ij}^0 \exp{\left(-T/T^{ref}\right)}
 
     Parameters
     ----------
-    q : array_like
+    qs : array_like
         Segment size for each component
-    kij_0 : matrix_like
-        kij_0 binary interaction parameters matrix
-    kij_inf : matrix_like
-        kij_inf binary interaction parameters matrix
-    t_ref: matrix_like
-        Reference temperature
-    lij : matrix_like
-        lij binary interaction parameters matrix
+    kij_0 : matrix_like, optional
+        kij_0 binary interaction parameters matrix. Defaults to zero. Must be
+        given together with `t_ref`.
+    kij_inf : matrix_like, optional
+        kij_inf binary interaction parameters matrix. Defaults to zero.
+    t_ref : matrix_like, optional
+        Reference temperature [K]. Defaults to zero. Must be given together
+        with `kij_0`.
+    lij : matrix_like, optional
+        lij binary interaction parameters matrix. Defaults to zero.
 
     Attributes
     ----------
-    q : array_like
+    qs : array_like
         Segment size for each component
-    kij_0, optional : matrix_like
-        kij_0 binary interaction parameters matrix. Defaults to zero.
-    kij_inf, optional : matrix_like
-        kij_inf binary interaction parameters matrix. Defaults to zero.
-    t_ref, optional: matrix_like
-        Reference temperature. Defaults to zero.
-    lij, optional : matrix_like
-        lij binary interaction parameters matrix. Defaults to zero.
+    kij_0 : matrix_like
+        kij_0 binary interaction parameters matrix.
+    kij_inf : matrix_like
+        kij_inf binary interaction parameters matrix.
+    t_ref : matrix_like
+        Reference temperature [K].
+    lij : matrix_like
+        lij binary interaction parameters matrix.
 
     Example
     -------
@@ -773,7 +788,7 @@ class sDDLC(CubicMixRule):
         if kij_0 is not None and t_ref is None:
             raise ValueError("t_ref should be provided with kij_0")
 
-        # kij temperature dependance term
+        # kij temperature dependence term
         if kij_0 is None:
             self.kij_0 = np.zeros((nc, nc))
             self.t_ref = np.zeros((nc, nc))
@@ -787,7 +802,13 @@ class sDDLC(CubicMixRule):
             self.lij = np.zeros((nc, nc))
 
     def set_mixrule(self, ar_model_id: int) -> None:
-        """Set mix rule method."""
+        """Set mix rule method.
+
+        Parameters
+        ----------
+        ar_model_id : int
+            ID of the cubic EoS model
+        """
         yaeos_c.set_sddlc(
             ar_model_id,
             qs=self.qs,
@@ -948,7 +969,13 @@ class CMRTD(CubicMixRule):
         self.lijk = np.array(lijk, order="F")
 
     def set_mixrule(self, ar_model_id: int) -> None:
-        """Set temperature-dependent cubic mix rule method."""
+        """Set temperature-dependent cubic mix rule method.
+
+        Parameters
+        ----------
+        ar_model_id : int
+            ID of the cubic EoS model
+        """
         yaeos_c.set_cmrtd(
             ar_model_id,
             kijk_0=self.kijk_0,

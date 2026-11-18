@@ -3,11 +3,16 @@ module yaeos__consistency_gemodel
    !! Consistency checks of Helmholtz free energy models ([[GeModel]]).
    !!
    !! # Description
-   !! This module contains tools to validate the analityc derivatives of
-   !! implmented excess Gibbs free energy models ([[GeModel]]). Also, allows to
+   !! This module contains tools to validate the analytic derivatives of
+   !! implemented excess Gibbs free energy models ([[GeModel]]). Also, allows to
    !! evaluate the consistency tests described in Thermodynamic Models:
    !! Fundamentals & Computational Aspects 2 ed. by Michelsen and Mollerup
    !! Chapter 5 section 4.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! call ge_consistency(model, n, T, eq58=eq58)
+   !! ```
    !!
    !! Available tools:
    !!
@@ -131,7 +136,9 @@ contains
       real(pr), optional, intent(out) :: eq61(size(n))
       !! MM Eq. 61
 
-      real(pr) :: Ge, Gen(size(n)), Gen2(size(n), size(n))
+      real(pr) :: Ge
+      real(pr) :: Gen(size(n))
+      real(pr) :: Gen2(size(n), size(n))
       real(pr) :: ln_gammas(size(n))
 
       integer i, j
@@ -268,9 +275,14 @@ contains
       !! \(\frac{d^2Ge}{dn_{ij}}\)
 
       ! Auxiliary
-      real(pr) :: Ge_aux1, Ge_aux2, Ge_aux3, Ge_aux4
-      real(pr) :: dn_aux1(size(n)), dn_aux2(size(n))
-      integer :: i, j
+      real(pr) :: Ge_aux1
+      real(pr) :: Ge_aux2
+      real(pr) :: Ge_aux3
+      real(pr) :: Ge_aux4
+      real(pr) :: dn_aux1(size(n))
+      real(pr) :: dn_aux2(size(n))
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
 
       ! ========================================================================
       ! Ar valuations
@@ -416,17 +428,26 @@ contains
       !! Moles number vector
       real(pr), intent(in) :: T
       !! Temperature [K]
-      logical, intent(out) :: passed
+      logical, intent(out) :: passed !! `.true.` if every consistency check passed.
 
-      integer :: i, j
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
 
       ! Call all together
-      real(pr) :: Ge, GeT, Gen(size(n)), Gen2(size(n), size(n)), GeT2
+      real(pr) :: Ge !! Excess Gibbs energy.
+      real(pr) :: GeT !! Temperature derivative of excess Gibbs energy.
+      real(pr) :: Gen(size(n)) !! Mole-number gradient of excess Gibbs energy.
+      real(pr) :: Gen2(size(n), size(n)) !! Mole-number Hessian of excess Gibbs energy.
+      real(pr) :: GeT2 !! Second temperature derivative of excess Gibbs energy.
       real(pr) :: GeTn(size(n))
 
       ! Individuals
-      real(pr) :: i_Ge, i_GeT, i_Gen(size(n)), i_Gen2(size(n), size(n))
-      real(pr) :: i_GeT2, i_GeTn(size(n))
+      real(pr) :: i_Ge
+      real(pr) :: i_GeT
+      real(pr) :: i_Gen(size(n))
+      real(pr) :: i_Gen2(size(n), size(n))
+      real(pr) :: i_GeT2
+      real(pr) :: i_GeTn(size(n))
 
       ! =======================================================================
       ! All together calls
@@ -489,4 +510,3 @@ contains
       passed = .true.
    end subroutine individual_ge_calls
 end module yaeos__consistency_gemodel
-

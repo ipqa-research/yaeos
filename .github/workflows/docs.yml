@@ -29,6 +29,7 @@ jobs:
     - name: Build Developer Documentation
       run: |
         ford ford.md
+        python3 tools/docs/fix_ford_links.py doc/ford_site
         cd python/docs
         sphinx-build -b html source build
         rm -r ../../doc/ford_site/page/python-api
@@ -47,7 +48,7 @@ jobs:
       if: ${{ github.ref == 'refs/heads/main'}}
       uses: technote-space/broken-link-checker-action@v1
       with:
-        TARGET: file://${{ github.workspace }}/ford_site/index.html
+        TARGET: file://${{ github.workspace }}/doc/ford_site/index.html
         RECURSIVE: true
         ASSIGNEES: ${{ github.actor }}
 

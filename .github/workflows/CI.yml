@@ -11,10 +11,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        # Previous LTS plus the newest image: the newest runners use x86-64-v3
+        # (AVX2/FMA) builds of gfortran and BLAS/LAPACK, which change rounding.
+        os: [ubuntu-24.04, ubuntu-latest]
         python-version: [3.12]
         toolchain:
-          - {compiler: gcc, version: 10}
+          # - {compiler: gcc, version: 10}
           - {compiler: gcc, version: 14}
           # - {compiler: intel, version: '2024.2'}
           # - {compiler: intel, version: '2023.2'}
@@ -26,7 +28,7 @@ jobs:
 
     - name: Setup Fortran Compiler
       if: runner.os != 'Windows'
-      uses: fortran-lang/setup-fortran@v1.8.1
+      uses: fortran-lang/setup-fortran@v1
       id: setup-fortran
       with:
         compiler: ${{ matrix.toolchain.compiler }}
@@ -41,33 +43,38 @@ jobs:
       uses: ts-graphviz/setup-graphviz@v1
 
     - name: Setup Fortran Package Manager
-      uses: fortran-lang/setup-fpm@v7
+      uses: fortran-lang/setup-fpm@v10
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Install dependencies
       run: |
+        # TODO: update gcovr later
         python -m pip install --upgrade pip
-        pip install ford numpy matplotlib gcovr numpy scipy coverage
+        pip install ford numpy matplotlib gcovr==8.6 numpy scipy coverage toml
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         sudo apt-get install libnlopt-dev libblas-dev liblapack-dev
 
+    - name: Check that fpm.toml lists every test program
+      run: python tools/dev/test_to_toml.py --check
+
     - name: Run tests without coverage
-      if: ${{ env.FC == 'gfortran' }}
+      if: startsWith(env.FC, 'gfortran')
       run: |
         fpm test --profile release --flag "-g -ffree-line-length-0" --compiler ${{ env.FC }} --c-compiler gcc
 
+    # Coverage is collected and uploaded once, from the newest image.
     - name: Run tests with coverage
-      if: ${{ env.FC == 'gfortran' }} && runner.os == 'Linux'
+      if: startsWith(env.FC, 'gfortran') && matrix.os == 'ubuntu-latest'
       run: |
         fpm test --profile release --flag "-g -coverage -ffree-line-length-0" --compiler ${{ env.FC }} --c-compiler gcc
 
     - name: Coverage
       run: bash ci/ci.sh coverage
-      if: ${{ env.FC == 'gfortran' }} && runner.os == 'Linux'
+      if: startsWith(env.FC, 'gfortran') && matrix.os == 'ubuntu-latest'
 
     - name: Upload coverage reports to Codecov
-      if: ${{ env.FC == 'gfortran' }} && runner.os == 'Linux'
+      if: startsWith(env.FC, 'gfortran') && matrix.os == 'ubuntu-latest'
       uses: codecov/codecov-action@v5
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
@@ -89,24 +96,20 @@ jobs:
       - name: Setup MSYS2 (toolchain only, no Python)
         uses: msys2/setup-msys2@v2
         with:
-          msystem: MINGW64
+          msystem: UCRT64
           update: true
           install: >-
-            gcc
-            mingw-w64-x86_64-gcc-libgfortran
-            mingw-w64-x86_64-gcc-fortran
-            mingw-w64-x86_64-lapack
-            mingw-w64-x86_64-fpm
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-gcc-fortran
+            mingw-w64-ucrt-x86_64-lapack
+            mingw-w64-ucrt-x86_64-blas
+            mingw-w64-ucrt-x86_64-fpm
+            mingw-w64-ucrt-x86_64-pkg-config
             make
             git
-            pkg-config
-
-      - name: Add MSYS2 binaries to PATH
-        shell: msys2 {0}
-        run: echo "C:/msys64/mingw64/bin" >> $GITHUB_PATH
 
       - name: Install Python
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -121,6 +124,62 @@ jobs:
             --profile release \
             --flag "-g -ffree-line-length-0" \
             --c-flag "-I./src/adiff/autodiff_api/tapenade/c/"
+
+  tests_macos:
+    name: Fortran tests on ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # Both 64-bit Mac architectures: Intel (x86_64) and Apple Silicon (arm64).
+        os: [macos-15-intel, macos-15]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Setup Fortran Compiler
+        uses: fortran-lang/setup-fortran@v1
+        with:
+          compiler: gcc
+          version: '14'
+
+      # The setup-fpm macOS binary is linked against GCC 12's libgfortran.
+      - name: Install fpm runtime
+        run: brew install gcc@12
+
+      - name: Setup Fortran Package Manager
+        uses: fortran-lang/setup-fpm@v10
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install BLAS and LAPACK
+        run: brew install lapack
+
+      - name: Show toolchain
+        run: |
+          sw_vers
+          uname -m
+          "$FC" --version
+          "$CC" --version
+          fpm --version
+
+      - name: Run tests
+        run: |
+          # Homebrew LAPACK also supplies BLAS, but is keg-only. Use its
+          # architecture-specific prefix for both linking and runtime lookup.
+          lapack_lib="$(brew --prefix lapack)/lib"
+          fpm test \
+            --profile release \
+            --flag "-g -ffree-line-length-0" \
+            --c-flag "-I./src/adiff/autodiff_api/tapenade/c/" \
+            --link-flag "-L${lapack_lib} -Wl,-rpath,${lapack_lib}" \
+            --compiler "$FC" \
+            --c-compiler "$CC"
 
   Python-API:
     runs-on: ${{ matrix.os }}
@@ -164,15 +223,17 @@ jobs:
 
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
-    needs: 
+    needs:
       - tests_and_coverage
       - tests_windows
+      - tests_macos
       - Python-API
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest] #, macos-13, macos-14]
+        # Native runners produce separate Intel and Apple Silicon wheels.
+        os: [ubuntu-latest, windows-latest, macos-15-intel, macos-15]
     
     steps:
       - uses: actions/checkout@v4
@@ -186,63 +247,79 @@ jobs:
           sudo apt install gfortran-14
           sudo update-alternatives --install /usr/bin/gfortran gfortran /usr/bin/gfortran-14 14
 
+      - name: Setup Fortran Compiler (macOS)
+        if: runner.os == 'macOS'
+        uses: fortran-lang/setup-fortran@v1
+        with:
+          compiler: gcc
+          version: '14'
+
+      # The setup-fpm macOS binary requires GCC 12's libgfortran at runtime.
+      - name: Install fpm runtime (macOS)
+        if: runner.os == 'macOS'
+        run: brew install gcc@12
+
       - name: Setup MSYS2 (Windows)
         if: runner.os == 'Windows'
         uses: msys2/setup-msys2@v2
         with:
-          msystem: MINGW64
+          msystem: UCRT64
           update: true
           install: >-
-            gcc
-            mingw-w64-x86_64-gcc-libgfortran
-            mingw-w64-x86_64-gcc-fortran
-            mingw-w64-x86_64-lapack
-            mingw-w64-x86_64-blas
-            mingw-w64-x86_64-fpm
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-gcc-fortran
+            mingw-w64-ucrt-x86_64-lapack
+            mingw-w64-ucrt-x86_64-blas
+            mingw-w64-ucrt-x86_64-fpm
+            mingw-w64-ucrt-x86_64-pkg-config
             make
             git
-            pkg-config
 
       - name: Add MSYS2 to PATH (Windows)
         if: runner.os == 'Windows'
         shell: msys2 {0}
         run: |
-          MINGW_PATH=$(cygpath -w $(dirname $(which gfortran)))
-          echo "$MINGW_PATH" >> $GITHUB_PATH
+          # -w for PATH, -m for tools that don't like backslashes (delvewheel,
+          # meson native file).
+          UCRT_BIN=$(dirname "$(which gfortran)")
+          echo "$(cygpath -w "$UCRT_BIN")" >> "$GITHUB_PATH"
+          echo "MINGW_BIN_PATH=$(cygpath -m "$UCRT_BIN")" >> "$GITHUB_ENV"
 
-      - name: Install fpm
-        uses: fortran-lang/setup-fpm@v7
+          # Show which toolchain (and fpm) the wheel build will pick up.
+          echo "Toolchain directory: $(cygpath -m "$UCRT_BIN")"
+          which fpm gfortran gcc
+          fpm --version
+          gfortran --version | head -n 1
+
+      # On Windows we deliberately use the UCRT64 fpm that comes with the
+      # MSYS2 toolchain instead of the PyPI wheel (which ships a MINGW64
+      # binary), see `fpm; platform_system != 'Windows'` in pyproject.toml.
+      - name: Install fpm (Linux/macOS)
+        if: runner.os != 'Windows'
+        uses: fortran-lang/setup-fpm@v10
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Show macOS wheel toolchain
+        if: runner.os == 'macOS'
+        run: |
+          uname -m
+          which fpm "$FC" "$CC"
+          fpm --version
+          "$FC" --version | head -n 1
 
       - name: Generate meson native file (Windows)
         if: runner.os == 'Windows'
         shell: msys2 {0}
         run: |
-          GFORTRAN=$(cygpath -w $(which gfortran))
-          GCC=$(cygpath -w $(which gcc))
-          GPP=$(cygpath -w $(which g++))
           mkdir -p python/ci
           cat > python/ci/windows-mingw.ini << EOF
           [binaries]
-          c = '${GCC//\\/\\\\}'
-          cpp = '${GPP//\\/\\\\}'
-          fortran = '${GFORTRAN//\\/\\\\}'
+          c = '$(cygpath -m "$(which gcc)")'
+          cpp = '$(cygpath -m "$(which g++)")'
+          fortran = '$(cygpath -m "$(which gfortran)")'
           EOF
           cat python/ci/windows-mingw.ini
-
-      - name: Add MSYS2 to PATH (Windows)
-        if: runner.os == 'Windows'
-        shell: msys2 {0}
-        run: |
-          # Use -w for PATH, but -m for delvewheel to avoid backslash escaping issues
-          MINGW_PATH_WIN=$(cygpath -w $(dirname $(which gfortran)))
-          MINGW_PATH_MIXED=$(cygpath -m $(dirname $(which gfortran)))
-
-          echo "$MINGW_PATH_WIN" >> $GITHUB_PATH
-
-          # Save the dynamic path to GITHUB_ENV for later steps
-          echo "MINGW_BIN_PATH=$MINGW_PATH_MIXED" >> $GITHUB_ENV
 
       # CiBuildWheel
       - name: Install dependencies
@@ -255,16 +332,33 @@ jobs:
 
         # to supply options, put them in 'env', like:
         env:
-          # CIBW_BUILD_VERBOSITY: 3
+          # Full build output, so a failure is diagnosable from the log.
+          CIBW_BUILD_VERBOSITY: 3
           CIBW_BUILD_FRONTEND: build
 
-          CIBW_BEFORE_BUILD_WINDOWS: pip install delvewheel
+          # Build only for the native architecture of each macOS runner.
+          # The wheel's minimum supported OS is macOS 15.
+          CIBW_ARCHS_MACOS: native
+          CIBW_ENVIRONMENT_MACOS: >
+            FC="$FC" CC="$CC" MACOSX_DEPLOYMENT_TARGET=15.0
+
+          # Sanity-check the toolchain inside the build environment itself (the
+          # isolated build env is what actually runs fpm/meson).
+          CIBW_BEFORE_BUILD_WINDOWS: >
+            pip install delvewheel &&
+            where fpm &&
+            fpm --version &&
+            gfortran --version
           CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel repair --add-path ${{ env.MINGW_BIN_PATH }} -w {dest_dir} {wheel}"
           CIBW_CONFIG_SETTINGS_WINDOWS: >
             setup-args=--native-file=../ci/windows-mingw.ini
 
           # MACOSX_DEPLOYMENT_TARGET: "13.0"
-          CIBW_BEFORE_TEST: pip install pytest fpm
+          # On Windows DO NOT install the PyPI `fpm` here: it ships a MINGW64
+          # binary that dies silently (0xC0000142) against the UCRT64 runtime
+          # DLLs on PATH. The MSYS2 UCRT64 fpm is already on PATH.
+          CIBW_BEFORE_TEST: pip install pytest
+          CIBW_BEFORE_TEST_LINUX: pip install pytest fpm
           CIBW_TEST_COMMAND: pytest {project}/python/tests --import-mode=importlib
 
       - uses: actions/upload-artifact@v4

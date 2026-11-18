@@ -23,7 +23,7 @@ MAX_POINTS_ENVELOPES = 1000
 
 
 def adjust_root_kind(number_of_phases: int, kinds_x=None, kind_w=None):
-    """Convert the the kinds of each phase to the corresponding value.
+    """Convert the kinds of each phase to the corresponding value.
 
     The C interface of `yaeos` expects the kinds of each phase to be defined
     as integer values, so this function converts the kinds of each phase
@@ -33,7 +33,7 @@ def adjust_root_kind(number_of_phases: int, kinds_x=None, kind_w=None):
     Parameters
     ----------
     number_of_phases : int
-        Number of phases in the system, besides de reference phase
+        Number of phases in the system, besides the reference phase
     kinds_x : list, optional
         Kinds of the phases in the system, by default None
     kind_w : str, optional
@@ -106,11 +106,18 @@ class GeModel(ABC):
             Moles number vector [mol]
         temperature : float
             Temperature [K]
+        dt : bool, optional
+            Calculate temperature derivative, by default False
+        dn : bool, optional
+            Calculate moles derivative, by default False
 
         Returns
         -------
-        np.ndarray
-            :math:`ln \gamma_i(n,T)` vector
+        Union[np.ndarray, tuple[np.ndarray, dict]]
+            :math:`\ln \gamma_i(n,T)` vector, or a tuple with that vector
+            and a derivatives dictionary (keys ``"dt"`` with shape ``(nc,)``
+            and ``"dn"`` with shape ``(nc, nc)``; ``None`` if not asked) if
+            any derivative is asked
 
         Example
         -------
@@ -184,7 +191,7 @@ class GeModel(ABC):
 
         Returns
         -------
-        Union[np.ndarray, tuple[np.ndarray, dict]]
+        Union[float, tuple[float, dict]]
             Excess Gibbs energy or tuple with excess Gibbs energy and
             derivatives dictionary if any derivative is asked [bar L]
 
@@ -200,7 +207,7 @@ class GeModel(ABC):
             model = UNIFACVLE(groups)
 
             # Evaluating excess Gibbs energy only
-            print(model.excess_gibbs(model.excess_gibbs([0.5,0.5], 303.15))
+            print(model.excess_gibbs([0.5, 0.5], 303.15))
 
             # Asking for derivatives
             print(
@@ -211,7 +218,8 @@ class GeModel(ABC):
                     dt2=True,
                     dn=True,
                     dtn=True,
-                    dn2=True
+                    dn2=True,
+                )
             )
         """
         nc = len(moles)
@@ -270,7 +278,7 @@ class GeModel(ABC):
 
         Returns
         -------
-        Union[np.ndarray, tuple[np.ndarray, dict]]
+        Union[float, tuple[float, dict]]
             Excess enthalpy or tuple with excess enthalpy and derivatives
             dictionary if any derivative is asked [bar L]
 
@@ -329,7 +337,7 @@ class GeModel(ABC):
 
         Returns
         -------
-        Union[np.ndarray, tuple[np.ndarray, dict]]
+        Union[float, tuple[float, dict]]
             Excess entropy or tuple with excess entropy and derivatives
             dictionary if any derivative is asked [bar L / K]
 
@@ -440,7 +448,7 @@ class GeModel(ABC):
         return {"w": w_min, "tm": tm_min}, {"tm": all_mins, "w": all_mins_w}
 
     def flash_t(self, z, temperature: float, k0=None) -> dict:
-        """Two-phase split with specification of temperature and pressure.
+        """Two-phase split with specification of temperature.
 
         Parameters
         ----------
@@ -467,6 +475,56 @@ class GeModel(ABC):
 
         x, y, pressure, temperature, volume_x, volume_y, beta = (
             yaeos_c.flash_ge(self.id, z, t=temperature, k0=k0)
+        )
+
+        flash_result = {
+            "x": x,
+            "y": y,
+            "T": temperature,
+            "beta": beta,
+        }
+
+        return flash_result
+
+    def flash_t_second_order(
+        self, z, temperature: float, k0=None, max_iter=200, tol=1e-8
+    ) -> dict:
+        """Second order two-phase split with specification at T.
+
+        Implementation of the Michelsen's second order two-phase flash
+        calculation.
+
+        Parameters
+        ----------
+        z : array_like
+            Global mole fractions
+        temperature : float
+            Temperature [K]
+        k0 : array_like, optional
+            Initial guess for the split, by default None (will use stability
+            analysis)
+        max_iter : int, optional
+            Maximum iteration number, by default 200
+        tol : float, optional
+            Calculation tolerance, Michelsen's recommendation is to leave it at
+            1e-8, by default 1e-8
+
+        Returns
+        -------
+        dict
+            Flash result dictionary with keys:
+                - x: "phase 1" mole fractions
+                - y: "phase 2" mole fractions
+                - T: temperature [K]
+                - beta: "phase 2" fraction
+        """
+        if k0 is None:
+            k0 = [0 for i in range(len(z))]
+
+        x, y, pressure, temperature, volume_x, volume_y, beta = (
+            yaeos_c.flash_second_order_ge(
+                self.id, z, t=temperature, k0=k0, miters=max_iter, tol=tol
+            )
         )
 
         flash_result = {
@@ -533,7 +591,7 @@ class ArModel(ABC):
         Returns
         -------
         Union[float, tuple[float, dict]]
-            Residual helholtz free energy or tuple with Residual helholtz free
+            Residual Helmholtz free energy or tuple with Residual Helmholtz free
             energy and derivatives dictionary if any derivative is asked [bar
             L]
 
@@ -650,7 +708,7 @@ class ArModel(ABC):
         dp: bool = False,
         dn: bool = False,
     ) -> Union[np.ndarray, tuple[np.ndarray, dict]]:
-        r"""Calculate fugacity coefficent given volume and temperature.
+        r"""Calculate fugacity coefficient given volume and temperature.
 
         Calculate :math:`ln \phi_i(n,V,T)` and its derivatives with respect to
         temperature, pressure and moles number.
@@ -704,7 +762,7 @@ class ArModel(ABC):
             # {'dt': array([0.01400063, 0.01923493]), 'dp': None, 'dn': None}
             # )
 
-            print(model.lnphi_vt([5.0, 5.6], 1.0, 300.0, dt=True)
+            print(model.lnphi_vt([5.0, 5.6], 1.0, 300.0, dt=True))
         """
         nc = len(moles)
 
@@ -767,7 +825,7 @@ class ArModel(ABC):
         Returns
         -------
         Union[float, tuple[float, dict]]
-            Pressure or tuple with Presure and derivatives dictionary if any
+            Pressure or tuple with pressure and derivatives dictionary if any
             derivative is asked [bar]
 
         Example
@@ -938,7 +996,7 @@ class ArModel(ABC):
                     np.array([5.0, 5.6]),
                     10.0,
                     300.0,
-                    dt=True)
+                    dt=True,
                 )
             )
         """
@@ -1012,9 +1070,9 @@ class ArModel(ABC):
             from yaeos import PengRobinson76
 
 
-            tc = np.array([320.0, 375.0])   # critical temperatures [K] pc =
-            np.array([45.0, 60.0])     # critical pressures [bar] w =
-            np.array([0.0123, 0.045])   # acentric factors
+            tc = np.array([320.0, 375.0])   # critical temperatures [K]
+            pc = np.array([45.0, 60.0])     # critical pressures [bar]
+            w = np.array([0.0123, 0.045])   # acentric factors
 
             model = PengRobinson76(tc, pc, w)
 
@@ -1030,7 +1088,7 @@ class ArModel(ABC):
 
             print(
                 model.internal_energy_residual_vt(
-                    np.array([5.0, 5.6]), 10.0, 300.0, dt=True)
+                    np.array([5.0, 5.6]), 10.0, 300.0, dt=True
                 )
             )
         """
@@ -1278,7 +1336,7 @@ class ArModel(ABC):
 
         Example
         -------
-            .. code-block:: python
+        .. code-block:: python
 
             import numpy as np
 
@@ -1315,7 +1373,7 @@ class ArModel(ABC):
         Returns
         -------
         float
-            Residual isochoric heat capacity [bar L / K]
+            Residual isobaric heat capacity [bar L / K]
 
         Example
         -------
@@ -1352,7 +1410,7 @@ class ArModel(ABC):
         dp: bool = False,
         dn: bool = False,
     ) -> Union[np.ndarray, tuple[np.ndarray, dict]]:
-        r"""Calculate fugacity coefficent given pressure and temperature.
+        r"""Calculate fugacity coefficient given pressure and temperature.
 
         Calculate :math:`ln \phi_i(n,P,T)` and its derivatives with respect to
         temperature, pressure and moles number.
@@ -1409,7 +1467,7 @@ class ArModel(ABC):
             # {'dt': array([0.00094892, 0.00108809]), 'dp': None, 'dn': None}
             # )
 
-            print(model.lnphi_pt([5.0, 5.6], 10.0, 300.0, dt=True)
+            print(model.lnphi_pt([5.0, 5.6], 10.0, 300.0, dt=True))
         """
         nc = len(moles)
 
@@ -1451,7 +1509,7 @@ class ArModel(ABC):
         dp: bool = False,
         dn: bool = False,
     ) -> Union[float, tuple[float, dict]]:
-        """Calculate residual helmoltz free energy given P and T [bar L].
+        """Calculate residual Helmholtz free energy given P and T [bar L].
 
         Parameters
         ----------
@@ -1474,7 +1532,7 @@ class ArModel(ABC):
         Returns
         -------
         Union[float, tuple[float, dict]]
-            Residual helmoltz free energy or tuple with Residual helmoltz free
+            Residual Helmholtz free energy or tuple with residual Helmholtz free
             energy and derivatives dictionary if any derivative is asked
             [bar L]
 
@@ -2060,16 +2118,16 @@ class ArModel(ABC):
     ) -> Union[np.ndarray, tuple[np.ndarray, dict]]:
         r"""Calculate activity coefficients given temperature and pressure.
 
-        Calculate :math:`ln \gamma_i(n,P,T)` and its derivatives..
+        Calculate :math:`\ln \gamma_i(n,P,T)` and its derivatives.
 
         Parameters
         ----------
         moles : array_like
             Moles number vector [mol]
-        temperature : float
-            Temperature [K]
         pressure : float
             Pressure [bar]
+        temperature : float
+            Temperature [K]
         root : str, optional
             Volume root, use: "liquid", "vapor" or "stable", by default
             "stable"
@@ -2083,9 +2141,9 @@ class ArModel(ABC):
         Returns
         -------
         Union[np.ndarray, tuple[np.ndarray, dict]]
-            :math:`ln \gamma_i(n,T)` vector or tuple with
-            :math:`ln \gamma_i(n,T)` vector and derivatives dictionary if any
-            derivative is asked
+            :math:`\ln \gamma_i(n,P,T)` vector or tuple with
+            :math:`\ln \gamma_i(n,P,T)` vector and derivatives dictionary if
+            any derivative is asked
 
         Example
         -------
@@ -2392,9 +2450,9 @@ class ArModel(ABC):
             from yaeos import PengRobinson76
 
 
-            tc = np.array([320.0, 375.0])   # critical temperatures [K] pc =
-            np.array([45.0, 60.0])     # critical pressures [bar] w =
-            np.array([0.0123, 0.045])   # acentric factors
+            tc = np.array([320.0, 375.0])   # critical temperatures [K]
+            pc = np.array([45.0, 60.0])     # critical pressures [bar]
+            w = np.array([0.0123, 0.045])   # acentric factors
 
             model = PengRobinson76(tc, pc, w)
 
@@ -2531,7 +2589,6 @@ class ArModel(ABC):
     # =========================================================================
     # Equilibrium calculations
     # -------------------------------------------------------------------------
-
     def pure_saturation_pressure(self, component, temperature):
         """Saturation pressure of a pure component at a given temperature.
 
@@ -2548,18 +2605,13 @@ class ArModel(ABC):
             Pure component saturation pressure dictionary with the keys:
                 - P: Pressure [bar]
                 - T: Temperature [K]
-                - Vx: Liquid volume [L]
-                - Vy: Vapor volume [L]
+                - Vx: Liquid molar volume [L/mol]
+                - Vy: Vapor molar volume [L/mol]
         """
         psat, vl, vv = yaeos_c.pure_psat(
-            id=self.id, ncomp=component+1, t=temperature
+            id=self.id, ncomp=component + 1, t=temperature
         )
-        return {
-            "T": temperature,
-            "P": psat,
-            "Vx": vl,
-            "Vy": vv
-        }
+        return {"T": temperature, "P": psat, "Vx": vl, "Vy": vv}
 
     def pure_saturation_pressures(
         self, component, stop_pressure=0.01, stop_temperature=100
@@ -2572,7 +2624,8 @@ class ArModel(ABC):
         Parameters
         ----------
         component : int
-            Component index (starting from 1)
+            Component index (starting from 1). Note that, unlike
+            :meth:`pure_saturation_pressure`, this index is 1-based.
         stop_pressure : float, optional
             Stop pressure [bar], by default 0.01
         stop_temperature : float, optional
@@ -2600,6 +2653,11 @@ class ArModel(ABC):
             w = np.array([0.0123, 0.045])
 
             model = PengRobinson76(tc, pc, w)
+
+            # Saturation line of the first component (1-based index)
+            sat = model.pure_saturation_pressures(1)
+
+            print(sat["T"], sat["P"])
         """
         p, t, vx, vy = yaeos_c.pure_saturation_line(
             self.id, component, stop_p=stop_pressure, stop_t=stop_temperature
@@ -2631,8 +2689,8 @@ class ArModel(ABC):
             Flash result dictionary with keys:
                 - x: heavy phase mole fractions
                 - y: light phase mole fractions
-                - Vx: heavy phase volume [L]
-                - Vy: light phase volume [L]
+                - Vx: heavy phase molar volume [L/mol]
+                - Vy: light phase molar volume [L/mol]
                 - P: pressure [bar]
                 - T: temperature [K]
                 - beta: light phase fraction. If beta is -1 flash was not
@@ -2672,6 +2730,95 @@ class ArModel(ABC):
 
         x, y, pressure, temperature, volume_x, volume_y, beta = yaeos_c.flash(
             self.id, z, p=pressure, t=temperature, k0=k0
+        )
+
+        flash_result = {
+            "x": x,
+            "y": y,
+            "Vx": volume_x,
+            "Vy": volume_y,
+            "P": pressure,
+            "T": temperature,
+            "beta": beta,
+        }
+
+        return flash_result
+
+    def flash_pt_second_order(
+        self,
+        z,
+        pressure: float,
+        temperature: float,
+        k0=None,
+        light_root="stable",
+        max_iters=200,
+        tol=1e-8,
+    ) -> dict:
+        """Two-phase split with specification of temperature and pressure.
+
+        Parameters
+        ----------
+        z : array_like
+            Global mole fractions
+        pressure : float
+            Pressure [bar]
+        temperature : float
+            Temperature [K]
+        k0 : array_like, optional
+            Initial guess for the split, by default None (will use k_wilson)
+        light_root : str, optional
+            Volume root nature of the light phase (liquid or stable), by
+            default stable
+        max_iters : int, optional
+            Maximum iteration number, by default 200
+        tol : float, optional
+            Calculation tolerance, Michelsen's recommendation is to leave it at
+            1e-8, by default 1e-8
+
+        Returns
+        -------
+        dict
+            Flash result dictionary with keys:
+                - x: heavy phase mole fractions
+                - y: light phase mole fractions
+                - Vx: heavy phase molar volume [L/mol]
+                - Vy: light phase molar volume [L/mol]
+                - P: pressure [bar]
+                - T: temperature [K]
+                - beta: light phase fraction. If beta is -1 flash was not
+                        successful.
+
+        Example
+        -------
+        .. code-block:: python
+
+            import numpy as np
+
+            from yaeos import PengRobinson76
+
+
+            tc = np.array([369.83, 507.6])        # critical temperatures [K]
+            pc = np.array([42.48, 30.25])         # critical pressures [bar]
+            w =  np.array([0.152291, 0.301261])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
+
+            print(model.flash_pt_second_order([0.5, 0.5], 8.0, 350.0))
+        """
+        if k0 is None:
+            k0 = [0 for i in range(len(z))]
+
+        x, y, pressure, temperature, volume_x, volume_y, beta = (
+            yaeos_c.flash_second_order(
+                self.id,
+                z,
+                p=pressure,
+                t=temperature,
+                k0=k0,
+                light_root=light_root,
+                miters=max_iters,
+                tol=tol,
+            )
         )
 
         flash_result = {
@@ -2732,7 +2879,8 @@ class ArModel(ABC):
                 - w: reference phase mole fractions.
                 - betas: mole phase fractions.
                 - iters: number of iterations.
-                - Vector of evaluated function values at the last iteration.
+                - F: vector of evaluated function values at the last
+                  iteration.
         """
         x_l0 = np.asarray(x_l0, order="F")
         kinds_x, kind_w = adjust_root_kind(
@@ -2857,8 +3005,8 @@ class ArModel(ABC):
             Flash grid result dictionary with keys:
                 - x: heavy phase mole fractions
                 - y: light phase mole fractions
-                - Vx: heavy phase volume [L]
-                - Vy: light phase volume [L]
+                - Vx: heavy phase molar volume [L/mol]
+                - Vy: light phase molar volume [L/mol]
                 - P: pressure [bar]
                 - T: temperature [K]
                 - beta: light phase fraction
@@ -2873,10 +3021,16 @@ class ArModel(ABC):
 
             tc = np.array([369.83, 507.6])       # critical temperatures [K]
             pc = np.array([42.48, 30.25])        # critical pressures [bar]
-            w = np.array([0.152291, 0.301261])
+            w = np.array([0.152291, 0.301261])   # acentric factors
+
+            model = PengRobinson76(tc, pc, w)
 
             temperatures = [350.0, 360.0, 400.0]
             pressures = [10, 20, 30]
+
+            grid = model.flash_pt_grid([0.5, 0.5], pressures, temperatures)
+
+            print(grid["beta"])
         """
         xs, ys, vxs, vys, betas = yaeos_c.flash_grid(
             self.id, z, pressures, temperatures, parallel=parallel
@@ -2904,22 +3058,22 @@ class ArModel(ABC):
     ) -> dict:
         """Saturation pressure at specified temperature.
 
-        Arguments
-        ---------
+        Parameters
+        ----------
         z: array_like
             Global molar fractions
         temperature: float
             Temperature [K]
         kind: str, optional
             Kind of saturation point, defaults to "bubble". Options are
-                - "bubble"
-                - "dew"
-                - "liquid-liquid"
+            "bubble", "dew" and "liquid-liquid".
         p0: float, optional
-            Initial guess for pressure [bar]
+            Initial guess for pressure [bar]. The default, 0, lets yaeos
+            generate its own initial guess.
         y0: array_like, optional
             Initial guess for the incipient phase, by default None
-            (will use k_wilson correlation)
+            (will use k_wilson correlation). It is only used if all its
+            elements are non-zero.
 
         Returns
         -------
@@ -2927,9 +3081,9 @@ class ArModel(ABC):
             Saturation pressure calculation result dictionary with keys:
                 - x: heavy phase mole fractions
                 - y: light phase mole fractions
-                - Vx: heavy phase volume [L]
-                - Vy: light phase volume [L]
-                - P: pressure [bar]
+                - Vx: heavy phase molar volume [L/mol]
+                - Vy: light phase molar volume [L/mol]
+                - P: pressure [bar] (NaN if the calculation failed)
                 - T: temperature [K]
                 - beta: light phase fraction
 
@@ -2984,22 +3138,22 @@ class ArModel(ABC):
     ) -> dict:
         """Saturation temperature at specified pressure.
 
-        Arguments
-        ---------
+        Parameters
+        ----------
         z: array_like
             Global molar fractions
         pressure: float
             Pressure [bar]
         kind: str, optional
             Kind of saturation point, defaults to "bubble". Options are
-                - "bubble"
-                - "dew"
-                - "liquid-liquid"
+            "bubble", "dew" and "liquid-liquid".
         t0: float, optional
-            Initial guess for temperature [K]
+            Initial guess for temperature [K]. The default, 0, lets yaeos
+            generate its own initial guess.
         y0: array_like, optional
             Initial guess for the incipient phase, by default None
-            (will use k_wilson correlation)
+            (will use k_wilson correlation). It is only used if all its
+            elements are non-zero.
 
         Returns
         -------
@@ -3007,10 +3161,10 @@ class ArModel(ABC):
             Saturation temperature calculation result dictionary with keys:
                 - x: heavy phase mole fractions
                 - y: light phase mole fractions
-                - Vx: heavy phase volume [L]
-                - Vy: light phase volume [L]
+                - Vx: heavy phase molar volume [L/mol]
+                - Vy: light phase molar volume [L/mol]
                 - P: pressure [bar]
-                - T: temperature [K]
+                - T: temperature [K] (NaN if the calculation failed)
                 - beta: light phase fraction
 
         Example
@@ -3028,7 +3182,7 @@ class ArModel(ABC):
 
             model = PengRobinson76(tc, pc, w)
 
-            # Saturation pressure calculation
+            # Saturation temperature calculation
             # will print:
             # {
             # 'x': array([0.5, 0.5]),
@@ -3102,7 +3256,7 @@ class ArModel(ABC):
             when decreasing temperature at the given pressure.
         stop_pressure : float, optional
             Stop on pressures above stop_pressure [bar], by default 2500.0.
-            If the the initial guess pressure is above this value, the
+            If the initial guess pressure is above this value, the
             calculation will stop immediately.
         ds0: float, optional
             Step for the first specified variable, by default 0.001. The
@@ -3229,7 +3383,7 @@ class ArModel(ABC):
         """Two phase envelope calculation (PX).
 
         Calculation of a phase envelope that starts at a given composition and
-        its related to another composition with some proportion.
+        is related to another composition with some proportion.
 
         Parameters
         ----------
@@ -3249,15 +3403,24 @@ class ArModel(ABC):
         p0 : float, optional
             Initial guess for pressure [bar] for the saturation point of kind:
             `kind`, by default 10.0
+        w0 : array_like, optional
+            Initial guess for the incipient phase, by default None
+            (will use k_wilson correlation)
         a0 : float, optional
-            Initial molar fraction of composition `zi`, by default 0.001
+            Initial molar fraction of composition `zi`, by default 0.01
         ns0 : int, optional
-            Initial specified variable number, by default None.
-            The the first `n=len(z)` values correspond to the K-values,
-            `len(z)+1` is the main phase molar fraction (ussually one) and
+            Initial specified variable number, by default None (which selects
+            alpha, ``len(z0) + 3``).
+            The first `n=len(z)` values correspond to the K-values,
+            `len(z)+1` is the main phase molar fraction (usually one) and
             the last two values are the pressure and alpha.
         ds0 : float, optional
-            Step for the first specified variable, by default 0.01
+            Step for the first specified variable, by default 1e-5
+
+        Returns
+        -------
+        PXEnvelope
+            PX envelope object.
         """
         if ns0 is None:
             ns0 = len(z0) + 3
@@ -3318,7 +3481,7 @@ class ArModel(ABC):
         """Two phase envelope calculation (TX).
 
         Calculation of a phase envelope that starts at a given composition and
-        its related to another composition with some proportion.
+        is related to another composition with some proportion.
 
         Parameters
         ----------
@@ -3341,14 +3504,21 @@ class ArModel(ABC):
         a0 : float, optional
             Initial molar fraction of composition `zi`, by default 0.001
         ns0 : int, optional
-            Initial specified variable number, by default None.
-            The the first `n=len(z)` values correspond to the K-values, where
+            Initial specified variable number, by default None (which selects
+            alpha, ``len(z0) + 3``).
+            The first `n=len(z)` values correspond to the K-values,
+            `len(z)+1` is the main phase molar fraction (usually one) and
             the last two values are the temperature and alpha.
         ds0 : float, optional
-            Step for a, by default 0.1
+            Step for the first specified variable, by default 0.1
         w0 : array_like, optional
             Initial guess for the incipient phase, by default None
             (will use k_wilson correlation)
+
+        Returns
+        -------
+        TXEnvelope
+            TX envelope object.
         """
         zi = np.array(zi)
         z0 = np.array(z0)
@@ -3431,7 +3601,7 @@ class ArModel(ABC):
             Initial pressure [bar]
         specified_variable : int, optional
             Initial specified variable number, by default 2*len(z)+2+2
-            (temperature).  The the first `n=(1,len(z))` values correspond to
+            (temperature).  The first `n=(1,len(z))` values correspond to
             the K-values between phase x and w, the next `n=(len(z)+1,
             2*len(z))` are the K-values between phase y and w. The next two
             values are the beta values of the main phases, then the pressure
@@ -3446,6 +3616,11 @@ class ArModel(ABC):
             Maximum number of points to calculate
         stop_pressure : float, optional
             Stop at pressure above stop_pressure [bar], default 2500
+
+        Returns
+        -------
+        PTEnvelope
+            PT envelope object.
         """
         np = 2
         if specified_variable is None:
@@ -3501,6 +3676,8 @@ class ArModel(ABC):
             Global mole fractions of the original fluid
         zi : array_like
             Global mole fractions of the other fluid
+        T : float
+            Temperature [K]
         x0 : array_like
             Initial phase x mole fractions
         y0 : array_like
@@ -3514,22 +3691,27 @@ class ArModel(ABC):
         p0 : float
             Initial pressure [bar]
         specified_variable : int, optional
-            Initial specified variable number, by default 2*len(z)+2
-            (temperature).  The the first `n=(1,len(z))` values correspond to
+            Initial specified variable number, by default 2*len(z0)+2
+            (the molar fraction of phase y).  The first `n=(1,len(z))` values correspond to
             the K-values between phase x and w, the next `n=(len(z)+1,
             2*len(z))` are the K-values between phase y and w. The next two
             values are the beta values of the main phases, then the pressure
-            and and finally the molar relation between the two fluids.
+            and finally the molar relation between the two fluids.
         first_step : float, optional
             Step for the specified variable, by default 0.1
         max_points : int, optional
             Maximum number of points to calculate
         kinds_x : list, optional
-            Kinds of the main phases, by default None (will use "stable")
-            options can be - "stable", "liquid", "vapor"
+            Kinds of the main phases, by default None (will use "stable").
+            Options are "stable", "liquid" and "vapor".
         kind_w : str, optional
-            Kind of the reference phase, by default None (will use "stable")
-            options can be - "stable", "liquid", "vapor"
+            Kind of the reference phase, by default None (will use "stable").
+            Options are "stable", "liquid" and "vapor".
+
+        Returns
+        -------
+        PXEnvelope
+            PX envelope object.
         """
         if specified_variable is None:
             specified_variable = 2 * len(z0) + 2
@@ -3575,7 +3757,57 @@ class ArModel(ABC):
         stop_pressure=2500,
         allow_negative_betas=False,
     ) -> PTEnvelope:
-        """Multi-phase envelope."""
+        """Multi-phase PT envelope.
+
+        Calculate a PT phase envelope with a preselected number of phases.
+
+        Parameters
+        ----------
+        z : array_like
+            Global mole fractions
+        x_l0 : array_like, matrix [number of phases, number of components]
+            A matrix where each row is the composition of a main phase.
+            Guess for first point.
+        w0 : array_like
+            Composition of the reference (usually incipient) phase. Guess for
+            first point.
+        betas0 : array_like
+            Molar fraction of each main phase. Guess for first point.
+        p0 : float
+            Pressure guess for first point [bar]
+        t0 : float
+            Temperature guess for first point [K]
+        ns0 : int
+            Initial specified variable number (1-based). From 1 to
+            `number_of_phases*number_of_components` it corresponds to the
+            ln K-values of each main phase with respect to the reference
+            phase. The next `number_of_phases` values correspond to the
+            molar fraction (beta) of each main phase. The last two values are
+            the pressure and the temperature, respectively.
+        ds0 : float
+            Step for the first specified variable.
+        beta_w : float, optional
+            Molar fraction of the reference phase, by default 0 (incipient
+            phase).
+        kinds_x : list of str, optional
+            Kinds of the main phases ("stable", "liquid" or "vapor"), by
+            default None (will use "stable").
+        kind_w : str, optional
+            Kind of the reference phase ("stable", "liquid" or "vapor"), by
+            default None (will use "stable").
+        max_points : int, optional
+            Maximum number of points to calculate.
+        stop_pressure : float, optional
+            Stop at pressures above stop_pressure [bar], by default 2500.
+        allow_negative_betas : bool, optional
+            Allow negative main-phase molar fractions while tracing the
+            envelope, by default False.
+
+        Returns
+        -------
+        PTEnvelope
+            PT envelope object.
+        """
         x_l0 = np.array(x_l0)
 
         number_of_phases = x_l0.shape[0]
@@ -3646,7 +3878,7 @@ class ArModel(ABC):
     ) -> PXEnvelope:
         """Multi-phase PX envelope.
 
-        Calculate a phase envelope with a preselected ammount of phases.
+        Calculate a phase envelope with a preselected number of phases.
 
         Parameters
         ----------
@@ -3659,32 +3891,41 @@ class ArModel(ABC):
         x_l0: float, matrix [number of phases, number of components]
             A matrix where each row is the composition of a main phase.
             Guess for first point.
-        w0: flot, array_like
-            Composition of the reference (ussually incipient) phase.
+        w0: float, array_like
+            Composition of the reference (usually incipient) phase.
             Guess for first point
         betas0: float, array_like
             Molar fraction of each main phase. Guess for first point
         p0: float
             Pressure guess for first point [bar]
         ns0: int
-            Initial variable to specifiy.
-            From 1 to `(number_of_phases*number_of_components)` corresponds to
-            each composition.
-            From `number_of_phases*number_of_components` to
-            `number_of_phases*number_of_components + number_of_phases`
-            corresponds to each beta value of the main phases.
-            The last two posibilities are the pressure and molar relation
-            between the two fluids, respectively.
+            Initial specified variable number (1-based). From 1 to
+            `number_of_phases*number_of_components` it corresponds to the
+            ln K-values of each main phase with respect to the reference
+            phase. The next `number_of_phases` values correspond to the
+            molar fraction (beta) of each main phase. The last two values are
+            the pressure and the molar relation between the two fluids
+            (alpha), respectively.
+        ds0: float
+            Step for the first specified variable.
+        alpha0: float, optional
+            Initial molar fraction of fluid `zi`, by default 0.
+        beta_w: float, optional
+            Molar fraction of the reference phase, by default 0 (incipient
+            phase).
+        max_points: int, optional
+            Maximum number of points to calculate.
         kinds_x: list(str), optional
-            List of kinds of main phases, defaults to stable. options are:
-            - "stable"
-            - "liquid"
-            - "vapor"
-        kinds_w: list(str), optional
-            Kind of reference phase, defaults to stable. options are:
-            - "stable"
-            - "liquid"
-            - "vapor"
+            List of kinds of main phases, defaults to stable. Options are
+            "stable", "liquid" and "vapor".
+        kind_w: str, optional
+            Kind of reference phase, defaults to stable. Options are
+            "stable", "liquid" and "vapor".
+
+        Returns
+        -------
+        PXEnvelope
+            PX envelope object.
         """
         x_l0 = np.array(x_l0, order="F")
 
@@ -3749,7 +3990,57 @@ class ArModel(ABC):
         kinds_x=None,
         kind_w=None,
     ) -> TXEnvelope:
-        """Multi-phase envelope."""
+        """Multi-phase TX envelope.
+
+        Calculate a TX phase envelope with a preselected number of phases.
+
+        Parameters
+        ----------
+        z0 : array_like
+            Original fluid global mole fractions.
+        zi : array_like
+            Other fluid global mole fractions.
+        p : float
+            Pressure [bar]
+        x_l0 : array_like, matrix [number of phases, number of components]
+            A matrix where each row is the composition of a main phase.
+            Guess for first point.
+        w0 : array_like
+            Composition of the reference (usually incipient) phase. Guess for
+            first point.
+        betas0 : array_like
+            Molar fraction of each main phase. Guess for first point.
+        t0 : float
+            Temperature guess for first point [K]
+        ns0 : int
+            Initial specified variable number (1-based). From 1 to
+            `number_of_phases*number_of_components` it corresponds to the
+            ln K-values of each main phase with respect to the reference
+            phase. The next `number_of_phases` values correspond to the
+            molar fraction (beta) of each main phase. The last two values are
+            the temperature and the molar relation between the two fluids
+            (alpha), respectively.
+        ds0 : float
+            Step for the first specified variable.
+        alpha0 : float, optional
+            Initial molar fraction of fluid `zi`, by default 0.
+        beta_w : float, optional
+            Molar fraction of the reference phase, by default 0 (incipient
+            phase).
+        max_points : int, optional
+            Maximum number of points to calculate.
+        kinds_x : list of str, optional
+            Kinds of the main phases ("stable", "liquid" or "vapor"), by
+            default None (will use "stable").
+        kind_w : str, optional
+            Kind of the reference phase ("stable", "liquid" or "vapor"), by
+            default None (will use "stable").
+
+        Returns
+        -------
+        TXEnvelope
+            TX envelope object.
+        """
         x_l0 = np.array(x_l0, order="F")
 
         number_of_phases = x_l0.shape[0]
@@ -3829,15 +4120,21 @@ class ArModel(ABC):
         env2 : PTEnvelope
             Second PT envelope object
         dbeta0 : float, optional
-            initial step for the beta values, by default 1e-5
+            Initial step for the beta values, by default 1e-5
         max_points : int, optional
             Maximum number of points to calculate
+        stop_pressure : float, optional
+            Stop at pressures above stop_pressure [bar], by default 2500
 
         Returns
         -------
-        list
-            List of lists of two PTEnvelope objects, one for each intersection
-            point.
+        tuple[list, list, list]
+            ``(dsps, locs_1, locs_2)``: ``dsps`` is a list of lists of two
+            PTEnvelope objects, one pair for each intersection point;
+            ``locs_1`` and ``locs_2`` are the indices of the points of
+            `env1` and `env2` closest to each intersection. If more than 5
+            intersections are found, a warning is issued and three empty
+            lists are returned.
         """
         nc = env1.number_of_components
         phases = env1.number_of_phases + 1
@@ -3938,6 +4235,7 @@ class ArModel(ABC):
             Second PX envelope object
         dbeta0 : float, optional
             Initial step for the beta values, by default 1e-5
+
         Returns
         -------
         list
@@ -4038,9 +4336,9 @@ class ArModel(ABC):
         It is needed to specify a variable that will remain constant. This
         variable is specified with the `spec_variable` argument. It corresponds
         to the index of the variable that should be specified. The first
-        `np*nc` variables are the :math:`\lnK_i^l` variables, the next `np+1`
+        `np*nc` variables are the :math:`\ln K_i^l` variables, the next `np+1`
         variables are :math:`\ln\beta^l`. The last two indexes correspond to
-        :math:`\lnP` and :math:`\lnT` respectively.
+        :math:`\ln P` and :math:`\ln T` respectively.
         Another variable must be specified, which will be used as another
         specification to calculate the first point, and will have a step
         defined by `ds0` which will define how the next points will be
@@ -4062,9 +4360,10 @@ class ArModel(ABC):
             A matrix where each row is the composition of a main phase.
         spec_variable : int
             Index of the specified variable. From 1 to `np*nc` corresponds to
-            each :math:`\lnK_i^l`, from `np*nc+1` to `np*nc+np` corresponds to
-            each :math:`\ln\beta^l`, and the last two correspond to
-            :math:`\lnP` and :math:`\lnT`.
+            each :math:`\ln K_i^l`, from `np*nc+1` to `np*nc+np+1` corresponds
+            to each :math:`\ln\beta^l` (the last one being the reference
+            phase), and the last two correspond to
+            :math:`\ln P` and :math:`\ln T`.
         spec_variable_value : float
             Value of the specified variable.
         w0 : array_like
@@ -4101,6 +4400,8 @@ class ArModel(ABC):
               incipient phase
             - found_unstability: boolean indicating if an unstable point was
               found.
+            - kinds_x: kinds of the main phases (as given)
+            - kind_w: kind of the reference phase (as given)
         """
         x_l0 = np.asarray(x_l0, order="F")
         ws_stability = np.asarray(ws_stability, order="F")
@@ -4155,7 +4456,43 @@ class ArModel(ABC):
         pstep="down",
         tstep="down",
     ) -> dict:
-        """Calculate precipitation line from a PTEnvelope."""
+        """Calculate precipitation line from a PTEnvelope.
+
+        Starting from a point of `env` at the specified pressure or
+        temperature, a new phase is added with a molar fraction `beta0` and a
+        line at constant `spec` is traced with
+        :meth:`generalized_isopleth`.
+
+        Parameters
+        ----------
+        env : PTEnvelope
+            Envelope from which the precipitation line starts.
+        spec_value : float
+            Value of the specified variable: pressure [bar] if `spec` is
+            "P", temperature [K] if `spec` is "T".
+        spec : str, optional
+            Specified variable, either "P" or "T", by default "P".
+        ds0 : float, optional
+            Initial step of the new phase molar fraction, by default 1e-5.
+        ws_stability : array_like, optional
+            List of compositions that will be used to check stability of the
+            reference phase, by default None.
+        max_points : int, optional
+            Maximum number of points to calculate, by default 100.
+        beta0 : float, optional
+            Initial molar fraction of the new phase, by default 1e-15.
+        pstep : str, optional
+            When `spec` is "T", select the intersection with `env` at the
+            lowest ("down", default) or highest pressure.
+        tstep : str, optional
+            When `spec` is "P", select the intersection with `env` at the
+            highest ("down", default) or lowest temperature.
+
+        Returns
+        -------
+        dict
+            Result of :meth:`generalized_isopleth`.
+        """
         phases = env.number_of_phases
         z = env.global_composition
 
@@ -4310,27 +4647,32 @@ class ArModel(ABC):
     def critical_point(self, z0, zi=[0, 0], ns=1, s=0, max_iters=100) -> dict:
         """Critical point calculation.
 
-        Calculate the critical point of a mixture. At a given composition.
+        Calculate the critical point of a mixture at a given composition.
+        The composition is defined as ``z = s*zi + (1-s)*z0`` when the
+        specified variable is the molar relation between the two fluids
+        (``ns=1``).
 
         Parameters
         ----------
         z0: array_like
             Mole fractions of original fluid
-        zi: array_like
-            Mole fractinos of other fluid
-        ns: int
-            Number of specification
-        S: float
-            Specification value
+        zi: array_like, optional
+            Mole fractions of other fluid, by default [0, 0]
+        ns: int, optional
+            Number of specification, by default 1
+        s: float, optional
+            Specification value, by default 0
         max_iters: int, optional
+            Maximum number of iterations, by default 100
 
         Returns
         -------
         dict
             Critical point calculation result dictionary with keys:
+                - x: list containing the critical composition array
                 - Tc: critical temperature [K]
                 - Pc: critical pressure [bar]
-                - Vc: critical volume [L]
+                - Vc: critical volume [L/mol]
         """
         *x, t, p, v = yaeos_c.critical_point(
             self.id, z0=z0, zi=zi, spec=ns, s=s, max_iters=max_iters
@@ -4368,19 +4710,31 @@ class ArModel(ABC):
         s: float, optional
             Specified value, by default 1e-5
         ds0: float, optional
-            Step for molar fraction of composition `i`
+            Step for the specified variable, by default 1e-2
         a0: float, optional
-            Initial molar fraction of composition `i`
+            Initial molar fraction of composition `zi`, by default 1e-5
         v0: float, optional
             Initial guess for volume [L/mol]
         t0: float, optional
             Initial guess for temperature [K]
         p0: float, optional
             Initial guess for pressure [bar]
+        stability_analysis: bool, optional
+            Perform stability analysis along the line to detect a critical
+            end point (CEP), by default False
         max_points: int, optional
             Maximum number of points to calculate
         stop_pressure: float, optional
-            Stop when reaching this pressure value
+            Stop when reaching this pressure value [bar], by default 2500
+
+        Returns
+        -------
+        dict or tuple[dict, dict]
+            Critical line dictionary with keys ``a`` (molar fraction of
+            `zi`), ``T`` [K], ``P`` [bar] and ``V`` [L/mol]. If
+            `stability_analysis` is True, a tuple is returned whose second
+            element is the CEP dictionary with keys ``x``, ``y``, ``P``,
+            ``Vx``, ``Vy`` and ``T``.
         """
         alphas, vs, ts, ps, *cep = yaeos_c.critical_line(
             self.id,
@@ -4437,6 +4791,12 @@ class ArModel(ABC):
             Pressure [bar]
         t0: float
             Initial guess for temperature [K]
+
+        Returns
+        -------
+        tuple[float, float, float]
+            Molar fraction of `zi` (alpha), temperature [K] and volume
+            [L/mol] of the point found.
         """
         a, t, v = yaeos_c.find_llcl(
             self.id, z0=z0, zi=zi, p=pressure, tstart=t0

@@ -37,8 +37,8 @@ module yaeos__equilibria_multiphase_flash
 contains
 
    type(MPEquilibriumState) function pt_mp_flash(model, z, P, T)
-      !! # `pt_mp_flash`
-      !! Perform a multiphase flash calculation at constant zPT.
+      !! # pt_mp_flash
+      !! Perform a multiphase flash at fixed feed composition, pressure, and temperature.
       !!
       !! # Description
       !! This method will do stability analysis to detect the possibility of
@@ -48,31 +48,42 @@ contains
       !! # Examples
       !!
       !! ```fortran
+      !! result = pt_mp_flash(model, z, P, T)
+      !! print *, result%np, result%x_l
       !! ```
-      !!
-      !! # References
-      !!
       use yaeos__equilibria_stability, only: min_tpd
-      class(ArModel), intent(in) :: model
-      real(pr), intent(in) :: z(:)
-      real(pr), intent(in) :: P, T
+      class(ArModel), intent(in) :: model !! Residual Helmholtz EOS.
+      real(pr), intent(in) :: z(:) !! Overall feed mole fractions.
+      real(pr), intent(in) :: P !! Pressure [bar].
+      real(pr), intent(in) :: T !! Temperature [K].
       integer, parameter :: max_phases = 4
-      integer :: np
+      integer :: np !! Number of phases.
 
-      real(pr) :: mintpd, all_minima(size(z), size(z)), w(size(z)), w_stab(size(z))
-      real(pr) :: mintpd_xl1, mintpd_w
-      real(pr) :: x_l(max_phases, size(z))
+      real(pr) :: mintpd
+      real(pr) :: all_minima(size(z), size(z))
+      real(pr) :: w(size(z)) !! Reference/trial phase composition.
+      real(pr) :: w_stab(size(z))
+      real(pr) :: mintpd_xl1
+      real(pr) :: mintpd_w
+      real(pr) :: x_l(max_phases, size(z)) !! Main-phase compositions.
       real(pr) :: K(max_phases, size(z))
 
       character(len=14) :: kinds_x(max_phases)
       character(len=14) :: kind_w
       logical :: less_phases
 
-      integer :: beta_0_index, iters, ns1, ns2, nc
-      real(pr) :: S1, S2
+      integer :: beta_0_index
+      integer :: iters
+      integer :: ns1
+      integer :: ns2
+      integer :: nc !! Number of components.
+      real(pr) :: S1
+      real(pr) :: S2
       integer :: max_iters
 
-      real(pr), allocatable :: X(:), F(:), betas(:)
+      real(pr), allocatable :: X(:)
+      real(pr), allocatable :: F(:)
+      real(pr), allocatable :: betas(:) !! Phase fractions for the main phases.
       real(pr) :: beta0
 
       max_iters = 1000
@@ -159,6 +170,9 @@ contains
    end function pt_mp_flash
 
    subroutine pt_F_NP(model, z, np, kinds_x, kind_w, X, ns1, S1, ns2, S2, F, dF)
+      !! # pt_F_NP
+      !!
+      !! # Description
       !! Function to solve at each point of a multi-phase envelope.
       use iso_fortran_env, only: error_unit
       class(ArModel), intent(in) :: model !! Model to use.
@@ -178,25 +192,35 @@ contains
       real(pr) :: K(np, size(z))
       real(pr) :: P
       real(pr) :: T
-      real(pr) :: betas(np), beta_w
+      real(pr) :: betas(np) !! Phase fractions for the main phases.
+      real(pr) :: beta_w !! Reference-phase fraction.
 
       ! Main phases variables
       real(pr) :: moles(size(z))
 
       real(pr) :: Vl(np)
-      real(pr), dimension(np, size(z)) :: x_l, lnphi_l, dlnphi_dt_l, dlnphi_dp_l
+      real(pr), dimension(np, size(z)) :: x_l
+      real(pr), dimension(np, size(z)) :: lnphi_l
+      real(pr), dimension(np, size(z)) :: dlnphi_dt_l
+      real(pr), dimension(np, size(z)) :: dlnphi_dp_l
       real(pr), dimension(np, size(z), size(z)) :: dlnphi_dn_l
 
-      real(pr) :: lnphi(size(z)), dlnphi_dt(size(z)), dlnphi_dp(size(z))
+      real(pr) :: lnphi(size(z))
+      real(pr) :: dlnphi_dt(size(z))
+      real(pr) :: dlnphi_dp(size(z))
       real(pr), dimension(size(z), size(z)) :: dlnphi_dn
 
       ! Incipient phase variables
       real(pr) :: Vw
-      real(pr), dimension(size(z)) :: w, lnphi_w, dlnphi_dt_w, dlnphi_dp_w
+      real(pr), dimension(size(z)) :: w
+      real(pr), dimension(size(z)) :: lnphi_w
+      real(pr), dimension(size(z)) :: dlnphi_dt_w
+      real(pr), dimension(size(z)) :: dlnphi_dp_w
       real(pr), dimension(size(z), size(z)) :: dlnphi_dn_w
 
       ! Derivatives of w wrt beta and K
-      real(pr) :: dwdb(np, size(z)), dwdbw(size(z))
+      real(pr) :: dwdb(np, size(z))
+      real(pr) :: dwdbw(size(z))
       real(pr) :: dwdlnK(np, size(z))
 
       real(pr) :: denom(size(z))
@@ -205,9 +229,15 @@ contains
 
       real(pr) :: dx_l_dlnK(np, np, size(z))
 
-      integer :: i, j, l, phase, nc
-      integer :: lb, ub
-      integer :: idx_1, idx_2
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
+      integer :: l !! Loop index `l`.
+      integer :: phase
+      integer :: nc !! Number of components.
+      integer :: lb
+      integer :: ub
+      integer :: idx_1
+      integer :: idx_2
 
       nc = size(z)
 
@@ -385,6 +415,9 @@ contains
       model, z, np, kinds_x, kind_w, X, ns1, S1, ns2, S2, max_iters, F, &
       less_phases, beta_0_index, iters &
       )
+      !! # solve_mp_flash_point
+      !!
+      !! # Description
       !! Function to solve the multiphase flash problem.
       use yaeos__math, only: solve_system, levenberg_marquardt
       class(ArModel), intent(in) :: model !! Model to use.
@@ -408,7 +441,8 @@ contains
 
       integer :: nc !! Number of components
       integer :: iBetas(np+1) !! Index of the betas in the vector X
-      integer :: i, info
+      integer :: i !! Loop/index variable.
+      integer :: info !! Solver status code.
 
       nc = size(z)
       iBetas = [(i, i=nc*np+1,nc*np+np+1)]
@@ -438,10 +472,13 @@ contains
       end do
    contains
       subroutine lmsolve(n, m, xvec, fvec, info)
-         integer, intent(in) :: n, m
-         real(pr), intent(in) :: xvec(n)
-         real(pr), intent(out) :: fvec(m)
-         integer, intent(in out) :: info
+         !! # lmsolve
+         !! Adapt the multiphase residual equations to the MINPACK callback interface.
+         integer, intent(in) :: n !! Number of unknowns.
+         integer, intent(in) :: m !! Number of residual equations.
+         real(pr), intent(in) :: xvec(n) !! Trial unknown vector.
+         real(pr), intent(out) :: fvec(m) !! Multiphase equilibrium residual vector.
+         integer, intent(in out) :: info !! MINPACK callback status flag.
          call pt_F_NP(model, z, np, kinds_x, kind_w, xvec, ns1, S1, ns2, S2, Fvec, df)
       end subroutine lmsolve
    end subroutine solve_mp_flash_point

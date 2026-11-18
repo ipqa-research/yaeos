@@ -235,7 +235,7 @@ def test_ge_same_as_fortran(ge_model: GeModel):
     # If compilation error occured, here will be printed
     assert (
         start_idx is not None
-    ), f"No FORTRAN OUTPUT found.\nSTDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}"  # noqa
+    ), f"No FORTRAN OUTPUT found (fpm exit {result.returncode}).\nSTDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}"  # noqa
 
     # Actual output lines
     lines = lines[start_idx:]

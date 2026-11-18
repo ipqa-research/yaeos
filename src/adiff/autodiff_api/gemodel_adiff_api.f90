@@ -1,9 +1,17 @@
 module yaeos__adiff_hyperdual_ge_api
-   !! Module that contains the automatic differentiation logic for an Ge model.
+   !! # Hyperdual excess-Gibbs models
+   !! Base type and derivative adapter for GE models using hyperdual AD.
    !!
-   !! All that is needed to define an Ge model that uses automatic
-   !! differentiation with hyperdual numbers is to define a new derived type
-   !! that overloads the method to the Ge function that you want to use.
+   !! # Description
+   !! Extend `GeModelAdiff` and implement the hyperdual excess-Gibbs function.
+   !! The adapter extracts composition, temperature, and mixed derivatives to
+   !! provide the standard `GeModel` activity-coefficient interface.
+   !!
+   !! # Examples
+   !! See the group-contribution and NRTL model implementations for examples.
+   !!
+   !! # References
+   !! Hyperdual arithmetic is provided by `hyperdual_mod`.
    use yaeos__constants, only: pr
    use yaeos__models_ge, only: GeModel
    use hyperdual_mod
@@ -11,6 +19,16 @@ module yaeos__adiff_hyperdual_ge_api
    implicit none
 
    type, abstract, extends(GeModel) :: GeModelAdiff
+      !! # GeModelAdiff
+      !! Base type for hyperdual excess-Gibbs models.
+      !!
+      !! # Description
+      !! Concrete extensions implement the hyperdual-valued `Ge` function.
+      !! This adapter evaluates it with derivative seeds in composition and
+      !! temperature, then provides the `GeModel` excess-Gibbs derivative API.
+      !!
+      !! # Examples
+      !! See the UNIFAC implementation for a model using hyperdual AD.
    contains
       procedure(hyperdual_ge), deferred :: Ge
       procedure :: excess_gibbs => excess_gibbs
@@ -18,27 +36,39 @@ module yaeos__adiff_hyperdual_ge_api
 
    abstract interface
       type(hyperdual) function hyperdual_Ge(self, n, t)
+         !! Evaluate the model's primal excess-Gibbs energy in hyperdual form.
          import hyperdual, GeModelAdiff
-         class(GeModelAdiff) :: self
-         type(hyperdual), intent(in) :: n(:)
-         type(hyperdual), intent(in) :: t
+         class(GeModelAdiff) :: self !! Concrete GE model; passed-object dummy.
+         type(hyperdual), intent(in) :: n(:) !! Component mole amounts as hyperdual values.
+         type(hyperdual), intent(in) :: t !! Temperature as a hyperdual value.
       end function hyperdual_Ge
    end interface
 contains
 
    subroutine excess_gibbs(self, n, T, Ge, GeT, GeT2, Gen, GeTn, Gen2)
-      class(GeModelAdiff), intent(in) :: self
-      real(pr), intent(in) :: n(:)
-      real(pr), intent(in) :: t
-      real(pr), optional, intent(out) :: Ge, GeT, GeT2
-      real(pr), optional, dimension(size(n)), intent(out) :: Gen, GeTn
-      real(pr), optional, intent(out) :: Gen2(size(n), size(n))
+      !! # excess_gibbs
+      !! Evaluate excess Gibbs energy and requested derivatives by AD.
+      !!
+      !! # Description
+      !! Seeds hyperdual composition and temperature variables, evaluates the
+      !! concrete model's `Ge` function, and returns requested first and second
+      !! derivatives through the standard `GeModel` interface.
+      class(GeModelAdiff), intent(in) :: self !! Model providing the hyperdual `Ge` function.
+      real(pr), intent(in) :: n(:) !! Component mole amounts [mol].
+      real(pr), intent(in) :: t !! Temperature [K].
+      real(pr), optional, intent(out) :: Ge !! Excess Gibbs energy.
+      real(pr), optional, intent(out) :: GeT !! Temperature derivative of excess Gibbs energy.
+      real(pr), optional, intent(out) :: GeT2 !! Second temperature derivative of excess Gibbs energy.
+      real(pr), optional, dimension(size(n)), intent(out) :: Gen !! Mole-number gradient of excess Gibbs energy.
+      real(pr), optional, dimension(size(n)), intent(out) :: GeTn !! Mixed temperature/mole-number derivative of excess Gibbs energy.
+      real(pr), optional, intent(out) :: Gen2(size(n), size(n)) !! Hessian with respect to component mole amounts.
 
-      type(hyperdual) :: d_t, d_n(size(n))
+      type(hyperdual) :: d_t !! Hyperdual temperature input.
+      type(hyperdual) :: d_n(size(n)) !! Hyperdual component mole amounts.
       type(hyperdual) :: d_Ge
 
       real(pr) :: dGe(size(n)+1, size(n)+1)
-      integer :: nc
+      integer :: nc !! Number of components.
 
       logical :: any_deriv
 
@@ -83,7 +113,10 @@ contains
    contains
 
       subroutine get_dgedn()
-         integer :: i, j
+         !! # get_dgedn
+         !! Extract first mole-number derivatives of the excess Gibbs energy.
+         integer :: i !! Loop index `i`.
+         integer :: j !! Loop index `j`.
 
          do i=2, size(n), 2
             call reset_vars
@@ -106,7 +139,10 @@ contains
       end subroutine get_dgedn
 
       subroutine get_dgedn2()
-         integer :: i, j
+         !! # get_dgedn2
+         !! Extract the symmetric mole-number Hessian of the excess Gibbs energy.
+         integer :: i !! Loop index `i`.
+         integer :: j !! Loop index `j`.
 
          do i=1,size(n)
             do j=i,size(n)
@@ -124,7 +160,9 @@ contains
       end subroutine get_dgedn2
 
       subroutine get_dgedtn()
-         integer :: i
+         !! # get_dgedtn
+         !! Extract mixed temperature-mole derivatives of the excess Gibbs energy.
+         integer :: i !! Loop/index variable.
 
          do i=1,size(n)
             call reset_vars
@@ -138,6 +176,8 @@ contains
       end subroutine get_dgedtn
 
       subroutine get_dgedt()
+         !! # get_dgedt
+         !! Extract the first temperature derivative of the excess Gibbs energy.
          call reset_vars
          d_t%f1 = 1
          d_Ge = self%Ge(d_n, d_t)
@@ -145,6 +185,8 @@ contains
       end subroutine get_dgedt
 
       subroutine get_dgedt2()
+         !! # get_dgedt2
+         !! Extract the second temperature derivative of the excess Gibbs energy.
          call reset_vars
          d_t%f1 = 1
          d_t%f2 = 1
@@ -154,6 +196,8 @@ contains
       end subroutine get_dgedt2
 
       subroutine reset_vars()
+         !! # reset_vars
+         !! Reset hyperdual mole and temperature values before seeding a derivative.
          d_n = n
          d_t = t
       end subroutine reset_vars

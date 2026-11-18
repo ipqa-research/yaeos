@@ -1,5 +1,17 @@
 module yaeos__equilibria_boundaries_phase_envelopes_pt
-   !! Phase boundaries line on the \(PT\) plane calculation procedures.
+   !! # Pressure-temperature phase envelopes
+   !! Continuation routines for two-phase and multiphase boundaries in the \(P-T\) plane.
+   !!
+   !! # Description
+   !! The public two-phase entry point [[pt_envelope_2ph]] continues from a
+   !! converged saturation point at fixed overall composition. The module also
+   !! defines the [[PTEnvel2]] result type and exports critical-point markers
+   !! found along the envelope.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! envelope = pt_envelope_2ph(model, z, saturation_state)
+   !! ```
    use yaeos__constants, only: pr
    use yaeos__models_ar, only: ArModel
    use yaeos__equilibria_equilibrium_state, only: EquilibriumState
@@ -14,14 +26,32 @@ module yaeos__equilibria_boundaries_phase_envelopes_pt
    public :: PTEnvel2, pt_envelope_2ph, find_hpl
 
    type :: CriticalPoint
-      !! Critical point
+      !! # CriticalPoint
+      !! Critical point located on a pressure-temperature envelope.
+      !!
+      !! # Description
+      !! Stores the critical coordinates associated with the envelope branch.
+      !!
+      !! # Examples
+      !! Access entries through `PTEnvel2%cps`.
       real(pr) :: T !! Temperature [K]
       real(pr) :: P !! Pressure [bar]
    end type CriticalPoint
 
    type :: PTEnvel2
+      !! # PTEnvel2
       !! Two-phase isopleth.
       !! Phase boundary line of a fluid at constant composition.
+      !!
+      !! # Description
+      !! `points` stores converged saturation states in continuation order;
+      !! `cps` stores critical points detected along the branch.
+      !!
+      !! # Examples
+      !! ```fortran
+      !! envelope = pt_envelope_2ph(model, z, first_point)
+      !! write(*,*) envelope
+      !! ```
       type(EquilibriumState), allocatable :: points(:)
       !! Each point through the line.
       type(CriticalPoint), allocatable :: cps(:)
@@ -44,6 +74,9 @@ contains
       points, iterations, delta_0, specified_variable_0, &
       solver, stop_conditions, maximum_pressure &
       ) result(envelopes)
+      !! # pt_envelope_2ph
+      !!
+      !! # Description
       !! PT two-phase envelope calculation procedure.
       !!
       !! Phase envelope calculation using the continuation method.
@@ -53,22 +86,22 @@ contains
       ! ========================================================================
       use yaeos__auxiliar, only: optval
       class(ArModel), intent(in) :: model
-      !! Thermodyanmic model
+      !! Thermodynamic model
       real(pr), intent(in) :: z(:)
       !! Vector of molar fractions
       type(EquilibriumState), intent(in) :: first_point
       !! Initial point of the envelope
       integer, optional, intent(in) :: points
-      !! Maxmimum number of points, defaults to 500
+      !! Maximum number of points, defaults to 500
       integer, optional, intent(in) :: iterations
       !! Point solver maximum iterations, defaults to 100
       real(pr), optional, intent(in) :: delta_0
-      !! Initial extrapolation \(\Delta\)
+      !! Initial specification step \(\Delta S\), defaults to 0.01
       integer, optional, intent(in) :: specified_variable_0
       !! Position of specified variable, since the vector of variables is
       !! \(X = [lnK_i, \dots, lnT, lnP]\) the values for specification
       !! will be \([1 \dots nc]\) for the equilibria constants, \(nc+1\) for
-      !! \(lnT\) and \(nc + 2\) for \(lnT\).
+      !! \(lnT\) and \(nc + 2\) for \(lnP\). Defaults to \(nc+1\) (\(\ln T\)).
       procedure(continuation_solver), optional :: solver
       !! Specify solver for each point, defaults to a full newton procedure
       procedure(continuation_stopper), optional :: stop_conditions
@@ -92,12 +125,14 @@ contains
       !! All the calculated variables that are returned on the continuation
       !! method procedure (unused since each point is saved on the fly)
 
-      integer :: i
-      real(pr) :: x_l0(1, size(z)), w0(size(z))
+      integer :: i !! Loop/index variable.
+      real(pr) :: x_l0(1, size(z))
+      real(pr) :: w0(size(z))
       type(PTEnvelMP) :: mp_env
 
       character(len=14) :: kind
-      character(len=14) :: kind_x(1), kind_w
+      character(len=14) :: kind_x(1)
+      character(len=14) :: kind_w
 
       ! ========================================================================
       ! Handle input
@@ -185,26 +220,37 @@ contains
    contains
 
       subroutine foo(X, ns, S, F, dF, dFdS)
-         !! Function that needs to be solved at each envelope point
-         real(pr), intent(in) :: X(:)
-         integer, intent(in) :: ns
-         real(pr), intent(in) :: S
+         !! # foo
+         !!
+         !! # Description
+         !! Evaluate the two-phase saturation equations at a continuation state.
+         real(pr), intent(in) :: X(:) !! Packed log-K and log-state unknowns.
+         integer, intent(in) :: ns !! Index of the specified unknown.
+         real(pr), intent(in) :: S !! Value of the continuation specification.
 
-         real(pr), intent(out) :: F(:)
-         real(pr), intent(out) :: dF(:, :)
-         real(pr), intent(out) :: dFdS(:)
+         real(pr), intent(out) :: F(:) !! Phase-equilibrium residuals.
+         real(pr), intent(out) :: dF(:, :) !! Residual Jacobian with respect to `X`.
+         real(pr), intent(out) :: dFdS(:) !! Residual derivative with respect to `S`.
 
-         character(len=14) :: kind_z, kind_y
+         character(len=14) :: kind_z
+         character(len=14) :: kind_y
 
-         real(pr) :: y(nc)
-         real(pr) :: lnPhi_z(nc), lnPhi_y(nc)
-         real(pr) :: dlnphi_dt_z(nc), dlnphi_dt_y(nc)
-         real(pr) :: dlnphi_dp_z(nc), dlnphi_dp_y(nc)
-         real(pr) :: dlnphi_dn_z(nc, nc), dlnphi_dn_y(nc, nc)
+         real(pr) :: y(nc) !! Incipient/second phase composition.
+         real(pr) :: lnPhi_z(nc)
+         real(pr) :: lnPhi_y(nc)
+         real(pr) :: dlnphi_dt_z(nc)
+         real(pr) :: dlnphi_dt_y(nc)
+         real(pr) :: dlnphi_dp_z(nc)
+         real(pr) :: dlnphi_dp_y(nc)
+         real(pr) :: dlnphi_dn_z(nc, nc)
+         real(pr) :: dlnphi_dn_y(nc, nc)
 
-         real(pr) :: T, P, K(nc)
+         real(pr) :: T
+         real(pr) :: P
+         real(pr) :: K(nc)
 
-         integer :: i, j
+         integer :: i !! Loop index `i`.
+         integer :: j !! Loop index `j`.
 
          F = 0
          dF = 0
@@ -264,6 +310,9 @@ contains
       end subroutine foo
 
       subroutine update_spec(X, ns, S, dS, dXdS, step_iters)
+         !! # update_spec
+         !!
+         !! # Description
          !! Update the specification during continuation.
          real(pr), intent(in out) :: X(:)
          !! Vector of variables \([lnK_i \dots , lnT, lnP]\)
@@ -278,7 +327,10 @@ contains
          integer, intent(in) :: step_iters
          !! Iterations used in the solver
 
-         real(pr) :: maxdS, dT, dP, Xold(size(X))
+         real(pr) :: maxdS
+         real(pr) :: dT
+         real(pr) :: dP
+         real(pr) :: Xold(size(X))
 
          ! =====================================================================
          ! Update specification
@@ -335,12 +387,17 @@ contains
       end subroutine update_spec
 
       subroutine save_point(X, iters)
+         !! # save_point
+         !!
+         !! # Description
          !! Save the converged point
-         real(pr), intent(in) :: X(:)
-         integer, intent(in) :: iters
+         real(pr), intent(in) :: X(:) !! Converged variables \([\ln K_i, \ln T, \ln P]\).
+         integer, intent(in) :: iters !! Newton iterations used to converge the point.
          type(EquilibriumState) :: point
 
-         real(pr) :: y(nc), T, P
+         real(pr) :: y(nc) !! Incipient/second phase composition.
+         real(pr) :: T
+         real(pr) :: P
 
          T = exp(X(nc+1))
          P = exp(X(nc+2))
@@ -403,7 +460,8 @@ contains
 
          real(pr) :: V
 
-         integer :: inner, ncomp
+         integer :: inner
+         integer :: ncomp
 
          Xold = X
 
@@ -454,16 +512,19 @@ contains
    end function pt_envelope_2ph
 
    subroutine write_PTEnvel2(pt2, unit, iotype, v_list, iostat, iomsg)
-      class(PTEnvel2), intent(in) :: pt2
-      integer, intent(in) :: unit
-      character(*),  intent(in) :: iotype
-      integer, intent(in)  :: v_list(:)
-      integer, intent(out) :: iostat
-      character(*), intent(inout) :: iomsg
+      !! # write_PTEnvel2
+      !! Write a two-phase PT envelope using sectioned, plotting-friendly output.
+      class(PTEnvel2), intent(in) :: pt2 !! Envelope result to serialize.
+      integer, intent(in) :: unit !! Output unit number.
+      character(*),  intent(in) :: iotype !! Fortran formatted-I/O mode.
+      integer, intent(in)  :: v_list(:) !! Format control list supplied by the runtime.
+      integer, intent(out) :: iostat !! I/O status returned to the runtime.
+      character(*), intent(inout) :: iomsg !! I/O error message buffer.
 
       integer, allocatable :: cps(:)
       integer :: cp
-      integer :: i, nc
+      integer :: i !! Loop/index variable.
+      integer :: nc !! Number of components.
 
 
       if (size(pt2%points) == 0) return
@@ -514,14 +575,19 @@ contains
       real(pr), intent(in) :: z(:) !! Mole fractions
       real(pr), intent(in) :: T0 !! Initial temperature [K]
       real(pr), intent(in) :: P0 !! Search pressure [bar]
-      integer, intent(in) :: max_points
+      integer, intent(in) :: max_points !! Maximum number of points passed to the envelope continuation.
 
-      integer :: i
-      real(pr) :: y(size(z))
-      real(pr) :: lnphi_y(size(z)), lnphi_z(size(z))
+      integer :: i !! Loop/index variable.
+      real(pr) :: y(size(z)) !! Incipient/second phase composition.
+      real(pr) :: lnphi_y(size(z))
+      real(pr) :: lnphi_z(size(z))
       type(EquilibriumState) :: fr
-      real(pr) :: diffs(size(z)), Ts(size(z)), T, P
-      integer :: ncomp, nc
+      real(pr) :: diffs(size(z))
+      real(pr) :: Ts(size(z))
+      real(pr) :: T
+      real(pr) :: P
+      integer :: ncomp
+      integer :: nc !! Number of components.
 
       nc = size(z)
       P = P0
