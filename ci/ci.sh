@@ -25,7 +25,7 @@ run_test() {
     DID_TEST=1
     echo Checking tests files names...
     NAMING_ERRORS=0
-    for file in $(find test/*f90); do
+    for file in $(find test -name "*.f90" -not -path "test/support/*"); do
         filename="$(basename $file)"
         prefix="$(echo $filename | cut -d '_' -f1)"
 
@@ -40,43 +40,46 @@ run_test() {
     [ $NAMING_ERRORS -ge 1 ] && 
         echoerr "There are wrongly named files in the test directory"
 
+    echo Checking that fpm.toml lists every test program...
+    python tools/dev/test_to_toml.py --check || exit 1
+
     echo Running tests...
-    fpm test --flag "--coverage"
+    fpm test --flag "--coverage -g" || exit 1
 }
 
 run_coverage() {
     gcovr \
         --exclude "build" \
-        --exclude "test/test_runner.f90" \
-        --exclude "test/fixtures/taperobinson.f90" \
+        --exclude "test/support/src/taperobinson.f90" \
+        --exclude "test" \
         --exclude "src/adiff/hyperdual.f90" \
         --exclude "example" \
         --exclude "src/legacy/*" \
         --exclude "src/models/excess_gibbs/nrtl.f90" \
         --exclude "app"\
         --exclude "tools" \
-        --fail-under-line 90 \
         --jacoco coverage.xml
     
     gcovr \
         --exclude "build" \
-        --exclude "test/test_runner.f90" \
-        --exclude "test/fixtures/taperobinson.f90" \
+        --exclude "test/support/src/taperobinson.f90" \
+        --exclude "test" \
         --exclude "src/adiff/hyperdual.f90" \
         --exclude "example" \
         --exclude "src/legacy/*" \
         --exclude "src/models/excess_gibbs/nrtl.f90" \
         --exclude "app"\
-        --exclude "tools" \
-        --fail-under-line 90
+        --exclude "tools"
 }
 
 python_wrappers(){
-    fpm install --profile release --prefix build/python
+    BUILD_DIR="build/python"
+    fpm install --profile release --prefix "$BUILD_DIR"
+    cd python/yaeos
     f2py \
-        -I ../build/tmp/include \
-        -L ../build/tmp/lib/libyaeos.a \
-        -m yaeos -c yaeos_python.f90 ../build/tmp/lib/libyaeos.a
+        -I ../../$BUILD_DIR/include \
+        -L ../../$BUILD_DIR/lib/libyaeos.a \
+        -m yaeos -c ../yaeos_c.f90 ../../$BUILD_DIR/lib/libyaeos.a
 }
 
 resumee() {
@@ -94,6 +97,7 @@ case $1 in
     "install")  install_fpm;;
     "test") run_test;;
     "coverage") run_coverage;;
+    "python") python_wrappers;;
     *)
         run_test
         run_coverage

@@ -1,8 +1,8 @@
 module bench
     use yaeos, only: pr, R, Substances, AlphaSoave, CubicEoS, &
-        fugacity_vt, QMR, PengRobinson76, ArModel, fugacity_tp
+        QMR, PengRobinson76, ArModel
     use hyperdual_pr76, only: PR76, setup_adiff_pr76 => setup
-    use TapeRobinson, only: setup_taperobinson => setup_model
+    use autodiff_tapenade_pr76_demo, only: setup_tapen_pr76 => setup_model
     implicit none
 
     real(pr), allocatable :: z(:), tc(:), pc(:), w(:), kij(:,:), lij(:,:)
@@ -17,8 +17,8 @@ contains
         tc = z * 2
         pc = z * 100
         w  = z/10
-        kij = reshape([(i,i=1,n**2)], [n,n])
-        lij = kij/2
+        kij = reshape([(0, i=1,n**2)], [n,n])
+        lij = reshape([(0, i=1,n**2)], [n,n])
     end subroutine
 
     subroutine yaeos__run(n, dn, f_p, model_name)
@@ -27,7 +27,11 @@ contains
         logical :: f_p
         character(len=*), intent(in) :: model_name
         class(ArModel), allocatable :: model
-        real(pr) :: lnfug(n), dlnphidp(n), dlnphidt(n), dlnphidn(n,n)
+
+        real(pr) :: Ar, ArV, ArT, ArVT, ArV2, ArT2
+        real(pr) :: Arn(n), Arn2(n, n), ArTn(n), ArVn(n)
+
+        real(pr) :: lnphi(n), lnphin(n,n)
 
 
         real(pr) :: v, t, p
@@ -40,28 +44,23 @@ contains
         case ("Adiff PR76")
             model = setup_adiff_pr76(tc, pc, w, kij, lij)
         case ("Tape PR76")
-            model = setup_taperobinson(tc, pc, w, kij, lij)
+            model = setup_tapen_pr76(tc, pc, w, kij, lij)
         end select
 
-        v = 1.0_pr
-        t = 150._pr
+        v = 10.0_pr
+        t = 250._pr
         p = 15
 
         if (dn) then
-            if (f_p) then
-                call fugacity_tp(&
-                    model, z, T, P, root_type="stable", &
-                    lnphip=lnfug, dlnphidp=dlnphidp, dlnphidn=dlnphidn)
-            else
-                call fugacity_vt(model, z, V, T, P, lnfug, dlnPhidP, dlnphidT, dlnphidn)
-            end if
+            call model%lnphi_vt(z, V, T, P=P, lnphi=lnPhi, dlnPhidn=lnphin)
         else
-            call fugacity_vt(model, z, V, T, lnphip=lnfug)
+            call model%lnphi_vt(z, V, T, P=P, lnphi=lnPhi)
         end if
+
     end subroutine
 
     subroutine run_bench(nmax, all_derivs, f_p, eos)
-        integer, parameter :: nevals=1e3
+        integer, parameter :: nevals=1e5
         integer :: nmax
         logical :: all_derivs
         logical :: f_p
@@ -73,7 +72,8 @@ contains
         std = 0
         mean = 0
 
-        print *, "running: ", eos, "all derivs: ", all_derivs
+        print "(//)"
+        print *,  "#", eos, "all derivs: ", all_derivs
         do n=1,nmax
             do i=1,nevals
                 call cpu_time(st)
@@ -92,18 +92,18 @@ contains
     end subroutine
     
     subroutine main()
-        integer :: n=20
+        integer :: n=30
         logical :: allderivs=.false.
         logical :: fug_p = .false.
 
         call run_bench(n, allderivs, fug_p, "Analytic PR76")
         call run_bench(n, allderivs, fug_p, "Tape PR76")
-        ! call run_bench(n, allderivs, fug_p, "Adiff PR76")
+        call run_bench(n, allderivs, fug_p, "Adiff PR76")
 
         allderivs = .true.
         call run_bench(n, allderivs, fug_p, "Analytic PR76")
         call run_bench(n, allderivs, fug_p, "Tape PR76")
-        ! call run_bench(n, allderivs, fug_p, "Adiff PR76")
+        call run_bench(n, allderivs, fug_p, "Adiff PR76")
     end subroutine
 
 end module
