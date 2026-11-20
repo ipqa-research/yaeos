@@ -9,13 +9,14 @@ module yaeos__models_ar_volume_translations_constant
    !!
    !! # Examples
    !! Constructor fragment, after defining the base EOS and shifts in L/mol:
+   !!
    !! ```fortran
    !! model = ConstantVolumeTranslation(base, c)
    !! ```
    !!
    !! # References
-   !! A. Peneloux, E. Rauzy, and R. Freze, "A consistent correction for
-   !! Redlich-Kwong-Soave volumes", Fluid Phase Equilibria 8 (1982), 7-23.
+   !! Péneloux, A., Rauzy, E., & Fréze, R. (1982). A consistent correction for
+   !! Redlich-Kwong-Soave volumes. Fluid phase equilibria, 8(1), 7-23.
    use yaeos__constants, only: pr
    use yaeos__models_ar, only: ArModel
    use yaeos__models_ar_volume_translated, only: VolumeTranslatedModel
@@ -30,13 +31,14 @@ module yaeos__models_ar_volume_translations_constant
       !!
       !! # Description
       !! The coefficients have the base model's component order and units
-      !! of L/mol. With physical volume \(V\), the base EOS is evaluated at
-      !! \(W=V+\sum_i n_i c_i\); positive shifts reduce the physical volume
+      !! of L/mol. With physical volume \(V\), the base EOS volume is evaluated
+      !! at \(W=V+\sum_i n_i c_i\); positive shifts reduce the physical volume
       !! at fixed pressure and temperature. The constructor copies the base
       !! model, its component metadata, and the shift coefficients.
       !!
       !! # Examples
       !! Constructor fragment with illustrative, not fitted, shifts:
+      !!
       !! ```fortran
       !! model = ConstantVolumeTranslation(base, c=[0.01_pr, 0.02_pr])
       !! ```

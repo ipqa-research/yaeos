@@ -3,7 +3,8 @@ module volume_translation_test_models
    use yaeos, only: pr, ArModel, VolumeTranslatedModel
    implicit none
    private
-   public :: TestTranslation, ZeroResidualModel
+    public :: TestTranslation, ZeroResidualModel, TrackingResidualModel, base_requested
+    logical :: base_requested(10) = .false.
 
    type, extends(VolumeTranslatedModel) :: TestTranslation
       real(pr) :: c0(2) = [0.012_pr, 0.021_pr] !! Constant molar shifts [L/mol].
@@ -14,14 +15,19 @@ module volume_translation_test_models
       procedure :: translation => test_translation
    end type TestTranslation
 
-   type, extends(ArModel) :: ZeroResidualModel
+    type, extends(ArModel) :: ZeroResidualModel
       real(pr) :: initial_volume = 0.2_pr !! Prescribed volume initializer [L].
       real(pr) :: root_volume = 1._pr !! Prescribed volume root or failure sentinel [L].
    contains
       procedure :: residual_helmholtz => zero_helmholtz
       procedure :: get_v0 => zero_v0
       procedure :: volume => prescribed_volume
-   end type ZeroResidualModel
+    end type ZeroResidualModel
+
+    type, extends(ZeroResidualModel) :: TrackingResidualModel
+    contains
+       procedure :: residual_helmholtz => tracked_helmholtz
+    end type TrackingResidualModel
 
 contains
 
@@ -67,7 +73,7 @@ contains
       if (present(Cn2)) Cn2 = kt*fnn
    end subroutine test_translation
 
-   subroutine zero_helmholtz(self, n, v, t, Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2)
+    subroutine zero_helmholtz(self, n, v, t, Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2)
       class(ZeroResidualModel), intent(in) :: self !! Unused; the residual energy is identically zero.
       real(pr), intent(in) :: n(:) !! Amounts defining the output shapes [mol].
       real(pr), intent(in) :: v !! Unused physical volume [L].
@@ -93,7 +99,28 @@ contains
       if (present(ArVn)) ArVn = 0._pr
       if (present(ArTn)) ArTn = 0._pr
       if (present(Arn2)) Arn2 = 0._pr
-   end subroutine zero_helmholtz
+    end subroutine zero_helmholtz
+
+    subroutine tracked_helmholtz(self, n, v, t, Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2)
+       class(TrackingResidualModel), intent(in) :: self
+       real(pr), intent(in) :: n(:)
+       real(pr), intent(in) :: v
+       real(pr), intent(in) :: t
+       real(pr), optional, intent(out) :: Ar
+       real(pr), optional, intent(out) :: ArV
+       real(pr), optional, intent(out) :: ArT
+       real(pr), optional, intent(out) :: ArTV
+       real(pr), optional, intent(out) :: ArV2
+       real(pr), optional, intent(out) :: ArT2
+       real(pr), optional, intent(out) :: Arn(size(n))
+       real(pr), optional, intent(out) :: ArVn(size(n))
+       real(pr), optional, intent(out) :: ArTn(size(n))
+       real(pr), optional, intent(out) :: Arn2(size(n), size(n))
+
+       base_requested = [present(Ar), present(ArV), present(ArT), present(ArTV), &
+          present(ArV2), present(ArT2), present(Arn), present(ArVn), present(ArTn), present(Arn2)]
+       call zero_helmholtz(self, n, v, t, Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2)
+    end subroutine tracked_helmholtz
 
    function zero_v0(self, n, p, t) result(v0)
       class(ZeroResidualModel), intent(in) :: self !! Model carrying the prescribed estimate.
@@ -121,7 +148,7 @@ program test_volume_translated
    use, intrinsic :: ieee_arithmetic, only: ieee_value, ieee_quiet_nan
    use yaeos, only: pr, R, ArModel, CubicEoS, PengRobinson76, SoaveRedlichKwong, &
       numeric_ar_derivatives, ar_consistency, size, EquilibriumState, flash
-   use volume_translation_test_models, only: TestTranslation, ZeroResidualModel
+    use volume_translation_test_models, only: TestTranslation, ZeroResidualModel, TrackingResidualModel, base_requested
    use testing_aux, only: assert, test_title
    implicit none
 
@@ -195,7 +222,8 @@ program test_volume_translated
    call assert(index(model%name, "SRK") > 0, "Reinitialization replaces model metadata")
    call check_derivatives(model)
    call check_roots(model)
-   call check_non_cubic_and_failures()
+    call check_non_cubic_and_failures()
+    call check_base_requests()
    write(*, *) ""
 
 contains
@@ -244,7 +272,7 @@ contains
       end do
    end subroutine check_derivatives
 
-   subroutine check_optional_outputs(eos)
+    subroutine check_optional_outputs(eos)
       class(ArModel), intent(in) :: eos !! Model under test.
       real(pr) :: reference(16) !! All-output reference evaluation.
       real(pr) :: individual(16) !! Outputs obtained one at a time, in the same order.
@@ -276,7 +304,61 @@ contains
          close(reshape(hessian, [4]), reference(13:16), 1.e-12_pr), &
          "Mixed temperature and amount Hessian outputs can be requested together")
       call eos%residual_helmholtz(n, V, T)
-   end subroutine check_optional_outputs
+    end subroutine check_optional_outputs
+
+    subroutine check_base_requests()
+       type(TrackingResidualModel) :: tracked
+       type(TestTranslation) :: translated
+       real(pr) :: energy
+       real(pr) :: volume_gradient
+       real(pr) :: volume_hessian
+       real(pr) :: pressure
+       real(pr) :: pressure_volume_gradient
+       real(pr) :: pressure_temperature_gradient
+       real(pr) :: pressure_amount_gradient(2)
+       real(pr) :: chemical_potential(2)
+       real(pr) :: fugacity(2)
+       real(pr) :: temperature_hessian
+       real(pr) :: amount_volume(2)
+
+       tracked%components = base%components
+       call translated%init(tracked)
+       call translated%residual_helmholtz(n, V, T, Ar=energy)
+       call assert(all(base_requested .eqv. [.true., .false., .false., .false., .false., &
+          .false., .false., .false., .false., .false.]), "Energy requests no base derivatives")
+
+       call translated%residual_helmholtz(n, V, T, ArV=volume_gradient, ArV2=volume_hessian)
+       call assert(all(base_requested .eqv. [.false., .true., .false., .false., .true., &
+          .false., .false., .false., .false., .false.]), "Volume derivatives request only base volume derivatives")
+
+       call translated%residual_helmholtz(n, V, T, ArV=volume_gradient, Arn=chemical_potential)
+       call assert(all(base_requested .eqv. [.false., .true., .false., .false., .false., &
+          .false., .true., .false., .false., .false.]), "Flash fugacity requests only base ArV and Arn")
+
+       call translated%lnphi_vt(n, V, T, lnPhi=fugacity)
+       call assert(all(base_requested .eqv. [.false., .true., .false., .false., .false., &
+          .false., .true., .false., .false., .false.]), "Inherited fugacity uses the lean base call")
+
+       call translated%pressure(n, V, T, pressure)
+       call assert(all(base_requested .eqv. [.false., .true., .false., .false., .false., &
+          .false., .false., .false., .false., .false.]), "Pressure alone requests only the base volume gradient")
+
+       call translated%pressure(n, V, T, pressure, dPdV=pressure_volume_gradient)
+       call assert(all(base_requested .eqv. [.false., .true., .false., .false., .true., &
+          .false., .false., .false., .false., .false.]), "Pressure volume gradient requests only base ArV2")
+
+       call translated%pressure(n, V, T, pressure, dPdT=pressure_temperature_gradient)
+       call assert(all(base_requested .eqv. [.false., .true., .false., .true., .true., &
+          .false., .false., .false., .false., .false.]), "Pressure temperature gradient requests its chain-rule inputs")
+
+       call translated%pressure(n, V, T, pressure, dPdn=pressure_amount_gradient)
+       call assert(all(base_requested .eqv. [.false., .true., .false., .false., .true., &
+          .false., .false., .true., .false., .false.]), "Pressure amount gradient avoids temperature derivatives")
+
+       call translated%residual_helmholtz(n, V, T, ArT2=temperature_hessian, ArVn=amount_volume)
+       call assert(all(base_requested .eqv. [.false., .true., .false., .true., .true., &
+          .true., .false., .true., .false., .false.]), "Combined temperature and amount derivatives retain dependencies")
+    end subroutine check_base_requests
 
    subroutine check_roots(eos)
       type(TestTranslation), intent(in) :: eos !! Translation with a cubic base model.

@@ -1,20 +1,20 @@
 module yaeos__models_ar_volume_translated
    !! # Volume-translated residual Helmholtz models
-   !! Abstract adapter for volume translations independent of volume and pressure.
+   !! Abstract adapter for volume translations independent of volume and
+   !! pressure.
    !!
    !! # Description
    !! With physical volume \(V\), base-model volume \(W=V+C(n,T)\), and
+   !!
    !! \(N=\sum_i n_i\), the translated residual energy is
+   !!
    !! \[
    !! A^r_{\mathrm{tr}}(n,V,T)
    !! = A^r_{\mathrm{base}}(n,W,T)+NRT\ln(V/W).
    !! \]
-   !! Positive translations therefore reduce the physical volume at fixed
-   !! pressure and temperature. The logarithmic term accounts for the change
-   !! in the ideal-gas reference volume; no ideal caloric model is required.
-   !! Extensions supply only the extensive translation and its derivatives.
    !!
-   use, intrinsic :: ieee_arithmetic, only: ieee_is_finite
+   !! Positive translations therefore reduce the physical volume at fixed
+   !! pressure and temperature.
    use yaeos__constants, only: pr, R
    use yaeos__models_ar, only: ArModel
    implicit none
@@ -36,8 +36,7 @@ module yaeos__models_ar_volume_translated
       !! base-model type in their own constructors.
       !!
       !! Energy evaluation requires positive finite physical and base volumes.
-      !! Volume solves delegate to `base` and subtract the translation;
-      !! failed or nonpositive/nonfinite translated roots return `-1`.
+      !! Volume solves delegate to `base` and subtract the translation.
       !!
       !! # Examples
       !! ```fortran
@@ -58,14 +57,13 @@ module yaeos__models_ar_volume_translated
    abstract interface
       subroutine translation_interface(self, n, T, C, CT, CT2, Cn, CTn, Cn2)
          !! # translation_interface
-         !! Extensive volume shift and independent amount/temperature derivatives.
+         !! Volume shift and independent amount/temperature derivatives.
          !!
          !! # Description
          !! `C` is always requested. Every other output is optional and must be
          !! computed when present, including when requested individually.
          !! Derivatives hold independent mole amounts fixed, not normalized
-         !! mole fractions. A constant-per-component law has
-         !! \(C=\sum_i n_i c_i\), `Cn=c`, and zero remaining derivatives.
+         !! mole fractions.
          !!
          !! # Examples
          !! ```fortran
@@ -122,17 +120,15 @@ contains
    end subroutine init
 
    subroutine translated_helmholtz(&
-      self, n, v, t, Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2 &
+      self, n, V, T, Ar, ArV, ArT, ArTV, ArV2, ArT2, Arn, ArVn, ArTn, Arn2 &
       )
       !! # translated_helmholtz
       !! Transform the base residual Helmholtz energy and requested derivatives.
       !!
       !! # Description
-      !! Applies the chain rule at \(W=V+C(n,T)\), including the ideal-reference
-      !! correction. Scalar volume derivatives are evaluated together; the
-      !! amount-volume derivatives and amount Hessians are requested only
-      !! when needed. Call `init` before evaluation. Invalid physical/base
-      !! volumes cause `error stop`; a call without outputs is a no-op.
+      !! Applies the chain rule at \(W=V+C(n,T)\), including the
+      !! ideal-reference correction. Base derivatives are requested according
+      !! to the outputs and their chain-rule dependencies.
       !!
       !! # Examples
       !! ```fortran
@@ -140,8 +136,8 @@ contains
       !! ```
       class(VolumeTranslatedModel), intent(in) :: self !! Translated model.
       real(pr), intent(in) :: n(:) !! Component mole amounts [mol].
-      real(pr), intent(in) :: v !! Physical total volume [L].
-      real(pr), intent(in) :: t !! Temperature [K].
+      real(pr), intent(in) :: V !! Physical total volume [L].
+      real(pr), intent(in) :: T !! Temperature [K].
       real(pr), optional, intent(out) :: Ar
       !! Residual Helmholtz energy [bar L].
       real(pr), optional, intent(out) :: ArV
@@ -163,85 +159,172 @@ contains
       real(pr), optional, intent(out) :: Arn2(size(n), size(n))
       !! Amount Hessian [bar L/mol^2].
 
-      ! Base residual Helholtz Evaluations
-      real(pr) :: ArV_base
-      real(pr) :: ArV2_base
+      ! Derivatives of the base residual and total Helmholtz energies at W.
+      real(pr) :: ArV_base !! Base residual volume derivative [bar].
+      real(pr) :: ArV2_base !! Base residual second volume derivative [bar/L].
       real(pr) :: ArTV_base
+      !! Base residual temperature/volume derivative [bar/K].
       real(pr) :: ArVn_base(size(n))
-      real(pr) :: Av ! Base total Helmholtz volume derivative [bar].
-      real(pr) :: Avv ! Base total Helmholtz second volume derivative [bar/L].
-      real(pr) :: Avt ! Base total Helmholtz volume/temperature derivative [bar/K].
-      real(pr) :: Avn(size(n)) ! Base total Helmholtz volume/amount derivatives [bar/mol].
+      !! Base residual volume/amount gradient [bar/mol].
+
+      real(pr) :: Av !! Base total Helmholtz volume derivative [bar].
+      real(pr) :: Avv !! Base total Helmholtz second volume derivative [bar/L].
+      real(pr) :: Avt
+      !! Base total Helmholtz temperature/volume derivative [bar/K].
+      real(pr) :: Avn(size(n))
+      !! Base total Helmholtz volume/amount gradient [bar/mol].
 
       ! Translations
-      real(pr) :: C
-      real(pr) :: W ! Base-model volume V+C
-      real(pr) :: CT
-      real(pr) :: CT2
-      real(pr) :: Cn(size(n))
+      real(pr) :: C !! Extensive volume translation [L].
+      real(pr) :: W !! Base-model total volume V+C [L].
+      real(pr) :: CT !! Translation temperature derivative [L/K].
+      real(pr) :: CT2 !! Translation second temperature derivative [L/K^2].
+      real(pr) :: Cn(size(n)) !! Translation amount gradient [L/mol].
       real(pr) :: CTn(size(n))
-      real(pr) :: Cn2(size(n), size(n))
+      !! Translation temperature/amount gradient [L/(K mol)].
+      real(pr) :: Cn2(size(n), size(n)) !! Translation amount Hessian [L/mol^2].
 
       ! Auxiliars
-      real(pr) :: NRT
-      real(pr) :: NR
-      real(pr) :: log_ratio ! Logarithm of physical/base volume ratio.
-      real(pr) :: inverse_volume_difference ! Stable evaluation of 1/V-1/W.
+      real(pr) :: NRT !! Total amount times RT [bar L].
+      real(pr) :: NR !! Total amount times R [bar L/K].
+      real(pr) :: log_ratio
+      !! Logarithm of physical/base total volume ratio, log(V/W).
+      real(pr) :: inverse_volume_difference !! Stable difference 1/V-1/W [1/L].
+      integer :: i !! Row index of the amount Hessian.
+      integer :: j !! Column index of the amount Hessian.
 
-      integer :: i, j
+      ! Requested derivative outputs.
+      logical :: energy_requested !! Residual energy Ar was requested.
+      logical :: dV !! Volume derivative ArV was requested.
+      logical :: dV2 !! Second volume derivative ArV2 was requested.
+      logical :: dT !! Temperature derivative ArT was requested.
+      logical :: dT2 !! Second temperature derivative ArT2 was requested.
+      logical :: dn !! Amount gradient Arn was requested.
+      logical :: dn2 !! Amount Hessian Arn2 was requested.
+      logical :: dVn !! Volume/amount gradient ArVn was requested.
+      logical :: dTn !! Temperature/amount gradient ArTn was requested.
+      logical :: dTV !! Temperature/volume derivative ArTV was requested.
 
-      ! Gather the shift and its derivatives. Only composition-dependent
-      if (present(Arn2)) then
-         call self%translation(n, t, C, CT=CT, CT2=CT2, Cn=Cn, CTn=CTn, Cn2=Cn2)
-      else if (present(ArTn)) then
-         call self%translation(n, t, C, CT=CT, CT2=CT2, Cn=Cn, CTn=CTn)
-      else if (present(Arn) .or. present(ArVn)) then
-         call self%translation(n, t, C, CT=CT, CT2=CT2, Cn=Cn)
+      ! ========================================================================
+      ! Logicals for clarity
+      ! ------------------------------------------------------------------------
+      energy_requested = present(Ar)
+      dV = present(ArV)
+      dV2 = present(ArV2)
+      dT = present(ArT)
+      dT2 = present(ArT2)
+      dn = present(Arn)
+      dn2 = present(Arn2)
+      dVn = present(ArVn)
+      dTn = present(ArTn)
+      dTV = present(ArTV)
+
+      ! ========================================================================
+      ! Calculate translation an V_eos (W)
+      ! ask translation derivatives as efficient as possible
+      ! ------------------------------------------------------------------------
+      if (.not. (dT .or. dTV .or. dT2 .or. dTn)) then
+         if (dn2) then
+            call self%translation(n, T, C, Cn=Cn, Cn2=Cn2)
+         else if (dn .or. dVn) then
+            call self%translation(n, T, C, Cn=Cn)
+         else
+            call self%translation(n, T, C)
+         end if
+      else if (dn2) then
+         call self%translation(n, T, C, CT=CT, CT2=CT2, Cn=Cn, CTn=CTn, Cn2=Cn2)
+      else if (dTn) then
+         call self%translation(n, T, C, CT=CT, CT2=CT2, Cn=Cn, CTn=CTn)
+      else if (dn .or. dVn) then
+         call self%translation(n, T, C, CT=CT, CT2=CT2, Cn=Cn)
       else
-         call self%translation(n, t, C, CT=CT, CT2=CT2)
+         call self%translation(n, T, C, CT=CT, CT2=CT2)
       end if
 
       ! Volume of the cubic with the inverse translation
-      W = v + C
+      W = V + C
 
-      ! Evaluate the base EOS once at W. TODO: This could be more efficient
-      if (present(ArVn) .or. present(ArTn) .or. present(Arn2)) then
+      ! ========================================================================
+      ! Call base Ar as efficient as possible (normal call cases)
+      ! ------------------------------------------------------------------------
+      if (dTn .or. dn2 .or. (dVn .and. dT2)) then
          call self%base%residual_helmholtz(&
             n, W, t, Ar=Ar, ArV=ArV_base, ArT=ArT, ArTV=ArTV_base, &
             ArV2=ArV2_base, ArT2=ArT2, Arn=Arn, ArVn=ArVn_base, &
             ArTn=ArTn, Arn2=Arn2 &
             )
-      else
+      else if (dVn) then
+         call self%base%residual_helmholtz(&
+            n, W, t, Ar=Ar, ArV=ArV_base, ArT=ArT, ArTV=ArTV, &
+            ArV2=ArV2_base, ArT2=ArT2, Arn=Arn, ArVn=ArVn_base &
+            )
+      else if (dT2 .or. dTV) then
          call self%base%residual_helmholtz(&
             n, W, t, Ar=Ar, ArV=ArV_base, ArT=ArT, ArTV=ArTV_base, &
             ArV2=ArV2_base, ArT2=ArT2, Arn=Arn &
             )
+      else if (dn .or. dT) then
+         if (dV2) then
+            call self%base%residual_helmholtz(&
+               n, W, t, Ar=Ar, ArV=ArV_base, ArT=ArT, ArV2=ArV2_base, Arn=Arn &
+               )
+         else
+            call self%base%residual_helmholtz(&
+               n, W, t, Ar=Ar, ArV=ArV_base, ArT=ArT, Arn=Arn &
+               )
+         end if
+      else if (dV2) then
+         if (dV) then
+            call self%base%residual_helmholtz(&
+               n, W, t, Ar=Ar, ArV=ArV_base, ArV2=ArV2_base &
+               )
+         else
+            call self%base%residual_helmholtz(n, W, t, Ar=Ar, ArV2=ArV2_base)
+         end if
+      else if (dV) then
+         call self%base%residual_helmholtz(n, W, t, Ar=Ar, ArV=ArV_base)
+      else
+         call self%base%residual_helmholtz(n, W, t, Ar=Ar)
       end if
 
+      ! ========================================================================
+      ! Volume translated Helmholtz evaluations
+      ! ------------------------------------------------------------------------
       NR = sum(n)*R
       NRT = NR*t
-      log_ratio = log(v/W)
-      inverse_volume_difference = (C/v)/W
-      ! Retain the base residual derivatives directly to avoid subtracting and
-      ! re-adding the ideal term, especially for zero shifts at low density.
-      if (present(ArV)) ArV = ArV_base + NRT*inverse_volume_difference
-      if (present(ArV2)) ArV2 = ArV2_base - NRT*inverse_volume_difference*(1._pr/v + 1._pr/W)
+      log_ratio = log(V/W)
+      inverse_volume_difference = (C/V)/W
+
+      ! Volume derivatives
+      if (dV) ArV = ArV_base + NRT*inverse_volume_difference
+
+      if (dV2) then
+         ArV2 = ArV2_base - NRT*inverse_volume_difference*(1._pr/V + 1._pr/W)
+      end if
 
       ! These total Helmholtz derivatives collect the chain-rule terms due
       ! to C(n,T). The ideal-gas terms here are evaluated at the base volume W.
-      Av = ArV_base - NRT/W
-      Avv = ArV2_base + NRT/W**2
-      Avt = ArTV_base - NR/W
-      if (present(ArVn) .or. present(ArTn) .or. present(Arn2)) Avn = ArVn_base - R*t/W
+      if (dT .or. dT2 .or. dn .or. dTn .or. dn2) Av = ArV_base - NRT/W
+      if (dTV .or. dT2 .or. dVn .or. dTn .or. dn2) Avv = ArV2_base + NRT/W**2
+      if (dT2 .or. dTn) Avt = ArTV_base - NR/W
+      if (dTn .or. dn2) Avn = ArVn_base - R*T/W
 
-      if (present(Ar)) Ar = Ar + NRT*log_ratio
-      if (present(ArT)) ArT = ArT + Av*CT + NR*log_ratio
-      if (present(ArTV)) ArTV = ArTV_base + NR*inverse_volume_difference + Avv*CT
-      if (present(ArT2)) ArT2 = ArT2 + 2._pr*Avt*CT + Avv*CT**2 + Av*CT2
-      if (present(Arn)) Arn = Arn + Av*Cn + R*t*log_ratio
-      if (present(ArVn)) ArVn = ArVn_base + R*t*inverse_volume_difference + Avv*Cn
-      if (present(ArTn)) ArTn = ArTn + Avt*Cn + Avn*CT + Avv*CT*Cn + Av*CTn + R*log_ratio
-      if (present(Arn2)) then
+      ! Rest of derivatives
+      if (energy_requested) Ar = Ar + NRT*log_ratio
+
+      if (dT) ArT = ArT + Av*CT + NR*log_ratio
+
+      if (dTV) ArTV = ArTV_base + NR*inverse_volume_difference + Avv*CT
+
+      if (dT2) ArT2 = ArT2 + 2._pr*Avt*CT + Avv*CT**2 + Av*CT2
+
+      if (dn) Arn = Arn + Av*Cn + R*T*log_ratio
+
+      if (dVn) ArVn = ArVn_base + R*T*inverse_volume_difference + Avv*Cn
+
+      if (dTn) ArTn = ArTn + Avt*Cn + Avn*CT + Avv*CT*Cn + Av*CTn + R*log_ratio
+
+      if (dn2) then
          do j = 1, size(n)
             do i = 1, size(n)
                Arn2(i, j) = Arn2(i, j) + Avn(i)*Cn(j) + Avn(j)*Cn(i) &
@@ -256,10 +339,7 @@ contains
       !! Translate the base model's liquid-volume initializer.
       !!
       !! # Description
-      !! Returns `base%get_v0(n,p,t)-C(n,t)`. Invalid base estimates or
-      !! nonpositive/nonfinite translated estimates return `-1`. This is an
-      !! initializer, not an exact volume root; a nonpositive translated
-      !! estimate does not imply that all translated roots are inadmissible.
+      !! Returns `base%get_v0(n,p,t)-C(n,t)`.
       !!
       !! # Examples
       !! ```fortran
@@ -269,31 +349,13 @@ contains
       real(pr), intent(in) :: n(:) !! Component mole amounts [mol].
       real(pr), intent(in) :: p !! Pressure [bar].
       real(pr), intent(in) :: t !! Temperature [K].
-      real(pr) :: v0 !! Translated initial volume [L], or -1 on failure.
-      real(pr) :: C !! Total volume translation [L].
+      real(pr) :: v0 !! Translated initial volume [L].
 
-      v0 = self%base%get_v0(n, p, t)
-
-      ! Do not translate a failed base estimate into an apparently valid one.
-      if (.not. ieee_is_finite(v0)) then
-         v0 = -1._pr
-         return
-      end if
-
-      if (v0 <= 0._pr) then
-         v0 = -1._pr
-         return
-      end if
+      real(pr) :: C
+      !! Total volume translation at the specified amounts and temperature [L].
 
       call self%translation(n, t, C)
-      v0 = v0 - C
-
-      ! The shifted estimate must still be a positive physical volume.
-      if (.not. ieee_is_finite(v0)) then
-         v0 = -1._pr
-      else if (v0 <= 0._pr) then
-         v0 = -1._pr
-      end if
+      v0 = self%base%get_v0(n, p, t) - C
    end function translated_v0
 
    subroutine translated_volume(eos, n, P, T, V, root_type)
@@ -305,8 +367,6 @@ contains
       !! Root labels are forwarded unchanged. Gibbs energies of corresponding
       !! roots differ by the root-independent term `-P*C`, so stable-root
       !! selection is preserved when the corresponding roots are admissible.
-      !! Invalid base roots or nonpositive/nonfinite physical roots return `-1`;
-      !! no alternative-root search is attempted for an inadmissible result.
       !!
       !! # Examples
       !! ```fortran
@@ -321,33 +381,18 @@ contains
       real(pr), intent(in) :: T
       !! Temperature [K].
       real(pr), intent(out) :: V
-      !! Physical total volume [L], or -1 on failure.
+      !! Physical total volume [L].
       character(len=*), intent(in) :: root_type
-      !! Base solver root selection.
+      !! Desired root-type to solve. Options are:
+      !! `["liquid", "vapor", "stable"]
 
       real(pr) :: C
+      !! Total volume translation at the specified amounts and temperature [L].
 
       call eos%base%volume(n, P, T, V, root_type)
-
-      ! Preserve a failed solve before applying the volume correction.
-      if (.not. ieee_is_finite(V)) then
-         V = -1._pr
-         return
-      end if
-      if (V <= 0._pr) then
-         V = -1._pr
-         return
-      end if
-
       call eos%translation(n, T, C)
-      V = V - C
 
-      ! A successful base root can still give an inadmissible physical volume.
-      if (.not. ieee_is_finite(V)) then
-         V = -1._pr
-      else if (V <= 0._pr) then
-         V = -1._pr
-      end if
+      V = V - C
    end subroutine translated_volume
 
 end module yaeos__models_ar_volume_translated
