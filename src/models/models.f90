@@ -45,6 +45,8 @@ module yaeos__models
 
    ! Residual Helmholtz Models
    use yaeos__models_ar, only: ArModel, size
+   use yaeos__models_ar_volume_translated, only: VolumeTranslatedModel
+   use yaeos__models_ar_volume_translations_constant, only: ConstantVolumeTranslation
 
    ! GERG2008
    use yaeos__models_ar_gerg2008, only: &

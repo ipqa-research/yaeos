@@ -150,6 +150,8 @@ Available names (see `fpm.toml`): `basics`, `saturation_points`,
   - Mixing rules: QMR, QMRTD, CMR, CMRTD, MHV, HV, HV-NRTL, sDDLC
 - GERG-2008 (multifluid)
 - PC-SAFT
+- Volume translations (Fortran): `ConstantVolumeTranslation`, with
+  temperature-independent component shifts and linear combination
 
 **Excess Gibbs models**
 

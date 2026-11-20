@@ -4,6 +4,7 @@ ordered_subpage: cubics
                  gerg2008.md
                  gerg2008_parameters.md
                  pc_saft.md
+                 volume_translations.md
 ---
 
 [TOC]
@@ -55,6 +56,8 @@ Choose a model and parameters appropriate to your fluid and range; a successful
 calculation is not evidence that the model is accurate there. See
 [cubic models](cubics/index.html), [GERG-2008](gerg2008.html), and
 [PC-SAFT](pc_saft.html) for model-specific inputs and limitations.
+For volume corrections to an existing EOS, see
+[volume translations](volume_translations.html).
 
 ## Why Helmholtz energy?
 
