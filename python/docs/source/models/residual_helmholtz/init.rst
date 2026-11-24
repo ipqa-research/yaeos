@@ -26,3 +26,4 @@ stable multiphase state before interpreting density or energy results.
    cubic_eos/init
    multifluid/init
    saft/init
+   volume_translation

@@ -24,5 +24,8 @@ Yaeos Residual Helmholtz module. This module provides the following submodules:
 from yaeos.models.residual_helmholtz import cubic_eos
 from yaeos.models.residual_helmholtz import multifluid
 from yaeos.models.residual_helmholtz import saft
+from yaeos.models.residual_helmholtz.volume_translation import (
+    ConstantVolumeTranslation,
+)
 
-__all__ = ["cubic_eos", "multifluid", "saft"]
+__all__ = ["cubic_eos", "multifluid", "saft", "ConstantVolumeTranslation"]

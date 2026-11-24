@@ -247,7 +247,7 @@ contains
       ! ========================================================================
       ! Call base Ar as efficient as possible (normal call cases)
       ! ------------------------------------------------------------------------
-      if (dTn .or. dn2 .or. (dVn .and. dT2)) then
+      if (dTn .or. dn2 .or. (dVn .and. (dT2 .or. dTV))) then
          call self%base%residual_helmholtz(&
             n, W, t, Ar=Ar, ArV=ArV_base, ArT=ArT, ArTV=ArTV_base, &
             ArV2=ArV2_base, ArT2=ArT2, Arn=Arn, ArVn=ArVn_base, &

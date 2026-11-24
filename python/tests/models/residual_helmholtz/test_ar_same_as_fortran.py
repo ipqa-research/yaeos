@@ -127,6 +127,12 @@ for i, mixrule in enumerate(mixrules):
 # =============================================================================
 # Multifluid EoS
 # -----------------------------------------------------------------------------
+model = yaeos.ConstantVolumeTranslation(
+    yaeos.PengRobinson76(tcs, pcs, ws), [0.01, 0.02, 0.03]
+)
+models_list.append(model)
+model_names.append("PR76 with constant volume translation")
+
 model = yaeos.GERG2008(["n-hexane", "decane", "isobutane"])
 models_list.append(model)
 model_names.append("GERG2008")

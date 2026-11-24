@@ -38,6 +38,7 @@ module yaeos_c
    public :: multifluid_gerg2008
    ! SAFT equations
    public :: pcsaft, pcsaft_set_kij
+   public :: constant_volume_translation
 
    ! __del__
    public :: make_available_ar_models_list
@@ -836,6 +837,20 @@ contains
          end select
       end associate
    end subroutine pcsaft_set_kij
+
+   ! ==========================================================================
+   !  Volume Translations
+   ! --------------------------------------------------------------------------
+   subroutine constant_volume_translation(base_id, c, id)
+      !! Create a translated copy of the registered base model.
+      use yaeos, only: ConstantVolumeTranslation
+      integer(c_int), intent(in) :: base_id !! Handle of the original EOS.
+      real(c_double), intent(in) :: c(:) !! Constant molar shifts [L/mol].
+      integer(c_int), intent(out) :: id !! Handle of the translated EOS.
+
+      ar_model = ConstantVolumeTranslation(ar_models(base_id)%model, c)
+      call extend_ar_models_list(id)
+   end subroutine constant_volume_translation
 
    ! ==========================================================================
    !  Thermodynamic properties

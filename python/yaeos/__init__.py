@@ -37,6 +37,9 @@ from yaeos.models.residual_helmholtz.cubic_eos import (
 )
 from yaeos.models.residual_helmholtz.multifluid import GERG2008
 from yaeos.models.residual_helmholtz.saft import PCSAFT
+from yaeos.models.residual_helmholtz.volume_translation import (
+    ConstantVolumeTranslation,
+)
 
 __all__ = [
     "envelopes",
@@ -48,6 +51,7 @@ __all__ = [
     "PengRobinson78",
     "RKPR",
     "PCSAFT",
+    "ConstantVolumeTranslation",
     "PSRK",
     "QMR",
     "QMRTD",

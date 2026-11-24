@@ -182,6 +182,7 @@ py.install_sources(excess_gibbs_sources, subdir:python_lib / 'models' / 'excess_
 ### models.residual_helmholtz
 residual_helmholtz_sources = [
   python_lib / 'models' / 'residual_helmholtz' / '__init__.py',
+  python_lib / 'models' / 'residual_helmholtz' / 'volume_translation.py',
 ]
 py.install_sources(residual_helmholtz_sources, subdir:python_lib / 'models' / 'residual_helmholtz')
 
