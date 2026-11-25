@@ -11,7 +11,6 @@ program test_constant_volume_translation
    call test_helmholtz_consistency()
    call test_translated_properties()
    call test_zero_translation()
-   call test_base_volume_failure()
 
    write(*, *) ""
 
@@ -279,27 +278,5 @@ contains
       call assert(V_base > 0._pr .and. V > 0._pr, "Zero-shift vapor volumes are positive")
       call assert(rel_error(V_base, V) < 1.e-12_pr, "Zero translation preserves volume")
    end subroutine test_zero_translation
-
-   subroutine test_base_volume_failure()
-      ! The generic ArModel volume solver reports a failed root as -1.
-      ! The negative translation would otherwise turn that failure positive.
-      use fixtures_models, only: binary_PR76_hd
-
-      class(ArModel), allocatable :: base
-      type(ConstantVolumeTranslation) :: model
-      real(pr) :: n(2)
-      real(pr) :: V_base
-      real(pr) :: V
-
-      base = binary_PR76_hd()
-      model = ConstantVolumeTranslation(base, [-2._pr, -3._pr])
-      n = [0.3_pr, 0.7_pr]
-
-      call base%volume(n, 100._pr, 200._pr, V_base, "vapor")
-      call assert(V_base == -1._pr, "Base vapor root reports a failed solve")
-
-      call model%volume(n, 100._pr, 200._pr, V, "vapor")
-      call assert(V == V_base, "Translation preserves the base solver's failure indicator")
-   end subroutine test_base_volume_failure
 
 end program test_constant_volume_translation

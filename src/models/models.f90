@@ -47,6 +47,7 @@ module yaeos__models
    use yaeos__models_ar, only: ArModel, size
    use yaeos__models_ar_volume_translated, only: VolumeTranslatedModel
    use yaeos__models_ar_volume_translations_constant, only: ConstantVolumeTranslation
+   use yaeos__models_ar_volume_translations_linear, only: LinearVolumeTranslation
 
    ! GERG2008
    use yaeos__models_ar_gerg2008, only: &

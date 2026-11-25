@@ -1,6 +1,7 @@
 ---
 title: Volume translations
 ordered_subpage: constant.md
+                 linear.md
 ---
 
 [TOC]
@@ -14,9 +15,8 @@ volumetric predictions. The method is not limited to cubic equations; the
 transformation below applies to a residual Helmholtz model that is valid at the
 corresponding base-model volume [1].
 
-The currently implemented translation is
-[constant volume translation](constant.html). Its page shows how to construct a
-translated EOS and discusses parameter estimates for SRK and PR. The Helmholtz
+Available translations include [constant](constant.html) and
+[linear temperature-dependent](linear.html) component shifts. The Helmholtz
 transformation below follows Hammer's SINTEF memo [1].
 
 ## Volumes, amounts and sign convention
@@ -36,9 +36,8 @@ corresponding base volume. Both \(V\) and \(W\) must lie in the physical domain
 of the transformation and the base EOS.
 
 The translation \(C\) is independent of volume and pressure in this
-formulation. It may depend on \(T\) and on the amounts. In contrast, the
-currently implemented constant model uses \(C=\sum_i n_i c_i\), with fixed
-molar shifts \(c_i\) in L/mol.
+formulation. It may depend on \(T\) and on the amounts. The constant model
+uses \(C=\sum_i n_i c_i\), with fixed molar shifts \(c_i\) in L/mol.
 
 ## From pressure to residual Helmholtz energy
 
