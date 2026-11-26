@@ -167,13 +167,6 @@ contains
       real(pr) :: ArVn_base(size(n))
       !! Base residual volume/amount gradient [bar/mol].
 
-      real(pr) :: Av !! Base total Helmholtz volume derivative [bar].
-      real(pr) :: Avv !! Base total Helmholtz second volume derivative [bar/L].
-      real(pr) :: Avt
-      !! Base total Helmholtz temperature/volume derivative [bar/K].
-      real(pr) :: Avn(size(n))
-      !! Base total Helmholtz volume/amount gradient [bar/mol].
-
       ! Translations
       real(pr) :: C !! Extensive volume translation [L].
       real(pr) :: W !! Base-model total volume V+C [L].
@@ -189,7 +182,7 @@ contains
       real(pr) :: NR !! Total amount times R [bar L/K].
       real(pr) :: log_ratio
       !! Logarithm of physical/base total volume ratio, log(V/W).
-      real(pr) :: inverse_volume_difference !! Stable difference 1/V-1/W [1/L].
+      real(pr) :: C_VW !! Stable difference 1/V-1/W [1/L].
       integer :: i !! Row index of the amount Hessian.
       integer :: j !! Column index of the amount Hessian.
 
@@ -293,42 +286,36 @@ contains
       NR = sum(n)*R
       NRT = NR*t
       log_ratio = log(V/W)
-      inverse_volume_difference = (C/V)/W
+      C_VW = (C/V)/W
 
-      ! Volume derivatives
-      if (dV) ArV = ArV_base + NRT*inverse_volume_difference
-
-      if (dV2) then
-         ArV2 = ArV2_base - NRT*inverse_volume_difference*(1._pr/V + 1._pr/W)
-      end if
-
-      ! These total Helmholtz derivatives collect the chain-rule terms due
-      ! to C(n,T). The ideal-gas terms here are evaluated at the base volume W.
-      if (dT .or. dT2 .or. dn .or. dTn .or. dn2) Av = ArV_base - NRT/W
-      if (dTV .or. dT2 .or. dVn .or. dTn .or. dn2) Avv = ArV2_base + NRT/W**2
-      if (dT2 .or. dTn) Avt = ArTV_base - NR/W
-      if (dTn .or. dn2) Avn = ArVn_base - R*T/W
-
-      ! Rest of derivatives
       if (energy_requested) Ar = Ar + NRT*log_ratio
 
-      if (dT) ArT = ArT + Av*CT + NR*log_ratio
+      ! Derivatives
+      if (dV) ArV = ArV_base + NRT*C_VW
 
-      if (dTV) ArTV = ArTV_base + NR*inverse_volume_difference + Avv*CT
+      if (dV2) ArV2 = ArV2_base - NRT*C_VW*(1._pr/V + 1._pr/W)
 
-      if (dT2) ArT2 = ArT2 + 2._pr*Avt*CT + Avv*CT**2 + Av*CT2
+      if (dT) ArT = ArT + (ArV_base - NRT/W)*CT + NR*log_ratio
 
-      if (dn) Arn = Arn + Av*Cn + R*T*log_ratio
+      if (dTV) ArTV = ArTV_base + NR*C_VW + (ArV2_base + NRT/W**2)*CT
 
-      if (dVn) ArVn = ArVn_base + R*T*inverse_volume_difference + Avv*Cn
+      if (dT2) ArT2 = ArT2 + 2._pr*(ArTV_base - NR/W)*CT &
+         + (ArV2_base + NRT/W**2)*CT**2 + (ArV_base - NRT/W)*CT2
 
-      if (dTn) ArTn = ArTn + Avt*Cn + Avn*CT + Avv*CT*Cn + Av*CTn + R*log_ratio
+      if (dn) Arn = Arn + (ArV_base - NRT/W)*Cn + R*T*log_ratio
+
+      if (dVn) ArVn = ArVn_base + R*T*C_VW + (ArV2_base + NRT/W**2)*Cn
+
+      if (dTn) ArTn = ArTn + (ArTV_base - NR/W)*Cn + (ArVn_base - R*T/W)*CT &
+         + (ArV2_base + NRT/W**2)*CT*Cn &
+         + (ArV_base - NRT/W)*CTn + R*log_ratio
 
       if (dn2) then
          do j = 1, size(n)
             do i = 1, size(n)
-               Arn2(i, j) = Arn2(i, j) + Avn(i)*Cn(j) + Avn(j)*Cn(i) &
-                  + Avv*Cn(i)*Cn(j) + Av*Cn2(i, j)
+               Arn2(i, j) = Arn2(i, j) + (ArVn_base(i) - R*T/W)*Cn(j) &
+                  + (ArVn_base(j) - R*T/W)*Cn(i) &
+                  + (ArV2_base + NRT/W**2)*Cn(i)*Cn(j) + (ArV_base - NRT/W)*Cn2(i, j)
             end do
          end do
       end if

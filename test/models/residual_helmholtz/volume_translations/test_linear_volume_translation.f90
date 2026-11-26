@@ -139,17 +139,19 @@ contains
             ArT2=ArT2_num, Arn=Arn_num, ArVn=ArVn_num, ArTn=ArTn_num, Arn2=Arn2_num &
             )
 
-         call assert(rel_error(Ar, Ar_num) < 1.e-6_pr, "Ar numerical")
-         call assert(rel_error(ArV, ArV_num) < 1.e-7_pr, "ArV numerical")
-         call assert(rel_error(ArT, ArT_num) < 1.e-7_pr, "ArT numerical")
-         call assert(rel_error(ArTV, ArTV_num) < 1.e-6_pr, "ArTV numerical")
-         call assert(rel_error(ArV2, ArV2_num) < 2.e-5_pr, "ArV2 numerical")
-         call assert(rel_error(ArT2, ArT2_num) < 1.e-5_pr, "ArT2 numerical")
-         call assert(allclose(Arn, Arn_num, 1.e-7_pr), "Arn numerical")
-         call assert(allclose(ArVn, ArVn_num, 3.e-5_pr), "ArVn numerical")
-         call assert(allclose(ArTn, ArTn_num, 1.e-6_pr), "ArTn numerical")
-         call assert(maxval(rel_error(Arn2, Arn2_num)) < 1.e-5_pr, "Arn2 numerical")
+         call assert(rel_error(Ar, Ar_num) < 1.e-12_pr, "Ar numerical")
+         call assert(rel_error(ArV, ArV_num) < 5.e-8_pr, "ArV numerical")
+         call assert(rel_error(ArT, ArT_num) < 3.e-8_pr, "ArT numerical")
+         call assert(rel_error(ArTV, ArTV_num) < 3.e-7_pr, "ArTV numerical")
+         call assert(rel_error(ArV2, ArV2_num) < 5.e-6_pr, "ArV2 numerical")
+         call assert(rel_error(ArT2, ArT2_num) < 2.e-6_pr, "ArT2 numerical")
+         call assert(allclose(Arn, Arn_num, 5.e-8_pr), "Arn numerical")
+         call assert(allclose(ArVn, ArVn_num, 4.e-6_pr), "ArVn numerical")
+         call assert(allclose(ArTn, ArTn_num, 2.e-7_pr), "ArTn numerical")
+         call assert(maxval(rel_error(Arn2, Arn2_num)) < 5.e-6_pr, "Arn2 numerical")
       end do
+
+      call test_second_derivatives(model, n, V, T, ArV2, ArT2, ArTV, ArVn, ArTn, Arn2)
 
       call ar_consistency(model,n,V,T,eq31,eq33,eq34,eq36,eq37)
 
@@ -157,6 +159,57 @@ contains
       call assert(maxval(abs(eq34))<1.e-12_pr, "Gibbs-Duhem")
       call assert(abs(eq36)<1.e-12_pr .and. abs(eq37)<1.e-12_pr, "Pressure and temperature identities")
    end subroutine test_helmholtz_consistency
+
+   subroutine test_second_derivatives(model, n, V, T, ArV2, ArT2, ArTV, ArVn, ArTn, Arn2)
+      ! Differencing first derivatives avoids subtracting nearly equal energies
+      ! twice. The separate energy-based checks above validate those first derivatives.
+      class(ArModel), intent(in) :: model
+      real(pr), intent(in) :: n(:)
+      real(pr), intent(in) :: V
+      real(pr), intent(in) :: T
+      real(pr), intent(in) :: ArV2
+      real(pr), intent(in) :: ArT2
+      real(pr), intent(in) :: ArTV
+      real(pr), intent(in) :: ArVn(:)
+      real(pr), intent(in) :: ArTn(:)
+      real(pr), intent(in) :: Arn2(:,:)
+      real(pr) :: ArV_plus
+      real(pr) :: ArV_minus
+      real(pr) :: ArT_plus
+      real(pr) :: ArT_minus
+      real(pr) :: Arn_plus(size(n))
+      real(pr) :: Arn_minus(size(n))
+      real(pr) :: n_work(size(n))
+      real(pr) :: step
+      integer :: i
+      integer :: k
+
+      do k = 1, 2
+         step = 1.e-5_pr / real(k, pr)
+         call model%residual_helmholtz(n, V+step, T, ArV=ArV_plus, ArT=ArT_plus, Arn=Arn_plus)
+         call model%residual_helmholtz(n, V-step, T, ArV=ArV_minus, ArT=ArT_minus, Arn=Arn_minus)
+         call assert(rel_error(ArV2, (ArV_plus-ArV_minus)/(2*step)) < 1.e-7_pr, "ArV2 from ArV")
+         call assert(rel_error(ArTV, (ArT_plus-ArT_minus)/(2*step)) < 1.e-7_pr, "ArTV from ArT")
+         call assert(allclose(ArVn, (Arn_plus-Arn_minus)/(2*step), 1.e-7_pr), "ArVn from Arn")
+
+         step = 0.01_pr / real(k, pr)
+         call model%residual_helmholtz(n, V, T+step, ArV=ArV_plus, ArT=ArT_plus, Arn=Arn_plus)
+         call model%residual_helmholtz(n, V, T-step, ArV=ArV_minus, ArT=ArT_minus, Arn=Arn_minus)
+         call assert(rel_error(ArT2, (ArT_plus-ArT_minus)/(2*step)) < 1.e-8_pr, "ArT2 from ArT")
+         call assert(rel_error(ArTV, (ArV_plus-ArV_minus)/(2*step)) < 1.e-8_pr, "ArTV from ArV")
+         call assert(allclose(ArTn, (Arn_plus-Arn_minus)/(2*step), 1.e-8_pr), "ArTn from Arn")
+
+         step = 1.e-4_pr / real(k, pr)
+         do i = 1, size(n)
+            n_work = n
+            n_work(i) = n(i) + step
+            call model%residual_helmholtz(n_work, V, T, Arn=Arn_plus)
+            n_work(i) = n(i) - step
+            call model%residual_helmholtz(n_work, V, T, Arn=Arn_minus)
+            call assert(allclose(Arn2(:,i), (Arn_plus-Arn_minus)/(2*step), 1.e-7_pr), "Arn2 from Arn")
+         end do
+      end do
+   end subroutine test_second_derivatives
 
    subroutine test_translated_properties()
       class(ArModel), allocatable :: base
@@ -251,7 +304,7 @@ contains
 
       call linear%enthalpy_residual_vt(n, volume_plus, T + step, Hr=enthalpy_plus)
       call linear%enthalpy_residual_vt(n, volume_minus, T - step, Hr=enthalpy_minus)
-      call assert(abs(Cp - (enthalpy_plus - enthalpy_minus)/(2*step)) < 1.e-6_pr, &
+      call assert(abs(Cp - (enthalpy_plus - enthalpy_minus)/(2*step)) < 1.e-8_pr, &
          "Cp agrees with the fixed-pressure enthalpy derivative")
 
       call base%volume(n, 1._pr, T, W, "vapor")
@@ -292,14 +345,14 @@ contains
       call model%enthalpy_residual_vt(n, V, T, HrV=derivative)
       call model%enthalpy_residual_vt(n, V + dv, T, Hr=plus)
       call model%enthalpy_residual_vt(n, V - dv, T, Hr=minus)
-      call assert(abs(derivative - (plus - minus)/(2*dv)) < 1.e-5_pr*max(1._pr, abs(derivative)), &
+      call assert(abs(derivative - (plus - minus)/(2*dv)) < 1.e-8_pr*max(1._pr, abs(derivative)), &
          "Enthalpy volume derivative")
 
       ! Entropy's temperature derivative holds V and n fixed.
       call model%entropy_residual_vt(n, V, T, SrT=derivative)
       call model%entropy_residual_vt(n, V, T + dt, Sr=plus)
       call model%entropy_residual_vt(n, V, T - dt, Sr=minus)
-      call assert(abs(derivative - (plus - minus)/(2*dt)) < 1.e-6_pr*max(1._pr, abs(derivative)), &
+      call assert(abs(derivative - (plus - minus)/(2*dt)) < 1.e-9_pr*max(1._pr, abs(derivative)), &
          "Entropy temperature derivative")
 
       ! Fugacity pressure derivatives hold T and n fixed, so V must be solved again.
@@ -311,7 +364,7 @@ contains
 
       call model%lnphi_vt(n, volume_plus, T, lnPhi=lnphi_plus)
       call model%lnphi_vt(n, volume_minus, T, lnPhi=lnphi_minus)
-      call assert(all(abs(lnphi_p - (lnphi_plus - lnphi_minus)/(2*dp)) < 1.e-7_pr), &
+      call assert(all(abs(lnphi_p - (lnphi_plus - lnphi_minus)/(2*dp)) < 1.e-9_pr), &
          "Fugacity pressure derivatives")
    end subroutine test_property_derivatives
 

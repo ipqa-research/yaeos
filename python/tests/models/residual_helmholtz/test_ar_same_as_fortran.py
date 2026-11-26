@@ -133,6 +133,14 @@ model = yaeos.ConstantVolumeTranslation(
 models_list.append(model)
 model_names.append("PR76 with constant volume translation")
 
+model = yaeos.LinearVolumeTranslation(
+    yaeos.PengRobinson76(tcs, pcs, ws),
+    [0.01, 0.02, 0.03],
+    [1e-5, -2e-5, 3e-5],
+)
+models_list.append(model)
+model_names.append("PR76 with linear volume translation")
+
 model = yaeos.GERG2008(["n-hexane", "decane", "isobutane"])
 models_list.append(model)
 model_names.append("GERG2008")

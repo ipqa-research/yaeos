@@ -38,7 +38,7 @@ module yaeos_c
    public :: multifluid_gerg2008
    ! SAFT equations
    public :: pcsaft, pcsaft_set_kij
-   public :: constant_volume_translation
+   public :: constant_volume_translation, linear_volume_translation
 
    ! __del__
    public :: make_available_ar_models_list
@@ -851,6 +851,18 @@ contains
       ar_model = ConstantVolumeTranslation(ar_models(base_id)%model, c)
       call extend_ar_models_list(id)
    end subroutine constant_volume_translation
+
+   subroutine linear_volume_translation(base_id, a, b, id)
+      !! Create a translated copy with linear temperature-dependent shifts.
+      use yaeos, only: LinearVolumeTranslation
+      integer(c_int), intent(in) :: base_id !! Handle of the original EOS.
+      real(c_double), intent(in) :: a(:) !! Component intercepts [L/mol].
+      real(c_double), intent(in) :: b(:) !! Component slopes [L/(mol K)].
+      integer(c_int), intent(out) :: id !! Handle of the translated EOS.
+
+      ar_model = LinearVolumeTranslation(ar_models(base_id)%model, a, b)
+      call extend_ar_models_list(id)
+   end subroutine linear_volume_translation
 
    ! ==========================================================================
    !  Thermodynamic properties

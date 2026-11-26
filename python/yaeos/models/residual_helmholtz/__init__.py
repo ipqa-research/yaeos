@@ -26,6 +26,13 @@ from yaeos.models.residual_helmholtz import multifluid
 from yaeos.models.residual_helmholtz import saft
 from yaeos.models.residual_helmholtz.volume_translation import (
     ConstantVolumeTranslation,
+    LinearVolumeTranslation,
 )
 
-__all__ = ["cubic_eos", "multifluid", "saft", "ConstantVolumeTranslation"]
+__all__ = [
+    "cubic_eos",
+    "multifluid",
+    "saft",
+    "ConstantVolumeTranslation",
+    "LinearVolumeTranslation",
+]

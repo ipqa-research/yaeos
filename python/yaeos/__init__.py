@@ -39,6 +39,7 @@ from yaeos.models.residual_helmholtz.multifluid import GERG2008
 from yaeos.models.residual_helmholtz.saft import PCSAFT
 from yaeos.models.residual_helmholtz.volume_translation import (
     ConstantVolumeTranslation,
+    LinearVolumeTranslation,
 )
 
 __all__ = [
@@ -52,6 +53,7 @@ __all__ = [
     "RKPR",
     "PCSAFT",
     "ConstantVolumeTranslation",
+    "LinearVolumeTranslation",
     "PSRK",
     "QMR",
     "QMRTD",
