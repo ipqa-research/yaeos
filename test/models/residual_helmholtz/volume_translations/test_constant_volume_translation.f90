@@ -137,25 +137,26 @@ contains
       call assert(rel_error(ArTV, ArTV_combined) < 1.e-12_pr, "Combined ArTV agrees with the full call")
       call assert(allclose(ArVn, ArVn_combined, 1.e-12_pr), "Combined ArVn agrees with the full call")
 
-      ! Two step sizes help distinguish derivative errors from rounding noise.
+      ! Composition steps are larger because second differences lose precision.
+      ! Two step sizes guard against a fortuitously accurate finite difference.
       do i = 1, 2
          step = 1._pr / real(i, pr)
          call numeric_ar_derivatives(&
-            model, n, V, T, d_n=step*2.e-4_pr, d_v=step*1.e-4_pr, d_t=step*0.05_pr, &
+            model, n, V, T, d_n=step*8.e-4_pr, d_v=step*1.e-4_pr, d_t=step*0.1_pr, &
             Ar=Ar_num, ArV=ArV_num, ArT=ArT_num, ArTV=ArTV_num, ArV2=ArV2_num, &
             ArT2=ArT2_num, Arn=Arn_num, ArVn=ArVn_num, ArTn=ArTn_num, Arn2=Arn2_num &
             )
 
          call assert(rel_error(Ar, Ar_num) < 1.e-6_pr, "Ar vs numerical value")
-         call assert(rel_error(ArV, ArV_num) < 1.e-5_pr, "ArV vs numerical derivative")
-         call assert(rel_error(ArT, ArT_num) < 1.e-5_pr, "ArT vs numerical derivative")
-         call assert(rel_error(ArTV, ArTV_num) < 1.e-4_pr, "ArTV vs numerical derivative")
-         call assert(rel_error(ArV2, ArV2_num) < 1.e-4_pr, "ArV2 vs numerical derivative")
-         call assert(rel_error(ArT2, ArT2_num) < 1.e-4_pr, "ArT2 vs numerical derivative")
-         call assert(allclose(Arn, Arn_num, 1.e-5_pr), "Arn vs numerical derivatives")
-         call assert(allclose(ArVn, ArVn_num, 1.e-4_pr), "ArVn vs numerical derivatives")
-         call assert(allclose(ArTn, ArTn_num, 1.e-4_pr), "ArTn vs numerical derivatives")
-         call assert(maxval(rel_error(Arn2, Arn2_num)) < 1.e-4_pr, "Arn2 vs numerical derivatives")
+         call assert(rel_error(ArV, ArV_num) < 1.e-7_pr, "ArV vs numerical derivative")
+         call assert(rel_error(ArT, ArT_num) < 1.e-7_pr, "ArT vs numerical derivative")
+         call assert(rel_error(ArTV, ArTV_num) < 1.e-6_pr, "ArTV vs numerical derivative")
+         call assert(rel_error(ArV2, ArV2_num) < 2.e-5_pr, "ArV2 vs numerical derivative")
+         call assert(rel_error(ArT2, ArT2_num) < 1.e-5_pr, "ArT2 vs numerical derivative")
+         call assert(allclose(Arn, Arn_num, 1.e-7_pr), "Arn vs numerical derivatives")
+         call assert(allclose(ArVn, ArVn_num, 3.e-5_pr), "ArVn vs numerical derivatives")
+         call assert(allclose(ArTn, ArTn_num, 1.e-6_pr), "ArTn vs numerical derivatives")
+         call assert(maxval(rel_error(Arn2, Arn2_num)) < 1.e-5_pr, "Arn2 vs numerical derivatives")
       end do
 
       ! Michelsen and Mollerup's thermodynamic consistency identities.
@@ -186,6 +187,10 @@ contains
       real(pr) :: lnphi_base(2)
       real(pr) :: Hr
       real(pr) :: Hr_base
+      real(pr) :: Gr
+      real(pr) :: Gr_base
+      real(pr) :: Sr
+      real(pr) :: Sr_base
       real(pr) :: Cp
       real(pr) :: Cp_base
       character(len=6) :: root
@@ -217,6 +222,17 @@ contains
       call base%lnphi_vt(n, W, T, lnPhi=lnphi_base)
       call model%lnphi_vt(n, V, T, lnPhi=lnphi)
       call assert(allclose(lnphi_base-P*c/(R*T), lnphi, 1.e-12_pr), "Fugacity coefficient correction")
+
+      ! These residual properties use the ideal reference at each state's volume.
+      call base%gibbs_residual_vt(n, W, T, Gr=Gr_base)
+      call model%gibbs_residual_vt(n, V, T, Gr=Gr)
+      call assert(abs(Gr - (Gr_base - P*C_total + sum(n)*R*T*log(V/W))) < 1.e-10_pr, &
+         "Residual Gibbs includes the volume reference correction")
+
+      call base%entropy_residual_vt(n, W, T, Sr=Sr_base)
+      call model%entropy_residual_vt(n, V, T, Sr=Sr)
+      call assert(abs(Sr - (Sr_base - sum(n)*R*log(V/W))) < 1.e-10_pr, &
+         "Residual entropy includes the volume reference correction")
 
       call base%enthalpy_residual_vt(n, W, T, Hr=Hr_base)
       call model%enthalpy_residual_vt(n, V, T, Hr=Hr)
