@@ -26,7 +26,7 @@ Let \(\mathbf n=(n_1,\ldots,n_m)\) be component amounts in mol and
 The base EOS is evaluated at a different total volume \(W\):
 
 \[
-W=V+C(\mathbf n,T),\qquad V=W-C(\mathbf n,T).
+W=V+C(\mathbf n,T),\qquad V=W-C(\mathbf n,T)
 \]
 
 The extensive displacement \(C\) is in L and must scale linearly when all
@@ -44,16 +44,50 @@ uses \(C=\sum_i n_i c_i\), with fixed molar shifts \(c_i\) in L/mol.
 At fixed \(T,\mathbf n\), \(dW=dV\), so the intended translated pressure is
 
 \[
-P_{\rm tr}(\mathbf n,V,T)=P_{\rm base}(\mathbf n,V+C,T).
+P_{\rm tr}(\mathbf n,V,T)=P_{\rm base}(\mathbf n,V+C,T)
 \]
 
 yaeos models instead supply the extensive residual Helmholtz energy \(A^r\)
-in bar L. Using the ideal-gas reference at the **physical** volume \(V\) gives
-[1, section 2]
+in bar L. To obtain it from the translated pressure, use
+\(P=NRT/V-(\partial A^r/\partial V)_{T,\mathbf n}\) and choose the
+usual residual reference \(A^r\to 0\) as the volume tends to infinity.
+Following Hammer [1, section 2], integration at fixed \(T,\mathbf n\) gives
+
+\[
+A^r_{\rm tr}(\mathbf n,V,T)
+=\int_V^\infty
+ \left[P_{\rm base}(\mathbf n,v+C,T)-\frac{NRT}{v}\right]\,dv
+\]
+
+Here \(v\) is a dummy physical volume. Since \(C(\mathbf n,T)\) is
+independent of volume, it is constant along this integration path. Add and
+subtract the ideal-gas pressure at the corresponding base volume \(v+C\):
+
+\[
+\begin{aligned}
+A^r_{\rm tr}
+={}&\int_V^\infty
+ \left[P_{\rm base}(\mathbf n,v+C,T)-\frac{NRT}{v+C}\right]\,dv\\
+&+NRT\int_V^\infty\left(\frac{1}{v+C}-\frac{1}{v}\right)\,dv
+\end{aligned}
+\]
+
+For the first integral, the change of variable \(w=v+C\) gives \(dw=dv\)
+and changes the lower limit to \(W=V+C\). Therefore it is the base residual
+energy \(A^r_{\rm base}(\mathbf n,W,T)\), with its own ideal-gas reference
+at \(W\). The second integral corrects that reference to the **physical**
+volume \(V\):
+
+\[
+NRT\int_V^\infty\left(\frac{1}{v+C}-\frac{1}{v}\right)\,dv
+=NRT\ln\!\left(\frac{V}{W}\right)
+\]
+
+Thus, for positive physical and base volumes and a valid integration path,
 
 \[
 \boxed{A^r_{\rm tr}(\mathbf n,V,T)=
-A^r_{\rm base}(\mathbf n,W,T)+NRT\ln\!\left(\frac{V}{W}\right).}
+A^r_{\rm base}(\mathbf n,W,T)+NRT\ln\!\left(\frac{V}{W}\right)}
 \]
 
 The logarithm is essential: substituting \(W\) into the base residual energy
@@ -69,9 +103,132 @@ residual caloric properties. At fixed \(P,T,\mathbf n\), its `volume` method
 delegates to the base model's solver and subtracts \(C\). It does not perform
 an independent search for another translated root.
 
-For the detailed derivatives, see Hammer's memo [1, sections 2 and 4]. It
-uses the reduced residual Helmholtz energy \(F=A^r/(RT)\), whereas yaeos
-returns the extensive residual energy \(A^r\).
+## Helmholtz energy and derivatives
+
+The equations below give the **extensive residual energy** and all its
+derivatives implemented by `VolumeTranslatedModel`. They follow the
+transformation described in Hammer's memo [1, sections 2 and 4], but use
+\(A^r\) in bar L rather than the memo's reduced energy \(A^r/(RT)\).
+
+Throughout, \(W=V+C(\mathbf n,T)\), \(N=\sum_i n_i\), and every
+\(A^r_{\rm base}\) and its partial derivatives are evaluated at
+\((\mathbf n,W,T)\). A derivative of the base model with respect to \(T\)
+or \(n_i\) holds its volume argument \(W\) fixed; derivatives of the
+translated model hold its physical volume \(V\) fixed. All other independent
+variables are held fixed in each partial derivative. The amounts \(n_i\) are
+independent mole amounts, not normalized mole fractions.
+
+### Energy and volume derivatives
+
+\[
+A^r_{\rm tr}=A^r_{\rm base}+NRT\ln\!\left(\frac{V}{W}\right)
+\]
+
+\[
+\frac{\partial A^r_{\rm tr}}{\partial V}
+=\frac{\partial A^r_{\rm base}}{\partial W}
++NRT\left(\frac{1}{V}-\frac{1}{W}\right)
+\]
+
+\[
+\frac{\partial^2 A^r_{\rm tr}}{\partial V^2}
+=\frac{\partial^2 A^r_{\rm base}}{\partial W^2}
+-NRT\left(\frac{1}{V}-\frac{1}{W}\right)
+       \left(\frac{1}{V}+\frac{1}{W}\right)
+\]
+
+### Temperature derivatives
+
+\[
+\frac{\partial A^r_{\rm tr}}{\partial T}
+=\frac{\partial A^r_{\rm base}}{\partial T}
++\left(\frac{\partial A^r_{\rm base}}{\partial W}-\frac{NRT}{W}\right)
+ \frac{\partial C}{\partial T}
++NR\ln\!\left(\frac{V}{W}\right)
+\]
+
+\[
+\begin{aligned}
+\frac{\partial^2 A^r_{\rm tr}}{\partial T\,\partial V}
+={}&\frac{\partial^2 A^r_{\rm base}}{\partial T\,\partial W}
++NR\left(\frac{1}{V}-\frac{1}{W}\right)\\
+&+\left(\frac{\partial^2 A^r_{\rm base}}{\partial W^2}
+       +\frac{NRT}{W^2}\right)\frac{\partial C}{\partial T}
+\end{aligned}
+\]
+
+\[
+\begin{aligned}
+\frac{\partial^2 A^r_{\rm tr}}{\partial T^2}
+={}&\frac{\partial^2 A^r_{\rm base}}{\partial T^2}
++2\left(\frac{\partial^2 A^r_{\rm base}}{\partial T\,\partial W}
+        -\frac{NR}{W}\right)\frac{\partial C}{\partial T}\\
+&+\left(\frac{\partial^2 A^r_{\rm base}}{\partial W^2}
+        +\frac{NRT}{W^2}\right)
+  \left(\frac{\partial C}{\partial T}\right)^2\\
+&+\left(\frac{\partial A^r_{\rm base}}{\partial W}
+        -\frac{NRT}{W}\right)\frac{\partial^2 C}{\partial T^2}
+\end{aligned}
+\]
+
+### Mole-amount derivatives
+
+\[
+\frac{\partial A^r_{\rm tr}}{\partial n_i}
+=\frac{\partial A^r_{\rm base}}{\partial n_i}
++\left(\frac{\partial A^r_{\rm base}}{\partial W}-\frac{NRT}{W}\right)
+ \frac{\partial C}{\partial n_i}
++RT\ln\!\left(\frac{V}{W}\right)
+\]
+
+\[
+\begin{aligned}
+\frac{\partial^2 A^r_{\rm tr}}{\partial V\,\partial n_i}
+={}&\frac{\partial^2 A^r_{\rm base}}{\partial W\,\partial n_i}
++RT\left(\frac{1}{V}-\frac{1}{W}\right)\\
+&+\left(\frac{\partial^2 A^r_{\rm base}}{\partial W^2}
+        +\frac{NRT}{W^2}\right)\frac{\partial C}{\partial n_i}
+\end{aligned}
+\]
+
+\[
+\begin{aligned}
+\frac{\partial^2 A^r_{\rm tr}}{\partial T\,\partial n_i}
+={}&\frac{\partial^2 A^r_{\rm base}}{\partial T\,\partial n_i}
++\left(\frac{\partial^2 A^r_{\rm base}}{\partial T\,\partial W}
+        -\frac{NR}{W}\right)\frac{\partial C}{\partial n_i}\\
+&+\left(\frac{\partial^2 A^r_{\rm base}}{\partial W\,\partial n_i}
+        -\frac{RT}{W}\right)\frac{\partial C}{\partial T}\\
+&+\left(\frac{\partial^2 A^r_{\rm base}}{\partial W^2}
+        +\frac{NRT}{W^2}\right)
+  \frac{\partial C}{\partial T}\frac{\partial C}{\partial n_i}\\
+&+\left(\frac{\partial A^r_{\rm base}}{\partial W}
+        -\frac{NRT}{W}\right)
+  \frac{\partial^2 C}{\partial T\,\partial n_i}
++R\ln\!\left(\frac{V}{W}\right)
+\end{aligned}
+\]
+
+\[
+\begin{aligned}
+\frac{\partial^2 A^r_{\rm tr}}{\partial n_i\,\partial n_j}
+={}&\frac{\partial^2 A^r_{\rm base}}{\partial n_i\,\partial n_j}\\
+&+\left(\frac{\partial^2 A^r_{\rm base}}{\partial W\,\partial n_i}
+        -\frac{RT}{W}\right)\frac{\partial C}{\partial n_j}\\
+&+\left(\frac{\partial^2 A^r_{\rm base}}{\partial W\,\partial n_j}
+        -\frac{RT}{W}\right)\frac{\partial C}{\partial n_i}\\
+&+\left(\frac{\partial^2 A^r_{\rm base}}{\partial W^2}
+        +\frac{NRT}{W^2}\right)
+  \frac{\partial C}{\partial n_i}\frac{\partial C}{\partial n_j}\\
+&+\left(\frac{\partial A^r_{\rm base}}{\partial W}
+        -\frac{NRT}{W}\right)
+  \frac{\partial^2 C}{\partial n_i\,\partial n_j}
+\end{aligned}
+\]
+
+The derivatives of \(C\) are supplied by the concrete translation model.
+The volume derivatives contain no \(\partial C/\partial V\) terms because
+this interface requires \(C\) to be independent of volume.
 
 ## Equilibrium and limitations
 
