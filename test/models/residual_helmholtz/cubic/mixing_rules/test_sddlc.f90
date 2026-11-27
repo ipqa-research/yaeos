@@ -60,41 +60,23 @@ contains
       real(pr), dimension(nc, nc) :: Arn2
 
       real(pr) :: dn = 1e-5, dv=1e-6, dt=1e-2
-      real(pr), parameter :: tol=1e-2
+      real(pr), parameter :: tol=1e-6
       integer :: i, j
 
       logical :: individual_calls
 
-      z = [0.5, 0.5]
-      V = 5
-      T = 350
+      z = [0.2, 0.8]
+      V = 0.2
+      T = 200
 
 
       dv = 0.0001
-      dt = 0.01
+      dt = 0.0001
 
-      ! do i=1,int(1e7),int(5e4)
-      !    do j=1,int(1e7),int(5e4)
-      !       dv = real(i, pr) * 1.e-10
-      !       dt = real(j, pr) * 1.e-10
-
-      !       call numeric_ar_derivatives(model, z, V, T, dn, dv, dt, &
-      !          Ar_num, ArV_num, ArT_num, Arn_num, ArV2_num, ArT2_num, ArTV_num, ArVn_num, ArTn_num, Arn2_num)
-
-      !       call model%residual_helmholtz(z, V, T, &
-      !          Ar=Ar, ArV=ArV, ArT=ArT, Arn=Arn, ArV2=ArV2, ArT2=ArT2, ArTV=ArTV, &
-      !          ArVn=ArVn, ArTn=ArTn, Arn2=Arn2 &
-      !          )
-
-      !       write(1, *) dv, dt, abs((ArTV - ArTV_num)/ArTV)
-      !    end do
-      !    print *, i, j
-      !    write(1, *)
-      ! end do
-
-
-      call numeric_ar_derivatives(model, z, V, T, dn, dv, dt, &
-         Ar_num, ArV_num, ArT_num, Arn_num, ArV2_num, ArT2_num, ArTV_num, ArVn_num, ArTn_num, Arn2_num)
+      call numeric_ar_derivatives(model, z, V, T, dn, dv, dt*T, &
+         Ar_num, ArV_num, ArT_num, Arn_num, ArV2_num, ArT2_num, &
+         ArTV_num, ArVn_num, ArTn_num, Arn2_num&
+        )
 
       call model%residual_helmholtz(z, V, T, &
          Ar=Ar, ArV=ArV, ArT=ArT, Arn=Arn, ArV2=ArV2, ArT2=ArT2, ArTV=ArTV, &

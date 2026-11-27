@@ -303,7 +303,7 @@ contains
 
       if (present(ArVn)) then
          ArVn(:) = -gv*T + FFBV*dBi(:) - fv*dDi(:) - D*fVD1*dD1i(:)
-         ArVn(:) = ArVn(:) - fB*dBi(:)*dDdV - f*dDidV(:)
+         ArVn(:) = ArVn(:) - fB*dBi(:)*dDdV - fD1*dD1i(:)*dDdV - f*dDidV(:)
       end if
 
       if (present(Arn2)) then
@@ -330,7 +330,7 @@ contains
       if (present(ArTV)) then
          ArTV = -TOTN*gv - dDdT*fV
          ! s-DDLC correction: ArTV += dDdV*f/T + (-f)*dDdTV
-         ArTV = ArTV + dDdV*f/T - f*dDdTV
+         ArTV = ArTV - f*dDdTV
       end if
 
       if (present(ArTn)) &
