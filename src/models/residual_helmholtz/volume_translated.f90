@@ -291,16 +291,16 @@ contains
       if (energy_requested) Ar = Ar + NRT*log_ratio
 
       ! Derivatives
-      if (dV) ArV = ArV_base + NRT*C_VW
+      if (dV) ArV = ArV_base + NRT*C_VW ! Good
 
-      if (dV2) ArV2 = ArV2_base - NRT*C_VW*(1._pr/V + 1._pr/W)
+      if (dV2) ArV2 = ArV2_base - NRT*C_VW*(1._pr/V + 1._pr/W) ! Good
 
-      if (dT) ArT = ArT + (ArV_base - NRT/W)*CT + NR*log_ratio
+      if (dT) ArT = ArT + (ArV_base - NRT/W)*CT + NR*log_ratio ! Good
 
       if (dTV) ArTV = ArTV_base + NR*C_VW + (ArV2_base + NRT/W**2)*CT
 
       if (dT2) ArT2 = ArT2 + 2._pr*(ArTV_base - NR/W)*CT &
-         + (ArV2_base + NRT/W**2)*CT**2 + (ArV_base - NRT/W)*CT2
+         + (ArV2_base + NRT/W**2)*CT**2 + (ArV_base - NRT/W)*CT2 ! Good
 
       if (dn) Arn = Arn + (ArV_base - NRT/W)*Cn + R*T*log_ratio
 
