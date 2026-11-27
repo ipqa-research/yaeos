@@ -1,7 +1,7 @@
 <!-- omit in toc -->
 # Contributing to yaeos
 
-First off, thanks for your interesnt and taking the time to contribute!
+First off, thanks for your interest and taking the time to contribute!
 
 All types of contributions are encouraged and valued. 
 See the [Table of Contents](#table-of-contents) for different ways to help and
@@ -87,7 +87,7 @@ A good bug report shouldn't leave others needing to chase you up for more inform
 
 - Make sure that you are using the latest version.
 - Determine if your bug is really a bug and not an error on your side e.g. using incompatible environment components/versions (Make sure that you have read the [documentation](https://ipqa-research.github.io/yaeos). If you are looking for support, you might want to check [this section](#i-have-a-question)).
-- To see if other users have experienced (and potentially already solved) the same issue you are having, check if there is not already a bug report existing for your bug or error in the [bug tracker](https://github.com/ipqa-research/yaeosissues?q=label%3Abug).
+- To see if other users have experienced (and potentially already solved) the same issue you are having, check if there is not already a bug report existing for your bug or error in the [bug tracker](https://github.com/ipqa-research/yaeos/issues?q=label%3Abug).
 - Also make sure to search the internet (including Stack Overflow) to see if users outside of the GitHub community have discussed the issue.
 - Collect information about the bug:
   - Stack trace (Traceback)
@@ -162,7 +162,7 @@ Our code style can be read at [Style Guide](STYLE_GUIDE.md)
 ### Commit Messages
 We encourage the use of
 [commitizen](https://commitizen-tools.github.io/commitizen/) styling on commit
-messages.
+messages, but it is not mandatory.
 <!-- TODO -->
 
 ## Join The Project Team

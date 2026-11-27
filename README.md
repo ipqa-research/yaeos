@@ -1,195 +1,228 @@
 <div align="center">
- 
+
 [![Fortran](https://img.shields.io/badge/Fortran-734f96?logo=fortran&style=flat)](https://fortran-lang.org)
 [![fpm](https://img.shields.io/badge/fpm-Fortran_package_manager-734f96)](https://fpm.fortran-lang.org)
-[![Documentation](https://img.shields.io/badge/ford-Documentation%20-blueviolet.svg)](https://ipqa-research.github.io/yaeos/)
+[![FORD Documentation](https://img.shields.io/badge/ford-Documentation%20-blueviolet.svg)](https://ipqa-research.github.io/yaeos/)
+[![Python Docs](https://img.shields.io/badge/Python-Docs-3776AB?logo=python&logoColor=white)](https://ipqa-research.github.io/yaeos/page/python-api/index.html)
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL_2.0-brightgreen.svg)](https://github.com/ipqa-research/yaeos/blob/main/LICENSE)
-[![CI](https://github.com/fedebenelli/yaeos/actions/workflows/CI.yml/badge.svg)](https://github.com/ipqa-research/yaeos/actions/workflows/CI.yml)
+[![CI](https://github.com/ipqa-research/yaeos/actions/workflows/CI.yml/badge.svg)](https://github.com/ipqa-research/yaeos/actions/workflows/CI.yml)
 [![codecov](https://codecov.io/gh/ipqa-research/yaeos/graph/badge.svg?token=IDJYKV8XK6)](https://codecov.io/gh/ipqa-research/yaeos)
+
+<p align="center">
+<a target="_blank" href="https://colab.research.google.com/github/ipqa-research/yaeos/blob/main/notebooks/run_online.ipynb">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a> <br>
+<img src="media/logo.png" width="50%" alt="yaeos logo"/>
+</p>
 
 </div>
 
-<p align="center">
-<img src="media/logo.png" width="50%"/>
-</p>
+**yaeos** (Yet Another Equation Of State library) computes thermodynamic
+properties and phase equilibria with equations of state, in modern Fortran and
+Python. It focuses on robust algorithms for phase diagrams and on an easy
+framework for adding new models, with analytical derivatives or automatic
+differentiation.
 
-There are multiple open source equations of state libraries, like:
+- **Phase diagrams that close.** Continuation methods trace PT, Px and Tx
+  envelopes through critical points, including three-phase and multiphase
+  boundaries, critical lines and binary global phase diagrams.
+- **Models you can extend.** Write the residual Helmholtz or excess Gibbs
+  energy and get fugacities, residual properties and every equilibrium routine
+  for free.
+- **Fortran speed, Python reach.** A readable Fortran core built with
+  [fpm](https://fpm.fortran-lang.org), wrapped as a `pip install yaeos`
+  package for notebooks, parameter fitting and plotting.
 
-- [Clapeyron](https://github.com/ClapeyronThermo/Clapeyron.jl) `julia`
-- [FeOs](https://github.com/feos-org/feos) `rust` with `Python` bindings
-- [teqp](https://github.com/usnistgov/teqp) `C++` with `Python` bindings
-- [thermo](https://github.com/CalebBell/thermo) `python`
-- [thermopack](https://github.com/thermotools/thermopack) `Fortran` with `Python` bindings
-- [CoolProp](https://github.com/CoolProp/CoolProp) `C++` with `Python` bindings
+## Documentation
 
-Here we are presenting yet another (still in development) one, that tackles the
-same problem just, in another way. Mostly exploiting the readability and
-extensibility of Modern Fortran for scientists to have an easy way to implement
-new thermodynamic models without dealing with lower-level languages but still
-getting decent performance.
-And also this framework provides the possibility of using analytically obtained
-derivatives so both options are easily available.
+- [User guide and Fortran API](https://ipqa-research.github.io/yaeos/)
+- [Python API](https://ipqa-research.github.io/yaeos/page/python-api/index.html)
+- [Adding new models](https://ipqa-research.github.io/yaeos/page/usage/newmodels/index.html)
+- [Developer handbook](https://ipqa-research.github.io/yaeos/page/developer/index.html)
 
-> This is an experimental work in progress and we recommend the before
-> mentioned libraries if you are intending to use some of this in real work.
-> Big part of the code comes from a refactoring process of older codes so
-> not all parts are easily readable, yet.
+## Installation
 
-We focus mainly on that the addition of a new thermodynamic model as easily as
-possible. Also providing our models too!
+### Fortran
 
-For now, we only include residual Helmholtz model (like Cubic or Saft Equations
-of State). But we'll be adding other models like $G^E$ (UNIFAC for example).
-
-# A little taste of `yaeos`
-A lot of users get the bad picture of Fortran being old and archaic since most
-of the codes they've seen are written in ancient `F77`.
-
-```fortran
-use yaeos, only: PengRobinson76, pressure, ArModel
-
-integer, parameter :: n=2   ! Number of components
-real(8) :: V, T, P, dPdN(n) ! variables to calculate
-class(ArModel), allocatable :: model ! Model
-
-real(pr) :: z(n), tc(n), pc(n), w(n), kij(n, n), lij(n, n)
-
-z = [0.3, 0.7]
-tc = [190., 310.]
-pc = [14., 30.]
-w = [0.001, 0.03]
-kij = reshape([0., 0.1, 0.1, 0.], [n,n])
-lij = kij / 2 
-
-model =  PengRobinson76(tc, pc, w, kij, lij)
-
-V = 1
-T = 150
-
-call pressure(model, z, V, T, P)
-print *, P
-
-! Obtain derivatives adding them as optional arguments! 
-call pressure(model, z, V, T, P, dPdN=dPdN)
-print *, dPdN
-```
-
-Examples of code with simple applications showing the capabilities of `yaeos`
-can be found at [example/tutorials](example/tutorials). Each example can be run
-with:
+yaeos is an [fpm](https://fpm.fortran-lang.org) package. It needs BLAS and
+LAPACK; on Debian/Ubuntu:
 
 ```bash
- fpm run --example <example name here>
+sudo apt install libblas-dev liblapack-dev
 ```
 
-Not providing any example will show all the possible examples that can be run.
-
-# How to install/run it
-`yaeos` is intended to use as a [`fpm`](fpm.fortran-lang.org)
-
-You can either:
-
-- Generate a new project that uses `yaeos` as a dependency
-
-```bash
-fpm new my_project
-```
-
-In the `fpm.toml` file add:
+Then add it as a dependency in your project's `fpm.toml`:
 
 ```toml
 [dependencies]
 yaeos = {git="https://github.com/ipqa-research/yaeos"}
 ```
 
-- Clone this repository and just modify the executables in the `app` directory
+### Python
+
+Binary wheels are published on PyPI:
 
 ```bash
-git clone https://github.com/ipqa-research/yaeos
-cd yaeos
-fpm run
+pip install yaeos
 ```
 
-## Developing with vscode
-If your intention is either to develop for `yaeos` or to explore in more detail
-the library with debugging. We provide some predefined defuaults to work with
-`vscode`. You can add them to the cloned repository by running:
+## Quick start
+
+Build a Peng-Robinson model for methane + n-butane, then evaluate a pressure,
+a bubble point and the PT phase envelope. yaeos uses K, bar, L and mol
+throughout.
+
+### Fortran
+
+```fortran
+program quickstart
+   use yaeos, only: pr, ArModel, PengRobinson76, EquilibriumState, PTEnvel2, &
+      saturation_pressure, pt_envelope_2ph
+   implicit none
+   class(ArModel), allocatable :: model
+   type(EquilibriumState) :: bubble
+   type(PTEnvel2) :: envelope
+   real(pr) :: z(2)
+   real(pr) :: P
+
+   ! Methane + n-butane with Peng-Robinson (1976): Tc [K], Pc [bar], omega
+   model = PengRobinson76(tc=[190.564_pr, 425.12_pr], &
+      pc=[45.99_pr, 37.96_pr], w=[0.0115478_pr, 0.200164_pr])
+   z = [0.3_pr, 0.7_pr]  ! mol
+
+   call model%pressure(z, V=1.0_pr, T=300.0_pr, P=P)
+   bubble = saturation_pressure(model, z, T=300.0_pr, kind="bubble")
+   envelope = pt_envelope_2ph(model, z, &
+      saturation_pressure(model, z, T=200.0_pr, kind="dew"))
+
+   print *, "P(1 L, 300 K) =", P, "bar"
+   print *, "Bubble P(300 K) =", bubble%P, "bar"
+   print *, "Critical point:", envelope%cps(1)%T, "K", envelope%cps(1)%P, "bar"
+end program quickstart
+```
+
+### Python
+
+```python
+import numpy as np
+from yaeos import PengRobinson76
+
+# Methane + n-butane with Peng-Robinson (1976)
+model = PengRobinson76(
+    critical_temperatures=[190.564, 425.12],  # K
+    critical_pressures=[45.99, 37.96],  # bar
+    acentric_factors=[0.0115478, 0.200164],
+)
+z = np.array([0.3, 0.7])  # mol
+
+P = model.pressure(z, volume=1.0, temperature=300.0)
+bubble = model.saturation_pressure(z, temperature=300.0, kind="bubble")
+envelope = model.phase_envelope_pt(z, kind="dew", t0=200.0, p0=1.0)
+
+print(f"P(1 L, 300 K) = {P:.4f} bar")
+print(f"Bubble P(300 K) = {bubble['P']:.4f} bar")
+print("Critical point:", envelope.critical_temperatures, envelope.critical_pressures)
+envelope.plot()  # requires matplotlib
+```
+
+Both print a pressure of 15.91 bar, a bubble pressure of 57.37 bar and a
+critical point near 401.5 K and 68.1 bar.
+
+### Examples
+
+More Fortran examples live in [`example/`](example). From a clone of this
+repository, run a registered example by name:
+
+```bash
+fpm run --example basics
+```
+
+Available names (see `fpm.toml`): `basics`, `saturation_points`,
+`phase_split`, `phase_envelope`, `new_alpha_function`, `pure_psat`,
+`huron_vidal`.
+
+## Models
+
+**Residual Helmholtz models**
+
+- Cubic EoS: SRK, PR76, PR78, RKPR, PSRK
+  - Alpha functions: Soave, RKPR, Mathias-Copeman
+  - Mixing rules: QMR, QMRTD, CMR, CMRTD, MHV, HV, HV-NRTL, sDDLC
+- GERG-2008 (multifluid)
+- PC-SAFT
+
+**Excess Gibbs models**
+
+- NRTL, NRTL-HV
+- UNIQUAC
+- UNIFAC VLE, UNIFAC Dortmund, PSRK-UNIFAC
+
+## Properties and phase equilibria
+
+- Volume, pressure, fugacity coefficients and their derivatives
+- Residual properties (H, S, G, U, Cv, Cp); activity coefficients and excess
+  properties from Ge models
+- Flash calculations at PT and VT, and multiphase flash
+- Saturation points: bubble, dew and liquid-liquid; pure-component saturation
+- Stability analysis (tangent plane distance)
+- Phase envelopes: PT (isopleths), Px (isotherms) and Tx (isobars), including
+  three-phase and general multiphase envelopes
+- Critical points and critical lines
+- Global phase equilibrium diagrams of binary mixtures (`GPEC`, Python)
+
+## Adding new models
+
+New models only need their energy function; the rest of the library works on
+top of it. Derivatives can come from three routes:
+
+- **Analytical** derivatives, coded by hand.
+- **Hyperdual numbers**, using the `hyperdual` module developed by
+  [Philipp Rehner](https://github.com/prehner) and
+  [Gernot Bauer](https://github.com/g-bauer). A complete PR76 implementation
+  is in [`example/extra/adiff_pr76.f90`](example/extra/adiff_pr76.f90).
+- **Tapenade**-generated derivatives; see
+  [`tools/tapenade_diff/`](tools/tapenade_diff/).
+
+The [new models guide](https://ipqa-research.github.io/yaeos/page/usage/newmodels/index.html)
+walks through each route.
+
+## Other EoS libraries
+
+yaeos is one of several open-source equation of state libraries, each with its
+own design choices:
+
+- [Clapeyron](https://github.com/ClapeyronThermo/Clapeyron.jl) (Julia)
+- [FeOs](https://github.com/feos-org/feos) (Rust, with Python bindings)
+- [teqp](https://github.com/usnistgov/teqp) (C++, with Python bindings)
+- [thermo](https://github.com/CalebBell/thermo) (Python)
+- [thermopack](https://github.com/thermotools/thermopack) (Fortran, with Python bindings)
+- [CoolProp](https://github.com/CoolProp/CoolProp) (C++, with Python bindings)
+
+yaeos emphasizes readable, extensible modern Fortran so that researchers can
+implement new models without dropping to lower-level code, while keeping
+good performance and robust phase-diagram algorithms.
+
+## Contributing
+
+Contributions are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) and the
+[developer handbook](https://ipqa-research.github.io/yaeos/page/developer/index.html)
+before opening a pull request. Bug reports and questions go to the
+[issue tracker](https://github.com/ipqa-research/yaeos/issues).
+
+If you use VS Code, predefined settings for developing and debugging are
+available; from the repository root run:
 
 ```bash
 git clone https://github.com/ipqa-research/vscode-fortran .vscode
 ```
 
-From the project main directory 
+## Citing, license and versioning
 
-## Available examples
-In this repository we provide a series of examples of the different things that
-can be calculated with `yaeos`. The source codes for the examples can be seen
-at the [example/tutorials](example/tutorials) directory.
+yaeos is maintained by the research group of Prof. Martín Cismondi-Duarte at
+[IPQA (UNC-CONICET)](https://ipqa.unc.edu.ar/en/).
 
-All the examples can be run with
-
-```bash
-fpm run --example <example_name_here>
-```
-
-# Including new models with Automatic Differentiation.
-We are using the `hyperdual` module developed by 
-[Philipp Rehner](https://github.com/prehner) 
-and [Gernot Bauer](https://github.com/g-bauer)
-
-> The automatic differentiation API isn't fully optimized yet so performance is
-> much slower than it should be.
-
-```fortran
-type, extends(ArModelAdiff) :: YourNewModel
-   type(Substances) :: composition
-   real(8), allocatable :: parameters(:) ! A vector of parameters
-contains
-   procedure :: Ar => arfun
-   procedure :: get_v0 => v0
-end type
-```
-
-```fortran
-subroutine arfun(self, n, v, t, Ar)
-   class(YourNewModel), intent(in) :: self
-   type(hyperdual), intent(in) :: n(:) ! Number of moles
-   type(hyperdual), intent(in) :: v ! Volume [L]
-   type(hyperdual), intent(in) :: t ! Temperature [K]
-   type(hyperdual), intent(out) :: ar_value ! Residual Helmholtz Energy
-
-   ! A very complicated residual helmholtz function of a mixture
-   Ar = sum(n) * v * t / self%parameters(1)
-end subroutine
-
-function v0(self, n, p, t)
-   class(YourNewModel), intent(in) :: self
-   real(pr), intent(in) :: n(:) ! Number of moles
-   real(pr), intent(in) :: p ! Pressure [bar]
-   real(pr), intent(in) :: t ! Temperature [K]
-   real(pr) :: v0
-
-   v0 = self%parameters(3)
-end function
-```
-
-A complete implementation of the PR76 Equation of State can me found in
-`example/adiff/adiff_pr76.f90`.
-
-All the thermodynamic properties can be found in `yaeos_thermoprops` and called
-like:
-
-```fortran
-use yaeos_thermoprops, only: fugacity_vt
-use my_new_model, only: YourNewModel
-...
-type(YourNewModel) :: eos
-eos%parameters = [1, 2, 3]
-call fugacity_vt(eos, n, v, t, lnfug=lnfug, dlnphidn=dlnphidn)
-```
-
-# Documentation
-The latest API documentation for the `main` branch can be found
-[here](https://ipqa-research.github.io/yaeos). This was generated from the source
-code using [FORD](https://github.com/Fortran-FOSS-Programmers/ford). We're
-working in extending it more.
+- **Citing:** if yaeos is useful in your work, please cite it using
+  [`CITATION.cff`](CITATION.cff) (GitHub's "Cite this repository" button
+  exports BibTeX and APA).
+- **License:** [Mozilla Public License 2.0](LICENSE).
+- **Versioning:** [Semantic Versioning](https://semver.org/).

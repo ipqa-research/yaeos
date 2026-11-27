@@ -1,0 +1,73 @@
+"""Cubic EoS module.
+
+Implemented models:
+
+- Cubic EoS:
+    - PengRobinson76: Peng-Robinson model (1976)
+    - PengRobinson78: Peng-Robinson model (1978)
+    - SoaveRedlichKwong: Soave-Redlich-Kwong model
+    - RKPR: RKPR model
+    - PSRK: Predictive Soave-Redlich-Kwong model
+- Alpha functions: alpha functions for cubic EoS
+    - AlphaSoave: Soave alpha function
+    - AlphaRKPR: RKPR alpha function
+    - AlphaMathiasCopeman: Mathias-Copeman alpha function
+- Mixing rules: mixing rules for cubic EoS
+    - QMR: quadratic mixing rule
+    - QMRTD: quadratic mixing rule with exponential temperature dependence
+    - CMR: cubic mixing rule
+    - CMRTD: cubic mixing rule with exponential temperature dependence
+    - sDDLC: segmented density dependent local composition mixing rule
+    - MHV: modified Huron-Vidal mixing rule
+    - HV: Huron-Vidal mixing rule
+    - HVNRTL: Huron-Vidal mixing rule with NRTL excess Gibbs energy
+"""
+
+from yaeos.models.residual_helmholtz.cubic_eos.cubic_eos import (
+    CubicEoS,
+    PSRK,
+    PengRobinson76,
+    PengRobinson78,
+    RKPR,
+    SoaveRedlichKwong,
+)
+from yaeos.models.residual_helmholtz.cubic_eos.mixing_rules import (
+    CubicMixRule,
+    HV,
+    HVNRTL,
+    MHV,
+    QMR,
+    QMRTD,
+    sDDLC,
+    CMR,
+    CMRTD
+)
+
+from yaeos.models.residual_helmholtz.cubic_eos.alphas import (
+    CubicAlphaFunction,
+    AlphaSoave,
+    AlphaRKPR,
+    AlphaMathiasCopeman
+)
+
+__all__ = [
+    "CubicEoS",
+    "PengRobinson76",
+    "PengRobinson78",
+    "SoaveRedlichKwong",
+    "RKPR",
+    "PSRK",
+    "CubicAlphaFunction",
+    "AlphaSoave",
+    "AlphaRKPR",
+    "AlphaMathiasCopeman",
+    "CubicMixRule",
+    "QMR",
+    "QMRTD",
+    "MHV",
+    "HV",
+    "HVNRTL",
+    "sDDLC",
+    "CMR",
+    "CMRTD"
+]

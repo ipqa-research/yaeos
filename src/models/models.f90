@@ -1,6 +1,8 @@
 module yaeos__models
-   !! `yaeos` thermodynamic models
+   !! # Thermodynamic model constructors and interfaces
+   !! Public EOS and excess-Gibbs models available from the library.
    !!
+   !! # Description
    !! On `yaeos` there are implemented a series of both residual Helmholtz
    !! energy (\(A_r\)) and excess Gibbs energy (\(G^E\)) models.
    !!
@@ -12,19 +14,45 @@ module yaeos__models
    !!   should provide.
    !! - **Cubic Equations of state**:
    !!    - `AlphaFunction` type
-   !!    - `CubicMixRule` type
    !!    - `CubicEos` type that extends `ArModel` to use a generic
    !!      two-parameter EoS. Implemented models that use this type can be
    !!      seen at [[yaeos__models_ar_cubic_implementations(module)]]
-   !!    - `QMR` (Quadratic Mixing Rule) type: extensible derived type that 
-   !!       defaults to classic vdW mixing rules
+   !!    - `QMR` (Quadratic Mixing Rule) type: extensible derived type that
+   !!       defaults to classic vdW mixing rules.
+   !!    - `MHV` (Modified Huron-Vidal) type: Michelsen's first-order modified
+   !!       Huron-Vidal mixing rule.
+   !!    - `HV` (Huron-Vidal) type: Huron-Vidal mixing rule.
+   !!    - `sDDLC` (segmented Density Dependent Local Composition) type:
+   !!       mixing rule proposed by Cismondi and Mollerup, including volume as
+   !!       a dependence of the mixture's attractive parameter.
+   !! - **GERG2008 Equation of State**:
+   !!    - GERG2008 multifluid equation of state
+   !! - **SAFT Equations of State**:
+   !!    - PC-SAFT equation of state
    !!
+   !! `ArModel` describes residual Helmholtz EOS models, while `GeModel`
+   !! describes excess-Gibbs activity models. Constructors initialize concrete
+   !! types with component data and model parameters.
+   !!
+   !! # Examples
+   !! ```fortran
+   !! model = PengRobinson76(Tc, Pc, omega)
+   !! ge = NRTL(A, B, alpha)
+   !! ```
 
    ! Base model structure
    use yaeos__models_base, only: BaseModel
 
    ! Residual Helmholtz Models
-   use yaeos__models_ar, only: ArModel
+   use yaeos__models_ar, only: ArModel, size
+
+   ! GERG2008
+   use yaeos__models_ar_gerg2008, only: &
+      Gerg2008, Gerg2008Binary, G2008Components, gerg_2008
+
+   ! PC-SAFT Models
+   use yaeos__models_ar_saft_pcsaft, only: &
+      PcSaft, init_pcsaft
 
    ! Cubic EoS models
    use yaeos__models_ar_genericcubic, only: &
@@ -35,7 +63,9 @@ module yaeos__models
 
    ! Mixing Rules
    use yaeos__models_ar_cubic_quadratic_mixing
+   use yaeos__models_ar_cubic_cubic_mixing
    use yaeos__models_cubic_mixing_rules_huron_vidal
+   use yaeos__models_ar_cubic_mixing_sddlc
 
    ! Implemented models
    use yaeos__models_ar_cubic_implementations
@@ -46,4 +76,4 @@ module yaeos__models
    ! Implemented models
    use yaeos__models_ge_implementations
 
-end module
+end module yaeos__models

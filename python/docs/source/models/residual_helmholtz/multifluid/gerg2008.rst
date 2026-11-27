@@ -1,0 +1,23 @@
+GERG 2008
+=========
+
+GERG2008 is a multifluid EoS used for natural-gas mixtures. Construct it with
+a list of supported component names, for example
+``GERG2008(["methane", "nitrogen", "carbon dioxide"])``. Subsequent mole
+vectors must follow that exact order, not the order of the full component
+list below. The name lookup is case-sensitive; unsupported names raise
+``ValueError``.
+
+The wrapper exposes the residual contribution through :doc:`/core`.
+``volume(n, P, T)`` uses mol, bar, and K and returns L; ``sum(n) / V`` is
+molar density in mol/L, not kg/m3. Residual heat capacities and energies
+must not be mistaken for complete caloric properties.
+
+See the :doc:`GERG2008 tutorial </tutorial/equations_of_state/multifluid_eos/multifluid_eos>`
+and verify that the chosen conditions and components are appropriate for
+the underlying model before relying on a prediction.
+
+.. automodule:: yaeos.models.residual_helmholtz.multifluid.gerg2008
+    :members:
+    :undoc-members:
+    :show-inheritance:

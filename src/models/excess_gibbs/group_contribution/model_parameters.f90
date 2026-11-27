@@ -1,12 +1,16 @@
 module yaeos__models_ge_group_contribution_model_parameters
-   !! # \(G^E\) group contribution model parameters
-   !! \(G^E\) group contribution model parameters module.
+   !! # Group-contribution model parameters
+   !! Parameter arrays and consistency checks shared by UNIFAC-like models.
    !!
    !! # Description
-   !! This module contrains the GeGCModelParameters type that allows to store
+   !! This module contains the `GeGCModelParameters` type used to store
    !! the subgroups ids, maingroups ids, subgroups Rs, subgroups Qs,
    !! subgroups maingroups, and maingroups interaction parameters for UNIFAC
    !! like models (UNIFAC, LL-UNIFAC, Dortmund UNIFAC, PSRK, etc)
+   !!
+   !! # Examples
+   !! Parameter factories such as `DortmundParameters()` and `PSRKParameters()`
+   !! return initialized instances of this type.
    !!
    use yaeos__constants, only: pr
    implicit none
@@ -28,9 +32,12 @@ module yaeos__models_ge_group_contribution_model_parameters
       !! [[GeGCModelParameters]] object with the classic liquid-vapor UNIFAC
       !! parameters defined in DDBST.
       !!
+      !! # Examples
+      !! Parameter factories such as `DortmundParameters()` and
+      !! `PSRKParameters()` return initialized values of this type.
+      !!
       !! # References
-      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.dd
-      !! bst.com/published-parameters-unifac.html)
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst.com/published-parameters-unifac.html)
       !!
       integer, allocatable :: subgroups_ids(:)
       !! ID of each model's subgroup
@@ -60,9 +67,78 @@ module yaeos__models_ge_group_contribution_model_parameters
       procedure :: get_subgroups_aij => get_subgroups_aij
       procedure :: get_subgroups_bij => get_subgroups_bij
       procedure :: get_subgroups_cij => get_subgroups_cij
+      procedure :: check_consistency
    end type GeGCModelParameters
 
 contains
+   subroutine check_consistency(self)
+      !! # check_consistency
+      !! Validate group-contribution parameter-array dimensions.
+      !!
+      !! # Description
+      !! Checks that subgroup identifiers, subgroup-to-main-group mapping,
+      !! group-size/area data, and interaction-parameter matrices have
+      !! compatible dimensions. Stops with an error message at the first
+      !! inconsistent array shape.
+      !!
+      !! # Examples
+      !! ```fortran
+      !! call parameters%check_consistency()
+      !! ```
+      class(GeGCModelParameters), intent(in) :: self !! Parameter set to validate.
+      
+      integer :: n_subgroups
+      integer :: n_maingroups
+
+      n_subgroups = size(self%subgroups_ids)
+      n_maingroups = size(self%maingroups_ids)
+
+      ! ==============================================================
+      ! Subgroups and maingroups sizes
+      ! --------------------------------------------------------------
+      if (n_subgroups /= size(self%subgroups_maingroups)) then
+         error stop 'Subgroups and maingroups sizes mismatch'
+      end if
+
+      ! ==============================================================
+      ! Size parameters
+      ! --------------------------------------------------------------
+      if (n_subgroups /= size(self%subgroups_Rs)) then
+         error stop 'Subgroups and Rs sizes mismatch'
+      end if
+
+      if (n_subgroups /= size(self%subgroups_Qs)) then
+         error stop 'Subgroups and Qs sizes mismatch'
+      end if
+
+      ! ==============================================================
+      ! Interaction matrices
+      ! --------------------------------------------------------------
+      if (n_maingroups /= size(self%maingroups_aij, 1)) then
+         error stop 'Maingroups and aij sizes mismatch'
+      end if
+      
+      if (n_maingroups /= size(self%maingroups_aij, 2)) then
+         error stop 'Maingroups and aij sizes mismatch'
+      end if
+      
+      if (n_maingroups /= size(self%maingroups_bij, 1)) then
+         error stop 'Maingroups and bij sizes mismatch'
+      end if
+      
+      if (n_maingroups /= size(self%maingroups_bij, 2)) then
+         error stop 'Maingroups and bij sizes mismatch'
+      end if
+      
+      if (n_maingroups /= size(self%maingroups_cij, 1)) then
+         error stop 'Maingroups and cij sizes mismatch'
+      end if
+      
+      if (n_maingroups /= size(self%maingroups_cij, 2)) then
+         error stop 'Maingroups and cij sizes mismatch'
+      end if
+   end subroutine
+
    function get_subgroup_index(self, subgroup_id) result(subgroup_idx)
       !! # get_subgroup_index
       !! Get index of the subgroup with id: `subgroup_id`
@@ -87,10 +163,9 @@ contains
       !! ```
       !!
       !! # References
-      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.dd
-      !! bst.com/published-parameters-unifac.html)
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst.com/published-parameters-unifac.html)
       !!
-      class(GeGCModelParameters) :: self
+      class(GeGCModelParameters) :: self !! Group-contribution parameter database.
 
       integer, intent(in) :: subgroup_id
       !! ID of the subgroup
@@ -123,10 +198,9 @@ contains
       !! ```
       !!
       !! # References
-      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.dd
-      !! bst.com/published-parameters-unifac.html)
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst.com/published-parameters-unifac.html)
       !!
-      class(GeGCModelParameters) :: self
+      class(GeGCModelParameters) :: self !! Group-contribution parameter database.
 
       integer, intent(in) :: maingroup_id
       !! ID of the subgroup
@@ -159,10 +233,9 @@ contains
       !! ```
       !!
       !! # References
-      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.dd
-      !! bst.com/published-parameters-unifac.html)
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst.com/published-parameters-unifac.html)
       !!
-      class(GeGCModelParameters) :: self
+      class(GeGCModelParameters) :: self !! Group-contribution parameter database.
 
       integer, intent(in) :: subgroup_id
       !! ID of the subgroup
@@ -199,10 +272,9 @@ contains
       !! ```
       !!
       !! # References
-      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.dd
-      !! bst.com/published-parameters-unifac.html)
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst.com/published-parameters-unifac.html)
       !!
-      class(GeGCModelParameters) :: self
+      class(GeGCModelParameters) :: self !! Group-contribution parameter database.
 
       integer, intent(in) :: subgroup_id
       !! ID of the subgroup
@@ -239,10 +311,9 @@ contains
       !! ```
       !!
       !! # References
-      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.dd
-      !! bst.com/published-parameters-unifac.html)
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst.com/published-parameters-unifac.html)
       !!
-      class(GeGCModelParameters) :: self
+      class(GeGCModelParameters) :: self !! Group-contribution parameter database.
 
       integer, intent(in) :: subgroup_id
       !! ID of the subgroup
@@ -279,10 +350,9 @@ contains
       !! ```
       !!
       !! # References
-      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.dd
-      !! bst.com/published-parameters-unifac.html)
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst.com/published-parameters-unifac.html)
       !!
-      class(GeGCModelParameters) :: self
+      class(GeGCModelParameters) :: self !! Group-contribution parameter database.
 
       integer, intent(in) :: maingroup_i_id
       !! ID of the maingroup `i`
@@ -291,7 +361,8 @@ contains
       real(pr) :: aij
       !! Interaction parameter \(a_{ij}\)
 
-      integer :: i, j
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
 
       i = self%get_maingroup_index(maingroup_i_id)
       j = self%get_maingroup_index(maingroup_j_id)
@@ -325,10 +396,9 @@ contains
       !! parameters
       !!
       !! # References
-      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.dd
-      !! bst.com/published-parameters-unifac.html)
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst.com/published-parameters-unifac.html)
       !!
-      class(GeGCModelParameters) :: self
+      class(GeGCModelParameters) :: self !! Group-contribution parameter database.
 
       integer, intent(in) :: maingroup_i_id
       !! ID of the maingroup `i`
@@ -337,7 +407,8 @@ contains
       real(pr) :: bij
       !! Interaction parameter \(b_{ij}\)
 
-      integer :: i, j
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
 
       i = self%get_maingroup_index(maingroup_i_id)
       j = self%get_maingroup_index(maingroup_j_id)
@@ -371,10 +442,9 @@ contains
       !! parameters
       !!
       !! # References
-      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.dd
-      !! bst.com/published-parameters-unifac.html)
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst.com/published-parameters-unifac.html)
       !!
-      class(GeGCModelParameters) :: self
+      class(GeGCModelParameters) :: self !! Group-contribution parameter database.
 
       integer, intent(in) :: maingroup_i_id
       !! ID of the maingroup `i`
@@ -383,7 +453,8 @@ contains
       real(pr) :: cij
       !! Interaction parameter \(c_{ij}\)
 
-      integer :: i, j
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
 
       i = self%get_maingroup_index(maingroup_i_id)
       j = self%get_maingroup_index(maingroup_j_id)
@@ -415,10 +486,9 @@ contains
       !! ```
       !!
       !! # References
-      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.dd
-      !! bst.com/published-parameters-unifac.html)
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst.com/published-parameters-unifac.html)
       !!
-      class(GeGCModelParameters) :: self
+      class(GeGCModelParameters) :: self !! Group-contribution parameter database.
 
       integer, intent(in) :: subgroup_i_id
       !! ID of the subgroup `i`
@@ -427,7 +497,10 @@ contains
       real(pr) :: aij
       !! Interaction parameter \(a_{ij}\)
 
-      integer :: mi_id, mj_id, i, j
+      integer :: mi_id
+      integer :: mj_id
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
 
       mi_id = self%get_subgroup_maingroup(subgroup_i_id)
       mj_id = self%get_subgroup_maingroup(subgroup_j_id)
@@ -465,10 +538,9 @@ contains
       !! parameters
       !!
       !! # References
-      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.dd
-      !! bst.com/published-parameters-unifac.html)
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst.com/published-parameters-unifac.html)
       !!
-      class(GeGCModelParameters) :: self
+      class(GeGCModelParameters) :: self !! Group-contribution parameter database.
 
       integer, intent(in) :: subgroup_i_id
       !! ID of the subgroup `i`
@@ -477,7 +549,10 @@ contains
       real(pr) :: bij
       !! Interaction parameter \(b_{ij}\)
 
-      integer :: mi_id, mj_id, i, j
+      integer :: mi_id
+      integer :: mj_id
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
 
       mi_id = self%get_subgroup_maingroup(subgroup_i_id)
       mj_id = self%get_subgroup_maingroup(subgroup_j_id)
@@ -515,10 +590,9 @@ contains
       !! parameters
       !!
       !! # References
-      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.dd
-      !! bst.com/published-parameters-unifac.html)
+      !! 1. [Dortmund Data Bank Software & Separation Technology](https://www.ddbst.com/published-parameters-unifac.html)
       !!
-      class(GeGCModelParameters) :: self
+      class(GeGCModelParameters) :: self !! Group-contribution parameter database.
 
       integer, intent(in) :: subgroup_i_id
       !! ID of the subgroup `i`
@@ -527,7 +601,10 @@ contains
       real(pr) :: cij
       !! Interaction parameter \(c_{ij}\)
 
-      integer :: mi_id, mj_id, i, j
+      integer :: mi_id
+      integer :: mj_id
+      integer :: i !! Loop index `i`.
+      integer :: j !! Loop index `j`.
 
       mi_id = self%get_subgroup_maingroup(subgroup_i_id)
       mj_id = self%get_subgroup_maingroup(subgroup_j_id)
