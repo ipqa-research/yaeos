@@ -11,6 +11,7 @@ program test_constant_volume_translation
    call test_helmholtz_consistency()
    call test_translated_properties()
    call test_zero_translation()
+   call test_excess_properties()
 
    write(*, *) ""
 
@@ -295,4 +296,161 @@ contains
       call assert(rel_error(V_base, V) < 1.e-12_pr, "Zero translation preserves volume")
    end subroutine test_zero_translation
 
+   subroutine test_excess_properties()
+      use, intrinsic :: ieee_arithmetic, only: ieee_is_finite
+
+      ! Store the same properties for the base and translated models.
+      type :: excess_results
+         real(pr) :: lngamma(3)
+         real(pr) :: lngamma_alone(3)
+         real(pr) :: lngamma_p(3)
+         real(pr) :: lngamma_t(3)
+         real(pr) :: lngamma_n(3,3)
+         real(pr) :: gibbs
+         real(pr) :: gibbs_alone
+         real(pr) :: gibbs_p
+         real(pr) :: gibbs_t
+         real(pr) :: gibbs_n(3)
+         real(pr) :: enthalpy
+         real(pr) :: volume
+         real(pr) :: entropy
+         real(pr) :: helmholtz
+         real(pr) :: internal_energy
+      end type excess_results
+
+      class(ArModel), allocatable :: base
+      class(ArModel), allocatable :: eos
+      type(ConstantVolumeTranslation) :: translated
+      type(excess_results) :: result(2)
+      real(pr) :: n(3)
+      real(pr) :: npure(3)
+      real(pr) :: kij(3,3)
+      real(pr) :: lij(3,3)
+      real(pr) :: p
+      real(pr) :: t
+      real(pr) :: volume
+      real(pr), parameter :: tol = 1.e-10_pr
+      integer :: state
+      integer :: root_index
+      integer :: model_index
+      integer :: i
+      character(len=6) :: root
+
+      ! A ternary PR76 mixture with nonzero binary interactions.
+      kij = reshape([0._pr, 0.06_pr, 0.10_pr, 0.06_pr, 0._pr, 0.03_pr, &
+         0.10_pr, 0.03_pr, 0._pr], [3,3])
+      lij = 0._pr
+
+      base = PengRobinson76(&
+         [190.564_pr, 305.32_pr, 369.83_pr], &
+         [45.99_pr, 48.72_pr, 42.48_pr], &
+         [0.0115_pr, 0.0995_pr, 0.1523_pr], kij, lij)
+
+      translated = ConstantVolumeTranslation(base, [0.002_pr, 0.004_pr, -0.001_pr])
+
+      ! Compare two states and each root choice at the same P, T and amounts.
+      do state = 1, 2
+         if (state == 1) then
+            n = [0.8_pr, 1.5_pr, 0.7_pr]
+            p = 10._pr
+            t = 240._pr
+         else
+            n = [1.2_pr, 0.4_pr, 2.1_pr]
+            p = 40._pr
+            t = 350._pr
+         end if
+
+         do root_index = 1, 3
+            select case (root_index)
+             case (1)
+               root = "liquid"
+             case (2)
+               root = "vapor"
+             case (3)
+               root = "stable"
+            end select
+
+            ! Result 1 belongs to the base EOS; result 2 to its translation.
+            do model_index = 1, 2
+               if (model_index == 1) then
+                  eos = base
+               else
+                  eos = translated
+               end if
+
+               ! The mixture root and all stable pure reference roots must be physical.
+               call eos%volume(n, p, t, volume, trim(root))
+               call assert(ieee_is_finite(volume) .and. volume > 0._pr, "Excess mixture volume")
+
+               do i = 1, size(n)
+                  npure = 0._pr
+                  npure(i) = 1._pr
+                  call eos%volume(npure, p, t, volume, "stable")
+                  call assert(ieee_is_finite(volume) .and. volume > 0._pr, "Excess pure volume")
+               end do
+
+               ! Request ln(gamma) and G^E both with and without derivatives,
+               ! since those calls follow different paths in ArModel.
+               call eos%ln_activity_coefficient(n, p, t, trim(root), &
+                  result(model_index)%lngamma, result(model_index)%lngamma_p, &
+                  result(model_index)%lngamma_t, result(model_index)%lngamma_n)
+
+               call eos%ln_activity_coefficient(n, p, t, trim(root), lngamma=result(model_index)%lngamma_alone)
+
+               call eos%gibbs_excess(n, p, t, trim(root), result(model_index)%gibbs, &
+                  result(model_index)%gibbs_p, result(model_index)%gibbs_t, result(model_index)%gibbs_n)
+
+               call eos%gibbs_excess(n, p, t, trim(root), Ge=result(model_index)%gibbs_alone)
+
+               ! Remaining extensive excess properties at the same state.
+               call eos%enthalpy_excess(n, p, t, trim(root), result(model_index)%enthalpy)
+               call eos%volume_excess(n, p, t, trim(root), result(model_index)%volume)
+               call eos%entropy_excess(n, p, t, trim(root), result(model_index)%entropy)
+               call eos%helmholtz_excess(n, p, t, trim(root), result(model_index)%helmholtz)
+               call eos%internal_energy_excess(n, p, t, trim(root), result(model_index)%internal_energy)
+            end do
+
+            associate(reference => result(1), shifted => result(2))
+               ! Avoid a trivial comparison in which every activity coefficient is one.
+               call assert(maxval(abs(reference%lngamma)) > 1.e-6_pr, "Nontrivial activity coefficients")
+
+               ! Compare every component using an absolute tolerance.
+               call assert(all(abs(reference%lngamma - shifted%lngamma) < &
+                  tol), "ln(gamma)")
+               call assert(all(abs(reference%lngamma - shifted%lngamma_alone) < &
+                  tol), "ln(gamma) alone")
+               call assert(all(abs(reference%lngamma_p - shifted%lngamma_p) < &
+                  tol), "dln(gamma)/dP")
+               call assert(all(abs(reference%lngamma_t - shifted%lngamma_t) < &
+                  tol), "dln(gamma)/dT")
+               call assert(all(abs(reference%lngamma_n - shifted%lngamma_n) < &
+                  tol), "dln(gamma)/dn")
+
+               ! Gibbs excess and its derivatives.
+               call assert(abs(reference%gibbs - shifted%gibbs) < &
+                  tol, "G^E")
+               call assert(abs(reference%gibbs - shifted%gibbs_alone) < &
+                  tol, "G^E alone")
+               call assert(abs(reference%gibbs_p - shifted%gibbs_p) < &
+                  tol, "dG^E/dP")
+               call assert(abs(reference%gibbs_t - shifted%gibbs_t) < &
+                  tol, "dG^E/dT")
+               call assert(all(abs(reference%gibbs_n - shifted%gibbs_n) < &
+                  tol), "dG^E/dn")
+
+               ! Other excess properties must also remain unchanged.
+               call assert(abs(reference%enthalpy - shifted%enthalpy) < &
+                  tol, "H^E")
+               call assert(abs(reference%volume - shifted%volume) < &
+                  tol, "V^E")
+               call assert(abs(reference%entropy - shifted%entropy) < &
+                  tol, "S^E")
+               call assert(abs(reference%helmholtz - shifted%helmholtz) < &
+                  tol, "A^E")
+               call assert(abs(reference%internal_energy - shifted%internal_energy) < &
+                  tol, "U^E")
+            end associate
+         end do
+      end do
+   end subroutine test_excess_properties
 end program test_constant_volume_translation
